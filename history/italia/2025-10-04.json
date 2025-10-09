@@ -1,0 +1,140 @@
+{
+  "name": "Italia",
+  "slug": "itali",
+  "locale": "it-IT",
+  "invalidCount": 12116,
+  "autoFixableCount": 8840,
+  "totalNumbers": 217040,
+  "groupedDivisionStats": {
+    "Centro": [
+      {
+        "name": "Lazio",
+        "invalidCount": 1016,
+        "autoFixableCount": 820,
+        "totalNumbers": 13580
+      },
+      {
+        "name": "Toscana",
+        "invalidCount": 366,
+        "autoFixableCount": 285,
+        "totalNumbers": 11398
+      },
+      {
+        "name": "Umbria",
+        "invalidCount": 208,
+        "autoFixableCount": 117,
+        "totalNumbers": 2181
+      },
+      {
+        "name": "Marche",
+        "invalidCount": 349,
+        "autoFixableCount": 340,
+        "totalNumbers": 5636
+      }
+    ],
+    "Isole": [
+      {
+        "name": "Sicilia",
+        "invalidCount": 233,
+        "autoFixableCount": 165,
+        "totalNumbers": 7654
+      },
+      {
+        "name": "Sardigna/Sardegna",
+        "invalidCount": 417,
+        "autoFixableCount": 353,
+        "totalNumbers": 3741
+      }
+    ],
+    "Nord-Est": [
+      {
+        "name": "Emilia-Romagna",
+        "invalidCount": 533,
+        "autoFixableCount": 410,
+        "totalNumbers": 9874
+      },
+      {
+        "name": "Veneto",
+        "invalidCount": 804,
+        "autoFixableCount": 660,
+        "totalNumbers": 13924
+      },
+      {
+        "name": "Trentino-Alto Adige/Südtirol",
+        "invalidCount": 387,
+        "autoFixableCount": 188,
+        "totalNumbers": 12781
+      },
+      {
+        "name": "Friuli-Venezia Giulia",
+        "invalidCount": 312,
+        "autoFixableCount": 256,
+        "totalNumbers": 5839
+      }
+    ],
+    "Nord-Ovest": [
+      {
+        "name": "Piemonte",
+        "invalidCount": 641,
+        "autoFixableCount": 513,
+        "totalNumbers": 14255
+      },
+      {
+        "name": "Lombardia",
+        "invalidCount": 1900,
+        "autoFixableCount": 1633,
+        "totalNumbers": 30468
+      },
+      {
+        "name": "Valle d&#039;Aosta / Vallée d&#039;Aoste",
+        "invalidCount": 67,
+        "autoFixableCount": 45,
+        "totalNumbers": 742
+      },
+      {
+        "name": "Liguria",
+        "invalidCount": 50,
+        "autoFixableCount": 11,
+        "totalNumbers": 5738
+      }
+    ],
+    "Sud": [
+      {
+        "name": "Puglia",
+        "invalidCount": 863,
+        "autoFixableCount": 788,
+        "totalNumbers": 6559
+      },
+      {
+        "name": "Basilicata",
+        "invalidCount": 78,
+        "autoFixableCount": 65,
+        "totalNumbers": 1263
+      },
+      {
+        "name": "Campania",
+        "invalidCount": 465,
+        "autoFixableCount": 312,
+        "totalNumbers": 5976
+      },
+      {
+        "name": "Molise",
+        "invalidCount": 29,
+        "autoFixableCount": 17,
+        "totalNumbers": 658
+      },
+      {
+        "name": "Abruzzo",
+        "invalidCount": 57,
+        "autoFixableCount": 49,
+        "totalNumbers": 7371
+      },
+      {
+        "name": "Calabria",
+        "invalidCount": 327,
+        "autoFixableCount": 313,
+        "totalNumbers": 1733
+      }
+    ]
+  }
+}

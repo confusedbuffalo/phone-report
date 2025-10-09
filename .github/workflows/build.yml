@@ -1,0 +1,212 @@
+name: Build and Deploy OSM Report
+
+on:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Run at midnight (00:00) UTC every day
+    - cron: '0 0 * * *'
+  # Allow for manual trigger
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write # Needed to commit updated history
+  pages: write
+  id-token: write
+  pull-requests: write # Needed to post comments
+  actions: read # Needed to list artifacts
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run all tests
+        run: npm test
+
+  build-report:
+    needs: run-tests
+    runs-on: ubuntu-latest
+
+    env:
+      BUILD_TYPE: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && 'simplified' || 'full' }}
+
+    steps:
+      - name: Check Build Type
+        run: echo "The build type is $BUILD_TYPE"
+
+      - name: Generate GitHub App Token
+        if: env.BUILD_TYPE == 'full'
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: 'write' 
+
+      - name: Checkout repository (using App Token)
+        if: env.BUILD_TYPE == 'full'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Checkout repository (without App token)
+        if: env.BUILD_TYPE == 'simplified'
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install 
+
+      - name: Run Full Build Process 
+        run: npm run build
+
+      - name: Backup History Data
+        if: env.BUILD_TYPE == 'full'
+        run: |
+          if [ -d "history" ]; then
+            # Create a temporary location and copy the history built from the PR branch
+            mkdir -p /tmp/new_history
+            cp -r history/* /tmp/new_history/
+            echo "Successfully backed up 'history' data."
+          else
+            echo "Warning: 'history' directory not found after build."
+          fi
+
+      - name: Commit and Push History Data
+        if: env.BUILD_TYPE == 'full'
+        run: |
+          # Get the token from the previous step's output
+          TOKEN="${{ steps.app-token.outputs.token }}"
+          
+          # Configure the remote URL to use the token for authentication
+          git remote set-url origin "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git"
+
+          # Configure Git user, identifying the commit as the bot
+          git config user.name "Auto-Pusher-Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main
+          git checkout main --force
+
+          if [ -d "/tmp/new_history" ]; then
+            # Ensure the destination folder exists on 'main' branch
+            mkdir -p history
+            # Overwrite the 'main' branch's history files with the newly generated ones
+            cp -r /tmp/new_history/* history/
+            echo "Restored new history data onto main branch working tree."
+          fi
+
+          # Add the history directory
+          git add history || true
+
+          # Check if there are any changes to commit
+          if git diff --cached --exit-code; then
+              echo "No changes to history data. Skipping commit."
+          else
+              # Commit the changes. [skip ci] prevents an infinite loop of new workflow runs.
+              git commit -m "🤖 History Data Update: $(date +%Y-%m-%d) [skip ci]"
+              
+              # Push the commit to the current branch (main)
+              git push
+          fi
+
+      - name: Run HTML Minifier
+        if: env.BUILD_TYPE == 'full'
+        run: |
+          find public -name "*.html" -print0 | while IFS= read -r -d $'\0' file; do
+            npx html-minifier-terser "$file" --output "$file" --collapse-whitespace --remove-comments --minify-css true --minify-js true
+          done
+        shell: bash
+
+      - name: Run JS Minifier (terser)
+        if: env.BUILD_TYPE == 'full'
+        run: |
+          find public -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
+            npx terser "$file" --output "$file" --compress --mangle
+          done
+        shell: bash
+
+      - name: Run JSON Minifier
+        if: env.BUILD_TYPE == 'full'
+        run: |
+          find public -name "*.json" | while read -r file; do
+            npx node-minify --compressor jsonminify --input "$file" --output "$file.min"
+            mv "$file.min" "$file"
+          done
+        shell: bash
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        if: env.BUILD_TYPE == 'full'
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  comment-on-pr:
+    # Only run this job for pull_request events
+    if: github.event_name == 'pull_request'
+    needs: build-report
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Get the Artifact ID from the workflow run
+      - name: Get Artifact ID
+        id: get_artifact
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId,
+            });
+
+            // The artifact uploaded by 'actions/upload-pages-artifact@v3' is usually named 'github-pages'
+            const pagesArtifact = artifacts.data.artifacts.find(
+              artifact => artifact.name === 'github-pages'
+            );
+            
+            if (pagesArtifact) {
+              // Set the artifact ID as an output for the next step
+              core.setOutput('artifact_id', pagesArtifact.id);
+            } else {
+              core.setFailed("Could not find the 'github-pages' artifact.");
+            }
+          
+      # Step 2: Create the direct download link and post the comment
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ✅ **Build Complete!**
+            
+            The simplified page build has been created. You can **download the zipped artifact** directly here:
+            
+            **[Download github-pages.zip](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.get_artifact.outputs.artifact_id }})**
+            
+            *Note: You must be logged into GitHub to download this file.*

@@ -1,0 +1,62 @@
+{
+  "numbersChecked": "Numeri verificati",
+  "invalidNumbers": "Numeri non validi",
+  "invalidPercentageOfTotal": "%p del totale",
+  "fixablePercentageOfInvalid": "%p dei non validi",
+  "potentiallyFixable": "Potenzialmente correggibili",
+
+  "calculating": "calcolo in corso...",
+  "suggestionIssueLink": "Hai un suggerimento o un problema?",
+  "letMeKnowOnGitHub": "Segnalamelo su GitHub",
+  "iconsSourcedFrom": "Icone provenienti da:",
+  "numberDetailsNamesDataFrom": "Numeri di telefono, dettagli di punti di interesse e nomi di regioni da %o",
+  
+  "settings": "impostazioni",
+
+  "openLocation": "Apri posizione",
+  "editIn": "Modifica in %e",
+  "fixInJOSM": "Correggi in JOSM",
+  "website": "Sito web",
+  "suggestedFix": "Correzione suggerita",
+
+  "backToCountryPage": "Torna alla pagina del paese",
+  "phoneNumberReport": "Rapporto numeri di telefono",
+  "fixableNumbersHeader": "Numeri correggibili",
+  "fixableNumbersDescription": "Questi numeri sembrano essere validi ma sono formattati in modo errato. La correzione suggerita assume che siano effettivamente numeri per questo paese. Non tutte le correzioni &apos;automatiche&apos; sono necessariamente valide, quindi non cliccare ciecamente su tutti i link di correzione senza prima verificare il numero.",
+  "noAutoFixable": "Nessun numero di telefono correggibile automaticamente trovato in questa suddivisione.",
+  "invalidNumbersHeader": "Numeri non validi",
+  "invalidNumbersDescription": "Questi numeri sono tutti non validi in qualche modo: forse sono troppo lunghi o troppo corti, o forse manca un prefisso. Il sito web può essere utilizzato per verificare un numero valido, oppure potrebbe essere necessario un rilievo sul posto.",
+  "noInvalidNumbers": "Nessun numero di telefono non valido trovato in questa suddivisione.",
+  "invalid": "non valido",
+  "disused": "Fuori servizio",
+  "fixable": "Corregibile",
+  "notMobileNumber": "Non è un numero di cellulare",
+
+  "osmPhoneNumberValidation": "Validazione numeri di telefono OSM",
+  "reportSubtitle": "Un rapporto sui numeri di telefono non validi nei dati OpenStreetMap per vari paesi.",
+  "countryReports": "Rapporti per paese",
+  "progressHistory": "Storia del Progresso",
+  "invalidNumbersOutOf": "%i numeri non validi (di cui %f potenzialmente correggibili) su %t",
+  "backToAllCountries": "Torna a tutti i paesi",
+  "reportSubtitleForCountry": "Un rapporto sui numeri di telefono non validi nei dati OpenStreetMap per %c.",
+  "divisionalReports": "Rapporti divisionali",
+  "hideEmptyDivisions": "Nascondi le divisioni senza problemi",
+  "sortBy": "Ordina per:",
+  "invalidPercentage": "Percentuale non valida",
+  "invalidCount": "Numero di non validi",
+  "name": "Nome",
+  "noDivisionsFound": "Nessuna suddivisione con numeri non validi trovata.",
+  "noSubdivisionsFound": "Nessuna suddivisione trovata",
+
+  "dataSourcedTemplate": "Dati ottenuti il %d alle %t %z (%a)",
+
+  "timeAgoJustNow": "proprio ora",
+  "timeAgoError": "errore nel calcolo del tempo",
+  "timeAgoMinute": "%n&nbsp;minuto fa",
+  "timeAgoMinutesPlural": "%n&nbsp;minuti fa",
+  "timeAgoHour": "%n&nbsp;ora fa",
+  "timeAgoHoursPlural": "%n&nbsp;ore fa",
+
+  "mainIndexTitle": "Rapporti di Validazione dei Numeri di Telefono OSM",
+  "countryReportTitle": "OSM Telefono nummervalidatierapport - %c"
+}

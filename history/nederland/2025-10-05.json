@@ -1,0 +1,2770 @@
+{
+  "name": "Nederland",
+  "slug": "nederland",
+  "locale": "nl-NL",
+  "invalidCount": 194,
+  "autoFixableCount": 74,
+  "totalNumbers": 67118,
+  "groupedDivisionStats": {
+    "Drenthe": [
+      {
+        "name": "Hoogeveen",
+        "divisionSlug": "drenthe",
+        "slug": "hoogeveen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 217
+      },
+      {
+        "name": "Midden-Drenthe",
+        "divisionSlug": "drenthe",
+        "slug": "midden-drenthe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 207
+      },
+      {
+        "name": "Noordenveld",
+        "divisionSlug": "drenthe",
+        "slug": "noordenveld",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 154
+      },
+      {
+        "name": "Tynaarlo",
+        "divisionSlug": "drenthe",
+        "slug": "tynaarlo",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 155
+      },
+      {
+        "name": "Assen",
+        "divisionSlug": "drenthe",
+        "slug": "assen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 474
+      },
+      {
+        "name": "Aa en Hunze",
+        "divisionSlug": "drenthe",
+        "slug": "aa-en-hunze",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 186
+      },
+      {
+        "name": "Borger-Odoorn",
+        "divisionSlug": "drenthe",
+        "slug": "borger-odoorn",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 132
+      },
+      {
+        "name": "Emmen",
+        "divisionSlug": "drenthe",
+        "slug": "emmen",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 299
+      },
+      {
+        "name": "Coevorden",
+        "divisionSlug": "drenthe",
+        "slug": "coevorden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 169
+      },
+      {
+        "name": "Westerveld",
+        "divisionSlug": "drenthe",
+        "slug": "westerveld",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 161
+      },
+      {
+        "name": "De Wolden",
+        "divisionSlug": "drenthe",
+        "slug": "de-wolden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 176
+      },
+      {
+        "name": "Meppel",
+        "divisionSlug": "drenthe",
+        "slug": "meppel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 86
+      }
+    ],
+    "Flevoland": [
+      {
+        "name": "Noordoostpolder",
+        "divisionSlug": "flevoland",
+        "slug": "noordoostpolder",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 135
+      },
+      {
+        "name": "Dronten",
+        "divisionSlug": "flevoland",
+        "slug": "dronten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 207
+      },
+      {
+        "name": "Urk",
+        "divisionSlug": "flevoland",
+        "slug": "urk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 31
+      },
+      {
+        "name": "Almere",
+        "divisionSlug": "flevoland",
+        "slug": "almere",
+        "invalidCount": 4,
+        "autoFixableCount": 1,
+        "totalNumbers": 642
+      },
+      {
+        "name": "Lelystad",
+        "divisionSlug": "flevoland",
+        "slug": "lelystad",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 189
+      },
+      {
+        "name": "Zeewolde",
+        "divisionSlug": "flevoland",
+        "slug": "zeewolde",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 71
+      }
+    ],
+    "Frisia": [
+      {
+        "name": "Ooststellingwerf",
+        "divisionSlug": "frisia",
+        "slug": "ooststellingwerf",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 110
+      },
+      {
+        "name": "Terschelling",
+        "divisionSlug": "frisia",
+        "slug": "terschelling",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 82
+      },
+      {
+        "name": "Vlieland",
+        "divisionSlug": "frisia",
+        "slug": "vlieland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 25
+      },
+      {
+        "name": "Weststellingwerf",
+        "divisionSlug": "frisia",
+        "slug": "weststellingwerf",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 139
+      },
+      {
+        "name": "Harlingen",
+        "divisionSlug": "frisia",
+        "slug": "harlingen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 52
+      },
+      {
+        "name": "Opsterland",
+        "divisionSlug": "frisia",
+        "slug": "opsterland",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 121
+      },
+      {
+        "name": "Leeuwarden",
+        "divisionSlug": "frisia",
+        "slug": "leeuwarden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 411
+      },
+      {
+        "name": "Ameland",
+        "divisionSlug": "frisia",
+        "slug": "ameland",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 70
+      },
+      {
+        "name": "Schiermonnikoog",
+        "divisionSlug": "frisia",
+        "slug": "schiermonnikoog",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 36
+      },
+      {
+        "name": "Dantumadiel",
+        "divisionSlug": "frisia",
+        "slug": "dantumadiel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 34
+      },
+      {
+        "name": "Tytsjerksteradiel",
+        "divisionSlug": "frisia",
+        "slug": "tytsjerksteradiel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 83
+      },
+      {
+        "name": "Achtkarspelen",
+        "divisionSlug": "frisia",
+        "slug": "achtkarspelen",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 251
+      },
+      {
+        "name": "Smallingerland",
+        "divisionSlug": "frisia",
+        "slug": "smallingerland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 127
+      },
+      {
+        "name": "Heerenveen",
+        "divisionSlug": "frisia",
+        "slug": "heerenveen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 206
+      },
+      {
+        "name": "Súdwest-Fryslân",
+        "divisionSlug": "frisia",
+        "slug": "súdwest-fryslân",
+        "invalidCount": 9,
+        "autoFixableCount": 9,
+        "totalNumbers": 532
+      },
+      {
+        "name": "De Fryske Marren",
+        "divisionSlug": "frisia",
+        "slug": "de-fryske-marren",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 244
+      },
+      {
+        "name": "Waadhoeke",
+        "divisionSlug": "frisia",
+        "slug": "waadhoeke",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 88
+      },
+      {
+        "name": "Noardeast-Fryslân",
+        "divisionSlug": "frisia",
+        "slug": "noardeast-fryslân",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 143
+      }
+    ],
+    "Gelderland": [
+      {
+        "name": "Barneveld",
+        "divisionSlug": "gelderland",
+        "slug": "barneveld",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 184
+      },
+      {
+        "name": "Culemborg",
+        "divisionSlug": "gelderland",
+        "slug": "culemborg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 87
+      },
+      {
+        "name": "Maasdriel",
+        "divisionSlug": "gelderland",
+        "slug": "maasdriel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 46
+      },
+      {
+        "name": "Hattem",
+        "divisionSlug": "gelderland",
+        "slug": "hattem",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 61
+      },
+      {
+        "name": "Oldebroek",
+        "divisionSlug": "gelderland",
+        "slug": "oldebroek",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 42
+      },
+      {
+        "name": "Heumen",
+        "divisionSlug": "gelderland",
+        "slug": "heumen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 122
+      },
+      {
+        "name": "Elburg",
+        "divisionSlug": "gelderland",
+        "slug": "elburg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 60
+      },
+      {
+        "name": "Nunspeet",
+        "divisionSlug": "gelderland",
+        "slug": "nunspeet",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 109
+      },
+      {
+        "name": "Ermelo",
+        "divisionSlug": "gelderland",
+        "slug": "ermelo",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 67
+      },
+      {
+        "name": "Harderwijk",
+        "divisionSlug": "gelderland",
+        "slug": "harderwijk",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 129
+      },
+      {
+        "name": "Zaltbommel",
+        "divisionSlug": "gelderland",
+        "slug": "zaltbommel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 84
+      },
+      {
+        "name": "Tiel",
+        "divisionSlug": "gelderland",
+        "slug": "tiel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 92
+      },
+      {
+        "name": "Heerde",
+        "divisionSlug": "gelderland",
+        "slug": "heerde",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 176
+      },
+      {
+        "name": "Epe",
+        "divisionSlug": "gelderland",
+        "slug": "epe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 152
+      },
+      {
+        "name": "Berkelland",
+        "divisionSlug": "gelderland",
+        "slug": "berkelland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 146
+      },
+      {
+        "name": "Oost Gelre",
+        "divisionSlug": "gelderland",
+        "slug": "oost-gelre",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 70
+      },
+      {
+        "name": "Winterswijk",
+        "divisionSlug": "gelderland",
+        "slug": "winterswijk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 72
+      },
+      {
+        "name": "Lochem",
+        "divisionSlug": "gelderland",
+        "slug": "lochem",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 127
+      },
+      {
+        "name": "Zutphen",
+        "divisionSlug": "gelderland",
+        "slug": "zutphen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 175
+      },
+      {
+        "name": "Voorst",
+        "divisionSlug": "gelderland",
+        "slug": "voorst",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 204
+      },
+      {
+        "name": "Brummen",
+        "divisionSlug": "gelderland",
+        "slug": "brummen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 97
+      },
+      {
+        "name": "Aalten",
+        "divisionSlug": "gelderland",
+        "slug": "aalten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 138
+      },
+      {
+        "name": "Oude IJsselstreek",
+        "divisionSlug": "gelderland",
+        "slug": "oude-ijsselstreek",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 149
+      },
+      {
+        "name": "Bronckhorst",
+        "divisionSlug": "gelderland",
+        "slug": "bronckhorst",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 238
+      },
+      {
+        "name": "Apeldoorn",
+        "divisionSlug": "gelderland",
+        "slug": "apeldoorn",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 1794
+      },
+      {
+        "name": "Doesburg",
+        "divisionSlug": "gelderland",
+        "slug": "doesburg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 71
+      },
+      {
+        "name": "Doetinchem",
+        "divisionSlug": "gelderland",
+        "slug": "doetinchem",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 163
+      },
+      {
+        "name": "Montferland",
+        "divisionSlug": "gelderland",
+        "slug": "montferland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Zevenaar",
+        "divisionSlug": "gelderland",
+        "slug": "zevenaar",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 146
+      },
+      {
+        "name": "Lingewaard",
+        "divisionSlug": "gelderland",
+        "slug": "lingewaard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 220
+      },
+      {
+        "name": "Berg en Dal",
+        "divisionSlug": "gelderland",
+        "slug": "berg-en-dal",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 98
+      },
+      {
+        "name": "Duiven",
+        "divisionSlug": "gelderland",
+        "slug": "duiven",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 143
+      },
+      {
+        "name": "Westervoort",
+        "divisionSlug": "gelderland",
+        "slug": "westervoort",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 68
+      },
+      {
+        "name": "Rheden",
+        "divisionSlug": "gelderland",
+        "slug": "rheden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 315
+      },
+      {
+        "name": "Rozendaal",
+        "divisionSlug": "gelderland",
+        "slug": "rozendaal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 14
+      },
+      {
+        "name": "Wijchen",
+        "divisionSlug": "gelderland",
+        "slug": "wijchen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 64
+      },
+      {
+        "name": "Beuningen",
+        "divisionSlug": "gelderland",
+        "slug": "beuningen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 30
+      },
+      {
+        "name": "West Maas en Waal",
+        "divisionSlug": "gelderland",
+        "slug": "west-maas-en-waal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 50
+      },
+      {
+        "name": "Overbetuwe",
+        "divisionSlug": "gelderland",
+        "slug": "overbetuwe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 118
+      },
+      {
+        "name": "Druten",
+        "divisionSlug": "gelderland",
+        "slug": "druten",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 43
+      },
+      {
+        "name": "Neder-Betuwe",
+        "divisionSlug": "gelderland",
+        "slug": "neder-betuwe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 59
+      },
+      {
+        "name": "Arnhem",
+        "divisionSlug": "gelderland",
+        "slug": "arnhem",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 673
+      },
+      {
+        "name": "Renkum",
+        "divisionSlug": "gelderland",
+        "slug": "renkum",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 124
+      },
+      {
+        "name": "Wageningen",
+        "divisionSlug": "gelderland",
+        "slug": "wageningen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 226
+      },
+      {
+        "name": "Ede",
+        "divisionSlug": "gelderland",
+        "slug": "ede",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 575
+      },
+      {
+        "name": "Buren",
+        "divisionSlug": "gelderland",
+        "slug": "buren",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 77
+      },
+      {
+        "name": "Scherpenzeel",
+        "divisionSlug": "gelderland",
+        "slug": "scherpenzeel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 25
+      },
+      {
+        "name": "Putten",
+        "divisionSlug": "gelderland",
+        "slug": "putten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 67
+      },
+      {
+        "name": "Nijkerk",
+        "divisionSlug": "gelderland",
+        "slug": "nijkerk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 92
+      },
+      {
+        "name": "Nijmegen",
+        "divisionSlug": "gelderland",
+        "slug": "nijmegen",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 831
+      },
+      {
+        "name": "West Betuwe",
+        "divisionSlug": "gelderland",
+        "slug": "west-betuwe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 204
+      }
+    ],
+    "Groningen": [
+      {
+        "name": "Groningen",
+        "divisionSlug": "groningen",
+        "slug": "groningen",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 920
+      },
+      {
+        "name": "Oldambt",
+        "divisionSlug": "groningen",
+        "slug": "oldambt",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 195
+      },
+      {
+        "name": "Veendam",
+        "divisionSlug": "groningen",
+        "slug": "veendam",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 45
+      },
+      {
+        "name": "Pekela",
+        "divisionSlug": "groningen",
+        "slug": "pekela",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 23
+      },
+      {
+        "name": "Stadskanaal",
+        "divisionSlug": "groningen",
+        "slug": "stadskanaal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Midden-Groningen",
+        "divisionSlug": "groningen",
+        "slug": "midden-groningen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 214
+      },
+      {
+        "name": "Westerwolde",
+        "divisionSlug": "groningen",
+        "slug": "westerwolde",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 165
+      },
+      {
+        "name": "Westerkwartier",
+        "divisionSlug": "groningen",
+        "slug": "westerkwartier",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 338
+      },
+      {
+        "name": "Het Hogeland",
+        "divisionSlug": "groningen",
+        "slug": "het-hogeland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 339
+      },
+      {
+        "name": "Eemsdelta",
+        "divisionSlug": "groningen",
+        "slug": "eemsdelta",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 118
+      }
+    ],
+    "Limburg": [
+      {
+        "name": "Peel en Maas",
+        "divisionSlug": "limburg",
+        "slug": "peel-en-maas",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 215
+      },
+      {
+        "name": "Horst aan de Maas",
+        "divisionSlug": "limburg",
+        "slug": "horst-aan-de-maas",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 209
+      },
+      {
+        "name": "Venray",
+        "divisionSlug": "limburg",
+        "slug": "venray",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 134
+      },
+      {
+        "name": "Leudal",
+        "divisionSlug": "limburg",
+        "slug": "leudal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 106
+      },
+      {
+        "name": "Nederweert",
+        "divisionSlug": "limburg",
+        "slug": "nederweert",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 51
+      },
+      {
+        "name": "Mook en Middelaar",
+        "divisionSlug": "limburg",
+        "slug": "mook-en-middelaar",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 37
+      },
+      {
+        "name": "Eijsden-Margraten",
+        "divisionSlug": "limburg",
+        "slug": "eijsden-margraten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 76
+      },
+      {
+        "name": "Valkenburg aan de Geul",
+        "divisionSlug": "limburg",
+        "slug": "valkenburg-aan-de-geul",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 76
+      },
+      {
+        "name": "Voerendaal",
+        "divisionSlug": "limburg",
+        "slug": "voerendaal",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 107
+      },
+      {
+        "name": "Beek",
+        "divisionSlug": "limburg",
+        "slug": "beek",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 32
+      },
+      {
+        "name": "Beesel",
+        "divisionSlug": "limburg",
+        "slug": "beesel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 23
+      },
+      {
+        "name": "Venlo",
+        "divisionSlug": "limburg",
+        "slug": "venlo",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 258
+      },
+      {
+        "name": "Bergen",
+        "divisionSlug": "limburg",
+        "slug": "bergen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 54
+      },
+      {
+        "name": "Roermond",
+        "divisionSlug": "limburg",
+        "slug": "roermond",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 380
+      },
+      {
+        "name": "Roerdalen",
+        "divisionSlug": "limburg",
+        "slug": "roerdalen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Sittard-Geleen",
+        "divisionSlug": "limburg",
+        "slug": "sittard-geleen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 151
+      },
+      {
+        "name": "Brunssum",
+        "divisionSlug": "limburg",
+        "slug": "brunssum",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 48
+      },
+      {
+        "name": "Heerlen",
+        "divisionSlug": "limburg",
+        "slug": "heerlen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 259
+      },
+      {
+        "name": "Landgraaf",
+        "divisionSlug": "limburg",
+        "slug": "landgraaf",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 90
+      },
+      {
+        "name": "Kerkrade",
+        "divisionSlug": "limburg",
+        "slug": "kerkrade",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 96
+      },
+      {
+        "name": "Simpelveld",
+        "divisionSlug": "limburg",
+        "slug": "simpelveld",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 16
+      },
+      {
+        "name": "Vaals",
+        "divisionSlug": "limburg",
+        "slug": "vaals",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 67
+      },
+      {
+        "name": "Gennep",
+        "divisionSlug": "limburg",
+        "slug": "gennep",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 41
+      },
+      {
+        "name": "Gulpen-Wittem",
+        "divisionSlug": "limburg",
+        "slug": "gulpen-wittem",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 91
+      },
+      {
+        "name": "Echt-Susteren",
+        "divisionSlug": "limburg",
+        "slug": "echt-susteren",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 93
+      },
+      {
+        "name": "Stein",
+        "divisionSlug": "limburg",
+        "slug": "stein",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 37
+      },
+      {
+        "name": "Meerssen",
+        "divisionSlug": "limburg",
+        "slug": "meerssen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 38
+      },
+      {
+        "name": "Maastricht",
+        "divisionSlug": "limburg",
+        "slug": "maastricht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 363
+      },
+      {
+        "name": "Maasgouw",
+        "divisionSlug": "limburg",
+        "slug": "maasgouw",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 80
+      },
+      {
+        "name": "Weert",
+        "divisionSlug": "limburg",
+        "slug": "weert",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 196
+      },
+      {
+        "name": "Beekdaelen",
+        "divisionSlug": "limburg",
+        "slug": "beekdaelen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 57
+      }
+    ],
+    "North Brabant": [
+      {
+        "name": "Eindhoven",
+        "divisionSlug": "north-brabant",
+        "slug": "eindhoven",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 1021
+      },
+      {
+        "name": "Baarle-Nassau",
+        "divisionSlug": "north-brabant",
+        "slug": "baarle-nassau",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 51
+      },
+      {
+        "name": "Waalwijk",
+        "divisionSlug": "north-brabant",
+        "slug": "waalwijk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 103
+      },
+      {
+        "name": "Gilze en Rijen",
+        "divisionSlug": "north-brabant",
+        "slug": "gilze-en-rijen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 83
+      },
+      {
+        "name": "&#039;s-Hertogenbosch",
+        "divisionSlug": "north-brabant",
+        "slug": "s-hertogenbosch",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 708
+      },
+      {
+        "name": "Geldrop-Mierlo",
+        "divisionSlug": "north-brabant",
+        "slug": "geldrop-mierlo",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 131
+      },
+      {
+        "name": "Best",
+        "divisionSlug": "north-brabant",
+        "slug": "best",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 135
+      },
+      {
+        "name": "Eersel",
+        "divisionSlug": "north-brabant",
+        "slug": "eersel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 74
+      },
+      {
+        "name": "Son en Breugel",
+        "divisionSlug": "north-brabant",
+        "slug": "son-en-breugel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 87
+      },
+      {
+        "name": "Nuenen c.a.",
+        "divisionSlug": "north-brabant",
+        "slug": "nuenen-c-a",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 88
+      },
+      {
+        "name": "Bergen op Zoom",
+        "divisionSlug": "north-brabant",
+        "slug": "bergen-op-zoom",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 203
+      },
+      {
+        "name": "Steenbergen",
+        "divisionSlug": "north-brabant",
+        "slug": "steenbergen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 54
+      },
+      {
+        "name": "Halderberge",
+        "divisionSlug": "north-brabant",
+        "slug": "halderberge",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 126
+      },
+      {
+        "name": "Etten-Leur",
+        "divisionSlug": "north-brabant",
+        "slug": "etten-leur",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 275
+      },
+      {
+        "name": "Moerdijk",
+        "divisionSlug": "north-brabant",
+        "slug": "moerdijk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 117
+      },
+      {
+        "name": "Breda",
+        "divisionSlug": "north-brabant",
+        "slug": "breda",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 1229
+      },
+      {
+        "name": "Alphen-Chaam",
+        "divisionSlug": "north-brabant",
+        "slug": "alphen-chaam",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 46
+      },
+      {
+        "name": "Drimmelen",
+        "divisionSlug": "north-brabant",
+        "slug": "drimmelen",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 80
+      },
+      {
+        "name": "Oosterhout",
+        "divisionSlug": "north-brabant",
+        "slug": "oosterhout",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 211
+      },
+      {
+        "name": "Geertruidenberg",
+        "divisionSlug": "north-brabant",
+        "slug": "geertruidenberg",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 59
+      },
+      {
+        "name": "Heusden",
+        "divisionSlug": "north-brabant",
+        "slug": "heusden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 102
+      },
+      {
+        "name": "Loon op Zand",
+        "divisionSlug": "north-brabant",
+        "slug": "loon-op-zand",
+        "invalidCount": 3,
+        "autoFixableCount": 3,
+        "totalNumbers": 60
+      },
+      {
+        "name": "Dongen",
+        "divisionSlug": "north-brabant",
+        "slug": "dongen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 80
+      },
+      {
+        "name": "Tilburg",
+        "divisionSlug": "north-brabant",
+        "slug": "tilburg",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 467
+      },
+      {
+        "name": "Goirle",
+        "divisionSlug": "north-brabant",
+        "slug": "goirle",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 49
+      },
+      {
+        "name": "Oisterwijk",
+        "divisionSlug": "north-brabant",
+        "slug": "oisterwijk",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 344
+      },
+      {
+        "name": "Vught",
+        "divisionSlug": "north-brabant",
+        "slug": "vught",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 81
+      },
+      {
+        "name": "Reusel-De Mierden",
+        "divisionSlug": "north-brabant",
+        "slug": "reusel-de-mierden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 96
+      },
+      {
+        "name": "Bladel",
+        "divisionSlug": "north-brabant",
+        "slug": "bladel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 166
+      },
+      {
+        "name": "Bergeijk",
+        "divisionSlug": "north-brabant",
+        "slug": "bergeijk",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 68
+      },
+      {
+        "name": "Veldhoven",
+        "divisionSlug": "north-brabant",
+        "slug": "veldhoven",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 154
+      },
+      {
+        "name": "Oirschot",
+        "divisionSlug": "north-brabant",
+        "slug": "oirschot",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 45
+      },
+      {
+        "name": "Waalre",
+        "divisionSlug": "north-brabant",
+        "slug": "waalre",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 52
+      },
+      {
+        "name": "Someren",
+        "divisionSlug": "north-brabant",
+        "slug": "someren",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 72
+      },
+      {
+        "name": "Helmond",
+        "divisionSlug": "north-brabant",
+        "slug": "helmond",
+        "invalidCount": 3,
+        "autoFixableCount": 1,
+        "totalNumbers": 350
+      },
+      {
+        "name": "Boxtel",
+        "divisionSlug": "north-brabant",
+        "slug": "boxtel",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 66
+      },
+      {
+        "name": "Sint-Michielsgestel",
+        "divisionSlug": "north-brabant",
+        "slug": "sint-michielsgestel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 64
+      },
+      {
+        "name": "Oss",
+        "divisionSlug": "north-brabant",
+        "slug": "oss",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 195
+      },
+      {
+        "name": "Laarbeek",
+        "divisionSlug": "north-brabant",
+        "slug": "laarbeek",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 70
+      },
+      {
+        "name": "Boekel",
+        "divisionSlug": "north-brabant",
+        "slug": "boekel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 50
+      },
+      {
+        "name": "Gemert-Bakel",
+        "divisionSlug": "north-brabant",
+        "slug": "gemert-bakel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 143
+      },
+      {
+        "name": "Deurne",
+        "divisionSlug": "north-brabant",
+        "slug": "deurne",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 95
+      },
+      {
+        "name": "Asten",
+        "divisionSlug": "north-brabant",
+        "slug": "asten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 51
+      },
+      {
+        "name": "Cranendonck",
+        "divisionSlug": "north-brabant",
+        "slug": "cranendonck",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 68
+      },
+      {
+        "name": "Heeze-Leende",
+        "divisionSlug": "north-brabant",
+        "slug": "heeze-leende",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 79
+      },
+      {
+        "name": "Hilvarenbeek",
+        "divisionSlug": "north-brabant",
+        "slug": "hilvarenbeek",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 84
+      },
+      {
+        "name": "Zundert",
+        "divisionSlug": "north-brabant",
+        "slug": "zundert",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 56
+      },
+      {
+        "name": "Rucphen",
+        "divisionSlug": "north-brabant",
+        "slug": "rucphen",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Roosendaal",
+        "divisionSlug": "north-brabant",
+        "slug": "roosendaal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 768
+      },
+      {
+        "name": "Woensdrecht",
+        "divisionSlug": "north-brabant",
+        "slug": "woensdrecht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 123
+      },
+      {
+        "name": "Valkenswaard",
+        "divisionSlug": "north-brabant",
+        "slug": "valkenswaard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 105
+      },
+      {
+        "name": "Bernheze",
+        "divisionSlug": "north-brabant",
+        "slug": "bernheze",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 74
+      },
+      {
+        "name": "Meierijstad",
+        "divisionSlug": "north-brabant",
+        "slug": "meierijstad",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 582
+      },
+      {
+        "name": "Altena",
+        "divisionSlug": "north-brabant",
+        "slug": "altena",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 132
+      },
+      {
+        "name": "Land van Cuijk",
+        "divisionSlug": "north-brabant",
+        "slug": "land-van-cuijk",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 336
+      },
+      {
+        "name": "Maashorst",
+        "divisionSlug": "north-brabant",
+        "slug": "maashorst",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 194
+      }
+    ],
+    "North Holland": [
+      {
+        "name": "Heemstede",
+        "divisionSlug": "north-holland",
+        "slug": "heemstede",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 45
+      },
+      {
+        "name": "Heemskerk",
+        "divisionSlug": "north-holland",
+        "slug": "heemskerk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 43
+      },
+      {
+        "name": "Heiloo",
+        "divisionSlug": "north-holland",
+        "slug": "heiloo",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 31
+      },
+      {
+        "name": "Haarlem",
+        "divisionSlug": "north-holland",
+        "slug": "haarlem",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 401
+      },
+      {
+        "name": "Bloemendaal",
+        "divisionSlug": "north-holland",
+        "slug": "bloemendaal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 57
+      },
+      {
+        "name": "Beverwijk",
+        "divisionSlug": "north-holland",
+        "slug": "beverwijk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 67
+      },
+      {
+        "name": "Zandvoort",
+        "divisionSlug": "north-holland",
+        "slug": "zandvoort",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 74
+      },
+      {
+        "name": "Amsterdam",
+        "divisionSlug": "north-holland",
+        "slug": "amsterdam",
+        "invalidCount": 11,
+        "autoFixableCount": 2,
+        "totalNumbers": 3990
+      },
+      {
+        "name": "Wormerland",
+        "divisionSlug": "north-holland",
+        "slug": "wormerland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 65
+      },
+      {
+        "name": "Castricum",
+        "divisionSlug": "north-holland",
+        "slug": "castricum",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 84
+      },
+      {
+        "name": "Amstelveen",
+        "divisionSlug": "north-holland",
+        "slug": "amstelveen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 176
+      },
+      {
+        "name": "Huizen",
+        "divisionSlug": "north-holland",
+        "slug": "huizen",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 81
+      },
+      {
+        "name": "Drechterland",
+        "divisionSlug": "north-holland",
+        "slug": "drechterland",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 46
+      },
+      {
+        "name": "Diemen",
+        "divisionSlug": "north-holland",
+        "slug": "diemen",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 136
+      },
+      {
+        "name": "Koggenland",
+        "divisionSlug": "north-holland",
+        "slug": "koggenland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 42
+      },
+      {
+        "name": "Purmerend",
+        "divisionSlug": "north-holland",
+        "slug": "purmerend",
+        "invalidCount": 5,
+        "autoFixableCount": 1,
+        "totalNumbers": 719
+      },
+      {
+        "name": "Waterland",
+        "divisionSlug": "north-holland",
+        "slug": "waterland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 43
+      },
+      {
+        "name": "Edam-Volendam",
+        "divisionSlug": "north-holland",
+        "slug": "edam-volendam",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 71
+      },
+      {
+        "name": "Oostzaan",
+        "divisionSlug": "north-holland",
+        "slug": "oostzaan",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 38
+      },
+      {
+        "name": "Uitgeest",
+        "divisionSlug": "north-holland",
+        "slug": "uitgeest",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 36
+      },
+      {
+        "name": "Hoorn",
+        "divisionSlug": "north-holland",
+        "slug": "hoorn",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 770
+      },
+      {
+        "name": "Ouder-Amstel",
+        "divisionSlug": "north-holland",
+        "slug": "ouder-amstel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 55
+      },
+      {
+        "name": "Medemblik",
+        "divisionSlug": "north-holland",
+        "slug": "medemblik",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 200
+      },
+      {
+        "name": "Enkhuizen",
+        "divisionSlug": "north-holland",
+        "slug": "enkhuizen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 36
+      },
+      {
+        "name": "Stede Broec",
+        "divisionSlug": "north-holland",
+        "slug": "stede-broec",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 139
+      },
+      {
+        "name": "Texel",
+        "divisionSlug": "north-holland",
+        "slug": "texel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 219
+      },
+      {
+        "name": "Den Helder",
+        "divisionSlug": "north-holland",
+        "slug": "den-helder",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 156
+      },
+      {
+        "name": "Bergen",
+        "divisionSlug": "north-holland",
+        "slug": "bergen",
+        "invalidCount": 3,
+        "autoFixableCount": 2,
+        "totalNumbers": 173
+      },
+      {
+        "name": "Landsmeer",
+        "divisionSlug": "north-holland",
+        "slug": "landsmeer",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 56
+      },
+      {
+        "name": "Alkmaar",
+        "divisionSlug": "north-holland",
+        "slug": "alkmaar",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 507
+      },
+      {
+        "name": "Velsen",
+        "divisionSlug": "north-holland",
+        "slug": "velsen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 299
+      },
+      {
+        "name": "Zaanstad",
+        "divisionSlug": "north-holland",
+        "slug": "zaanstad",
+        "invalidCount": 3,
+        "autoFixableCount": 2,
+        "totalNumbers": 595
+      },
+      {
+        "name": "Opmeer",
+        "divisionSlug": "north-holland",
+        "slug": "opmeer",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 31
+      },
+      {
+        "name": "Uithoorn",
+        "divisionSlug": "north-holland",
+        "slug": "uithoorn",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 32
+      },
+      {
+        "name": "Blaricum",
+        "divisionSlug": "north-holland",
+        "slug": "blaricum",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 10
+      },
+      {
+        "name": "Laren",
+        "divisionSlug": "north-holland",
+        "slug": "laren",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 9
+      },
+      {
+        "name": "Hilversum",
+        "divisionSlug": "north-holland",
+        "slug": "hilversum",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 243
+      },
+      {
+        "name": "Wijdemeren",
+        "divisionSlug": "north-holland",
+        "slug": "wijdemeren",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 84
+      },
+      {
+        "name": "Haarlemmermeer",
+        "divisionSlug": "north-holland",
+        "slug": "haarlemmermeer",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 628
+      },
+      {
+        "name": "Aalsmeer",
+        "divisionSlug": "north-holland",
+        "slug": "aalsmeer",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 61
+      },
+      {
+        "name": "Hollands Kroon",
+        "divisionSlug": "north-holland",
+        "slug": "hollands-kroon",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 149
+      },
+      {
+        "name": "Schagen",
+        "divisionSlug": "north-holland",
+        "slug": "schagen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 160
+      },
+      {
+        "name": "Gooise Meren",
+        "divisionSlug": "north-holland",
+        "slug": "gooise-meren",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 176
+      },
+      {
+        "name": "Dijk en Waard",
+        "divisionSlug": "north-holland",
+        "slug": "dijk-en-waard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 191
+      }
+    ],
+    "Overijssel": [
+      {
+        "name": "Hellendoorn",
+        "divisionSlug": "overijssel",
+        "slug": "hellendoorn",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 165
+      },
+      {
+        "name": "Losser",
+        "divisionSlug": "overijssel",
+        "slug": "losser",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 104
+      },
+      {
+        "name": "Almelo",
+        "divisionSlug": "overijssel",
+        "slug": "almelo",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 160
+      },
+      {
+        "name": "Hengelo",
+        "divisionSlug": "overijssel",
+        "slug": "hengelo",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 366
+      },
+      {
+        "name": "Kampen",
+        "divisionSlug": "overijssel",
+        "slug": "kampen",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 78
+      },
+      {
+        "name": "Steenwijkerland",
+        "divisionSlug": "overijssel",
+        "slug": "steenwijkerland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 225
+      },
+      {
+        "name": "Zwartewaterland",
+        "divisionSlug": "overijssel",
+        "slug": "zwartewaterland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 38
+      },
+      {
+        "name": "Staphorst",
+        "divisionSlug": "overijssel",
+        "slug": "staphorst",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 53
+      },
+      {
+        "name": "Dalfsen",
+        "divisionSlug": "overijssel",
+        "slug": "dalfsen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Hardenberg",
+        "divisionSlug": "overijssel",
+        "slug": "hardenberg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 260
+      },
+      {
+        "name": "Zwolle",
+        "divisionSlug": "overijssel",
+        "slug": "zwolle",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 305
+      },
+      {
+        "name": "Twenterand",
+        "divisionSlug": "overijssel",
+        "slug": "twenterand",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 60
+      },
+      {
+        "name": "Tubbergen",
+        "divisionSlug": "overijssel",
+        "slug": "tubbergen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 114
+      },
+      {
+        "name": "Dinkelland",
+        "divisionSlug": "overijssel",
+        "slug": "dinkelland",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 152
+      },
+      {
+        "name": "Ommen",
+        "divisionSlug": "overijssel",
+        "slug": "ommen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 92
+      },
+      {
+        "name": "Oldenzaal",
+        "divisionSlug": "overijssel",
+        "slug": "oldenzaal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 116
+      },
+      {
+        "name": "Enschede",
+        "divisionSlug": "overijssel",
+        "slug": "enschede",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 702
+      },
+      {
+        "name": "Borne",
+        "divisionSlug": "overijssel",
+        "slug": "borne",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 40
+      },
+      {
+        "name": "Haaksbergen",
+        "divisionSlug": "overijssel",
+        "slug": "haaksbergen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 65
+      },
+      {
+        "name": "Wierden",
+        "divisionSlug": "overijssel",
+        "slug": "wierden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 87
+      },
+      {
+        "name": "Rijssen-Holten",
+        "divisionSlug": "overijssel",
+        "slug": "rijssen-holten",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 145
+      },
+      {
+        "name": "Hof van Twente",
+        "divisionSlug": "overijssel",
+        "slug": "hof-van-twente",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 103
+      },
+      {
+        "name": "Raalte",
+        "divisionSlug": "overijssel",
+        "slug": "raalte",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Olst-Wijhe",
+        "divisionSlug": "overijssel",
+        "slug": "olst-wijhe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 30
+      },
+      {
+        "name": "Deventer",
+        "divisionSlug": "overijssel",
+        "slug": "deventer",
+        "invalidCount": 3,
+        "autoFixableCount": 2,
+        "totalNumbers": 273
+      }
+    ],
+    "South Holland": [
+      {
+        "name": "Katwijk",
+        "divisionSlug": "south-holland",
+        "slug": "katwijk",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 184
+      },
+      {
+        "name": "Leiderdorp",
+        "divisionSlug": "south-holland",
+        "slug": "leiderdorp",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 100
+      },
+      {
+        "name": "Pijnacker-Nootdorp",
+        "divisionSlug": "south-holland",
+        "slug": "pijnacker-nootdorp",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 150
+      },
+      {
+        "name": "Ridderkerk",
+        "divisionSlug": "south-holland",
+        "slug": "ridderkerk",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 101
+      },
+      {
+        "name": "Den Haag",
+        "divisionSlug": "south-holland",
+        "slug": "den-haag",
+        "invalidCount": 16,
+        "autoFixableCount": 12,
+        "totalNumbers": 1669
+      },
+      {
+        "name": "Zuidplas",
+        "divisionSlug": "south-holland",
+        "slug": "zuidplas",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 86
+      },
+      {
+        "name": "Gouda",
+        "divisionSlug": "south-holland",
+        "slug": "gouda",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 336
+      },
+      {
+        "name": "Vlaardingen",
+        "divisionSlug": "south-holland",
+        "slug": "vlaardingen",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 178
+      },
+      {
+        "name": "Capelle aan den IJssel",
+        "divisionSlug": "south-holland",
+        "slug": "capelle-aan-den-ijssel",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 193
+      },
+      {
+        "name": "Krimpen aan den IJssel",
+        "divisionSlug": "south-holland",
+        "slug": "krimpen-aan-den-ijssel",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 33
+      },
+      {
+        "name": "Albrandswaard",
+        "divisionSlug": "south-holland",
+        "slug": "albrandswaard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 66
+      },
+      {
+        "name": "Barendrecht",
+        "divisionSlug": "south-holland",
+        "slug": "barendrecht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 281
+      },
+      {
+        "name": "Zwijndrecht",
+        "divisionSlug": "south-holland",
+        "slug": "zwijndrecht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 86
+      },
+      {
+        "name": "Hendrik-Ido-Ambacht",
+        "divisionSlug": "south-holland",
+        "slug": "hendrik-ido-ambacht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 36
+      },
+      {
+        "name": "Alblasserdam",
+        "divisionSlug": "south-holland",
+        "slug": "alblasserdam",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 49
+      },
+      {
+        "name": "Papendrecht",
+        "divisionSlug": "south-holland",
+        "slug": "papendrecht",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 104
+      },
+      {
+        "name": "Sliedrecht",
+        "divisionSlug": "south-holland",
+        "slug": "sliedrecht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 124
+      },
+      {
+        "name": "Dordrecht",
+        "divisionSlug": "south-holland",
+        "slug": "dordrecht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 457
+      },
+      {
+        "name": "Hardinxveld-Giessendam",
+        "divisionSlug": "south-holland",
+        "slug": "hardinxveld-giessendam",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 34
+      },
+      {
+        "name": "Gorinchem",
+        "divisionSlug": "south-holland",
+        "slug": "gorinchem",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 109
+      },
+      {
+        "name": "Lansingerland",
+        "divisionSlug": "south-holland",
+        "slug": "lansingerland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 238
+      },
+      {
+        "name": "Rijswijk",
+        "divisionSlug": "south-holland",
+        "slug": "rijswijk",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 207
+      },
+      {
+        "name": "Delft",
+        "divisionSlug": "south-holland",
+        "slug": "delft",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 690
+      },
+      {
+        "name": "Midden-Delfland",
+        "divisionSlug": "south-holland",
+        "slug": "midden-delfland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 142
+      },
+      {
+        "name": "Schiedam",
+        "divisionSlug": "south-holland",
+        "slug": "schiedam",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 222
+      },
+      {
+        "name": "Westland",
+        "divisionSlug": "south-holland",
+        "slug": "westland",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 321
+      },
+      {
+        "name": "Maassluis",
+        "divisionSlug": "south-holland",
+        "slug": "maassluis",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 78
+      },
+      {
+        "name": "Rotterdam",
+        "divisionSlug": "south-holland",
+        "slug": "rotterdam",
+        "invalidCount": 4,
+        "autoFixableCount": 1,
+        "totalNumbers": 1882
+      },
+      {
+        "name": "Waddinxveen",
+        "divisionSlug": "south-holland",
+        "slug": "waddinxveen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 241
+      },
+      {
+        "name": "Alphen aan den Rijn",
+        "divisionSlug": "south-holland",
+        "slug": "alphen-aan-den-rijn",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 239
+      },
+      {
+        "name": "Nieuwkoop",
+        "divisionSlug": "south-holland",
+        "slug": "nieuwkoop",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 62
+      },
+      {
+        "name": "Noordwijk",
+        "divisionSlug": "south-holland",
+        "slug": "noordwijk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 219
+      },
+      {
+        "name": "Lisse",
+        "divisionSlug": "south-holland",
+        "slug": "lisse",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 46
+      },
+      {
+        "name": "Hillegom",
+        "divisionSlug": "south-holland",
+        "slug": "hillegom",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 32
+      },
+      {
+        "name": "Kaag en Braassem",
+        "divisionSlug": "south-holland",
+        "slug": "kaag-en-braassem",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 80
+      },
+      {
+        "name": "Oegstgeest",
+        "divisionSlug": "south-holland",
+        "slug": "oegstgeest",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 73
+      },
+      {
+        "name": "Teylingen",
+        "divisionSlug": "south-holland",
+        "slug": "teylingen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 101
+      },
+      {
+        "name": "Zoetermeer",
+        "divisionSlug": "south-holland",
+        "slug": "zoetermeer",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 276
+      },
+      {
+        "name": "Zoeterwoude",
+        "divisionSlug": "south-holland",
+        "slug": "zoeterwoude",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 43
+      },
+      {
+        "name": "Leidschendam-Voorburg",
+        "divisionSlug": "south-holland",
+        "slug": "leidschendam-voorburg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 144
+      },
+      {
+        "name": "Leiden",
+        "divisionSlug": "south-holland",
+        "slug": "leiden",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 428
+      },
+      {
+        "name": "Wassenaar",
+        "divisionSlug": "south-holland",
+        "slug": "wassenaar",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 53
+      },
+      {
+        "name": "Voorschoten",
+        "divisionSlug": "south-holland",
+        "slug": "voorschoten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 30
+      },
+      {
+        "name": "Bodegraven-Reeuwijk",
+        "divisionSlug": "south-holland",
+        "slug": "bodegraven-reeuwijk",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 102
+      },
+      {
+        "name": "Goeree-Overflakkee",
+        "divisionSlug": "south-holland",
+        "slug": "goeree-overflakkee",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 185
+      },
+      {
+        "name": "Krimpenerwaard",
+        "divisionSlug": "south-holland",
+        "slug": "krimpenerwaard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 142
+      },
+      {
+        "name": "Nissewaard",
+        "divisionSlug": "south-holland",
+        "slug": "nissewaard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 295
+      },
+      {
+        "name": "Molenlanden",
+        "divisionSlug": "south-holland",
+        "slug": "molenlanden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 185
+      },
+      {
+        "name": "Hoeksche Waard",
+        "divisionSlug": "south-holland",
+        "slug": "hoeksche-waard",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 282
+      },
+      {
+        "name": "Voorne aan Zee",
+        "divisionSlug": "south-holland",
+        "slug": "voorne-aan-zee",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 168
+      }
+    ],
+    "Utrecht": [
+      {
+        "name": "Woerden",
+        "divisionSlug": "utrecht",
+        "slug": "woerden",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 214
+      },
+      {
+        "name": "Baarn",
+        "divisionSlug": "utrecht",
+        "slug": "baarn",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 45
+      },
+      {
+        "name": "Montfoort",
+        "divisionSlug": "utrecht",
+        "slug": "montfoort",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 43
+      },
+      {
+        "name": "Oudewater",
+        "divisionSlug": "utrecht",
+        "slug": "oudewater",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 24
+      },
+      {
+        "name": "Lopik",
+        "divisionSlug": "utrecht",
+        "slug": "lopik",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 30
+      },
+      {
+        "name": "Bunschoten",
+        "divisionSlug": "utrecht",
+        "slug": "bunschoten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 30
+      },
+      {
+        "name": "Leusden",
+        "divisionSlug": "utrecht",
+        "slug": "leusden",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 296
+      },
+      {
+        "name": "IJsselstein",
+        "divisionSlug": "utrecht",
+        "slug": "ijsselstein",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 48
+      },
+      {
+        "name": "Veenendaal",
+        "divisionSlug": "utrecht",
+        "slug": "veenendaal",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 371
+      },
+      {
+        "name": "Rhenen",
+        "divisionSlug": "utrecht",
+        "slug": "rhenen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 100
+      },
+      {
+        "name": "Renswoude",
+        "divisionSlug": "utrecht",
+        "slug": "renswoude",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 8
+      },
+      {
+        "name": "Woudenberg",
+        "divisionSlug": "utrecht",
+        "slug": "woudenberg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 81
+      },
+      {
+        "name": "Amersfoort",
+        "divisionSlug": "utrecht",
+        "slug": "amersfoort",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 642
+      },
+      {
+        "name": "Soest",
+        "divisionSlug": "utrecht",
+        "slug": "soest",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 81
+      },
+      {
+        "name": "Wijk bij Duurstede",
+        "divisionSlug": "utrecht",
+        "slug": "wijk-bij-duurstede",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 78
+      },
+      {
+        "name": "Utrechtse Heuvelrug",
+        "divisionSlug": "utrecht",
+        "slug": "utrechtse-heuvelrug",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 151
+      },
+      {
+        "name": "Eemnes",
+        "divisionSlug": "utrecht",
+        "slug": "eemnes",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 22
+      },
+      {
+        "name": "Zeist",
+        "divisionSlug": "utrecht",
+        "slug": "zeist",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 135
+      },
+      {
+        "name": "De Bilt",
+        "divisionSlug": "utrecht",
+        "slug": "de-bilt",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 73
+      },
+      {
+        "name": "Utrecht",
+        "divisionSlug": "utrecht",
+        "slug": "utrecht",
+        "invalidCount": 9,
+        "autoFixableCount": 2,
+        "totalNumbers": 1868
+      },
+      {
+        "name": "Bunnik",
+        "divisionSlug": "utrecht",
+        "slug": "bunnik",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 150
+      },
+      {
+        "name": "Houten",
+        "divisionSlug": "utrecht",
+        "slug": "houten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 158
+      },
+      {
+        "name": "Nieuwegein",
+        "divisionSlug": "utrecht",
+        "slug": "nieuwegein",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 221
+      },
+      {
+        "name": "De Ronde Venen",
+        "divisionSlug": "utrecht",
+        "slug": "de-ronde-venen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 88
+      },
+      {
+        "name": "Stichtse Vecht",
+        "divisionSlug": "utrecht",
+        "slug": "stichtse-vecht",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 221
+      },
+      {
+        "name": "Vijfheerenlanden",
+        "divisionSlug": "utrecht",
+        "slug": "vijfheerenlanden",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 205
+      }
+    ],
+    "Zeeland": [
+      {
+        "name": "Terneuzen",
+        "divisionSlug": "zeeland",
+        "slug": "terneuzen",
+        "invalidCount": 4,
+        "autoFixableCount": 2,
+        "totalNumbers": 367
+      },
+      {
+        "name": "Vlissingen",
+        "divisionSlug": "zeeland",
+        "slug": "vlissingen",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 259
+      },
+      {
+        "name": "Middelburg",
+        "divisionSlug": "zeeland",
+        "slug": "middelburg",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 295
+      },
+      {
+        "name": "Sluis",
+        "divisionSlug": "zeeland",
+        "slug": "sluis",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 238
+      },
+      {
+        "name": "Hulst",
+        "divisionSlug": "zeeland",
+        "slug": "hulst",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 140
+      },
+      {
+        "name": "Borsele",
+        "divisionSlug": "zeeland",
+        "slug": "borsele",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 108
+      },
+      {
+        "name": "Veere",
+        "divisionSlug": "zeeland",
+        "slug": "veere",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 370
+      },
+      {
+        "name": "Noord-Beveland",
+        "divisionSlug": "zeeland",
+        "slug": "noord-beveland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 100
+      },
+      {
+        "name": "Goes",
+        "divisionSlug": "zeeland",
+        "slug": "goes",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 402
+      },
+      {
+        "name": "Kapelle",
+        "divisionSlug": "zeeland",
+        "slug": "kapelle",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 78
+      },
+      {
+        "name": "Reimerswaal",
+        "divisionSlug": "zeeland",
+        "slug": "reimerswaal",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 161
+      },
+      {
+        "name": "Tholen",
+        "divisionSlug": "zeeland",
+        "slug": "tholen",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 123
+      },
+      {
+        "name": "Schouwen-Duiveland",
+        "divisionSlug": "zeeland",
+        "slug": "schouwen-duiveland",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 381
+      }
+    ]
+  }
+}

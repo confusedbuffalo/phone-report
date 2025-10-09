@@ -1,0 +1,434 @@
+@import 'tailwindcss';
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap')
+layer(utilities);
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: Inter, sans-serif;
+}
+
+@utility body-styles {
+  @apply p-8 bg-gray-100 dark:bg-gray-900;
+}
+
+@utility container {
+  @apply max-w-5xl mx-auto space-y-8;
+}
+
+@utility card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6;
+}
+
+@utility card-title {
+  @apply text-2xl font-bold text-gray-900 dark:text-gray-100;
+}
+
+@utility footer-container {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 text-center;
+}
+
+@utility footer-text {
+  @apply text-sm text-gray-500 dark:text-gray-400 mt-2;
+}
+
+@utility footer-link {
+  @apply text-blue-500 hover:text-blue-700 underline transition-colors;
+}
+
+@utility page-title {
+  @apply text-4xl font-extrabold text-gray-900 dark:text-gray-100;
+}
+
+@utility page-subtitle {
+  @apply text-2xl font-semibold text-gray-700 dark:text-gray-300 mt-2;
+}
+
+@utility report-subtitle {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+@utility section-header {
+  @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+@utility section-description {
+  @apply text-sm text-gray-500 dark:text-gray-400 mt-2;
+}
+
+@utility subdivision-list-item {
+  @apply list-none bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transition-transform transform hover:scale-105;
+}
+
+@utility report-list-item {
+  @apply list-none bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col sm:flex-row justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4;
+}
+
+@utility subdivision-link-content {
+  @apply flex flex-col sm:flex-row justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4;
+}
+
+@utility report-list-link {
+  @apply p-6 flex flex-col sm:flex-row justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4;
+}
+
+@utility report-list-item-empty {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 text-center text-gray-500 dark:text-gray-400 list-none;
+}
+
+@utility list-item-link {
+  @apply hover:text-gray-950 dark:hover:text-gray-200 underline transition-colors;
+}
+
+@utility list-item-phone-label {
+  @apply font-semibold text-xs text-gray-700 dark:text-gray-400;
+  @apply grid-col-span-1;
+}
+
+@utility list-item-phone-number {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+@utility btn {
+  @apply inline-flex items-center rounded-full px-3 py-1.5 shadow-xs transition-colors;
+}
+
+@utility btn-editor {
+  @apply bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-gray-200;
+}
+
+@utility btn-josm-fix {
+  @apply bg-yellow-200 text-yellow-800 hover:bg-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50;
+}
+
+@utility btn-website {
+  @apply bg-green-500 text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:text-gray-200;
+}
+
+@utility label {
+  @apply text-xs font-semibold inline-flex items-center px-2 py-1 rounded-full text-center;
+}
+
+@utility label-fixable {
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50;
+}
+
+@utility label-not-mobile {
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50 sm:ml-2 mt-1 mb-1 sm:mt-0 sm:mb-0;
+}
+
+@utility label-disused {
+  @apply bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-100;
+}
+
+@utility stats-box {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 gap-6 text-center;
+}
+
+@utility stats-box-no-progress {
+  @apply grid grid-cols-1 sm:grid-cols-3;
+}
+
+@utility stats-box-progress {
+  @apply grid grid-cols-2 sm:grid-cols-4;
+}
+
+@utility progress-icon {
+  @apply fill-red-700 dark:fill-red-400 w-12 h-12 mx-auto;
+}
+
+@utility stats-box-number {
+  @apply text-4xl font-extrabold text-gray-800 dark:text-gray-100;
+}
+
+@utility stats-box-number-invalid {
+  @apply text-4xl font-extrabold text-blue-700 dark:text-blue-400;
+}
+
+@utility stats-box-number-fixable {
+  @apply text-4xl font-extrabold text-green-700 dark:text-green-400;
+}
+
+@utility stats-box-label {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+@utility stats-box-percentage {
+  @apply text-sm text-gray-400 dark:text-gray-500;
+}
+
+@utility theme-toggle-button {
+  @apply text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg text-sm p-2.5 cursor-pointer;
+}
+
+@utility header {
+  @apply text-center relative space-y-2;
+}
+
+@utility header-actions {
+  @apply absolute top-0 right-0 flex items-center space-x-2;
+}
+
+@utility settings-button {
+  @apply hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer;
+}
+
+@utility settings-menu {
+  @apply absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-10 text-left border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+@utility back-link {
+  @apply inline-block text-blue-500 hover:text-blue-700 transition-colors;
+}
+
+@utility country-link {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 transition-transform transform hover:scale-105;
+}
+
+@utility color-indicator {
+  @apply h-12 w-12 rounded-full flex-shrink-0;
+}
+
+@utility country-name {
+  @apply text-xl font-bold text-gray-900 dark:text-gray-100;
+}
+
+@utility country-description {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+@utility country-percentage {
+  @apply text-2xl font-bold text-gray-800 dark:text-gray-100;
+}
+
+@utility country-invalid-label {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+@utility list-item-header {
+  @apply flex-shrink-0 flex flex-wrap items-center gap-2;
+}
+
+@utility list-item-icon-circle-preview {
+  @apply w-10 h-10 inline-flex flex-shrink-0 items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-gray-200 transition-colors;
+}
+
+@utility list-item-icon-container {
+  @apply w-6 h-6 inline-flex items-center justify-center mr-2;
+}
+
+@utility icon-svg {
+  @apply w-5 h-5;
+  fill: currentColor;
+}
+
+@utility list-item-title {
+  @apply text-lg font-bold text-gray-900 dark:text-gray-100;
+}
+
+@utility list-item-details-grid {
+  @apply grid grid-cols-[max-content_1fr] gap-x-4 items-center;
+}
+
+@utility grid-col-span-1 {
+  @apply col-span-1;
+}
+
+@utility details-group {
+  @apply mt-8 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg;
+  @apply mt-8 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg;
+}
+
+@utility summary-header {
+  @apply list-none cursor-pointer p-6 flex transition-colors rounded-t-xl bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-950;
+  @apply list-none cursor-pointer p-6 flex transition-colors rounded-t-xl bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-950;
+}
+
+@utility summary-content {
+  @apply flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 w-full;
+  @apply flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 w-full;
+}
+
+@utility summary-left-side {
+  @apply flex-grow flex items-center space-x-4;
+  @apply flex-grow flex items-center space-x-4 w-full sm:w-auto;
+}
+
+@utility summary-icon {
+  @apply flex items-center justify-center;
+}
+
+@utility summary-title {
+  @apply text-2xl font-bold text-gray-900 dark:text-gray-100;
+}
+
+@utility summary-stats {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+@utility summary-right-side {
+  @apply text-center sm:text-right flex-shrink-0;
+  @apply text-center sm:text-right flex-shrink-0 w-full sm:w-auto;
+}
+
+@utility summary-percentage {
+  @apply text-2xl font-bold text-gray-800 dark:text-gray-100;
+}
+
+@utility summary-percentage-label {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+@utility details-content {
+  @apply space-y-4 p-4 border-t border-gray-200 dark:border-gray-700;
+  @apply space-y-4 p-4 border-t border-gray-200 dark:border-gray-700;
+}
+
+@utility list-item-main-container {
+  @apply flex-grow flex items-center space-x-4;
+}
+
+@utility list-item-sub-title {
+  @apply text-xl font-bold text-gray-900 dark:text-gray-100;
+}
+
+@utility card-header {
+  @apply flex flex-col sm:flex-row justify-between items-center mb-6;
+}
+
+@utility card-actions {
+  @apply flex flex-col items-end space-y-4 sm:space-y-0 sm:space-x-4 mt-4 sm:mt-0;
+}
+
+@utility checkbox-container {
+  @apply flex items-end mr-4;
+}
+
+@utility checkbox-input {
+  @apply h-4 w-4 rounded-sm text-blue-600 focus:ring-blue-500 border-gray-300;
+}
+
+@utility checkbox-label {
+  @apply mr-2 text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+
+@utility sort-controls {
+  @apply flex flex-wrap items-center justify-end gap-2 mb-0 sm:mb-4;
+}
+
+@utility sort-label {
+  @apply mr-2 text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+
+@utility sort-btn-style {
+  @apply px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer;
+}
+
+@utility sort-btn-style-active {
+  @apply bg-blue-500 text-white shadow-sm;
+}
+
+@utility sort-btn-style-inactive {
+  @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600;
+}
+
+@utility page-container {
+  @apply max-w-5xl mx-auto space-y-8;
+}
+
+@utility page-header {
+  @apply text-center space-y-2 relative;
+}
+
+@utility index-header-container {
+  @apply flex justify-between items-start w-full;
+}
+
+@utility subdivision-item-container {
+  @apply flex flex-col items-start;
+}
+
+@utility list-item-content-wrapper {
+  @apply flex flex-grow items-center sm:w-2/3;
+}
+
+@utility list-item-details-wrapper {
+  @apply ml-4;
+}
+
+@utility list-item-phone-value-container {
+  @apply col-span-1 text-gray-900 dark:text-gray-100;
+}
+
+@utility phone-separator-line {
+  @apply col-span-full my-1 border-t border-gray-200;
+}
+
+@utility list-item-actions-container {
+  @apply flex flex-wrap gap-2 w-full sm:w-[40%] justify-end text-sm font-semibold;
+}
+
+@utility section-header-container {
+  @apply text-center;
+}
+
+@utility report-list {
+  @apply space-y-4;
+}
+
+@utility country-link-content {
+  @apply flex-grow flex items-center space-x-4;
+}
+
+@utility country-link-text-container {
+  @apply flex-grow;
+}
+
+@utility country-stats-container {
+  @apply text-center sm:text-right;
+}
+
+@utility country-percentage-symbol {
+  @apply text-base font-normal;
+}
+
+@utility collapse-icon {
+  @apply h-6 w-6 transform transition-transform duration-200 group-open:rotate-90 group-hover/summary:scale-110 text-white;
+}
+
+@utility no-subdivisions-item {
+  @apply p-6 text-center text-gray-500 rounded-xl;
+}
+
+@utility diff-added {
+  @apply bg-green-200 dark:bg-green-900 rounded-md;
+}
+
+@utility diff-removed {
+  @apply bg-red-200 dark:bg-red-900 rounded-md leading-none;
+}
+
+@utility diff-unchanged {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+@utility action-row {
+  @apply flex justify-between items-center;
+}
+
+@utility chart-container {
+  @apply relative h-[40vh] mx-auto;
+}
+
+@utility btn-progress {
+  @apply flex flex-row items-center rounded-md px-3 py-1.5 mt-4 sm:mt-0 shadow-xs transition-colors bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-gray-200;
+}
+
+@utility progress-icon-index {
+  @apply fill-white dark:fill-gray-200 w-8 h-8;
+}
+
+@utility list-item-old-value {
+  @apply flex sm:items-center items-start sm:flex-row flex-col;
+}

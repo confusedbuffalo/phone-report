@@ -1,0 +1,882 @@
+{
+  "name": "United Kingdom",
+  "slug": "united-kingdom",
+  "locale": "en-GB",
+  "invalidCount": 843,
+  "autoFixableCount": 409,
+  "totalNumbers": 159230,
+  "groupedDivisionStats": {
+    "England": [
+      {
+        "name": "Bath and North East Somerset",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 347
+      },
+      {
+        "name": "Bedford",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 228
+      },
+      {
+        "name": "Blackburn with Darwen",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 203
+      },
+      {
+        "name": "Blackpool",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 167
+      },
+      {
+        "name": "Bournemouth, Christchurch and Poole",
+        "invalidCount": 5,
+        "autoFixableCount": 0,
+        "totalNumbers": 991
+      },
+      {
+        "name": "Bracknell Forest",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 128
+      },
+      {
+        "name": "Brighton and Hove",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 750
+      },
+      {
+        "name": "Buckinghamshire",
+        "invalidCount": 16,
+        "autoFixableCount": 13,
+        "totalNumbers": 1181
+      },
+      {
+        "name": "Cambridgeshire and Peterborough",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 1814
+      },
+      {
+        "name": "Central Bedfordshire",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 342
+      },
+      {
+        "name": "Cheshire East",
+        "invalidCount": 10,
+        "autoFixableCount": 1,
+        "totalNumbers": 827
+      },
+      {
+        "name": "Cheshire West and Chester",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 1199
+      },
+      {
+        "name": "City of Bristol",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 1065
+      },
+      {
+        "name": "City of Leicester",
+        "invalidCount": 6,
+        "autoFixableCount": 0,
+        "totalNumbers": 428
+      },
+      {
+        "name": "City of Milton Keynes",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 425
+      },
+      {
+        "name": "City of Nottingham",
+        "invalidCount": 9,
+        "autoFixableCount": 6,
+        "totalNumbers": 612
+      },
+      {
+        "name": "Cornwall",
+        "invalidCount": 10,
+        "autoFixableCount": 7,
+        "totalNumbers": 1662
+      },
+      {
+        "name": "County Durham",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 1367
+      },
+      {
+        "name": "Cumberland",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 1900
+      },
+      {
+        "name": "Derby",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 753
+      },
+      {
+        "name": "Derbyshire",
+        "invalidCount": 10,
+        "autoFixableCount": 3,
+        "totalNumbers": 1459
+      },
+      {
+        "name": "Devon",
+        "invalidCount": 21,
+        "autoFixableCount": 8,
+        "totalNumbers": 2024
+      },
+      {
+        "name": "Dorset",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 1138
+      },
+      {
+        "name": "East Sussex",
+        "invalidCount": 8,
+        "autoFixableCount": 5,
+        "totalNumbers": 2032
+      },
+      {
+        "name": "Essex",
+        "invalidCount": 17,
+        "autoFixableCount": 10,
+        "totalNumbers": 3591
+      },
+      {
+        "name": "Gloucestershire",
+        "invalidCount": 8,
+        "autoFixableCount": 2,
+        "totalNumbers": 2293
+      },
+      {
+        "name": "Greater London",
+        "invalidCount": 93,
+        "autoFixableCount": 37,
+        "totalNumbers": 23712
+      },
+      {
+        "name": "Greater Manchester",
+        "invalidCount": 28,
+        "autoFixableCount": 16,
+        "totalNumbers": 4698
+      },
+      {
+        "name": "Hampshire",
+        "invalidCount": 8,
+        "autoFixableCount": 1,
+        "totalNumbers": 3700
+      },
+      {
+        "name": "Hartlepool",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 143
+      },
+      {
+        "name": "Herefordshire",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 438
+      },
+      {
+        "name": "Hertfordshire",
+        "invalidCount": 10,
+        "autoFixableCount": 3,
+        "totalNumbers": 2866
+      },
+      {
+        "name": "Hull and East Yorkshire",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 938
+      },
+      {
+        "name": "Isle of Wight",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 1189
+      },
+      {
+        "name": "Isles of Scilly",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 29
+      },
+      {
+        "name": "Kent",
+        "invalidCount": 30,
+        "autoFixableCount": 25,
+        "totalNumbers": 4424
+      },
+      {
+        "name": "Lancashire",
+        "invalidCount": 13,
+        "autoFixableCount": 9,
+        "totalNumbers": 2480
+      },
+      {
+        "name": "Leicestershire",
+        "invalidCount": 11,
+        "autoFixableCount": 3,
+        "totalNumbers": 882
+      },
+      {
+        "name": "Lincolnshire",
+        "invalidCount": 5,
+        "autoFixableCount": 0,
+        "totalNumbers": 1110
+      },
+      {
+        "name": "Liverpool City Region",
+        "invalidCount": 12,
+        "autoFixableCount": 6,
+        "totalNumbers": 2088
+      },
+      {
+        "name": "Luton",
+        "invalidCount": 4,
+        "autoFixableCount": 0,
+        "totalNumbers": 368
+      },
+      {
+        "name": "Medway",
+        "invalidCount": 65,
+        "autoFixableCount": 61,
+        "totalNumbers": 716
+      },
+      {
+        "name": "Norfolk",
+        "invalidCount": 14,
+        "autoFixableCount": 5,
+        "totalNumbers": 4140
+      },
+      {
+        "name": "North East Lincolnshire",
+        "invalidCount": 3,
+        "autoFixableCount": 1,
+        "totalNumbers": 1371
+      },
+      {
+        "name": "North Lincolnshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 181
+      },
+      {
+        "name": "North Northamptonshire",
+        "invalidCount": 4,
+        "autoFixableCount": 2,
+        "totalNumbers": 1031
+      },
+      {
+        "name": "North Somerset",
+        "invalidCount": 8,
+        "autoFixableCount": 4,
+        "totalNumbers": 507
+      },
+      {
+        "name": "Northumberland",
+        "invalidCount": 7,
+        "autoFixableCount": 1,
+        "totalNumbers": 1199
+      },
+      {
+        "name": "Nottinghamshire",
+        "invalidCount": 19,
+        "autoFixableCount": 12,
+        "totalNumbers": 1629
+      },
+      {
+        "name": "Oxfordshire",
+        "invalidCount": 21,
+        "autoFixableCount": 0,
+        "totalNumbers": 1703
+      },
+      {
+        "name": "Plymouth",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 272
+      },
+      {
+        "name": "Portsmouth",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 910
+      },
+      {
+        "name": "Reading",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 544
+      },
+      {
+        "name": "Rutland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 58
+      },
+      {
+        "name": "Shropshire",
+        "invalidCount": 7,
+        "autoFixableCount": 0,
+        "totalNumbers": 613
+      },
+      {
+        "name": "Slough",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 110
+      },
+      {
+        "name": "Somerset",
+        "invalidCount": 11,
+        "autoFixableCount": 3,
+        "totalNumbers": 1690
+      },
+      {
+        "name": "South Gloucestershire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 370
+      },
+      {
+        "name": "South Yorkshire",
+        "invalidCount": 13,
+        "autoFixableCount": 7,
+        "totalNumbers": 1467
+      },
+      {
+        "name": "Southampton",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 438
+      },
+      {
+        "name": "Southend-on-Sea",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 169
+      },
+      {
+        "name": "Staffordshire",
+        "invalidCount": 8,
+        "autoFixableCount": 3,
+        "totalNumbers": 1488
+      },
+      {
+        "name": "Stoke-on-Trent",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 300
+      },
+      {
+        "name": "Suffolk",
+        "invalidCount": 5,
+        "autoFixableCount": 0,
+        "totalNumbers": 2005
+      },
+      {
+        "name": "Surrey",
+        "invalidCount": 11,
+        "autoFixableCount": 3,
+        "totalNumbers": 3896
+      },
+      {
+        "name": "Swindon",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 292
+      },
+      {
+        "name": "Tees Valley",
+        "invalidCount": 5,
+        "autoFixableCount": 2,
+        "totalNumbers": 998
+      },
+      {
+        "name": "Telford and Wrekin",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 234
+      },
+      {
+        "name": "Thurrock",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 478
+      },
+      {
+        "name": "Torbay",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 136
+      },
+      {
+        "name": "Tyne and Wear",
+        "invalidCount": 12,
+        "autoFixableCount": 5,
+        "totalNumbers": 3916
+      },
+      {
+        "name": "Warrington",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 1008
+      },
+      {
+        "name": "Warwickshire",
+        "invalidCount": 5,
+        "autoFixableCount": 2,
+        "totalNumbers": 1469
+      },
+      {
+        "name": "West Berkshire",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 353
+      },
+      {
+        "name": "West Midlands",
+        "invalidCount": 60,
+        "autoFixableCount": 50,
+        "totalNumbers": 4148
+      },
+      {
+        "name": "West Northamptonshire",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 677
+      },
+      {
+        "name": "West Sussex",
+        "invalidCount": 23,
+        "autoFixableCount": 6,
+        "totalNumbers": 2126
+      },
+      {
+        "name": "West Yorkshire",
+        "invalidCount": 41,
+        "autoFixableCount": 31,
+        "totalNumbers": 3972
+      },
+      {
+        "name": "Westmorland and Furness",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 1920
+      },
+      {
+        "name": "Wiltshire",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "totalNumbers": 950
+      },
+      {
+        "name": "Windsor and Maidenhead",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 329
+      },
+      {
+        "name": "Wokingham",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 302
+      },
+      {
+        "name": "Worcestershire",
+        "invalidCount": 8,
+        "autoFixableCount": 2,
+        "totalNumbers": 856
+      },
+      {
+        "name": "York and North Yorkshire",
+        "invalidCount": 12,
+        "autoFixableCount": 7,
+        "totalNumbers": 2124
+      }
+    ],
+    "Northern Ireland": [
+      {
+        "name": "County Borough of Londonderry",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 54
+      },
+      {
+        "name": "County Tyrone",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 262
+      },
+      {
+        "name": "County Fermanagh",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 99
+      },
+      {
+        "name": "County Down",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 557
+      },
+      {
+        "name": "County Antrim",
+        "invalidCount": 7,
+        "autoFixableCount": 6,
+        "totalNumbers": 974
+      },
+      {
+        "name": "County Armagh",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 109
+      }
+    ],
+    "Scotland": [
+      {
+        "name": "Aberdeen City",
+        "invalidCount": 5,
+        "autoFixableCount": 4,
+        "totalNumbers": 947
+      },
+      {
+        "name": "Aberdeenshire",
+        "invalidCount": 3,
+        "autoFixableCount": 2,
+        "totalNumbers": 606
+      },
+      {
+        "name": "Angus",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 296
+      },
+      {
+        "name": "Argyll and Bute",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 445
+      },
+      {
+        "name": "City of Edinburgh",
+        "invalidCount": 6,
+        "autoFixableCount": 1,
+        "totalNumbers": 3888
+      },
+      {
+        "name": "Clackmannanshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 49
+      },
+      {
+        "name": "Dumfries and Galloway",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 598
+      },
+      {
+        "name": "Dundee City",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 501
+      },
+      {
+        "name": "East Ayrshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 112
+      },
+      {
+        "name": "East Dunbartonshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 262
+      },
+      {
+        "name": "East Lothian",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "totalNumbers": 197
+      },
+      {
+        "name": "East Renfrewshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 84
+      },
+      {
+        "name": "Falkirk",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 270
+      },
+      {
+        "name": "Fife",
+        "invalidCount": 3,
+        "autoFixableCount": 3,
+        "totalNumbers": 681
+      },
+      {
+        "name": "Glasgow City",
+        "invalidCount": 6,
+        "autoFixableCount": 3,
+        "totalNumbers": 1475
+      },
+      {
+        "name": "Highland",
+        "invalidCount": 7,
+        "autoFixableCount": 3,
+        "totalNumbers": 1264
+      },
+      {
+        "name": "Inverclyde",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 52
+      },
+      {
+        "name": "Midlothian",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 125
+      },
+      {
+        "name": "Moray",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 167
+      },
+      {
+        "name": "Na h-Eileanan Siar",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 253
+      },
+      {
+        "name": "North Ayrshire",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 178
+      },
+      {
+        "name": "North Lanarkshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 309
+      },
+      {
+        "name": "Orkney Islands",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 77
+      },
+      {
+        "name": "Perth and Kinross",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 0
+      },
+      {
+        "name": "Renfrewshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 148
+      },
+      {
+        "name": "Scottish Borders",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 529
+      },
+      {
+        "name": "Shetland Islands",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 83
+      },
+      {
+        "name": "South Ayrshire",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 702
+      },
+      {
+        "name": "South Lanarkshire",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 271
+      },
+      {
+        "name": "Stirling",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 326
+      },
+      {
+        "name": "West Dunbartonshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 97
+      },
+      {
+        "name": "West Lothian",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 368
+      }
+    ],
+    "Wales": [
+      {
+        "name": "Blaenau Gwent",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 253
+      },
+      {
+        "name": "Bridgend",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 283
+      },
+      {
+        "name": "Caerphilly",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 745
+      },
+      {
+        "name": "Cardiff",
+        "invalidCount": 4,
+        "autoFixableCount": 0,
+        "totalNumbers": 1222
+      },
+      {
+        "name": "Ceredigion",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 743
+      },
+      {
+        "name": "Conwy",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 294
+      },
+      {
+        "name": "Denbighshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 155
+      },
+      {
+        "name": "Flintshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 160
+      },
+      {
+        "name": "Gwynedd",
+        "invalidCount": 4,
+        "autoFixableCount": 3,
+        "totalNumbers": 480
+      },
+      {
+        "name": "Merthyr Tydfil",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 72
+      },
+      {
+        "name": "Monmouthshire",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalNumbers": 586
+      },
+      {
+        "name": "Neath Port Talbot",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 139
+      },
+      {
+        "name": "Newport",
+        "invalidCount": 6,
+        "autoFixableCount": 0,
+        "totalNumbers": 1881
+      },
+      {
+        "name": "Pembrokeshire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 386
+      },
+      {
+        "name": "Powys",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 557
+      },
+      {
+        "name": "Rhondda Cynon Taf",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "totalNumbers": 422
+      },
+      {
+        "name": "Sir Gaerfyrddin / Carmarthenshire",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalNumbers": 592
+      },
+      {
+        "name": "Swansea",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 357
+      },
+      {
+        "name": "Torfaen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 476
+      },
+      {
+        "name": "Vale of Glamorgan",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalNumbers": 443
+      },
+      {
+        "name": "Wrexham",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalNumbers": 255
+      },
+      {
+        "name": "Ynys Môn / Isle of Anglesey",
+        "invalidCount": 4,
+        "autoFixableCount": 3,
+        "totalNumbers": 228
+      }
+    ]
+  }
+}
