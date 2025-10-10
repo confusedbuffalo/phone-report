@@ -2,16 +2,16 @@
   "name": "United Kingdom",
   "slug": "united-kingdom",
   "locale": "en-GB",
-  "invalidCount": 543,
+  "invalidCount": 557,
   "autoFixableCount": 142,
-  "totalNumbers": 160139,
+  "totalNumbers": 160142,
   "groupedDivisionStats": {
     "England": [
       {
         "name": "Bath and North East Somerset",
         "divisionSlug": "england",
         "slug": "bath-and-north-east-somerset",
-        "invalidCount": 0,
+        "invalidCount": 1,
         "autoFixableCount": 0,
         "totalNumbers": 347
       },
@@ -43,7 +43,7 @@
         "name": "Bournemouth, Christchurch and Poole",
         "divisionSlug": "england",
         "slug": "bournemouth-christchurch-and-poole",
-        "invalidCount": 5,
+        "invalidCount": 6,
         "autoFixableCount": 1,
         "totalNumbers": 991
       },
@@ -109,7 +109,7 @@
         "slug": "city-of-bristol",
         "invalidCount": 0,
         "autoFixableCount": 0,
-        "totalNumbers": 1065
+        "totalNumbers": 1066
       },
       {
         "name": "City of Leicester",
@@ -173,7 +173,7 @@
         "slug": "derbyshire",
         "invalidCount": 7,
         "autoFixableCount": 0,
-        "totalNumbers": 1461
+        "totalNumbers": 1460
       },
       {
         "name": "Devon",
@@ -221,7 +221,7 @@
         "slug": "greater-london",
         "invalidCount": 62,
         "autoFixableCount": 13,
-        "totalNumbers": 23735
+        "totalNumbers": 23734
       },
       {
         "name": "Greater Manchester",
@@ -307,9 +307,9 @@
         "name": "Leicestershire",
         "divisionSlug": "england",
         "slug": "leicestershire",
-        "invalidCount": 6,
+        "invalidCount": 10,
         "autoFixableCount": 2,
-        "totalNumbers": 878
+        "totalNumbers": 882
       },
       {
         "name": "Lincolnshire",
@@ -443,7 +443,7 @@
         "name": "Shropshire",
         "divisionSlug": "england",
         "slug": "shropshire",
-        "invalidCount": 5,
+        "invalidCount": 7,
         "autoFixableCount": 0,
         "totalNumbers": 613
       },
@@ -459,7 +459,7 @@
         "name": "Somerset",
         "divisionSlug": "england",
         "slug": "somerset",
-        "invalidCount": 5,
+        "invalidCount": 10,
         "autoFixableCount": 1,
         "totalNumbers": 1689
       },
@@ -491,7 +491,7 @@
         "name": "Southend-on-Sea",
         "divisionSlug": "england",
         "slug": "southend-on-sea",
-        "invalidCount": 1,
+        "invalidCount": 2,
         "autoFixableCount": 0,
         "totalNumbers": 169
       },
