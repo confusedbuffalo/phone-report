@@ -314,7 +314,7 @@ layer(utilities);
 }
 
 @utility sort-controls {
-  @apply flex flex-wrap items-center justify-end gap-2 mb-0 sm:mb-4;
+  @apply flex flex-wrap items-center justify-end gap-2 mb-4;
 }
 
 @utility sort-label {
