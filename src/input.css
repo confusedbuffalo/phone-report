@@ -301,7 +301,7 @@
 }
 
 @utility checkbox-container {
-  @apply flex items-end mr-4;
+  @apply flex items-end sm:mr-4;
 }
 
 @utility checkbox-input {
