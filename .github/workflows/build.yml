@@ -50,10 +50,24 @@ jobs:
       - name: Check Build Type
         run: echo "The build type is $BUILD_TYPE"
 
-      - name: Checkout repository
+      - name: Generate GitHub App Token
+        if: env.BUILD_TYPE == 'full'
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: 'write' 
+
+      - name: Checkout repository (using App Token)
+        if: env.BUILD_TYPE == 'full'
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Checkout repository (without App token)
+        if: env.BUILD_TYPE == 'simplified'
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -81,8 +95,14 @@ jobs:
       - name: Commit and Push History Data
         if: env.BUILD_TYPE == 'full'
         run: |
+          # Get the token from the previous step's output
+          TOKEN="${{ steps.app-token.outputs.token }}"
+          
+          # Configure the remote URL to use the token for authentication
+          git remote set-url origin "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git"
+
           # Configure Git user, identifying the commit as the bot
-          git config user.name "History-Update-Bot"
+          git config user.name "Auto-Pusher-Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git fetch origin main
