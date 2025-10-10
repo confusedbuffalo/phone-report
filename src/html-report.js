@@ -27,8 +27,6 @@ function createDetailsGrid(item, locale) {
             const tagToUse = phoneTagToUse(item.allTags);
             const existingValuePresent = tagToUse in item.allTags;
 
-            console.log(item);
-
             let originalNumber;
             if (!item.invalidNumbers[tagToUse] && item.allTags[tagToUse]) {
                 originalNumber = item.allTags[tagToUse];
