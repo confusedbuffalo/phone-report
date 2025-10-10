@@ -408,10 +408,6 @@
   @apply bg-red-200 dark:bg-red-900 rounded-md leading-none;
 }
 
-@utility diff-unchanged {
-  @apply text-gray-900 dark:text-gray-100;
-}
-
 @utility action-row {
   @apply flex justify-between items-center;
 }

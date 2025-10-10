@@ -29,7 +29,6 @@ const translations = {};
 /**
  * Loads translation data for a given locale, falling back to language code and then 'en'.
  * The resulting translation object is cached.
- * Note: This function's actual file access logic is often mocked in tests.
  * @param {string} locale - The target locale string (e.g., 'en', 'en-US', 'fr').
  * @returns {object|null} The translation object for the locale, or null if loading fails.
  */
@@ -41,7 +40,7 @@ function loadTranslation(locale) {
     const lang = locale.split('-')[0];
     let translation;
 
-    // Try full locale, then language, then fallback to english
+    // Try full locale, then language, then fallback to English
     const translationPaths = [
         path.resolve(__dirname, '..', `node_modules/@openstreetmap/id-tagging-schema/dist/translations/${locale}.json`),
         path.resolve(__dirname, '..', `node_modules/@openstreetmap/id-tagging-schema/dist/translations/${lang}.json`),
@@ -146,6 +145,9 @@ function getMatchScore(preset, tags, geometry) {
     }
 
     if (preset.matchScore) {
+        if (wildcardMatches > 0 && specificMatches === 0) {
+            return preset.matchScore * 0.95;
+        }
         return preset.matchScore
     }
 

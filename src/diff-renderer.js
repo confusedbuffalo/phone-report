@@ -101,10 +101,14 @@ function diffPhoneNumbers(original, suggested) {
     let originalRemainder = original; // We will cut these down to keep track of added/removed separators
     let suggestedRemainder = suggested;
 
+    const actualNumberStartsWithZero = suggested.split(' ')[1]
+        ?.startsWith('0')
+        ?? false;
+
     for (let i = 0; i < original.length; i++) {
         const char = original[i];
 
-        if (suggestedRemainder[i] === '+' && char === '0') {
+        if (suggestedRemainder[i] === '+' && char === '0' && !actualNumberStartsWithZero) {
             // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
             originalDiff.push({ value: char, removed: true });
             if (commonDigits[commonPointer] === '0') {
@@ -162,7 +166,7 @@ function diffPhoneNumbers(original, suggested) {
             !originalRemainderNew.includes('+') && // + might exist but not be first character, e.g. 'tel:+...'
             normalizedOriginal.slice(0,2) != '00' // This gets handled properly by the rest of the logic anyway
         ) {
-            prefix = suggested.split(' ')[0]
+            const prefix = suggested.split(' ')[0]
 
             for (let j = 0; j < prefix.length; j++) {
                 suggestedDiff.push({ value: prefix[j], added: true });
@@ -171,7 +175,7 @@ function diffPhoneNumbers(original, suggested) {
 
             i = suggested.indexOf(' ')
 
-            if (originalRemainderNew[0] === '0') {
+            if (originalRemainderNew[0] === '0' && !actualNumberStartsWithZero) {
                 originalRemainderNew = originalRemainderNew.slice(1) // Remove the 0
                 if (commonDigits[commonPointerNew] === '0') {
                     // 0 in original matched with 0 in added prefix

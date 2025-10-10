@@ -36,6 +36,14 @@ const defibrillatorItem = {
     allTags: defibrillatorTags
 };
 
+const industrialLanduseTags = {
+    landuse: 'industrial'
+}
+const industrialLanduseItem = {
+    type: 'way',
+    allTags: industrialLanduseTags
+}
+
 
 // Define the mock presets used for matching, including all conflicting pairs
 const mockPresets = {
@@ -85,6 +93,25 @@ const mockPresets = {
         },
         matchScore: 2
     },
+    // landuse
+    'landuse': {
+        id: 'landuse',
+        geometry: ['area'],
+        tags: {
+            'landuse': '*'
+        },
+        matchScore: 0.9,
+    },
+    // specific landuse
+    'landuse/industrial': {
+        id: 'landuse/industrial',
+        icon: "maki-industry",
+        geometry: [ 'area' ],
+        tags: {
+            'landuse': 'industrial'
+        },
+        matchScore: 0.9,
+    },
 };
 
 // Global helper to inject mock presets into the logic during testing
@@ -103,7 +130,7 @@ describe('Preset Matching Logic', () => {
             expect(getMatchScore(defibPreset, defibrillatorItem.allTags, geometry)).toBe(1.0);
             
             const indoorPreset = mockPresets.indoor;
-            expect(getMatchScore(indoorPreset, defibrillatorItem.allTags, geometry)).toBe(0.8);
+            expect(getMatchScore(indoorPreset, defibrillatorItem.allTags, geometry)).toBe(0.76);
         });
         
         test('should correctly score the "seamark" preset (Wildcard Match)', () => {
@@ -132,6 +159,12 @@ describe('Preset Matching Logic', () => {
             const bestPreset = getBestPreset(cableItem, 'en');
             expect(bestPreset.id).toBe('comm/cable');
             expect(bestPreset.icon).toBe('iD-icon-communication-cable');
+        });
+
+        test('should choose the specific industrial landuse over generic landuse preset', () => {
+            const bestPreset = getBestPreset(industrialLanduseItem, 'en');
+            expect(bestPreset.id).toBe('landuse/industrial');
+            expect(bestPreset.icon).toBe('maki-industry');
         });
 
         test('should select "seamark" if it is the highest scorer, beating the generic "line" preset', () => {
