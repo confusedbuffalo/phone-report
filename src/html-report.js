@@ -7,6 +7,22 @@ const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
 
+
+/**
+ * Creates a single row for the HTML grid for displaying an invalid phone number tag and value.
+ * @param {string} label - The HTML for the label.
+ * @param {string} number - The HTML for the phone number.
+ * @returns {string} The HTML string for the details grid.
+ */
+function createDetailsRow(label, number) {
+    return `<div class="list-item-phone-label-container">
+                <span class="list-item-phone-label">${label}</span>
+            </div>
+            <div class="list-item-phone-value-container">
+                ${number}
+            </div>`
+}
+
 /**
  * Creates the HTML grid for displaying an invalid phone number tag and its suggested fix.
  * It generates a diff view if a fix is available.
@@ -19,15 +35,11 @@ function createDetailsGrid(item, locale) {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
 
-        let originalNumberHtml;
-        let suggestedFixHtml = '';
-        let extraRow = '';
+        let originalRow = '', suggestedRow = '', extraRows = '';
 
         if (key in item.mismatchTypeNumbers) {
             const tagToUse = phoneTagToUse(item.allTags);
             const existingValuePresent = tagToUse in item.allTags;
-
-            console.log(item);
 
             let originalNumber;
             if (!item.invalidNumbers[tagToUse] && item.allTags[tagToUse]) {
@@ -50,22 +62,10 @@ function createDetailsGrid(item, locale) {
             const originalMismatch = item.allTags[key];
             const suggestedMismatch = item.suggestedFixes[key];
 
-            const {
-                oldDiff: originalDiff,
-                newDiff: suggestedDiff
-            } = getDiffHtml(originalNumber, suggestedFix);
-
-            const {
-                oldDiff: originalMismatchDiff,
-                newDiff: suggestedMismatchDiff
-            } = getDiffHtml(originalMismatch, suggestedMismatch);
+            const { oldDiff: originalDiff, newDiff: suggestedDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff: originalMismatchDiff, newDiff: suggestedMismatchDiff } = getDiffHtml(originalMismatch, suggestedMismatch);
 
             const notMobileLabel = `<span class="label label-not-mobile">${translate("notMobileNumber", locale)}</span>`
-
-            originalNumberHtml = `
-                <span class="list-item-old-value">
-                    <span class="list-item-old-value">${originalMismatchDiff}</span>${notMobileLabel}
-                </span>`;
 
             let oldTagDiff = '', newTagDiff = '';
             if (!item.suggestedFixes[key] && !existingValuePresent) {
@@ -76,68 +76,34 @@ function createDetailsGrid(item, locale) {
                 oldTagDiff = `<span class="diff-removed">${key}</span>`;
                 newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
                 if (tagToUse in item.suggestedFixes) {
-                    extraRow = `
-                        <div class="list-item-phone-label-container">
-                            <span class="list-item-phone-label">${tagToUse}</span>
-                        </div>
-                        <div class="list-item-phone-value-container">
-                            ${originalDiff}
-                        </div>`;
+                    extraRows = createDetailsRow(tagToUse, originalDiff)
                 }
             } else if (existingValuePresent) {
                 // Removing from old tag (leaving something there) and adding to existing tag
                 oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
                 newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                
-                extraRow = `
-                    <div class="list-item-phone-label-container">
-                        <span class="list-item-phone-label">${key}</span>
-                    </div>
-                    <div class="list-item-phone-value-container">
-                        ${suggestedMismatchDiff}
-                    </div>`
+
+                extraRows = createDetailsRow(key, suggestedMismatchDiff);
                 if (tagToUse in item.suggestedFixes) {
-                    extraRow += `
-                        <hr class="phone-separator-line">
-                        <div class="list-item-phone-label-container">
-                            <span class="list-item-phone-label">${tagToUse}</span>
-                        </div>
-                        <div class="list-item-phone-value-container">
-                            ${originalDiff}
-                        </div>`;
+                    extraRows += createDetailsRow(tagToUse, originalDiff);
                 }
             } else {
                 // Removing from old tag, creating new tag
                 oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
                 newTagDiff = `<span class="diff-added">${tagToUse}</span>`;
-                extraRow = `
-                    <div class="list-item-phone-label-container">
-                        <span class="list-item-phone-label">${key}</span>
-                    </div>
-                    <div class="list-item-phone-value-container">
-                        ${suggestedMismatchDiff}
-                    </div>`
+                extraRows = createDetailsRow(key, suggestedMismatchDiff);
             }
 
-            suggestedFixHtml = `
-                <div class="list-item-phone-label-container">
-                    <span class="list-item-phone-label">${newTagDiff}</span>
-                </div>
-                <div class="list-item-phone-value-container">
-                    <span>${suggestedDiff}</span>
-                </div>
-            `;
+            originalRow = createDetailsRow(oldTagDiff, `<span class="list-item-old-value"><span class="list-item-old-value">${originalMismatchDiff}</span>${notMobileLabel}</span>`);
+            suggestedRow = createDetailsRow(newTagDiff, suggestedDiff);
 
-            return `<div class="list-item-details-grid">
-                <div class="list-item-phone-label-container">
-                    <span class="list-item-phone-label">${oldTagDiff}</span>
+            return `
+                <div class="list-item-details-grid">
+                    ${originalRow}
+                    ${extraRows}
+                    ${suggestedRow}
                 </div>
-                <div class="list-item-phone-value-container">
-                    ${originalNumberHtml}
-                </div>
-                ${extraRow}
-                ${suggestedFixHtml}
-            </div>`
+                `;
         }
 
         // Dealt with above
@@ -147,29 +113,17 @@ function createDetailsGrid(item, locale) {
 
         if (suggestedFix) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            originalNumberHtml = `<span>${oldDiff}</span>`;
-            suggestedFixHtml = `
-                <div class="list-item-phone-label-container">
-                    <span class="list-item-phone-label">${translate('suggestedFix', locale)}</span>
-                </div>
-                <div class="list-item-phone-value-container">
-                    <span>${newDiff}</span>
-                </div>
-            `;
+            originalRow = createDetailsRow(key, oldDiff);
+            suggestedRow = createDetailsRow(translate('suggestedFix', locale), newDiff);
         } else {
-            originalNumberHtml = `<span>${escapeHTML(originalNumber)}</span>`;
+            originalRow = createDetailsRow(key, `<span>${escapeHTML(originalNumber)}</span>`);
         }
 
-        // Return the HTML for one set of phone number details
         return `
             <div class="list-item-details-grid">
-                <div class="list-item-phone-label-container">
-                    <span class="list-item-phone-label">${key}</span>
-                </div>
-                <div class="list-item-phone-value-container">
-                    ${originalNumberHtml}
-                </div>
-                ${suggestedFixHtml}
+                ${originalRow}
+                ${extraRows}
+                ${suggestedRow}
             </div>
         `;
     }).filter(Boolean).join('<hr class="phone-separator-line">');

@@ -1,7 +1,6 @@
-@import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap')
-layer(utilities);
+@import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -302,7 +301,7 @@ layer(utilities);
 }
 
 @utility checkbox-container {
-  @apply flex items-end mr-4;
+  @apply flex items-end sm:mr-4;
 }
 
 @utility checkbox-input {
@@ -314,7 +313,7 @@ layer(utilities);
 }
 
 @utility sort-controls {
-  @apply flex flex-wrap items-center justify-end gap-2 mb-0 sm:mb-4;
+  @apply flex flex-wrap items-center justify-end gap-2 mb-4;
 }
 
 @utility sort-label {

@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     },
                     plugins:{
                         legend: {
-                            display: REPORT_COUNTRY_KEY === 'ALL',
                             labels: {
                                 color: axisColour,
                                 usePointStyle: true,

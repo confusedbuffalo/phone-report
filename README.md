@@ -8,7 +8,7 @@ The generated site is available at https://confusedbuffalo.github.io/phone-repor
 
 The project fetches data from OSM, validates phone numbers, and generates a static HTML report. The process is as follows:
 
-1.  **Fetch Data**: For each country and its subdivisions defined in `src/constants.js`, the project queries the Overpass API to fetch OSM elements with phone number tags.
+1.  **Fetch Data**: For each country and its subdivisions defined in `src/data/constants.js`, the project queries the Overpass API to fetch OSM elements with phone number tags.
 2.  **Validate Numbers**: The fetched phone numbers are validated using `libphonenumber-js`. Numbers are checked for correct formatting and validity for the specific country.
 3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers, providing direct links to edit the data in various OSM editors (iD, JOSM, etc.).
 
