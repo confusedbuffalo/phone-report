@@ -408,12 +408,6 @@
   @apply bg-red-200 dark:bg-red-900 rounded-md leading-none;
 }
 
-@utility diff-unchanged {
-  /*  
-     Inherit surrounding styling
-  */
-}
-
 @utility action-row {
   @apply flex justify-between items-center;
 }
