@@ -384,6 +384,47 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         ]
         expect(result.suggestedDiff).toEqual(expectedSuggested)
     });
+
+    test('should not mark leading 0 as removed when adding a prefix and number actually starts with 0', () => {
+        const original = '0981.82002';
+        const suggested = '+39 0981 82002';
+
+        const result = diffPhoneNumbers(original, suggested);
+
+        // Check Original Diff: . removed
+        const expectedOriginal = [
+            { value: '0', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+            { value: '1', removed: false, added: false },
+            { value: '.', removed: true },
+            { value: '8', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+        ]
+        expect(result.originalDiff).toEqual(expectedOriginal)
+
+        // Check Suggested Diff: +39 and space added
+        const expectedSuggested = [
+            { value: '+', added: true },
+            { value: '3', added: true },
+            { value: '9', added: true },
+            { value: ' ', added: true },
+            { value: '0', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+            { value: '1', removed: false, added: false },
+            { value: ' ', added: true },
+            { value: '8', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+        ]
+        expect(result.suggestedDiff).toEqual(expectedSuggested)
+    });
 });
 
 
