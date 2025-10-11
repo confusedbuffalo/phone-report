@@ -425,6 +425,50 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         ]
         expect(result.suggestedDiff).toEqual(expectedSuggested)
     });
+
+    test('should mark only + as added when only + is added', () => {
+        const original = '390789754216';
+        const suggested = '+39 0789 754216';
+
+        const result = diffPhoneNumbers(original, suggested);
+
+        // Check Original Diff: nothing changed
+        const expectedOriginal = [
+            { value: '3', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+            { value: '7', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '7', removed: false, added: false },
+            { value: '5', removed: false, added: false },
+            { value: '4', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+            { value: '1', removed: false, added: false },
+            { value: '6', removed: false, added: false },
+        ]
+        expect(result.originalDiff).toEqual(expectedOriginal)
+
+        // Check Suggested Diff: + and spaces added
+        const expectedSuggested = [
+            { value: '+', added: true },
+            { value: '3', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: ' ', added: true },
+            { value: '0', removed: false, added: false },
+            { value: '7', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: ' ', added: true },
+            { value: '7', removed: false, added: false },
+            { value: '5', removed: false, added: false },
+            { value: '4', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+            { value: '1', removed: false, added: false },
+            { value: '6', removed: false, added: false },
+        ]
+        expect(result.suggestedDiff).toEqual(expectedSuggested)
+    });
 });
 
 
@@ -702,6 +746,21 @@ describe('getDiffHtml', () => {
 
         // --- Suggested HTML (Additions) ---
         const expectedSuggested = null;
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('IT: should correctly show spaces as added', () => {
+        const original = '0708676778';
+        const suggested = '+39 070 867 6778';
+
+        const result = getDiffHtml(original, suggested);
+
+        // --- Original HTML (Removals) ---
+        const expectedOriginal = '<span class="diff-unchanged">0708676778</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        // --- Suggested HTML (Additions) ---
+        const expectedSuggested = '<span class="diff-added">+39 </span><span class="diff-unchanged">070</span><span class="diff-added"> </span><span class="diff-unchanged">867</span><span class="diff-added"> </span><span class="diff-unchanged">6778</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 });

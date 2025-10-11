@@ -104,12 +104,17 @@ function diffPhoneNumbers(original, suggested) {
     const actualNumberStartsWithZero = suggested.split(' ')[1]
         ?.startsWith('0')
         ?? false;
+    
+    const onlyAddingPlus = normalizedOriginal === normalizedSuggested;
 
     for (let i = 0; i < original.length; i++) {
         const char = original[i];
 
-        if (suggestedRemainder[i] === '+' && char === '0' && !actualNumberStartsWithZero) {
-            // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
+        if ( // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
+            suggestedRemainder[i] === '+'
+            && char === '0'
+            && !actualNumberStartsWithZero
+        ) {
             originalDiff.push({ value: char, removed: true });
             if (commonDigits[commonPointer] === '0') {
                 // 0 in original matched with 0 in added prefix
@@ -162,9 +167,10 @@ function diffPhoneNumbers(original, suggested) {
         // Special handling of adding a prefix to ensure that the whole prefix is marked as added,
         // even if it contains the same digit as the first digit of the actual phone number
         if (
-            char === '+' &&
-            !originalRemainderNew.includes('+') && // + might exist but not be first character, e.g. 'tel:+...'
-            normalizedOriginal.slice(0,2) != '00' // This gets handled properly by the rest of the logic anyway
+            char === '+'
+            && !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
+            && normalizedOriginal.slice(0,2) != '00' // This gets handled properly by the rest of the logic anyway
+            && !onlyAddingPlus // doesn't need special handling
         ) {
             const prefix = suggested.split(' ')[0]
 
