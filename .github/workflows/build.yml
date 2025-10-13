@@ -106,9 +106,6 @@ jobs:
         run: |
           # Get the token from the previous step's output
           TOKEN="${{ steps.refresh-app-token.outputs.token }}"
-          
-          # Configure the remote URL to use the token for authentication
-          git remote set-url origin "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git"
 
           # Configure Git user, identifying the commit as the bot
           git config user.name "History-Update-Bot"
@@ -134,9 +131,7 @@ jobs:
           else
               # Commit the changes. [skip ci] prevents an infinite loop of new workflow runs.
               git commit -m "🤖 History Data Update: $(date +%Y-%m-%d) [skip ci]"
-              
-              # Push the commit to the current branch (main)
-              git push
+              git push "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:main
           fi
 
       - name: Run HTML Minifier
