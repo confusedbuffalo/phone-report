@@ -171,12 +171,22 @@ jobs:
     needs: build-report
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App Token for PR Comment
+        id: app-token-comment
+        # You'll need the same 'uses' and 'with' blocks as before
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          # The 'pull-requests' permission is needed to comment on a PR
+          permission-pull-requests: 'write' 
+
       # Step 1: Get the Artifact ID from the workflow run
       - name: Get Artifact ID
         id: get_artifact
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ steps.app-token-comment.outputs.token }}
           script: |
             const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
               owner: context.repo.owner,
