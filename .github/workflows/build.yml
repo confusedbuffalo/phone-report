@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          
+
       - name: Install dependencies
         run: npm install
 
@@ -42,6 +42,9 @@ jobs:
   build-report:
     needs: run-tests
     runs-on: ubuntu-latest
+
+    outputs:
+      is-full-build: ${{ env.BUILD_TYPE == 'full' }}
 
     env:
       BUILD_TYPE: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && 'simplified' || 'full' }}
@@ -57,7 +60,7 @@ jobs:
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          permission-contents: 'write' 
+          permission-contents: 'write'
 
       - name: Checkout repository (using App Token)
         if: env.BUILD_TYPE == 'full'
@@ -75,64 +78,17 @@ jobs:
           node-version: '18'
 
       - name: Install Dependencies
-        run: npm install 
+        run: npm install
 
-      - name: Run Full Build Process 
+      - name: Run Full Build Process
         run: npm run build
 
-      - name: Backup History Data
+      - name: Upload History Data Artifact
         if: env.BUILD_TYPE == 'full'
-        run: |
-          if [ -d "history" ]; then
-            # Create a temporary location and copy the history built from the PR branch
-            mkdir -p /tmp/new_history
-            cp -r history/* /tmp/new_history/
-            echo "Successfully backed up 'history' data."
-          else
-            echo "Warning: 'history' directory not found after build."
-          fi
-
-      - name: Refresh GitHub App Token
-        if: env.BUILD_TYPE == 'full'
-        id: refresh-app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/upload-artifact@v4
         with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          permission-contents: 'write' 
-
-      - name: Commit and Push History Data
-        if: env.BUILD_TYPE == 'full'
-        run: |
-          # Get the token from the previous step's output
-          TOKEN="${{ steps.refresh-app-token.outputs.token }}"
-
-          # Configure Git user, identifying the commit as the bot
-          git config user.name "History-Update-Bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git fetch origin main
-          git checkout main --force
-
-          if [ -d "/tmp/new_history" ]; then
-            # Ensure the destination folder exists on 'main' branch
-            mkdir -p history
-            # Overwrite the 'main' branch's history files with the newly generated ones
-            cp -r /tmp/new_history/* history/
-            echo "Restored new history data onto main branch working tree."
-          fi
-
-          # Add the history directory
-          git add history || true
-
-          # Check if there are any changes to commit
-          if git diff --cached --exit-code; then
-              echo "No changes to history data. Skipping commit."
-          else
-              # Commit the changes. [skip ci] prevents an infinite loop of new workflow runs.
-              git commit -m "🤖 History Data Update: $(date +%Y-%m-%d) [skip ci]"
-              git push "https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git" HEAD:main
-          fi
+          name: new-history-data
+          path: history/
 
       - name: Run HTML Minifier
         if: env.BUILD_TYPE == 'full'
@@ -160,7 +116,7 @@ jobs:
         shell: bash
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: './public'
 
@@ -168,6 +124,55 @@ jobs:
         if: env.BUILD_TYPE == 'full'
         id: deployment
         uses: actions/deploy-pages@v4
+
+  push-history:
+    needs: build-report
+    if: needs.build-report.outputs.is-full-build == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download history artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: new-history-data
+          path: /tmp/new_history
+
+      - name: Generate GitHub App Token for Push
+        id: app-token-push
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: 'write'
+
+      - name: Checkout Main Branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token-push.outputs.token }}
+          ref: main
+
+      - name: Commit and Push History Data
+        run: |
+          # Configure Git user
+          git config user.name "Auto-Pusher-Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # Copy the downloaded history data into the repository's history folder
+          mkdir -p history
+          cp -r /tmp/new_history/* history/
+          echo "Restored new history data onto main branch working tree."
+          
+          git add history || true
+          
+          # Check if there are any changes to commit
+          if git diff --cached --exit-code; then
+              echo "No changes to history data. Skipping commit."
+          else
+              # Commit the changes. [skip ci] prevents an infinite loop of new workflow runs.
+              git commit -m "🤖 History Data Update: $(date +%Y-%m-%d) [skip ci]"
+              
+              git push
+          fi
 
   comment-on-pr:
     # Only run this job for pull_request events
@@ -183,7 +188,7 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           # The 'pull-requests' permission is needed to comment on a PR
-          permission-pull-requests: 'write' 
+          permission-pull-requests: 'write'
 
       # Step 1: Get the Artifact ID from the workflow run
       - name: Get Artifact ID
@@ -202,14 +207,14 @@ jobs:
             const pagesArtifact = artifacts.data.artifacts.find(
               artifact => artifact.name === 'github-pages'
             );
-            
+
             if (pagesArtifact) {
               // Set the artifact ID as an output for the next step
               core.setOutput('artifact_id', pagesArtifact.id);
             } else {
               core.setFailed("Could not find the 'github-pages' artifact.");
             }
-          
+
       # Step 2: Create the direct download link and post the comment
       - name: Create or update comment
         uses: peter-evans/create-or-update-comment@v4
@@ -218,9 +223,9 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             ✅ **Build Complete!**
-            
+
             The simplified page build has been created. You can **download the zipped artifact** directly here:
-            
+
             **[Download github-pages.zip](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.get_artifact.outputs.artifact_id }})**
-            
+
             *Note: You must be logged into GitHub to download this file.*
