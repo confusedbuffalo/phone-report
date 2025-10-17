@@ -284,8 +284,20 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
         let normalizedParsed = '';
 
+        // See https://github.com/confusedbuffalo/phone-report/issues/15
+        const isPolishPrefixed = (
+            countryCode === 'PL'
+            && phoneNumber
+            && !phoneNumber.isValid()
+            && phoneNumber.isPossible
+            && phoneNumber.nationalNumber.startsWith('0')
+        )
+
         if (phoneNumber) {
-            const coreNumberE164 = phoneNumber.number;
+            const coreNumberE164 = isPolishPrefixed
+                ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
+                : phoneNumber.number;
+
             const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
             // Append the extension in the standard format (' x{ext}').
             const extension = phoneNumber.ext ? ` x${phoneNumber.ext}` : '';
@@ -306,7 +318,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             })();
         }
 
-        if (phoneNumber && phoneNumber.isValid()) {
+        if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {
             normalizedParsed = phoneNumber.number.replace(spacingRegex, '');
 
             if (MOBILE_TAGS.includes(tag)) {
@@ -318,7 +330,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            isInvalid = isInvalid || normalizedOriginal !== normalizedParsed;
+            isInvalid = isInvalid || normalizedOriginal !== normalizedParsed || isPolishPrefixed;
 
             if (phoneNumber.ext && hasNonStandardExtension) {
                 isInvalid = true;
