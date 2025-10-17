@@ -13,6 +13,7 @@ const {
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
 const SAMPLE_COUNTRY_CODE_US = 'US';
 const SAMPLE_COUNTRY_CODE_ZA = 'ZA';
+const SAMPLE_COUNTRY_CODE_PL = 'PL';
 
 // =====================================================================
 // safeName Tests
@@ -313,6 +314,20 @@ describe('processSingleNumber', () => {
     test('US: dashes is not invalid', () => {
         const result = processSingleNumber('+1-213-373-4253', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(false);
+    });
+
+    test('PL: leading 0 is invaid but fixable', () => {
+        const result = processSingleNumber('0586774478', SAMPLE_COUNTRY_CODE_PL);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+48 58 677 44 78');
+    });
+
+    test('PL: leading 0 is invaid but fixable with country code', () => {
+        const result = processSingleNumber('+48 0586774478', SAMPLE_COUNTRY_CODE_PL);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+48 58 677 44 78');
     });
 });
 
