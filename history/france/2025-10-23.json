@@ -1,0 +1,812 @@
+{
+  "name": "France",
+  "slug": "france",
+  "locale": "fr-FR",
+  "invalidCount": 12432,
+  "autoFixableCount": 11163,
+  "totalNumbers": 396587,
+  "groupedDivisionStats": {
+    "Auvergne-Rhône-Alpes": [
+      {
+        "name": "Cantal",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "cantal",
+        "invalidCount": 60,
+        "autoFixableCount": 59,
+        "totalNumbers": 1024
+      },
+      {
+        "name": "Ain",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "ain",
+        "invalidCount": 141,
+        "autoFixableCount": 132,
+        "totalNumbers": 3022
+      },
+      {
+        "name": "Puy-de-Dôme",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "puy-de-dôme",
+        "invalidCount": 176,
+        "autoFixableCount": 169,
+        "totalNumbers": 2847
+      },
+      {
+        "name": "Haute-Savoie",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "haute-savoie",
+        "invalidCount": 309,
+        "autoFixableCount": 290,
+        "totalNumbers": 7569
+      },
+      {
+        "name": "Loire",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "loire",
+        "invalidCount": 112,
+        "autoFixableCount": 106,
+        "totalNumbers": 4663
+      },
+      {
+        "name": "Savoie",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "savoie",
+        "invalidCount": 337,
+        "autoFixableCount": 328,
+        "totalNumbers": 3499
+      },
+      {
+        "name": "Ardèche",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "ardèche",
+        "invalidCount": 131,
+        "autoFixableCount": 123,
+        "totalNumbers": 2698
+      },
+      {
+        "name": "Drôme",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "drôme",
+        "invalidCount": 195,
+        "autoFixableCount": 191,
+        "totalNumbers": 4099
+      },
+      {
+        "name": "Isère",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "isère",
+        "invalidCount": 343,
+        "autoFixableCount": 316,
+        "totalNumbers": 10247
+      },
+      {
+        "name": "Haute-Loire",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "haute-loire",
+        "invalidCount": 43,
+        "autoFixableCount": 38,
+        "totalNumbers": 1281
+      },
+      {
+        "name": "Allier",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "allier",
+        "invalidCount": 61,
+        "autoFixableCount": 51,
+        "totalNumbers": 2944
+      },
+      {
+        "name": "Métropole de Lyon",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "métropole-de-lyon",
+        "invalidCount": 303,
+        "autoFixableCount": 258,
+        "totalNumbers": 9975
+      },
+      {
+        "name": "Rhône",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "rhône",
+        "invalidCount": 148,
+        "autoFixableCount": 139,
+        "totalNumbers": 2392
+      }
+    ],
+    "Bourgogne – Franche-Comté": [
+      {
+        "name": "Yonne",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "yonne",
+        "invalidCount": 61,
+        "autoFixableCount": 48,
+        "totalNumbers": 1620
+      },
+      {
+        "name": "Saône-et-Loire",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "saône-et-loire",
+        "invalidCount": 87,
+        "autoFixableCount": 73,
+        "totalNumbers": 3756
+      },
+      {
+        "name": "Territoire-de-Belfort",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "territoire-de-belfort",
+        "invalidCount": 25,
+        "autoFixableCount": 17,
+        "totalNumbers": 726
+      },
+      {
+        "name": "Haute-Saône",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "haute-saône",
+        "invalidCount": 30,
+        "autoFixableCount": 21,
+        "totalNumbers": 1527
+      },
+      {
+        "name": "Côte-d'Or",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "côte-d-or",
+        "invalidCount": 94,
+        "autoFixableCount": 82,
+        "totalNumbers": 3419
+      },
+      {
+        "name": "Nièvre",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "nièvre",
+        "invalidCount": 84,
+        "autoFixableCount": 75,
+        "totalNumbers": 1946
+      },
+      {
+        "name": "Jura",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "jura",
+        "invalidCount": 112,
+        "autoFixableCount": 92,
+        "totalNumbers": 4027
+      },
+      {
+        "name": "Doubs",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "doubs",
+        "invalidCount": 131,
+        "autoFixableCount": 103,
+        "totalNumbers": 5384
+      }
+    ],
+    "Brittany": [
+      {
+        "name": "Côtes-d'Armor",
+        "divisionSlug": "brittany",
+        "slug": "côtes-d-armor",
+        "invalidCount": 176,
+        "autoFixableCount": 171,
+        "totalNumbers": 3758
+      },
+      {
+        "name": "Morbihan",
+        "divisionSlug": "brittany",
+        "slug": "morbihan",
+        "invalidCount": 209,
+        "autoFixableCount": 193,
+        "totalNumbers": 5044
+      },
+      {
+        "name": "Ille-et-Vilaine",
+        "divisionSlug": "brittany",
+        "slug": "ille-et-vilaine",
+        "invalidCount": 223,
+        "autoFixableCount": 205,
+        "totalNumbers": 8389
+      },
+      {
+        "name": "Finistère",
+        "divisionSlug": "brittany",
+        "slug": "finistère",
+        "invalidCount": 408,
+        "autoFixableCount": 388,
+        "totalNumbers": 6278
+      }
+    ],
+    "Centre-Val de Loire": [
+      {
+        "name": "Eure-et-Loir",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "eure-et-loir",
+        "invalidCount": 127,
+        "autoFixableCount": 120,
+        "totalNumbers": 1574
+      },
+      {
+        "name": "Loir-et-Cher",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "loir-et-cher",
+        "invalidCount": 52,
+        "autoFixableCount": 50,
+        "totalNumbers": 1702
+      },
+      {
+        "name": "Indre-et-Loire",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "indre-et-loire",
+        "invalidCount": 76,
+        "autoFixableCount": 66,
+        "totalNumbers": 4243
+      },
+      {
+        "name": "Indre",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "indre",
+        "invalidCount": 24,
+        "autoFixableCount": 15,
+        "totalNumbers": 1747
+      },
+      {
+        "name": "Loiret",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "loiret",
+        "invalidCount": 80,
+        "autoFixableCount": 72,
+        "totalNumbers": 4321
+      },
+      {
+        "name": "Cher",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "cher",
+        "invalidCount": 45,
+        "autoFixableCount": 38,
+        "totalNumbers": 1762
+      }
+    ],
+    "Corsica": [
+      {
+        "name": "Haute-Corse",
+        "divisionSlug": "corsica",
+        "slug": "haute-corse",
+        "invalidCount": 64,
+        "autoFixableCount": 61,
+        "totalNumbers": 1035
+      },
+      {
+        "name": "Corse-du-Sud",
+        "divisionSlug": "corsica",
+        "slug": "corse-du-sud",
+        "invalidCount": 64,
+        "autoFixableCount": 60,
+        "totalNumbers": 837
+      }
+    ],
+    "Grand Est": [
+      {
+        "name": "Marne",
+        "divisionSlug": "grand-est",
+        "slug": "marne",
+        "invalidCount": 148,
+        "autoFixableCount": 140,
+        "totalNumbers": 3766
+      },
+      {
+        "name": "Meuse",
+        "divisionSlug": "grand-est",
+        "slug": "meuse",
+        "invalidCount": 23,
+        "autoFixableCount": 20,
+        "totalNumbers": 1855
+      },
+      {
+        "name": "Vosges",
+        "divisionSlug": "grand-est",
+        "slug": "vosges",
+        "invalidCount": 128,
+        "autoFixableCount": 123,
+        "totalNumbers": 3933
+      },
+      {
+        "name": "Ardennes",
+        "divisionSlug": "grand-est",
+        "slug": "ardennes",
+        "invalidCount": 45,
+        "autoFixableCount": 41,
+        "totalNumbers": 1489
+      },
+      {
+        "name": "Haute-Marne",
+        "divisionSlug": "grand-est",
+        "slug": "haute-marne",
+        "invalidCount": 31,
+        "autoFixableCount": 28,
+        "totalNumbers": 1080
+      },
+      {
+        "name": "Haut-Rhin",
+        "divisionSlug": "grand-est",
+        "slug": "haut-rhin",
+        "invalidCount": 100,
+        "autoFixableCount": 88,
+        "totalNumbers": 3043
+      },
+      {
+        "name": "Bas-Rhin",
+        "divisionSlug": "grand-est",
+        "slug": "bas-rhin",
+        "invalidCount": 321,
+        "autoFixableCount": 291,
+        "totalNumbers": 6287
+      },
+      {
+        "name": "Aube",
+        "divisionSlug": "grand-est",
+        "slug": "aube",
+        "invalidCount": 99,
+        "autoFixableCount": 88,
+        "totalNumbers": 2063
+      },
+      {
+        "name": "Moselle",
+        "divisionSlug": "grand-est",
+        "slug": "moselle",
+        "invalidCount": 112,
+        "autoFixableCount": 98,
+        "totalNumbers": 4762
+      },
+      {
+        "name": "Meurthe-et-Moselle",
+        "divisionSlug": "grand-est",
+        "slug": "meurthe-et-moselle",
+        "invalidCount": 72,
+        "autoFixableCount": 53,
+        "totalNumbers": 5643
+      }
+    ],
+    "Hauts-de-France": [
+      {
+        "name": "Pas-de-Calais",
+        "divisionSlug": "hauts-de-france",
+        "slug": "pas-de-calais",
+        "invalidCount": 72,
+        "autoFixableCount": 61,
+        "totalNumbers": 7686
+      },
+      {
+        "name": "Nord",
+        "divisionSlug": "hauts-de-france",
+        "slug": "nord",
+        "invalidCount": 109,
+        "autoFixableCount": 88,
+        "totalNumbers": 12557
+      },
+      {
+        "name": "Aisne",
+        "divisionSlug": "hauts-de-france",
+        "slug": "aisne",
+        "invalidCount": 66,
+        "autoFixableCount": 62,
+        "totalNumbers": 3568
+      },
+      {
+        "name": "Oise",
+        "divisionSlug": "hauts-de-france",
+        "slug": "oise",
+        "invalidCount": 43,
+        "autoFixableCount": 41,
+        "totalNumbers": 6540
+      },
+      {
+        "name": "Somme",
+        "divisionSlug": "hauts-de-france",
+        "slug": "somme",
+        "invalidCount": 29,
+        "autoFixableCount": 26,
+        "totalNumbers": 3639
+      }
+    ],
+    "Ile-de-France": [
+      {
+        "name": "Seine-et-Marne",
+        "divisionSlug": "ile-de-france",
+        "slug": "seine-et-marne",
+        "invalidCount": 160,
+        "autoFixableCount": 155,
+        "totalNumbers": 5639
+      },
+      {
+        "name": "Seine-Saint-Denis",
+        "divisionSlug": "ile-de-france",
+        "slug": "seine-saint-denis",
+        "invalidCount": 175,
+        "autoFixableCount": 163,
+        "totalNumbers": 2790
+      },
+      {
+        "name": "Essonne",
+        "divisionSlug": "ile-de-france",
+        "slug": "essonne",
+        "invalidCount": 143,
+        "autoFixableCount": 128,
+        "totalNumbers": 4512
+      },
+      {
+        "name": "Val-d'Oise",
+        "divisionSlug": "ile-de-france",
+        "slug": "val-d-oise",
+        "invalidCount": 131,
+        "autoFixableCount": 115,
+        "totalNumbers": 3617
+      },
+      {
+        "name": "Hauts-de-Seine",
+        "divisionSlug": "ile-de-france",
+        "slug": "hauts-de-seine",
+        "invalidCount": 293,
+        "autoFixableCount": 279,
+        "totalNumbers": 7157
+      },
+      {
+        "name": "Yvelines",
+        "divisionSlug": "ile-de-france",
+        "slug": "yvelines",
+        "invalidCount": 191,
+        "autoFixableCount": 181,
+        "totalNumbers": 5625
+      },
+      {
+        "name": "Val-de-Marne",
+        "divisionSlug": "ile-de-france",
+        "slug": "val-de-marne",
+        "invalidCount": 217,
+        "autoFixableCount": 197,
+        "totalNumbers": 4110
+      },
+      {
+        "name": "Paris",
+        "divisionSlug": "ile-de-france",
+        "slug": "paris",
+        "invalidCount": 416,
+        "autoFixableCount": 355,
+        "totalNumbers": 17624
+      }
+    ],
+    "Normandy": [
+      {
+        "name": "Manche",
+        "divisionSlug": "normandy",
+        "slug": "manche",
+        "invalidCount": 80,
+        "autoFixableCount": 57,
+        "totalNumbers": 3829
+      },
+      {
+        "name": "Orne",
+        "divisionSlug": "normandy",
+        "slug": "orne",
+        "invalidCount": 163,
+        "autoFixableCount": 160,
+        "totalNumbers": 1797
+      },
+      {
+        "name": "Seine-Maritime",
+        "divisionSlug": "normandy",
+        "slug": "seine-maritime",
+        "invalidCount": 110,
+        "autoFixableCount": 78,
+        "totalNumbers": 7838
+      },
+      {
+        "name": "Eure",
+        "divisionSlug": "normandy",
+        "slug": "eure",
+        "invalidCount": 86,
+        "autoFixableCount": 80,
+        "totalNumbers": 2985
+      },
+      {
+        "name": "Calvados",
+        "divisionSlug": "normandy",
+        "slug": "calvados",
+        "invalidCount": 65,
+        "autoFixableCount": 46,
+        "totalNumbers": 7144
+      }
+    ],
+    "Nouvelle-Aquitaine": [
+      {
+        "name": "Dordogne",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "dordogne",
+        "invalidCount": 81,
+        "autoFixableCount": 71,
+        "totalNumbers": 2252
+      },
+      {
+        "name": "Landes",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "landes",
+        "invalidCount": 87,
+        "autoFixableCount": 73,
+        "totalNumbers": 7193
+      },
+      {
+        "name": "Vienne",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "vienne",
+        "invalidCount": 50,
+        "autoFixableCount": 40,
+        "totalNumbers": 2454
+      },
+      {
+        "name": "Gironde",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "gironde",
+        "invalidCount": 193,
+        "autoFixableCount": 177,
+        "totalNumbers": 7705
+      },
+      {
+        "name": "Haute-Vienne",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "haute-vienne",
+        "invalidCount": 38,
+        "autoFixableCount": 29,
+        "totalNumbers": 2409
+      },
+      {
+        "name": "Charente",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "charente",
+        "invalidCount": 76,
+        "autoFixableCount": 73,
+        "totalNumbers": 2731
+      },
+      {
+        "name": "Charente-Maritime",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "charente-maritime",
+        "invalidCount": 98,
+        "autoFixableCount": 63,
+        "totalNumbers": 6801
+      },
+      {
+        "name": "Pyrénées-Atlantiques",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "pyrénées-atlantiques",
+        "invalidCount": 46,
+        "autoFixableCount": 30,
+        "totalNumbers": 7134
+      },
+      {
+        "name": "Deux-Sèvres",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "deux-sèvres",
+        "invalidCount": 55,
+        "autoFixableCount": 51,
+        "totalNumbers": 2277
+      },
+      {
+        "name": "Creuse",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "creuse",
+        "invalidCount": 22,
+        "autoFixableCount": 19,
+        "totalNumbers": 1059
+      },
+      {
+        "name": "Corrèze",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "corrèze",
+        "invalidCount": 59,
+        "autoFixableCount": 53,
+        "totalNumbers": 1323
+      },
+      {
+        "name": "Lot-et-Garonne",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "lot-et-garonne",
+        "invalidCount": 36,
+        "autoFixableCount": 26,
+        "totalNumbers": 2037
+      }
+    ],
+    "Occitania": [
+      {
+        "name": "Tarn-et-Garonne",
+        "divisionSlug": "occitania",
+        "slug": "tarn-et-garonne",
+        "invalidCount": 95,
+        "autoFixableCount": 95,
+        "totalNumbers": 1140
+      },
+      {
+        "name": "Haute-Garonne",
+        "divisionSlug": "occitania",
+        "slug": "haute-garonne",
+        "invalidCount": 292,
+        "autoFixableCount": 261,
+        "totalNumbers": 7689
+      },
+      {
+        "name": "Lozère",
+        "divisionSlug": "occitania",
+        "slug": "lozère",
+        "invalidCount": 39,
+        "autoFixableCount": 38,
+        "totalNumbers": 763
+      },
+      {
+        "name": "Gers",
+        "divisionSlug": "occitania",
+        "slug": "gers",
+        "invalidCount": 23,
+        "autoFixableCount": 19,
+        "totalNumbers": 1481
+      },
+      {
+        "name": "Hérault",
+        "divisionSlug": "occitania",
+        "slug": "hérault",
+        "invalidCount": 198,
+        "autoFixableCount": 173,
+        "totalNumbers": 9477
+      },
+      {
+        "name": "Ariège",
+        "divisionSlug": "occitania",
+        "slug": "ariège",
+        "invalidCount": 28,
+        "autoFixableCount": 24,
+        "totalNumbers": 1373
+      },
+      {
+        "name": "Tarn",
+        "divisionSlug": "occitania",
+        "slug": "tarn",
+        "invalidCount": 65,
+        "autoFixableCount": 57,
+        "totalNumbers": 1877
+      },
+      {
+        "name": "Aude",
+        "divisionSlug": "occitania",
+        "slug": "aude",
+        "invalidCount": 67,
+        "autoFixableCount": 60,
+        "totalNumbers": 2439
+      },
+      {
+        "name": "Aveyron",
+        "divisionSlug": "occitania",
+        "slug": "aveyron",
+        "invalidCount": 128,
+        "autoFixableCount": 119,
+        "totalNumbers": 2515
+      },
+      {
+        "name": "Lot",
+        "divisionSlug": "occitania",
+        "slug": "lot",
+        "invalidCount": 69,
+        "autoFixableCount": 60,
+        "totalNumbers": 1295
+      },
+      {
+        "name": "Gard",
+        "divisionSlug": "occitania",
+        "slug": "gard",
+        "invalidCount": 178,
+        "autoFixableCount": 156,
+        "totalNumbers": 5064
+      },
+      {
+        "name": "Pyrénées-Orientales",
+        "divisionSlug": "occitania",
+        "slug": "pyrénées-orientales",
+        "invalidCount": 136,
+        "autoFixableCount": 128,
+        "totalNumbers": 4225
+      },
+      {
+        "name": "Hautes-Pyrénées",
+        "divisionSlug": "occitania",
+        "slug": "hautes-pyrénées",
+        "invalidCount": 28,
+        "autoFixableCount": 23,
+        "totalNumbers": 2428
+      }
+    ],
+    "Pays de la Loire": [
+      {
+        "name": "Vendée",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "vendée",
+        "invalidCount": 90,
+        "autoFixableCount": 78,
+        "totalNumbers": 3668
+      },
+      {
+        "name": "Maine-et-Loire",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "maine-et-loire",
+        "invalidCount": 175,
+        "autoFixableCount": 169,
+        "totalNumbers": 3330
+      },
+      {
+        "name": "Loire-Atlantique",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique",
+        "invalidCount": 270,
+        "autoFixableCount": 250,
+        "totalNumbers": 10291
+      },
+      {
+        "name": "Mayenne",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "mayenne",
+        "invalidCount": 14,
+        "autoFixableCount": 11,
+        "totalNumbers": 1368
+      },
+      {
+        "name": "Sarthe",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "sarthe",
+        "invalidCount": 73,
+        "autoFixableCount": 71,
+        "totalNumbers": 3148
+      }
+    ],
+    "Provence-Alpes-Côte d'Azur": [
+      {
+        "name": "Alpes-de-Haute-Provence",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "alpes-de-haute-provence",
+        "invalidCount": 152,
+        "autoFixableCount": 147,
+        "totalNumbers": 1776
+      },
+      {
+        "name": "Alpes-Maritimes",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "alpes-maritimes",
+        "invalidCount": 437,
+        "autoFixableCount": 415,
+        "totalNumbers": 5773
+      },
+      {
+        "name": "Var",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "var",
+        "invalidCount": 228,
+        "autoFixableCount": 201,
+        "totalNumbers": 5371
+      },
+      {
+        "name": "Bouches-du-Rhône",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "bouches-du-rhône",
+        "invalidCount": 439,
+        "autoFixableCount": 321,
+        "totalNumbers": 7921
+      },
+      {
+        "name": "Hautes-Alpes",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "hautes-alpes",
+        "invalidCount": 79,
+        "autoFixableCount": 71,
+        "totalNumbers": 1801
+      },
+      {
+        "name": "Vaucluse",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "vaucluse",
+        "invalidCount": 129,
+        "autoFixableCount": 119,
+        "totalNumbers": 3066
+      }
+    ]
+  }
+}
