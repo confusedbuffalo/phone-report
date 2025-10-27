@@ -213,24 +213,48 @@ function stripExtension(numberStr) {
 }
 
 /**
+ * Gets the relevant regex for valid spacing in the given country code.
+ * @param {string} countryCode - The country code.
+ * @returns {RegExp} - The regular expression to use for spacing validation.
+ */
+function getSpacingRegex(countryCode) {
+    return countryCode === 'US' ? /[\s-]/g : /\s/g;
+}
+
+/**
  * Checks if a parsed phone number matches any defined exclusions based on country 
  * code and OSM tags.
  * @param {Object} phoneNumber - The parsed phone number object from libphonenumber-js.
+ * @param {string} numberStr - The phone number string to validate.
  * @param {string} countryCode - The country code.
  * @param {Object} osmTags - The OpenStreetMap tags associated with the number.
  * @returns {Object|null} - Returns an object with { isInvalid: false, autoFixable: true, suggestedFix } 
  * if an exclusion is matched, otherwise returns null.
  */
-function checkExclusions(phoneNumber, countryCode, osmTags) {
-    if (!phoneNumber) {
+function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
+    if (!phoneNumber || !numberStr) {
         return null;
     }
 
-    const countryExclusions = EXCLUSIONS[countryCode];
+    // Get the core national number without country code
+    const coreNationalNumber = phoneNumber.nationalNumber;
+    const normalizedOriginal = numberStr.replace(getSpacingRegex(countryCode), '');
 
+    // See https://github.com/confusedbuffalo/phone-report/issues/18
+    if (
+        countryCode === 'FR'
+        && coreNationalNumber.length === 4
+        && coreNationalNumber.at(0) === '3'
+    ) {
+        return {
+            isInvalid: !(normalizedOriginal === coreNationalNumber),
+            autoFixable: true,
+            suggestedFix: coreNationalNumber
+        };
+    }
+
+    const countryExclusions = EXCLUSIONS[countryCode];
     if (countryExclusions) {
-        // Get the core national number without country code
-        const coreNationalNumber = phoneNumber.nationalNumber;
         const numberExclusions = countryExclusions[coreNationalNumber];
 
         if (numberExclusions) {
@@ -239,7 +263,7 @@ function checkExclusions(phoneNumber, countryCode, osmTags) {
                 if (numberExclusions.hasOwnProperty(key)) {
                     if (osmTags[key] === numberExclusions[key]) {
                         return {
-                            isInvalid: false,
+                            isInvalid: !(normalizedOriginal === coreNationalNumber),
                             autoFixable: true,
                             suggestedFix: coreNationalNumber
                         };
@@ -268,15 +292,19 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
     const NON_STANDARD_EXT_PREFIX_REGEX = /([eE][xX][tT])|(\s*\([eE][xX][tT]\)\s*)/;
     const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
-    const spacingRegex = countryCode === 'US' ? /[\s-]/g : /\s/g;
+    const spacingRegex = getSpacingRegex(countryCode);
 
     try {
+        console.log('trying')
         const phoneNumber = parsePhoneNumber(numberStr, countryCode);
 
-        const exclusionResult = checkExclusions(phoneNumber, countryCode, osmTags);
+        const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
+        console.log(`exclusion: ${exclusionResult}`)
         if (exclusionResult) {
+            console.log('exclusion')
             return exclusionResult;
         }
+        console.log('no exclusion')
 
         // Strip the extension from the original string for normalization
         const numberToValidate = stripExtension(numberStr);
