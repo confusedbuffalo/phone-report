@@ -135,6 +135,39 @@
         "locale": "en-ZA",
         "subdivisionAdminLevel": 6
     },
+    "Switzerland": {
+        "name": "Schweiz/Suisse/Svizzera/Svizra",
+        "divisions": {
+            "Aargau": 1686359,
+            "Appenzell Ausserrhoden": 1686649,
+            "Appenzell Innerrhoden": 1686666,
+            "Basel-Landschaft": 1686366,
+            "Basel-Stadt": 1699639,
+            "Bern/Berne": 1686344,
+            "Fribourg/Freiburg": 1698314,
+            "Genève": 1702419,
+            "Glarus": 1685673,
+            "Graubünden/Grischun/Grigioni": 1686631,
+            "Jura": 1697347,
+            "Luzern": 1685677,
+            "Neuchâtel": 1702420,
+            "Nidwalden": 1686449,
+            "Obwalden": 1686448,
+            "Schaffhausen": 1696112,
+            "Schwyz": 1688583,
+            "Solothurn": 1701133,
+            "St. Gallen": 1687006,
+            "Thurgau": 1693811,
+            "Ticino": 1687730,
+            "Uri": 1693971,
+            "Valais/Wallis": 1686699,
+            "Vaud": 1702421,
+            "Zug": 1686447,
+            "Zürich": 1690227
+        },
+        "countryCode": "CH",
+        "locale": "en"
+    },
     "United Kingdom": {
         "name": "United Kingdom",
         "divisionMap": {
