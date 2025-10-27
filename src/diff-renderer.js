@@ -106,6 +106,7 @@ function diffPhoneNumbers(original, suggested) {
         ?? false;
     
     const onlyAddingPlus = normalizedOriginal === normalizedSuggested;
+    const numericalPrefix = suggested.split(' ')[0].slice(1);
 
     for (let i = 0; i < original.length; i++) {
         const char = original[i];
@@ -171,6 +172,7 @@ function diffPhoneNumbers(original, suggested) {
             && !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
             && normalizedOriginal.slice(0,2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
+            && normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
         ) {
             const prefix = suggested.split(' ')[0]
 
