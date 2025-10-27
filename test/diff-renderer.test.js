@@ -469,6 +469,36 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         ]
         expect(result.suggestedDiff).toEqual(expectedSuggested)
     });
+
+    test('should cope with brackets and zero removed and plus added', () => {
+        const original = '(48)058';
+        const suggested = '+48 58';
+
+        const result = diffPhoneNumbers(original, suggested);
+
+        // Check Original Diff: (, ) and 0 removed
+        const expectedOriginal = [
+            { value: '(', removed: true },
+            { value: '4', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+            { value: ')', removed: true },
+            { value: '0', removed: true },
+            { value: '5', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+        ]
+        expect(result.originalDiff).toEqual(expectedOriginal)
+
+        // Check Suggested Diff: + and spaces added
+        const expectedSuggested = [
+            { value: '+', added: true },
+            { value: '4', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+            { value: ' ', added: true },
+            { value: '5', removed: false, added: false },
+            { value: '8', removed: false, added: false },
+        ]
+        expect(result.suggestedDiff).toEqual(expectedSuggested)
+    });
 });
 
 
