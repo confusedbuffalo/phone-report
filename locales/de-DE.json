@@ -1,0 +1,62 @@
+{
+  "numbersChecked": "Telefonnummern geprüft",
+  "invalidNumbers": "Telefonnummern ungültig",
+  "invalidPercentageOfTotal": "%p von allen",
+  "fixablePercentageOfInvalid": "%p der ungültigen",
+  "potentiallyFixable": "wahrscheinlich reparierbar",
+
+  "calculating": "berechne...",
+  "suggestionIssueLink": "Haben Sie einen Vorschlag oder ein Problem?",
+  "letMeKnowOnGitHub": "Berichten Sie das auf GitHub",
+  "iconsSourcedFrom": "Quelle der Icons:",
+  "numberDetailsNamesDataFrom": "Telefonnummern, Details zu Sehenswürdigkeiten und Namen der Regionen aus %o",
+
+  "settings": "Einstellungen",
+
+  "openLocation": "Standort öffnen",
+  "editIn": "Bearbeiten mit %e",
+  "fixInJOSM": "Berichtigen mit JOSM",
+  "website": "Webseite",
+  "suggestedFix": "Vorgeschlagene Korrektur",
+
+  "backToCountryPage": "Zurück zur Landes-Übersicht",
+  "phoneNumberReport": "Telefonnummern-Report",
+  "fixableNumbersHeader": "Korrigierbare Telefonnummern",
+  "fixableNumbersDescription": "Diese Telefonnummern scheinen gültig zu sein, sind jedoch falsch formatiert. Die vorgeschlagene Korrektur geht davon aus, dass es sich tatsächlich um Telefonnummern für dieses Land handelt. Nicht alle automatischen Korrekturen sind zwangsläufig gültig. Klicken Sie daher bitte nicht blindlings auf alle Korrektur-Links, ohne zuvor die Nummer zu überprüfen.",
+  "noAutoFixable": "In diesem Bereich wurden keine automatisch korrigierbaren Telefonnummern gefunden.",
+  "invalidNumbersHeader": "Ungültige Telefonnummern",
+  "invalidNumbersDescription": "Diese Telefonnummern sind alle in irgendeiner Weise ungültig; möglicherweise sind sie zu lang oder zu kurz, oder es fehlt die Vorwahl. Die Webseite oder eine Internet-Recherche könnte zur Findung der gültigen Telefonnummer genutzt werden oder.",
+  "noInvalidNumbers": "In diesem Bereich wurden keine ungültigen Telefonnummern gefunden.",
+  "invalid": "ungültig",
+  "disused": "Ungenutzt",
+  "fixable": "Reparierbar",
+  "notMobileNumber": "Keine Mobilfunk-Telefonnummer",
+
+  "osmPhoneNumberValidation": "OSM Telefonnummern-Validierung",
+  "reportSubtitle": "Bericht über ungültige Telefonnummern in den OpenStreetMap-Daten für mehrere Länder.",
+  "countryReports": "Meldungen in diesem Land",
+  "progressHistory": "Fortschrittsverlauf",
+  "invalidNumbersOutOf": "%i ungültige Telefonnummern (%f möglicherweise behebbar) von insgesamt %t",
+  "backToAllCountries": "Zurück zu allen Ländern",
+  "reportSubtitleForCountry": "Bericht über ungültige Telefonnummern in den OpenStreetMap-Daten für %c.",
+  "divisionalReports": "Meldungen in diesem Bereich",
+  "hideEmptyDivisions": "Bereiche ohne Problem ausblenden",
+  "sortBy": "Sortiert nach:",
+  "invalidPercentage": "Ungültiger Prozentsatz",
+  "invalidCount": "Ungültige Anzahl",
+  "name": "Name",
+  "noDivisionsFound": "Keinen Bereich mit ungültiger Telefonnummer gefunden.",
+  "noSubdivisionsFound": "Keinen Bereich gefunden.",
+
+  "dataSourcedTemplate": "Datenquelle von %d at %t %z (%a)",
+
+  "timeAgoJustNow": "soeben",
+  "timeAgoError": "Fehler bei der Zeit-Berechnung",
+  "timeAgoMinute": "%n&nbsp;vor Minute",
+  "timeAgoMinutesPlural": "%n&nbsp;vor Minuten",
+  "timeAgoHour": "%n&nbsp;vor Stunde",
+  "timeAgoHoursPlural": "%n&nbsp;vor Stunden",
+
+  "mainIndexTitle": "OSM Telefonnummern-Validierung Meldungen",
+  "countryReportTitle": "OSM Telefonnummern-Validierung Berich - %c"
+}
