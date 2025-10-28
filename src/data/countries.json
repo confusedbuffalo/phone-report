@@ -167,6 +167,33 @@
         "countryCode": "CH",
         "locale": "en"
     },
+    "Spain": {
+        "name": "España",
+        "divisions": {
+            "Andalucía": 349044,
+            "Aragón": 349045,
+            "Asturias": 349033,
+            "Islas Baleares": 348981,
+            "Islas Canarias": 349048,
+            "Cantabria": 349013,
+            "Castilla-La Mancha": 349052,
+            "Castilla y León": 349041,
+            "Cataluña": 349053,
+            "Comunidad Valenciana": 349043,
+            "Extremadura": 349050,
+            "Galicia": 349036,
+            "La Rioja": 348991,
+            "Comunidad de Madrid": 349055,
+            "Región de Murcia": 349047,
+            "Comunidad Foral de Navarra": 349027,
+            "País Vasco": 349042,
+            "Ceuta": 1154756,
+            "Melilla": 1154757
+        },
+        "countryCode": "ES",
+        "locale": "es-ES",
+        "subdivisionAdminLevel": 6
+    },
     "United Kingdom": {
         "name": "United Kingdom",
         "divisionMap": {
