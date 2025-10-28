@@ -295,16 +295,12 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     const spacingRegex = getSpacingRegex(countryCode);
 
     try {
-        console.log('trying')
         const phoneNumber = parsePhoneNumber(numberStr, countryCode);
 
         const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
-        console.log(`exclusion: ${exclusionResult}`)
         if (exclusionResult) {
-            console.log('exclusion')
             return exclusionResult;
         }
-        console.log('no exclusion')
 
         // Strip the extension from the original string for normalization
         const numberToValidate = stripExtension(numberStr);
