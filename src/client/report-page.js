@@ -387,8 +387,8 @@ function sortItems(items, key, direction) {
 
         switch (key) {
             case 'name':
-                valA = a.featureTypeName.toUpperCase();
-                valB = b.featureTypeName.toUpperCase();
+                valA = a.featureTypeName ? a.featureTypeName.toUpperCase() : null;
+                valB = b.featureTypeName ? b.featureTypeName.toUpperCase() : null;
                 break;
             case 'invalid':
                 // Get the value of the first key in invalidNumbers
@@ -404,6 +404,22 @@ function sortItems(items, key, direction) {
                 return 0;
         }
 
+        // null values go to the start for ascending sort.
+        const aIsNull = valA === null || valA === undefined;
+        const bIsNull = valB === null || valB === undefined;
+
+        // Null comparison
+        if (aIsNull && bIsNull) {
+            return 0;
+        }
+        if (aIsNull) {
+            return direction === 'asc' ? -1 : 1;
+        }
+        if (bIsNull) {
+            return direction === 'asc' ? 1 : -1;
+        }
+
+        // Regular comparison
         if (valA < valB) {
             return direction === 'asc' ? -1 : 1;
         }
