@@ -37,6 +37,10 @@ const MASTER_KEYS = {
     'fixable': [],
     'iconsSourcedFrom': [],
     'notMobileNumber': [],
+    "invalidNumber": [],
+    "next": [],
+    "previous": [],
+
 
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
@@ -53,6 +57,8 @@ const MASTER_KEYS = {
 
     'reportSubtitleForCountry': ['%c'],
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a'],
+
+    "pageOf": ['%n', '%t'],
 
     // Time Ago (uses %n for number)
     'timeAgoMinute': ['%n'],

@@ -147,11 +147,7 @@ function getIconHtml(iconName) {
         addIconToSprite(iconName, content, viewBox);
 
         // Return the minimal <svg> with <use> tag
-        iconHtml = `
-            <span class="icon-svg-container">
-                <svg class="icon-svg"><use href="#${iconName}"></use></svg>
-            </span>
-        `;
+        iconHtml = `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${iconName}"></use></svg></span>`;
     } else {
         console.log(`Icon not found: ${library}-${icon}`)
     }
