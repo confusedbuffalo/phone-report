@@ -163,3 +163,230 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+// Page generation
+
+/**
+ * Creates a single row for the HTML grid for displaying an invalid phone number tag and value.
+ * @param {string} label - The HTML for the label.
+ * @param {string} number - The HTML for the phone number.
+ * @returns {string} The HTML string for the details grid.
+ */
+function createDetailsRow(label, number) {
+    return `<div class="list-item-phone-label-container">
+                <span class="list-item-phone-label">${label}</span>
+            </div>
+            <div class="list-item-phone-value-container">
+                ${number}
+            </div>`
+}
+
+
+/**
+ * Creates the HTML grid for displaying an invalid phone number tag and its suggested fix.
+ * It generates a diff view if a fix is available.
+ * @param {Object} item - The invalid item object.
+ * @returns {string} The HTML string for the details grid.
+ */
+function createDetailsGrid(item) {
+    const detailsGrid = item.fixRows.map(row => {
+        const detailsRows = Object.entries(row).map(([label, number]) => {
+            return createDetailsRow(label, number);
+        }).join('\n');
+        return `
+            <div class="list-item-details-grid">
+                ${detailsRows}
+            </div>`
+    }).join('<hr class="phone-separator-line">');
+
+    return detailsGrid;
+}
+
+/**
+ * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
+ * @param {Object} item - The invalid number data item.
+ * @returns {string | null}
+*/
+function createJosmFixUrl(item) {
+    if (!item.autoFixable) {
+        return null;
+    }
+
+    const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
+    const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
+
+    let newSuggestedFixes = {};
+    if (item.hasTypeMismatch) {
+        const tagToUse = item.phoneTagToUse;
+        const existingValuePresent = tagToUse in item.allTags;
+
+        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
+            ? item.allTags[tagToUse]
+            : (item.suggestedFixes[tagToUse])
+                ? item.suggestedFixes[tagToUse]
+                : '';
+
+        const existingFixesList = existingFixes
+            .split(';')
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+
+        newSuggestedFixes = {
+            ...item.suggestedFixes,
+            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
+        };
+    } else {
+        newSuggestedFixes = item.suggestedFixes;
+    }
+    const fixes = Object.entries(newSuggestedFixes);
+
+    const encodedTags = fixes.map(([key, value]) => {
+        const encodedKey = encodeURIComponent(key);
+        const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
+        return `${encodedKey}=${encodedValue}`;
+    });
+
+    const addtagsValue = encodedTags.join(encodeURIComponent('|'));
+    const josmFixUrl = `${josmEditUrl}&addtags=${addtagsValue}`;
+
+    return josmFixUrl;
+}
+
+/**
+ * Creates the website and editor buttons for a single invalid number item.
+ * @param {Object} item - The invalid number data item.
+ * @returns {{
+ * websiteButton: Element,
+ * fixableLabel: Element,
+ * josmFixButton: Element,
+ * editorButtons: Element[]
+ * }}
+ */
+function createButtons(item) {
+    const josmFixUrl = createJosmFixUrl(item);
+
+    // Generate buttons for ALL editors so client-side script can hide them
+    const editorButtons = ALL_EDITOR_IDS.map(editorId => {
+        const editor = OSM_EDITORS[editorId];
+        if (!editor) return '';
+
+        const url = editor.getEditLink(item);
+        const text = editor.editInString;
+        const isJosm = editorId === 'JOSM';
+
+        // Use a standard target="_blank" for non-JOSM/non-GEO links
+        const target = isJosm ? '' : (editorId === 'Geo' ? '' : 'target="_blank"');
+
+        // JOSM requires an onclick handler; others use a direct href
+        const href = isJosm ? '#' : url;
+        const onClick = isJosm ? `onclick="openInJosm('${url}', event)"` : '';
+
+        return `
+            <a href="${href}" ${target} ${onClick} 
+                data-editor-id="${editorId}"
+                class="btn btn-editor">
+                ${text}
+            </a>
+        `;
+    }).join('\n');
+
+    // Generate JOSM Fix Button (special case)
+    const josmFixButton = josmFixUrl ?
+        `<a href="#" onclick="openInJosm('${josmFixUrl}', event)" 
+            data-editor-id="josm-fix"
+            class="btn btn-josm-fix">
+            ${FIX_IN_JOSM_STR}
+        </a>` :
+        '';
+    const fixableLabel = item.autoFixable ?
+        `<span data-editor-id="fix-label" class="label label-fixable">${FIXABLE_STR}</span>` :
+        '';
+
+    const websiteButton = item.website ?
+        `<a href="${item.website}" class="btn btn-website" target="_blank">${WEBSITE_STR}</a>` :
+        '';
+
+    return { websiteButton, fixableLabel, josmFixButton, editorButtons };
+}
+
+/**
+ * Creates the HTML content for a single invalid number item.
+ * @param {Object} item - The invalid number data item.
+ * @returns {string}
+ */
+function createListItem(item) {
+
+    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item);
+
+    return `
+        <li class="report-list-item">
+            <div class="list-item-content-wrapper">
+                <a class="list-item-icon-circle-preview" href="${item.osmUrl}" target="_blank" rel="noopener noreferrer">
+                    ${item.iconHtml}
+                </a>
+                <div class="list-item-details-wrapper">
+                    <div class="list-item-header">
+                        <h3 class="list-item-title">${item.featureTypeName}</h3>
+                        ${item.disusedLabel}
+                    </div>
+                    ${createDetailsGrid(item)}
+                </div>
+            </div>
+
+            <div class="list-item-actions-container">
+                ${websiteButton}
+                ${fixableLabel}
+                ${josmFixButton}
+                ${editorButtons} 
+            </div>
+        </li>
+    `;
+}
+
+function renderNumbers() {
+    const autofixableNumbers = invalidItemsClient.filter(item => item.autoFixable);
+    const manualFixNumbers = invalidItemsClient.filter(item => !item.autoFixable);
+
+    const anyInvalid = manualFixNumbers.length > 0;
+    const anyFixable = autofixableNumbers.length > 0;
+
+    const fixableListContent = autofixableNumbers.map(item => createListItem(item)).join('');
+    const invalidListContent = manualFixNumbers.map(item => createListItem(item)).join('');
+
+    const fixableSectionAndHeader = `
+        <div class="section-header-container">
+            <h2 class="section-header">${FIXABLE_NUMBERS_STR}</h2>
+            <p class="section-description">${FIXABLE_DESCRIPTION_STR}</p>
+        </div>
+        <ul class="report-list">
+            ${fixableListContent}
+        </ul>`;
+
+    const invalidSectionAndHeader = `
+        <div class="text-center">
+            <h2 class="section-header">${INVALID_NUMBERS_STR}</h2>
+            <p class="section-description">${INVALID_DESCRIPTION_STR}</p>
+        </div>
+        <ul class="report-list">
+            ${invalidListContent}
+        </ul>`;
+
+    const noInvalidContent = `<li class="report-list-item-empty">${NO_INVALID_STR}</li>`;
+
+    const fixableAndInvalidSectionContent =
+        (anyFixable && anyInvalid) ? fixableSectionAndHeader + invalidSectionAndHeader :
+            anyFixable ? fixableSectionAndHeader :
+                anyInvalid ? invalidSectionAndHeader :
+                    noInvalidContent
+
+
+    const fixableAndInvalidSct = document.getElementById("fixableAndInvalidSection");
+    fixableAndInvalidSct.innerHTML = fixableAndInvalidSectionContent;
+}
+
+renderNumbers();
+
+module.exports = {
+    createJosmFixUrl,
+};

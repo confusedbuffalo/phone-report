@@ -7,38 +7,28 @@ const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
 
-
 /**
- * Creates a single row for the HTML grid for displaying an invalid phone number tag and value.
- * @param {string} label - The HTML for the label.
- * @param {string} number - The HTML for the phone number.
- * @returns {string} The HTML string for the details grid.
+ * Creates the items for client side injection, with extra content.
+ * @param {Object} item - The invalid number data item.
+ * @param {string} locale - The locale for the text
+ * @returns {string}
  */
-function createDetailsRow(label, number) {
-    return `<div class="list-item-phone-label-container">
-                <span class="list-item-phone-label">${label}</span>
-            </div>
-            <div class="list-item-phone-value-container">
-                ${number}
-            </div>`
-}
+function createClientItems(item, locale) {
+    item.phoneTagToUse = phoneTagToUse(item.allTags);
+    item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
-/**
- * Creates the HTML grid for displaying an invalid phone number tag and its suggested fix.
- * It generates a diff view if a fix is available.
- * @param {Object} item - The invalid item object, containing `invalidNumbers` and `suggestedFixes`.
- * @param {string} locale - The current locale for translations.
- * @returns {string} The HTML string for the details grid.
- */
-function createDetailsGrid(item, locale) {
-    const detailsGrid = Object.keys(item.invalidNumbers).map(key => {
+    const iconName = getFeatureIcon(item, locale);
+    item.iconHtml = getIconHtml(iconName);
+
+    item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
+
+
+    item.fixRows = Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
 
-        let originalRow = '', suggestedRow = '', extraRows = '';
-
         if (key in item.mismatchTypeNumbers) {
-            const tagToUse = phoneTagToUse(item.allTags);
+            const tagToUse = item.phoneTagToUse;
             const existingValuePresent = tagToUse in item.allTags;
 
             let originalNumber;
@@ -67,216 +57,68 @@ function createDetailsGrid(item, locale) {
 
             const notMobileLabel = `<span class="label label-not-mobile">${translate("notMobileNumber", locale)}</span>`
 
+            const originalRowValue = `<span class="list-item-old-value"><span class="list-item-old-value">${originalMismatchDiff}</span>${notMobileLabel}</span>`;
+            const suggestedRowValue = suggestedDiff;
+
             let oldTagDiff = '', newTagDiff = '';
             if (!item.suggestedFixes[key] && !existingValuePresent) {
                 // Simply moving from one key to another
                 ({ oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse));
+                return {
+                    [oldTagDiff]: originalRowValue,
+                    [newTagDiff]: suggestedRowValue
+                }
             } else if (!item.suggestedFixes[key]) {
                 // Emptying old tag, appending it to existing tag
                 oldTagDiff = `<span class="diff-removed">${key}</span>`;
                 newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                if (tagToUse in item.suggestedFixes) {
-                    extraRows = createDetailsRow(tagToUse, originalDiff)
+                return {
+                    [oldTagDiff]: originalRowValue,
+                    [tagToUse]: originalDiff,
+                    [newTagDiff]: suggestedRowValue
                 }
             } else if (existingValuePresent) {
                 // Removing from old tag (leaving something there) and adding to existing tag
                 oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
                 newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-
-                extraRows = createDetailsRow(key, suggestedMismatchDiff);
-                if (tagToUse in item.suggestedFixes) {
-                    extraRows += createDetailsRow(tagToUse, originalDiff);
+                return {
+                    [oldTagDiff]: originalRowValue,
+                    [key]: suggestedMismatchDiff,
+                    [tagToUse]: originalDiff,
+                    [newTagDiff]: suggestedRowValue
                 }
             } else {
                 // Removing from old tag, creating new tag
                 oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
                 newTagDiff = `<span class="diff-added">${tagToUse}</span>`;
-                extraRows = createDetailsRow(key, suggestedMismatchDiff);
+                return {
+                    [oldTagDiff]: originalRowValue,
+                    [key]: suggestedMismatchDiff,
+                    [newTagDiff]: suggestedRowValue
+                }
             }
-
-            originalRow = createDetailsRow(oldTagDiff, `<span class="list-item-old-value"><span class="list-item-old-value">${originalMismatchDiff}</span>${notMobileLabel}</span>`);
-            suggestedRow = createDetailsRow(newTagDiff, suggestedDiff);
-
-            return `
-                <div class="list-item-details-grid">
-                    ${originalRow}
-                    ${extraRows}
-                    ${suggestedRow}
-                </div>
-                `;
         }
 
         // Dealt with above
-        if (item.hasTypeMismatch && key === phoneTagToUse(item.allTags)) {
+        if (item.hasTypeMismatch && key === item.phoneTagToUse) {
             return;
         }
 
         if (suggestedFix) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            originalRow = createDetailsRow(key, oldDiff);
-            suggestedRow = createDetailsRow(translate('suggestedFix', locale), newDiff);
+            const suggestedRowKey = translate('suggestedFix', locale);
+            return {
+                [key]: oldDiff,
+                [suggestedRowKey]: newDiff
+            };
         } else {
-            originalRow = createDetailsRow(key, `<span>${escapeHTML(originalNumber)}</span>`);
+            return {
+                [key]: `<span>${escapeHTML(originalNumber)}</span>`
+            };
         }
+    }).filter(Boolean);
 
-        return `
-            <div class="list-item-details-grid">
-                ${originalRow}
-                ${extraRows}
-                ${suggestedRow}
-            </div>
-        `;
-    }).filter(Boolean).join('<hr class="phone-separator-line">');
-
-    return detailsGrid;
-}
-
-/**
- * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
- * @param {Object} item - The invalid number data item.
- * @returns {string | null}
-*/
-function createJosmFixUrl(item) {
-    if (!item.autoFixable) {
-        return null;
-    }
-
-    const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
-    const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
-
-    let newSuggestedFixes = {};
-    if (item.hasTypeMismatch) {
-        const tagToUse = phoneTagToUse(item.allTags);
-        const existingValuePresent = tagToUse in item.allTags;
-
-        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
-            ? item.allTags[tagToUse]
-            : (item.suggestedFixes[tagToUse])
-                ? item.suggestedFixes[tagToUse]
-                : '';
-
-        const existingFixesList = existingFixes
-            .split(';')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-
-        newSuggestedFixes = {
-            ...item.suggestedFixes,
-            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
-        };
-    } else {
-        newSuggestedFixes = item.suggestedFixes;
-    }
-    const fixes = Object.entries(newSuggestedFixes);
-
-    const encodedTags = fixes.map(([key, value]) => {
-        const encodedKey = encodeURIComponent(key);
-        const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
-        return `${encodedKey}=${encodedValue}`;
-    });
-
-    const addtagsValue = encodedTags.join(encodeURIComponent('|'));
-    const josmFixUrl = `${josmEditUrl}&addtags=${addtagsValue}`;
-
-    return josmFixUrl;
-}
-
-/**
- * Creates the website and editor buttons for a single invalid number item.
- * @param {Object} item - The invalid number data item.
- * @param {string} locale - The locale for the text
- * @returns {{
- * websiteButton: Element,
- * fixableLabel: Element,
- * josmFixButton: Element,
- * editorButtons: Element[]
- * }}
- */
-function createButtons(item, locale) {
-    const josmFixUrl = createJosmFixUrl(item);
-
-    // Generate buttons for ALL editors so client-side script can hide them
-    const editorButtons = ALL_EDITOR_IDS.map(editorId => {
-        const editor = OSM_EDITORS[editorId];
-        if (!editor) return '';
-
-        const url = editor.getEditLink(item);
-        const text = editor.editInString(locale);
-        const isJosm = editorId === 'JOSM';
-
-        // Use a standard target="_blank" for non-JOSM/non-GEO links
-        const target = isJosm ? '' : (editorId === 'Geo' ? '' : 'target="_blank"');
-
-        // JOSM requires an onclick handler; others use a direct href
-        const href = isJosm ? '#' : url;
-        const onClick = isJosm ? `onclick="openInJosm('${url}', event)"` : '';
-
-        return `
-            <a href="${href}" ${target} ${onClick} 
-                data-editor-id="${editorId}"
-                class="btn btn-editor">
-                ${text}
-            </a>
-        `;
-    }).join('\n');
-
-    // Generate JOSM Fix Button (special case)
-    const josmFixButton = josmFixUrl ?
-        `<a href="#" onclick="openInJosm('${josmFixUrl}', event)" 
-            data-editor-id="josm-fix"
-            class="btn btn-josm-fix">
-            ${translate('fixInJOSM', locale)}
-        </a>` :
-        '';
-    const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label label-fixable">${translate('fixable', locale)}</span>` :
-        '';
-
-    const websiteButton = item.website ?
-        `<a href="${item.website}" class="btn btn-website" target="_blank">${translate('website', locale)}</a>` :
-        '';
-
-    return { websiteButton, fixableLabel, josmFixButton, editorButtons };
-}
-
-/**
- * Creates the HTML content for a single invalid number item.
- * @param {Object} item - The invalid number data item.
- * @param {string} locale - The locale for the text
- * @returns {string}
- */
-function createListItem(item, locale) {
-
-    const disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
-
-    const iconName = getFeatureIcon(item, locale);
-    const iconHtml = getIconHtml(iconName);
-
-    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item, locale);
-
-    return `
-        <li class="report-list-item">
-            <div class="list-item-content-wrapper">
-                <a class="list-item-icon-circle-preview" href="${item.osmUrl}" target="_blank" rel="noopener noreferrer">
-                    ${iconHtml}
-                </a>
-                <div class="list-item-details-wrapper">
-                    <div class="list-item-header">
-                        <h3 class="list-item-title">${escapeHTML(getFeatureTypeName(item, locale))}</h3>
-                        ${disusedLabel}
-                    </div>
-                    ${createDetailsGrid(item, locale)}
-                </div>
-            </div>
-
-            <div class="list-item-actions-container">
-                ${websiteButton}
-                ${fixableLabel}
-                ${josmFixButton}
-                ${editorButtons} 
-            </div>
-        </li>
-    `;
+    return item;
 }
 
 /**
@@ -296,11 +138,12 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
     const safeCountryName = safeName(countryName);
     const filePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
 
-    const autofixableNumbers = invalidNumbers.filter(item => item.autoFixable);
-    const manualFixNumbers = invalidNumbers.filter(item => !item.autoFixable);
+    const invalidItemsClient = invalidNumbers.map(item => createClientItems(item, locale));
 
-    const anyInvalid = manualFixNumbers.length > 0
-    const anyFixable = autofixableNumbers.length > 0
+    // Generate the sprite after all list items have been processed
+    const svgSprite = generateSvgSprite();
+
+    const autofixableNumbers = invalidNumbers.filter(item => item.autoFixable);
 
     // Add a confetti easter egg if there are no errors
     let confettiScripts = '';
@@ -321,40 +164,29 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         `;
     }
 
-    const fixableListContent = autofixableNumbers.map(item => createListItem(item, locale)).join('');
-    const invalidListContent = manualFixNumbers.map(item => createListItem(item, locale)).join('');
+    const OSM_EDITORS_CLIENT = {};
 
-    // Generate the sprite after all list items have been processed
-    const svgSprite = generateSvgSprite();
+    for (const editorId in OSM_EDITORS) {
+        const editor = OSM_EDITORS[editorId];
+        
+        OSM_EDITORS_CLIENT[editorId] = {
+            getEditLink: editor.getEditLink, 
+            onClick: editor.onClick,
+            // Pre-evaluate the string using the locale
+            editInString: editor.editInString(locale) 
+        };
+    }
 
-    const fixableSectionAndHeader = `
-        <div class="section-header-container">
-            <h2 class="section-header">${translate('fixableNumbersHeader', locale)}</h2>
-            <p class="section-description">${translate('fixableNumbersDescription', locale)}</p>
-        </div>
-        <ul class="report-list">
-            ${fixableListContent}
-        </ul>`;
-
-    const invalidSectionAndHeader = `
-        <div class="text-center">
-            <h2 class="section-header">${translate('invalidNumbersHeader', locale)}</h2>
-            <p class="section-description">${translate('invalidNumbersDescription', locale)}</p>
-        </div>
-        <ul class="report-list">
-            ${invalidListContent}
-        </ul>`;
-
-    const noInvalidContent = `<li class="report-list-item-empty">${translate('noInvalidNumbers', locale)}</li>`;
-
-    const fixableAndInvalidSectionContent =
-        (anyFixable && anyInvalid) ? fixableSectionAndHeader + invalidSectionAndHeader :
-            anyFixable ? fixableSectionAndHeader :
-                anyInvalid ? invalidSectionAndHeader :
-                    noInvalidContent
-
-    // Dynamically create the list of all editor IDs for the client-side script
-    const allEditorIdsClient = JSON.stringify(ALL_EDITOR_IDS);
+    const clientOsmEditorsScript = `
+        const OSM_EDITORS = ${JSON.stringify(OSM_EDITORS_CLIENT, (key, value) => {
+            // Use a custom replacer function to handle functions (convert them to strings)
+            if (typeof value === 'function') {
+                // Converts the function back to a string so it can be re-evaluated client-side
+                return value.toString();
+            }
+            return value;
+        }, 4)};
+    `;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -394,17 +226,33 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
                 <h2 class="page-subtitle">${escapeHTML(subdivisionStats.name)}</h2>
             </header>
             ${createStatsBox(subdivisionStats.totalNumbers, invalidNumbers.length, autofixableNumbers.length, locale)}
-            ${fixableAndInvalidSectionContent}
+            <div id="fixableAndInvalidSection" class="space-y-8"></div>
             <div class="footer-container">
                 ${createFooter(locale, translations, true)}
             </div>
         </div>
     <script>
-        // CLIENT-SIDE LOGIC FOR EDITOR SETTINGS
-        const ALL_EDITOR_IDS = ${allEditorIdsClient};
+        // Client-side constants
+        const ALL_EDITOR_IDS = ${JSON.stringify(ALL_EDITOR_IDS)};
         const DEFAULT_EDITORS_DESKTOP = ${JSON.stringify(DEFAULT_EDITORS_DESKTOP)};
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
+        const invalidItemsClient = ${JSON.stringify(invalidItemsClient)};
         const STORAGE_KEY = 'osm_report_editors';
+
+        const FIX_IN_JOSM_STR = "${translate('fixInJOSM', locale)}";
+        const FIXABLE_STR = "${translate('fixable', locale)}";
+        const WEBSITE_STR = "${translate('website', locale)}";
+        const FIXABLE_NUMBERS_STR = "${translate('fixableNumbersHeader', locale)}";
+        const FIXABLE_DESCRIPTION_STR = "${translate('fixableNumbersDescription', locale)}";
+        const INVALID_NUMBERS_STR = "${translate('invalidNumbersHeader', locale)}";
+        const INVALID_DESCRIPTION_STR = "${translate('invalidNumbersDescription', locale)}";
+        const NO_INVALID_STR = "${translate('noInvalidNumbers', locale)}";
+
+        ${clientOsmEditorsScript}
+        for (const editorId in OSM_EDITORS) {
+            OSM_EDITORS[editorId].getEditLink = new Function('item', 'return ' + OSM_EDITORS[editorId].getEditLink);
+            OSM_EDITORS[editorId].onClick = new Function('editorId', 'return ' + OSM_EDITORS[editorId].onClick);
+        }
     </script>
     <script src="../../report-page.js"></script>
     </body>
@@ -416,5 +264,4 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
 
 module.exports = {
     generateHtmlReport,
-    createJosmFixUrl,
 };
