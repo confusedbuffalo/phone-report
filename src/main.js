@@ -15,7 +15,22 @@ const CLIENT_KEYS = [
     'timeAgoHour',
     'timeAgoHoursPlural',
     'timeAgoError',
-    'dataSourcedTemplate'
+    'dataSourcedTemplate',
+    'fixInJOSM',
+    'fixable',
+    'website',
+    'fixableNumbersHeader',
+    'fixableNumbersDescription',
+    'invalidNumbersHeader',
+    'invalidNumbersDescription',
+    'noInvalidNumbers',
+    'pageOf',
+    'name',
+    'suggestedFix',
+    'invalidNumber',
+    'next',
+    'previous',
+    'sortBy',
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;

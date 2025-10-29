@@ -1,3 +1,11 @@
+let fixableCurrentPage = 1;
+let invalidCurrentPage = 1;
+let pageSize = 50;
+let fixableSortKey = 'none'; // 'name', 'invalid', 'fixable'
+let fixableSortDirection = 'asc'; // 'asc', 'desc'
+let invalidSortKey = 'none'; // 'name', 'invalid'
+let invalidSortDirection = 'asc'; // 'asc', 'desc'
+
 /**
  * Sends a command to the JOSM Remote Control API.
  * Prevents the default link action and provides user feedback in the console.
@@ -164,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
 // Page generation
 
 /**
@@ -181,7 +188,6 @@ function createDetailsRow(label, number) {
                 ${number}
             </div>`
 }
-
 
 /**
  * Creates the HTML grid for displaying an invalid phone number tag and its suggested fix.
@@ -296,15 +302,15 @@ function createButtons(item) {
         `<a href="#" onclick="openInJosm('${josmFixUrl}', event)" 
             data-editor-id="josm-fix"
             class="btn btn-josm-fix">
-            ${FIX_IN_JOSM_STR}
+            translate('fixInJOSM')
         </a>` :
         '';
     const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label label-fixable">${FIXABLE_STR}</span>` :
+        `<span data-editor-id="fix-label" class="label label-fixable">translate('fixable')</span>` :
         '';
 
     const websiteButton = item.website ?
-        `<a href="${item.website}" class="btn btn-website" target="_blank">${WEBSITE_STR}</a>` :
+        `<a href="${item.website}" class="btn btn-website" target="_blank">translate('website')</a>` :
         '';
 
     return { websiteButton, fixableLabel, josmFixButton, editorButtons };
@@ -344,49 +350,305 @@ function createListItem(item) {
     `;
 }
 
+/**
+ * Helper to retrieve the value of the first key in an object.
+ * Used for getting the phone number string from invalidNumbers or suggestedFixes objects.
+ * @param {Object} obj - The object to extract the first value from (e.g., { "phone": "123" }).
+ * @returns {string} The value of the first key, or an empty string if invalid.
+ */
+function getFirstValue(obj) {
+    if (!obj || typeof obj !== 'object') return '';
+    const firstKey = Object.keys(obj)[0];
+    return firstKey ? obj[firstKey] : '';
+}
+
+/**
+ * Sorts an array of report items based on a specified key and direction.
+ * Sorting by 'invalid' or 'fixable' uses the value of the first key within
+ * the corresponding nested object (e.g., item.invalidNumbers.phone).
+ *
+ * @param {Array<Object>} items - The list of report items to be sorted. Each item must contain
+ * 'featureTypeName', 'invalidNumbers' ({[key: string]: string}), and 'suggestedFixes' ({[key: string]: string}).
+ * @param {('none'|'name'|'invalid'|'fixable')} key - The column key to sort by.
+ * - 'name': Sorts by the item's 'featureTypeName'.
+ * - 'invalid': Sorts by the first value in 'invalidNumbers'.
+ * - 'fixable': Sorts by the first value in 'suggestedFixes'.
+ * - 'none': Returns the original array unsorted.
+ * @param {('asc'|'desc')} direction - The sort order: 'asc' for ascending, 'desc' for descending.
+ * @returns {Array<Object>} A new, sorted array of items. Returns the original array copy if key is 'none'.
+ */
+function sortItems(items, key, direction) {
+    if (key === 'none') return items;
+
+    const sortedItems = [...items];
+
+    sortedItems.sort((a, b) => {
+        let valA, valB;
+
+        switch (key) {
+            case 'name':
+                valA = a.featureTypeName.toUpperCase();
+                valB = b.featureTypeName.toUpperCase();
+                break;
+            case 'invalid':
+                // Get the value of the first key in invalidNumbers
+                valA = getFirstValue(a.invalidNumbers);
+                valB = getFirstValue(b.invalidNumbers);
+                break;
+            case 'fixable':
+                // Get the value of the first key in suggestedFixes
+                valA = getFirstValue(a.suggestedFixes);
+                valB = getFirstValue(b.suggestedFixes);
+                break;
+            default:
+                return 0;
+        }
+
+        if (valA < valB) {
+            return direction === 'asc' ? -1 : 1;
+        }
+        if (valA > valB) {
+            return direction === 'asc' ? 1 : -1;
+        }
+        return 0; // values are equal
+    });
+
+    return sortedItems;
+}
+
+/**
+ * Updates the visual styles of the sort buttons to indicate which one is active.
+ */
+function updateButtonStyles() {
+    sortButtons.forEach(button => {
+        const isActive = button.dataset.sort === currentSort;
+        button.classList.toggle('sort-btn-style-active', isActive);
+        button.classList.toggle('sort-btn-style-inactive', !isActive);
+    });
+}
+
+/**
+ * Renders a paginated list section with controls.
+ * @param {string} containerId - The ID of the HTML element to render into.
+ * @param {Array<Object>} items - The full array of items for this section.
+ * @param {string} headerStr - The main heading text.
+ * @param {string} descriptionStr - The description text.
+ * @param {number} currentPage - The current page number for this section.
+ * @param {function} setCurrentPageFn - Function to call to update the current page in the global state (e.g., setFixableCurrentPage).
+ * @param {boolean} isFixableSection - True if rendering the autofixable section (used for unique IDs).
+ */
+function renderPaginatedSection(
+    containerId,
+    items,
+    headerStr,
+    descriptionStr,
+    currentPage,
+    setCurrentPageFn,
+    isFixableSection
+) {
+    const totalItems = items.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, totalItems);
+
+    const itemsOnPage = items.slice(startIndex, endIndex);
+    const listContent = itemsOnPage.map(item => createListItem(item)).join('');
+
+    const currentSortKey = isFixableSection ? fixableSortKey : invalidSortKey;
+
+    const getSortStyle = (key) => {
+        if (currentSortKey === key) {
+            return 'sort-btn-style-active'
+        } else {
+            return 'sort-btn-style-inactive'
+        }
+    };
+    
+    // Unique ID suffix for this section's controls
+    const suffix = isFixableSection ? 'fixable' : 'invalid';
+
+    const paginationControls = totalItems > pageSize ? `
+        <div class="page-sort-card">
+            <div class="page-btns-container">
+                <button id="prevPage${suffix}" onclick="changePage('${suffix}', -1)"
+                        class="page-btn
+                               ${currentPage <= 1 ? 'page-btn-disabled' : 'page-btn-active'}"
+                        ${currentPage <= 1 ? 'disabled' : ''}>
+                    ${translate('previous')}
+                </button>
+                <span class="page-numbers">
+                    ${translate('pageOf', {'%n': currentPage, '%t': totalPages})}
+                </span>
+                <button id="nextPage${suffix}" onclick="changePage('${suffix}', 1)"
+                        class="page-btn
+                               ${currentPage >= totalPages ? 'page-btn-disabled' : 'page-btn-active'}"
+                        ${currentPage >= totalPages ? 'disabled' : ''}>
+                        ${translate('next')}
+                </button>
+            </div>
+            <div class="sort-controls">
+                <span class="sort-label">${translate('sortBy')}</span>
+                <button onclick="handleSort('${suffix}', 'name')"
+                        class="sort-btn sort-btn-style ${getSortStyle('name')}">
+                    ${translate('name')}
+                </button>
+                ${isFixableSection ? `
+                <button onclick="handleSort('${suffix}', 'fixable')"
+                        class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
+                    ${translate('suggestedFix')}
+                </button>` : ''}
+                <button onclick="handleSort('${suffix}', 'invalid')"
+                        class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
+                        ${translate('invalidNumber')}
+                </button>
+            </div>
+        </div>
+    ` : '';
+    
+    const sectionContent = `
+        <div class="section-header-container ${isFixableSection ? '' : 'text-center'}">
+            <h2 class="section-header">${headerStr}</h2>
+            <p class="section-description">${descriptionStr}</p>
+        </div>
+        ${paginationControls}
+        <ul class="report-list mt-4">
+            ${totalItems > 0 ? listContent : ''}
+        </ul>
+    `;
+
+    document.getElementById(containerId).innerHTML = sectionContent;
+}
+
+// --- Helper Functions for Pagination Control and sorting ---
+
+/**
+ * Handles pagination control logic by calculating the new current page,
+ * updating the relevant global state variable (fixableCurrentPage or invalidCurrentPage),
+ * triggering a full re-render, and smoothly scrolling to the section.
+ * @param {('Fixable'|'Invalid')} section - The section being navigated ('Fixable' for autofixable, 'Invalid' for manual fix).
+ * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
+ */
+function changePage(section, delta) {
+    if (section === 'fixable') {
+        const totalPages = Math.ceil(invalidItemsClient.filter(item => item.autoFixable).length / pageSize);
+        fixableCurrentPage = Math.max(1, Math.min(totalPages, fixableCurrentPage + delta));
+        renderNumbers(); // Re-render the whole page to update the state
+    } else if (section === 'invalid') {
+        const totalPages = Math.ceil(invalidItemsClient.filter(item => !item.autoFixable).length / pageSize);
+        invalidCurrentPage = Math.max(1, Math.min(totalPages, invalidCurrentPage + delta));
+        renderNumbers(); // Re-render the whole page
+    }
+    document.getElementById(`${section}Section`).scrollIntoView({'behavior':'smooth'});
+}
+
+/**
+ * Handles the user request to sort a report section. It toggles the sort direction
+ * if the same key is clicked, or sets a new key and resets the direction to ascending.
+ * It also resets the current page to 1 and triggers a full UI re-render and a smooth scroll.
+ * @param {('Fixable'|'Invalid')} section - The section being sorted ('fixable' for autofixable, 'invalid' for manual fix).
+ * @param {('name'|'invalid'|'fixable')} newKey - The column key requested for sorting.
+ */
+function handleSort(section, newKey) {
+    let currentKey, currentDirection;
+
+    if (section === 'fixable') {
+        currentKey = fixableSortKey;
+        currentDirection = fixableSortDirection;
+    } else { // 'invalid'
+        currentKey = invalidSortKey;
+        currentDirection = invalidSortDirection;
+    }
+
+    if (newKey === currentKey) {
+        // Same key clicked, toggle direction
+        if (section === 'fixable') {
+            fixableSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
+        } else {
+            invalidSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
+        }
+    } else {
+        // New key clicked, set key and default to ascending
+        if (section === 'fixable') {
+            fixableSortKey = newKey;
+            fixableSortDirection = 'asc';
+        } else {
+            invalidSortKey = newKey;
+            invalidSortDirection = 'asc';
+        }
+    }
+    
+    // Reset to the first page after sorting
+    if (section === 'fixable') fixableCurrentPage = 1;
+    else invalidCurrentPage = 1;
+
+    renderNumbers();
+    document.getElementById(`${section}Section`).scrollIntoView({'behavior':'smooth'});
+}
+
+/**
+ * Main rendering function for the phone number report.
+ * It filters the raw data, applies the current sorting parameters,
+ * clears the display containers, and delegates the rendering of
+ * the paginated sections to renderPaginatedSection.
+ * @returns {void}
+ */
 function renderNumbers() {
+    const fixableContainer = document.getElementById("fixableSection");
+    const invalidContainer = document.getElementById("invalidSection");
+    const noInvalidContainer = document.getElementById("noInvalidSection");
+
     const autofixableNumbers = invalidItemsClient.filter(item => item.autoFixable);
     const manualFixNumbers = invalidItemsClient.filter(item => !item.autoFixable);
 
     const anyInvalid = manualFixNumbers.length > 0;
     const anyFixable = autofixableNumbers.length > 0;
 
-    const fixableListContent = autofixableNumbers.map(item => createListItem(item)).join('');
-    const invalidListContent = manualFixNumbers.map(item => createListItem(item)).join('');
+    const sortedFixable = sortItems(autofixableNumbers, fixableSortKey, fixableSortDirection);
+    const sortedInvalid = sortItems(manualFixNumbers, invalidSortKey, invalidSortDirection);
 
-    const fixableSectionAndHeader = `
-        <div class="section-header-container">
-            <h2 class="section-header">${FIXABLE_NUMBERS_STR}</h2>
-            <p class="section-description">${FIXABLE_DESCRIPTION_STR}</p>
-        </div>
-        <ul class="report-list">
-            ${fixableListContent}
-        </ul>`;
+    // Clear all containers first
+    fixableContainer.innerHTML = '';
+    invalidContainer.innerHTML = '';
+    noInvalidContainer.innerHTML = '';
 
-    const invalidSectionAndHeader = `
-        <div class="text-center">
-            <h2 class="section-header">${INVALID_NUMBERS_STR}</h2>
-            <p class="section-description">${INVALID_DESCRIPTION_STR}</p>
-        </div>
-        <ul class="report-list">
-            ${invalidListContent}
-        </ul>`;
+    if (anyFixable || anyInvalid) {
+        if (anyFixable) {
+            renderPaginatedSection(
+                "fixableSection",
+                sortedFixable,
+                translate('fixableNumbersHeader'),
+                translate('fixableNumbersDescription'),
+                fixableCurrentPage,
+                (page) => fixableCurrentPage = page, // Setter function for fixableCurrentPage
+                true // isFixableSection
+            );
+        }
 
-    const noInvalidContent = `<li class="report-list-item-empty">${NO_INVALID_STR}</li>`;
-
-    const fixableAndInvalidSectionContent =
-        (anyFixable && anyInvalid) ? fixableSectionAndHeader + invalidSectionAndHeader :
-            anyFixable ? fixableSectionAndHeader :
-                anyInvalid ? invalidSectionAndHeader :
-                    noInvalidContent
-
-
-    const fixableAndInvalidSct = document.getElementById("fixableAndInvalidSection");
-    fixableAndInvalidSct.innerHTML = fixableAndInvalidSectionContent;
+        if (anyInvalid) {
+            renderPaginatedSection(
+                "invalidSection",
+                sortedInvalid,
+                translate('invalidNumbersHeader'),
+                translate('invalidNumbersDescription'),
+                invalidCurrentPage,
+                (page) => invalidCurrentPage = page, // Setter function for invalidCurrentPage
+                false // isFixableSection
+            );
+        }
+    } else {
+        // No invalid numbers found at all
+        noInvalidContainer.innerHTML = `
+            <p class="report-list-item-empty">${translate('noInvalidNumbers')}</p>
+        `;
+    }
+    applyEditorVisibility();
 }
 
 renderNumbers();
 
-module.exports = {
-    createJosmFixUrl,
-};
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        createJosmFixUrl,
+    };
+}

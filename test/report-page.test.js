@@ -6,14 +6,6 @@ global.DEFAULT_EDITORS_DESKTOP = ['JOSM_mock', 'iD_mock'];
 global.STORAGE_KEY = 'mock_storage_key';
 global.ALL_EDITOR_IDS = ['JOSM_mock', 'iD_mock', 'RapiD_mock'];
 global.OSM_EDITORS = {}; // Not strictly needed for createJosmFixUrl
-global.FIX_IN_JOSM_STR = 'Fix in JOSM';
-global.FIXABLE_STR = 'Fixable';
-global.WEBSITE_STR = 'Website';
-global.FIXABLE_NUMBERS_STR = 'Fixable Numbers';
-global.FIXABLE_DESCRIPTION_STR = 'Fixable Description';
-global.INVALID_NUMBERS_STR = 'Invalid Numbers';
-global.INVALID_DESCRIPTION_STR = 'Invalid Description';
-global.NO_INVALID_STR = 'No Invalid';
 global.invalidItemsClient = []; // Mock to prevent renderNumbers() from crashing
 
 // Mock Browser Globals
@@ -63,6 +55,11 @@ global.console = {
     log: jest.fn(), 
     error: jest.fn(), 
     warn: jest.fn() 
+};
+
+// Mock client translate function
+global.translate = (key, substitutions = {}) => {
+    return `MOCK_TRANSLATION:${key}`;
 };
 
 const { createJosmFixUrl } = require('../src/client/report-page.js');

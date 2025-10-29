@@ -226,7 +226,11 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
                 <h2 class="page-subtitle">${escapeHTML(subdivisionStats.name)}</h2>
             </header>
             ${createStatsBox(subdivisionStats.totalNumbers, invalidNumbers.length, autofixableNumbers.length, locale)}
-            <div id="fixableAndInvalidSection" class="space-y-8"></div>
+            <div id="reportContainer" class="space-y-8">
+                <section id="fixableSection" class="space-y-8"></section>
+                <section id="invalidSection" class="space-y-8"></section>
+                <section id="noInvalidSection"></section>
+            </div>
             <div class="footer-container">
                 ${createFooter(locale, translations, true)}
             </div>
@@ -238,15 +242,6 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
         const invalidItemsClient = ${JSON.stringify(invalidItemsClient)};
         const STORAGE_KEY = 'osm_report_editors';
-
-        const FIX_IN_JOSM_STR = "${translate('fixInJOSM', locale)}";
-        const FIXABLE_STR = "${translate('fixable', locale)}";
-        const WEBSITE_STR = "${translate('website', locale)}";
-        const FIXABLE_NUMBERS_STR = "${translate('fixableNumbersHeader', locale)}";
-        const FIXABLE_DESCRIPTION_STR = "${translate('fixableNumbersDescription', locale)}";
-        const INVALID_NUMBERS_STR = "${translate('invalidNumbersHeader', locale)}";
-        const INVALID_DESCRIPTION_STR = "${translate('invalidNumbersDescription', locale)}";
-        const NO_INVALID_STR = "${translate('noInvalidNumbers', locale)}";
 
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
