@@ -302,15 +302,15 @@ function createButtons(item) {
         `<a href="#" onclick="openInJosm('${josmFixUrl}', event)" 
             data-editor-id="josm-fix"
             class="btn btn-josm-fix">
-            translate('fixInJOSM')
+            ${translate('fixInJOSM')}
         </a>` :
         '';
     const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label label-fixable">translate('fixable')</span>` :
+        `<span data-editor-id="fix-label" class="label label-fixable">${translate('fixable')}</span>` :
         '';
 
     const websiteButton = item.website ?
-        `<a href="${item.website}" class="btn btn-website" target="_blank">translate('website')</a>` :
+        `<a href="${item.website}" class="btn btn-website" target="_blank">${translate('website')}</a>` :
         '';
 
     return { websiteButton, fixableLabel, josmFixButton, editorButtons };
