@@ -471,7 +471,6 @@ function validateNumbers(elements, countryCode) {
             const baseItem = {
                 type: element.type,
                 id: element.id,
-                osmUrl: `https://www.openstreetmap.org/${element.type}/${element.id}`,
                 website: website,
                 lat: lat,
                 lon: lon,

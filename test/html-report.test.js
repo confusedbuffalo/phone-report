@@ -1,4 +1,4 @@
-const { generateHtmlReport } = require('../src/html-report.js');
+const { createJosmFixUrl, generateHtmlReport } = require('../src/html-report.js');
 const fs = require('fs');
 
 // Mock dependencies
@@ -36,6 +36,108 @@ jest.mock('../src/data-processor.js', () => ({
     getFeatureIcon: () => 'iD-icon-point',
     isDisused: () => false,
 }));
+
+describe('createJosmFixUrl', () => {
+    const UNFIXABLE_ITEM = {
+        type: 'node',
+        id: 12164564580,
+        website: null,
+        lat: 55.941545,
+        lon: -4.3303375,
+        couldBeArea: false,
+        name: 'Shan Tandoori',
+        allTags: {
+            'contact:mobile': '+44 141',
+        },
+        invalidNumbers: { 'contact:mobile': '+44 141' },
+        suggestedFixes: { 'contact:mobile': null },
+        hasTypeMismatch: false,
+        mismatchTypeNumbers: [],
+        autoFixable: false
+    }
+
+    const FIXABLE_ITEM = {
+        type: 'node',
+        id: 12164564580,
+        website: null,
+        lat: 55.941545,
+        lon: -4.3303375,
+        couldBeArea: false,
+        name: 'Shan Tandoori',
+        allTags: {
+            'contact:phone': '0141 956 6323',
+        },
+        invalidNumbers: { 'contact:phone': '0141 956 6323' },
+        suggestedFixes: { 'contact:phone': '+44 141 956 6323' },
+        hasTypeMismatch: false,
+        mismatchTypeNumbers: [],
+        autoFixable: true,
+        phoneTagToUse: "contact:phone"
+    }
+
+    const MISMATCH_MOVE_TAG_ITEM = {
+        type: 'node',
+        id: 12164564580,
+        website: null,
+        lat: 55.941545,
+        lon: -4.3303375,
+        couldBeArea: false,
+        name: 'Shan Tandoori',
+        allTags: {
+            'contact:mobile': '+44 141 955 0411',
+        },
+        invalidNumbers: { 'contact:mobile': '+44 141 955 0411' },
+        suggestedFixes: { 'contact:mobile': null },
+        hasTypeMismatch: true,
+        mismatchTypeNumbers: {'contact:mobile': '+44 141 955 0411'},
+        autoFixable: true,
+        phoneTagToUse: "phone"
+    }
+
+    const MISTMATCH_ADD_TO_TAG_ITEM = {
+        type: 'node',
+        id: 12164564580,
+        website: null,
+        lat: 55.941545,
+        lon: -4.3303375,
+        couldBeArea: false,
+        name: 'Shan Tandoori',
+        allTags: {
+            'contact:mobile': '+44 141 955 0411',
+            'contact:phone': '+44 141 956 6323',
+        },
+        invalidNumbers: { 'contact:mobile': '+44 141 955 0411' },
+        suggestedFixes: { 'contact:mobile': null },
+        hasTypeMismatch: true,
+        mismatchTypeNumbers: {'contact:mobile': '+44 141 955 0411'},
+        autoFixable: true,
+        phoneTagToUse: "contact:phone"
+    }
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    test('should return null if item is not fixable', () => {
+        expect(createJosmFixUrl(UNFIXABLE_ITEM)).toBe(null);
+    });
+
+    test('should return fix URL', () => {
+        const addTags = encodeURIComponent('contact:phone') + '=' + encodeURIComponent('+44 141 956 6323');
+        expect(createJosmFixUrl(FIXABLE_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&addtags=${addTags}`,);
+    });
+
+    test('should remove old tag and add new tag for tag mismatch', () => {
+        const addTags = encodeURIComponent('contact:mobile') + '=' + encodeURIComponent('|phone') + '=' + encodeURIComponent('+44 141 955 0411');
+        expect(createJosmFixUrl(MISMATCH_MOVE_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&addtags=${addTags}`,);
+    });
+
+    test('should remove old tag and append to existing tag for tag mismatch', () => {
+        const addTags = encodeURIComponent('contact:mobile') + '=' + encodeURIComponent('|contact:phone') + '=' + encodeURIComponent('+44 141 956 6323; +44 141 955 0411');
+        expect(createJosmFixUrl(MISTMATCH_ADD_TO_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&addtags=${addTags}`,);
+    });
+});
+
 
 describe('generateHtmlReport', () => {
     afterEach(() => {

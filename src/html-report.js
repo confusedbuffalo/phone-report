@@ -7,6 +7,57 @@ const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
 
+
+/**
+ * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
+ * @param {Object} item - The invalid number data item.
+ * @returns {string | null}
+*/
+function createJosmFixUrl(item) {
+    if (!item.autoFixable) {
+        return null;
+    }
+
+    const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
+    const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
+
+    let newSuggestedFixes = {};
+    if (item.hasTypeMismatch) {
+        const tagToUse = item.phoneTagToUse;
+        const existingValuePresent = tagToUse in item.allTags;
+
+        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
+            ? item.allTags[tagToUse]
+            : (item.suggestedFixes[tagToUse])
+                ? item.suggestedFixes[tagToUse]
+                : '';
+
+        const existingFixesList = existingFixes
+            .split(';')
+            .map(s => s.trim())
+            .filter(s => s.length > 0);
+
+        newSuggestedFixes = {
+            ...item.suggestedFixes,
+            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
+        };
+    } else {
+        newSuggestedFixes = item.suggestedFixes;
+    }
+    const fixes = Object.entries(newSuggestedFixes);
+
+    const encodedTags = fixes.map(([key, value]) => {
+        const encodedKey = encodeURIComponent(key);
+        const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
+        return `${encodedKey}=${encodedValue}`;
+    });
+
+    const addtagsValue = encodedTags.join(encodeURIComponent('|'));
+    const josmFixUrl = `${josmEditUrl}&addtags=${addtagsValue}`;
+
+    return josmFixUrl;
+}
+
 /**
  * Creates the items for client side injection, with extra content.
  * @param {Object} item - The invalid number data item.
@@ -18,7 +69,12 @@ function createClientItems(item, locale) {
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
     const iconName = getFeatureIcon(item, locale);
-    item.iconHtml = getIconHtml(iconName);
+    const iconHtml = getIconHtml(iconName);
+    if (iconHtml.includes(iconName)) {
+        item.iconName = iconName;
+    } else {
+        item.iconHtml = iconHtml;
+    }
 
     item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
 
@@ -118,7 +174,11 @@ function createClientItems(item, locale) {
         }
     }).filter(Boolean);
 
-    return item;
+    item.josmFixUrl = createJosmFixUrl(item);
+
+    const { allTags, ...clientItem } = item;
+
+    return clientItem;
 }
 
 /**
@@ -259,4 +319,5 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
 
 module.exports = {
     generateHtmlReport,
+    createJosmFixUrl,
 };

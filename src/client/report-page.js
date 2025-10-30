@@ -210,56 +210,6 @@ function createDetailsGrid(item) {
 }
 
 /**
- * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
- * @param {Object} item - The invalid number data item.
- * @returns {string | null}
-*/
-function createJosmFixUrl(item) {
-    if (!item.autoFixable) {
-        return null;
-    }
-
-    const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
-    const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
-
-    let newSuggestedFixes = {};
-    if (item.hasTypeMismatch) {
-        const tagToUse = item.phoneTagToUse;
-        const existingValuePresent = tagToUse in item.allTags;
-
-        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
-            ? item.allTags[tagToUse]
-            : (item.suggestedFixes[tagToUse])
-                ? item.suggestedFixes[tagToUse]
-                : '';
-
-        const existingFixesList = existingFixes
-            .split(';')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-
-        newSuggestedFixes = {
-            ...item.suggestedFixes,
-            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
-        };
-    } else {
-        newSuggestedFixes = item.suggestedFixes;
-    }
-    const fixes = Object.entries(newSuggestedFixes);
-
-    const encodedTags = fixes.map(([key, value]) => {
-        const encodedKey = encodeURIComponent(key);
-        const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
-        return `${encodedKey}=${encodedValue}`;
-    });
-
-    const addtagsValue = encodedTags.join(encodeURIComponent('|'));
-    const josmFixUrl = `${josmEditUrl}&addtags=${addtagsValue}`;
-
-    return josmFixUrl;
-}
-
-/**
  * Creates the website and editor buttons for a single invalid number item.
  * @param {Object} item - The invalid number data item.
  * @returns {{
@@ -270,7 +220,6 @@ function createJosmFixUrl(item) {
  * }}
  */
 function createButtons(item) {
-    const josmFixUrl = createJosmFixUrl(item);
 
     // Generate buttons for ALL editors so client-side script can hide them
     const editorButtons = ALL_EDITOR_IDS.map(editorId => {
@@ -298,8 +247,8 @@ function createButtons(item) {
     }).join('\n');
 
     // Generate JOSM Fix Button (special case)
-    const josmFixButton = josmFixUrl ?
-        `<a href="#" onclick="openInJosm('${josmFixUrl}', event)" 
+    const josmFixButton = item.josmFixUrl ?
+        `<a href="#" onclick="openInJosm('${item.josmFixUrl}', event)" 
             data-editor-id="josm-fix"
             class="btn btn-josm-fix">
             ${translate('fixInJOSM')}
@@ -325,11 +274,13 @@ function createListItem(item) {
 
     const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item);
 
+    iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
+
     return `
         <li class="report-list-item">
             <div class="list-item-content-wrapper">
-                <a class="list-item-icon-circle-preview" href="${item.osmUrl}" target="_blank" rel="noopener noreferrer">
-                    ${item.iconHtml}
+                <a class="list-item-icon-circle-preview" href="https://www.openstreetmap.org/${item.type}/${item.id}" target="_blank" rel="noopener noreferrer">
+                    ${iconHtml}
                 </a>
                 <div class="list-item-details-wrapper">
                     <div class="list-item-header">
@@ -662,9 +613,3 @@ function renderNumbers() {
 }
 
 renderNumbers();
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        createJosmFixUrl,
-    };
-}
