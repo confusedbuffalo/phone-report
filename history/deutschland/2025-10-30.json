@@ -1,0 +1,182 @@
+{
+  "name": "Deutschland",
+  "slug": "deutschland",
+  "locale": "de-DE",
+  "invalidCount": 31612,
+  "autoFixableCount": 27909,
+  "totalNumbers": 315768,
+  "groupedDivisionStats": {
+    "Baden-Württemberg": [
+      {
+        "name": "Regierungsbezirk Karlsruhe",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-karlsruhe",
+        "invalidCount": 1269,
+        "autoFixableCount": 1132,
+        "totalNumbers": 23296
+      },
+      {
+        "name": "Regierungsbezirk Stuttgart",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-stuttgart",
+        "invalidCount": 2778,
+        "autoFixableCount": 2494,
+        "totalNumbers": 23503
+      },
+      {
+        "name": "Regierungsbezirk Freiburg",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-freiburg",
+        "invalidCount": 1739,
+        "autoFixableCount": 1497,
+        "totalNumbers": 16848
+      },
+      {
+        "name": "Regierungsbezirk Tübingen",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-tübingen",
+        "invalidCount": 1059,
+        "autoFixableCount": 915,
+        "totalNumbers": 14485
+      }
+    ],
+    "Bayern": [
+      {
+        "name": "Unterfranken",
+        "divisionSlug": "bayern",
+        "slug": "unterfranken",
+        "invalidCount": 1108,
+        "autoFixableCount": 985,
+        "totalNumbers": 10767
+      },
+      {
+        "name": "Oberfranken",
+        "divisionSlug": "bayern",
+        "slug": "oberfranken",
+        "invalidCount": 791,
+        "autoFixableCount": 711,
+        "totalNumbers": 7798
+      },
+      {
+        "name": "Niederbayern",
+        "divisionSlug": "bayern",
+        "slug": "niederbayern",
+        "invalidCount": 755,
+        "autoFixableCount": 643,
+        "totalNumbers": 8169
+      },
+      {
+        "name": "Oberpfalz",
+        "divisionSlug": "bayern",
+        "slug": "oberpfalz",
+        "invalidCount": 687,
+        "autoFixableCount": 564,
+        "totalNumbers": 7441
+      },
+      {
+        "name": "Mittelfranken",
+        "divisionSlug": "bayern",
+        "slug": "mittelfranken",
+        "invalidCount": 1578,
+        "autoFixableCount": 1441,
+        "totalNumbers": 12280
+      },
+      {
+        "name": "Schwaben",
+        "divisionSlug": "bayern",
+        "slug": "schwaben",
+        "invalidCount": 1644,
+        "autoFixableCount": 1279,
+        "totalNumbers": 13254
+      },
+      {
+        "name": "Oberbayern",
+        "divisionSlug": "bayern",
+        "slug": "oberbayern",
+        "invalidCount": 4556,
+        "autoFixableCount": 4142,
+        "totalNumbers": 36141
+      }
+    ],
+    "Berlin": [],
+    "Brandenburg": [],
+    "Bremen": [],
+    "Hamburg": [],
+    "Hessen": [
+      {
+        "name": "Regierungsbezirk Darmstadt",
+        "divisionSlug": "hessen",
+        "slug": "regierungsbezirk-darmstadt",
+        "invalidCount": 2156,
+        "autoFixableCount": 1963,
+        "totalNumbers": 24167
+      },
+      {
+        "name": "Regierungsbezirk Gießen",
+        "divisionSlug": "hessen",
+        "slug": "regierungsbezirk-gießen",
+        "invalidCount": 1006,
+        "autoFixableCount": 903,
+        "totalNumbers": 7641
+      },
+      {
+        "name": "Regierungsbezirk Kassel",
+        "divisionSlug": "hessen",
+        "slug": "regierungsbezirk-kassel",
+        "invalidCount": 1023,
+        "autoFixableCount": 963,
+        "totalNumbers": 9996
+      }
+    ],
+    "Mecklenburg-Vorpommern": [],
+    "Niedersachsen": [],
+    "Nordrhein-Westfalen": [
+      {
+        "name": "Regierungsbezirk Düsseldorf",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-düsseldorf",
+        "invalidCount": 2910,
+        "autoFixableCount": 2381,
+        "totalNumbers": 24342
+      },
+      {
+        "name": "Regierungsbezirk Münster",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-münster",
+        "invalidCount": 1276,
+        "autoFixableCount": 1154,
+        "totalNumbers": 11824
+      },
+      {
+        "name": "Regierungsbezirk Köln",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-köln",
+        "invalidCount": 1795,
+        "autoFixableCount": 1610,
+        "totalNumbers": 29811
+      },
+      {
+        "name": "Regierungsbezirk Arnsberg",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-arnsberg",
+        "invalidCount": 1229,
+        "autoFixableCount": 977,
+        "totalNumbers": 21703
+      },
+      {
+        "name": "Regierungsbezirk Detmold",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-detmold",
+        "invalidCount": 2253,
+        "autoFixableCount": 2155,
+        "totalNumbers": 12302
+      }
+    ],
+    "Rheinland-Pfalz": [],
+    "Saarland": [],
+    "Sachsen": [],
+    "Sachsen-Anhalt": [],
+    "Schleswig-Holstein": [],
+    "Thüringen": []
+  }
+}
