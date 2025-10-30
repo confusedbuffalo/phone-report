@@ -164,7 +164,7 @@ function checkMobileStatus(phoneNumber) {
 
     if (numberType === 'MOBILE') {
         return MobileStatus.MOBILE;
-    } else if (!numberType || numberType === 'FIXED_LINE_OR_MOBILE ') {
+    } else if (!numberType || numberType === 'FIXED_LINE_OR_MOBILE') {
         return MobileStatus.UNKNOWN;
     }
     return MobileStatus.NOT_MOBILE;
