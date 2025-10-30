@@ -11,27 +11,73 @@
     },
     "Deutschland": {
         "name": "Deutschland",
-        "divisions": {
-            "Baden-Württemberg": 62611,
-            "Bayern": 2145268,
-            "Berlin": 62422,
-            "Brandenburg": 62504,
-            "Bremen": 62718,
-            "Hamburg": 62782,
-            "Hessen": 62650,
-            "Mecklenburg-Vorpommern": 28322,
-            "Niedersachsen": 62771,
-            "Nordrhein-Westfalen": 62761,
-            "Rheinland-Pfalz": 62341,
-            "Saarland": 62372,
-            "Sachsen": 62467,
-            "Sachsen-Anhalt": 62607,
-            "Schleswig-Holstein": 51529,
-            "Thüringen": 62366
+        "divisionMap": {
+            "Baden-Württemberg": {
+                "Regierungsbezirk Freiburg": 2106112,
+                "Regierungsbezirk Karlsruhe": 22027,
+                "Regierungsbezirk Stuttgart": 22041,
+                "Regierungsbezirk Tübingen": 2811874
+            },
+            "Bayern": {
+                "Mittelfranken": 17614,
+                "Niederbayern": 17593,
+                "Oberbayern": 2145274,
+                "Oberfranken": 17592,
+                "Oberpfalz": 17596,
+                "Schwaben": 17657,
+                "Unterfranken": 17585
+            },
+            "Berlin": {
+                "Berlin": 62422
+            },
+            "Brandenburg": {
+                "Brandenburg": 62504
+            },
+            "Bremen": {
+                "Bremen": 62718
+            },
+            "Hamburg": {
+                "Hamburg": 62782
+            },
+            "Hessen": {
+                "Regierungsbezirk Darmstadt": 286590,
+                "Regierungsbezirk Gießen": 286618,
+                "Regierungsbezirk Kassel": 286675
+            },
+            "Mecklenburg-Vorpommern": {
+                "Mecklenburg-Vorpommern": 28322
+            },
+            "Niedersachsen": {
+                "Niedersachsen": 62771
+            },
+            "Nordrhein-Westfalen": {
+                "Regierungsbezirk Arnsberg": 73340,
+                "Regierungsbezirk Detmold": 73347,
+                "Regierungsbezirk Düsseldorf": 63306,
+                "Regierungsbezirk Köln": 72022,
+                "Regierungsbezirk Münster": 63594
+            },
+            "Rheinland-Pfalz": {
+                "Rheinland-Pfalz": 62341
+            },
+            "Saarland": {
+                "Saarland": 62372
+            },
+            "Sachsen": {
+                "Sachsen": 62467
+            },
+            "Sachsen-Anhalt": {
+                "Sachsen-Anhalt": 62607
+            },
+            "Schleswig-Holstein": {
+                "Schleswig-Holstein": 51529
+            },
+            "Thüringen": {
+                "Thüringen": 62366
+            }
         },
         "countryCode": "DE",
-        "locale": "de-DE",
-        "subdivisionAdminLevel": 5
+        "locale": "de-DE"
     },
     "España": {
         "name": "España",
