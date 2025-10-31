@@ -435,9 +435,7 @@ function renderPaginatedSection(
     // Unique ID suffix for this section's controls
     const suffix = isFixableSection ? 'fixable' : 'invalid';
 
-    const paginationControls = totalItems > pageSize ? `
-        <div class="page-sort-card">
-            <div class="page-btns-container">
+    const pageControls = totalItems > pageSize ? `<div class="page-btns-container">
                 <button id="prevPage${suffix}" onclick="changePage('${suffix}', -1)"
                         class="page-btn
                                ${currentPage <= 1 ? 'page-btn-disabled' : 'page-btn-active'}"
@@ -453,7 +451,11 @@ function renderPaginatedSection(
                         ${currentPage >= totalPages ? 'disabled' : ''}>
                         ${translate('next')}
                 </button>
-            </div>
+            </div>` : '<div></div>';
+
+    const paginationSortCard = `
+        <div class="page-sort-card">
+            ${pageControls}
             <div class="sort-controls">
                 <span class="sort-label">${translate('sortBy')}</span>
                 <button onclick="handleSort('${suffix}', 'name')"
@@ -471,14 +473,14 @@ function renderPaginatedSection(
                 </button>
             </div>
         </div>
-    ` : '';
+    `;
     
     const sectionContent = `
         <div class="section-header-container ${isFixableSection ? '' : 'text-center'}">
             <h2 class="section-header">${headerStr}</h2>
             <p class="section-description">${descriptionStr}</p>
         </div>
-        ${paginationControls}
+        ${paginationSortCard}
         <ul class="report-list mt-4">
             ${totalItems > 0 ? listContent : ''}
         </ul>
