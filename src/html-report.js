@@ -228,10 +228,11 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
 
     for (const editorId in OSM_EDITORS) {
         const editor = OSM_EDITORS[editorId];
-        
+        const onClickString = editor.onClick ? editor.onClick(editorId) : undefined;
+
         OSM_EDITORS_CLIENT[editorId] = {
             getEditLink: editor.getEditLink, 
-            onClick: editor.onClick,
+            onClick: onClickString,
             // Pre-evaluate the string using the locale
             editInString: editor.editInString(locale) 
         };
@@ -302,11 +303,16 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
         const invalidItemsClient = ${JSON.stringify(invalidItemsClient)};
         const STORAGE_KEY = 'osm_report_editors';
-
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
-            OSM_EDITORS[editorId].getEditLink = new Function('item', 'return ' + OSM_EDITORS[editorId].getEditLink);
-            OSM_EDITORS[editorId].onClick = new Function('editorId', 'return ' + OSM_EDITORS[editorId].onClick);
+            const editor = OSM_EDITORS[editorId];
+            const funcString = editor.getEditLink;
+            const functionBody = funcString.substring(funcString.indexOf('{') + 1, funcString.lastIndexOf('}'));
+            editor.getEditLink = new Function('item', functionBody);
+            if (editor.onClick) {
+                const onClickBody = editor.onClick;
+                editor.onClick = new Function('event', onClickBody);
+            }
         }
     </script>
     <script src="../../report-page.js"></script>
