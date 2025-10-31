@@ -26,23 +26,25 @@ const HISTORIC_AND_DISUSED_PREFIXES = [
 
 const OSM_EDITORS = {
     "JOSM": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
             // Use item.type[0] for the single-letter type prefix (n/w/r)
             return `${baseUrl}?objects=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["JOSM"]),
-        onClick: (editorId) => `fixWithJosm(OSM_EDITORS['${editorId}'].getEditLink(item), event)`
+        onClick: function (editorId) {
+            return `openInJosm(OSM_EDITORS['${editorId}'].getEditLink(item), event)`
+        }
     },
     "iD": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'https://www.openstreetmap.org/edit?editor=id';
             return `${baseUrl}&${item.type}=${item.id}#map=19/${item.lat}/${item.lon}`;
         },
         editInString: (locale) => translate('editIn', locale, ["iD"]),
     },
     "Rapid": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'https://rapideditor.org/edit#map=19';
             // Use item.type[0] for the object type prefix (n/w/r)
             return `${baseUrl}/${item.lat}/${item.lon}&id=${item.type[0]}${item.id}`;
@@ -50,14 +52,14 @@ const OSM_EDITORS = {
         editInString: (locale) => translate('editIn', locale, ["Rapid"]),
     },
     "Level0": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'https://level0.osmz.ru/?url=';
             return `${baseUrl}${item.type}/${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["Level0"]),
     },
     "Geo": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'geo:';
             return `${baseUrl}${item.lat},${item.lon}`;
         },
