@@ -23,6 +23,7 @@ const listContainer = document.getElementById('division-list');
 const sortButtons = document.querySelectorAll('.sort-btn');
 const hideEmptyCheckbox = document.getElementById('hide-empty');
 let currentSort = 'percentage';
+let sortDirection = 'asc'
 
 /**
  * Formats a number using the current locale for consistent display.
@@ -99,11 +100,13 @@ function renderList() {
             const statsB = calculatedDivisionTotals[b];
             const percentageA = statsA.total > 0 ? (statsA.invalid / statsA.total) : 0;
             const percentageB = statsB.total > 0 ? (statsB.invalid / statsB.total) : 0;
-            return percentageB - percentageA;
+            const diff = percentageB - percentageA;
+            return sortDirection === 'asc' ? diff : -1 * diff;
         } else if (currentSort === 'invalidCount') {
-            return calculatedDivisionTotals[b].invalid - calculatedDivisionTotals[a].invalid;
+            const diff = calculatedDivisionTotals[b].invalid - calculatedDivisionTotals[a].invalid;
+            return sortDirection === 'asc' ? diff : -1 * diff;
         } else if (currentSort === 'name') {
-            return a.localeCompare(b);
+            return sortDirection === 'asc' ? a.localeCompare(b): b.localeCompare(a);
         }
         return 0;
     });
@@ -302,6 +305,11 @@ function renderList() {
 
 sortButtons.forEach(button => {
     button.addEventListener('click', () => {
+        if (currentSort === button.dataset.sort && sortDirection === 'asc') {
+            sortDirection = 'desc';
+        } else {
+            sortDirection = 'asc';
+        }
         currentSort = button.dataset.sort;
         renderList();
     });
