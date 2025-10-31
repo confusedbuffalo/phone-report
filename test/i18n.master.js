@@ -21,7 +21,7 @@ const MASTER_KEYS = {
     'progressHistory': [],
     'backToAllCountries': [],
     'divisionalReports': [],
-    'hideEmptyDivisions': [],
+    'showEmptyDivisions': [],
     'sortBy': [],
     'invalidPercentage': [],
     'invalidCount': [],

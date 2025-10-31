@@ -108,7 +108,6 @@ if (require.main === module) {
             const countryName = escapeHTML(countryData.name);
             const locale = countryData.locale;
 
-            // This await is now valid inside the async IIFE
             await generateProgressPage(safeName(countryName), locale)
             if (testMode) {
                 break;
