@@ -21,7 +21,7 @@ function escapeHTML(str) {
 
 const listContainer = document.getElementById('division-list');
 const sortButtons = document.querySelectorAll('.sort-btn');
-const hideEmptyCheckbox = document.getElementById('hide-empty');
+const showEmptyCheckbox = document.getElementById('show-empty');
 let currentSort = 'percentage';
 let sortDirection = 'asc'
 
@@ -134,7 +134,7 @@ function renderList() {
 
         let sortedData = [...groupedDivisionStats[divisionName]];
 
-        if (hideEmptyCheckbox.checked) {
+        if (!showEmptyCheckbox.checked) {
             sortedData = sortedData.filter(subdivision => subdivision.invalidCount > 0);
         }
 
@@ -315,6 +315,6 @@ sortButtons.forEach(button => {
     });
 });
 
-hideEmptyCheckbox.addEventListener('change', renderList);
+showEmptyCheckbox.addEventListener('change', renderList);
 
 renderList();
