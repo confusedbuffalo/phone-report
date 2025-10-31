@@ -370,6 +370,10 @@ function sortItems(items, key, direction) {
             return direction === 'asc' ? 1 : -1;
         }
 
+        if (key === 'name') {
+            return direction === 'asc' ? valA.localeCompare(valB): valB.localeCompare(valA);
+        }
+
         // Regular comparison
         if (valA < valB) {
             return direction === 'asc' ? -1 : 1;
@@ -474,7 +478,7 @@ function renderPaginatedSection(
             </div>
         </div>
     `;
-    
+
     const sectionContent = `
         <div class="section-header-container ${isFixableSection ? '' : 'text-center'}">
             <h2 class="section-header">${headerStr}</h2>
