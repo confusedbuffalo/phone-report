@@ -265,19 +265,27 @@
     },
     "United Kingdom": {
         "name": "United Kingdom",
-        "divisions": {
-            "East Midlands": 151279,
-            "East of England": 151336,
-            "Greater London": 175342,
-            "North East England": 151164,
-            "North West England": 151261,
-            "South East England": 151304,
-            "South West England": 151339,
-            "West Midlands": 151283,
-            "Yorkshire and the Humber": 151012,
-            "Northern Ireland": 156393,
-            "Scotland": 58446,
-            "Wales": 58437
+        "divisionMap": {
+            "England": {
+                "East Midlands": 151279,
+                "East of England": 151336,
+                "Greater London": 175342,
+                "North East England": 151164,
+                "North West England": 151261,
+                "South East England": 151304,
+                "South West England": 151339,
+                "West Midlands": 151283,
+                "Yorkshire and the Humber": 151012
+            },
+            "Northern Ireland": {
+                "Northern Ireland": 156393
+            },
+            "Scotland": {
+                "Scotland": 58446
+            },
+            "Wales": {
+                "Wales": 58437
+            }
         },
         "countryCode": "GB",
         "locale": "en-GB"

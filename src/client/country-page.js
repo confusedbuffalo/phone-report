@@ -107,7 +107,6 @@ function renderList() {
         }
         return 0;
     });
-    const isGrouped = divisionNames.length > 1;
 
     const percentageOptions = {
         minimumFractionDigits: 2,
@@ -128,6 +127,8 @@ function renderList() {
     listContainer.innerHTML = '';
 
     for (const divisionName of divisionNames) {
+        const isGrouped = groupedDivisionStats[divisionName].length > 1;
+
         let sortedData = [...groupedDivisionStats[divisionName]];
 
         if (hideEmptyCheckbox.checked) {
