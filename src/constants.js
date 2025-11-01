@@ -8,6 +8,22 @@ const MOBILE_TAGS = ['mobile', 'contact:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
 const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
 
+/**
+ * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
+ * A lower number indicates a higher preference (i.e., the key to KEEP).
+ * * Preference Order:
+ * 1. phone (0)
+ * 2. contact:phone (1)
+ * 3. mobile (2)
+ * 4. contact:mobile (3)
+ */
+const PHONE_TAG_PREFERENCE_ORDER = {
+    'phone': 0,
+    'contact:phone': 1,
+    'mobile': 2,
+    'contact:mobile': 3
+};
+
 const WEBSITE_TAGS = ['website', 'contact:website'];
 
 const COUNTRIES = require(path.join(__dirname, 'data', 'countries.json'));
@@ -173,5 +189,6 @@ module.exports = {
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
-    HISTORY_DIR
+    HISTORY_DIR,
+    PHONE_TAG_PREFERENCE_ORDER
 };
