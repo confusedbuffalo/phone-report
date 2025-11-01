@@ -40,6 +40,7 @@ const MASTER_KEYS = {
     "invalidNumber": [],
     "next": [],
     "previous": [],
+    "duplicateNumber": [],
 
 
     'fixableNumbersDescription': [],
