@@ -111,6 +111,10 @@ describe('stripExtension', () => {
         expect(stripExtension('+44 20 7946 0000 ext. 456')).toBe('+44 20 7946 0000');
     });
 
+    test('should strip an extension prefixed by "extension"', () => {
+        expect(stripExtension('+44 20 7946 0000 extension 456')).toBe('+44 20 7946 0000');
+    });
+
     test('should return the original string if no extension is present', () => {
         expect(stripExtension('0800 123 4567')).toBe('0800 123 4567');
     });
@@ -320,11 +324,25 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
-    test('GB: flag a valid number with non-standard extension as invalid but autoFixable', () => {
+    test('GB: flag a valid number with non-standard extension abbreviated as invalid but autoFixable', () => {
         const result = processSingleNumber('+44 20 7946 0000 ext.123', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+44 20 7946 0000 x123');
+    });
+
+    test('GB: flag a valid number with non-standard extension as invalid but autoFixable', () => {
+        const result = processSingleNumber('+44 20 7946 0000 extension 123', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000 x123');
+    });
+
+    test('US: flag a valid number with non-standard extension as invalid but autoFixable', () => {
+        const result = processSingleNumber('+1-304-845-9810 extension 403', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+1 304-845-9810 ext. 403');
     });
 
     test('GB: mobile number in phone tag is valid', () => {

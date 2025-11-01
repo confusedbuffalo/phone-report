@@ -26,10 +26,10 @@ function safeName(name) {
 
     let processedName = name;
 
-    // 1. Convert to lowercase
+    // Convert to lowercase
     processedName = processedName.toLowerCase();
 
-    // 2. Substitute non-letter (\p{L}), non-number (\p{N}), and non-space (\s) characters with a hyphen.
+    // Substitute non-letter (\p{L}), non-number (\p{N}), and non-space (\s) characters with a hyphen.
     // The 'gu' flags enable global replacement and robust Unicode handling.
     // This step preserves all letters/numbers across all scripts and substitutes all symbols.
     // Note: If running in a very old JS environment that doesn't support \p{L}, this may fail.
@@ -41,13 +41,13 @@ function safeName(name) {
         processedName = processedName.replace(/[^a-z0-9\s\u00C0-\uFFFF]+/g, '-');
     }
 
-    // 3. Replace one or more spaces with a hyphen.
+    // Replace one or more spaces with a hyphen.
     processedName = processedName.replace(/\s+/g, '-');
 
-    // 4. Remove repeated substitutes (e.g., '--' becomes '-')
+    // Remove repeated substitutes (e.g., '--' becomes '-')
     processedName = processedName.replace(/-+/g, '-');
 
-    // 5. Remove substitutes appearing at the start or end of the string.
+    // Remove substitutes appearing at the start or end of the string.
     processedName = processedName.replace(/^-|-$/g, '');
 
     return processedName;
@@ -229,7 +229,7 @@ function keyToRemove(key1, key2) {
 function stripExtension(numberStr) {
     // Regex matches common extension prefixes: x, ext, extension, etc.
     // It captures everything before the extension marker.
-    const extensionRegex = /^(.*?)(?:[xX]|[eE][xX][tT]|\s*\(ext\)\s*).*$/;
+    const extensionRegex = /^(.*?)(?:[xX]|[eE][xX][tT]|\s*\(ext|extension\)\s*).*$/;
     const match = numberStr.match(extensionRegex);
 
     // If an extension is found, return the part before it (trimmed).
@@ -364,7 +364,9 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                     nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
                     nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
 
-                    return `${countryCodePrefix} ${nationalNumberFormatted}${extension}`;
+                    // National number has extension in it for US
+                    nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' ext. ');
+                    return `${countryCodePrefix} ${nationalNumberFormatted}`;
                 } else {
                     return coreFormatted + extension;
                 }
