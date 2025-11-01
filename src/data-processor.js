@@ -1,6 +1,6 @@
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
 
 const MobileStatus = {
     MOBILE: 'mobile',
@@ -193,6 +193,34 @@ function phoneTagToUse(tags) {
 }
 
 /**
+ * Determines which of the two given OSM keys should be removed based on a predefined
+ * preference order. The key with the lower preference (higher score) is returned
+ * for removal.
+ *
+ * @param {string} key1 The first OSM key (e.g., 'phone', 'mobile').
+ * @param {string} key2 The second OSM key.
+ * @returns {string} The key that should be removed.
+ */
+function keyToRemove(key1, key2) {
+    // Look up the score. If a key is unknown, it's given a very low preference 
+    // (Infinity), prioritizing its removal.
+    const score1 = PHONE_TAG_PREFERENCE_ORDER[key1] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key1] : Infinity;
+    const score2 = PHONE_TAG_PREFERENCE_ORDER[key2] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key2] : Infinity;
+
+    // The key to REMOVE is the one with the higher score (lower preference).
+
+    if (score1 > score2) {
+        return key1;
+    } else if (score2 > score1) {
+        return key2;
+    } else {
+        // If scores are equal (e.g., both keys are 'phone', or both are unrecognized),
+        // we must choose one deterministically. We'll default to removing key2.
+        return key2;
+    }
+}
+
+/**
  * Strips phone number extensions (x, ext, etc.) and non-dialable characters 
  * to isolate the core number for comparison.
  * @param {string} numberStr 
@@ -282,20 +310,21 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
  * @param {string} countryCode - The country code for validation.
  * @param {map} osmTags - All the OSM tags of the object, to check against exclusions
  * @param {string} tag - The OSM phone tag being used for this number
- * @returns {{isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean}}
+ * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean}}
  */
 function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     let suggestedFix = null;
     let autoFixable = true;
     let isInvalid = false;
     let typeMismatch = false;
+    let phoneNumber = null;
 
     const NON_STANDARD_EXT_PREFIX_REGEX = /([eE][xX][tT])|(\s*\([eE][xX][tT]\)\s*)/;
     const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
     const spacingRegex = getSpacingRegex(countryCode);
 
     try {
-        const phoneNumber = parsePhoneNumber(numberStr, countryCode);
+        phoneNumber = parsePhoneNumber(numberStr, countryCode);
 
         const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
         if (exclusionResult) {
@@ -361,6 +390,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
         } else {
             // The number is fundamentally invalid (e.g., too few digits)
+            phoneNumber = null;
             isInvalid = true;
             suggestedFix = null;
             autoFixable = false;
@@ -372,7 +402,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         suggestedFix = null;
     }
 
-    return { isInvalid, suggestedFix, autoFixable, typeMismatch };
+    return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch };
 }
 
 /**
@@ -386,6 +416,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
  * @property {boolean} isAutoFixable - Indicates whether the number can be automatically corrected.
  * @property {Array<string>} suggestedNumbersList - A list of suggested corrections (as strings).
  * @property {number} numberOfValues - The number of phone values checked.
+ * @property {phoneNumber} validNumbersList - A list of all valid phone numbers found in the tag.
  */
 function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const originalTagValue = tagValue.trim();
@@ -406,7 +437,8 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
         isAutoFixable: true,
         suggestedNumbersList: [],
         mismatchTypeNumbers: [],
-        numberOfValues: 0
+        numberOfValues: 0,
+        validNumbersList: []
     };
 
     let hasTypeMismatch = false;
@@ -415,7 +447,11 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
         tagValidationResult.numberOfValues++;
 
         const validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
-        const { isInvalid, suggestedFix, autoFixable, typeMismatch } = validationResult;
+        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch } = validationResult;
+
+        if (phoneNumber) {
+            tagValidationResult.validNumbersList.push(phoneNumber);
+        }
 
         if (suggestedFix && !typeMismatch) {
             tagValidationResult.suggestedNumbersList.push(suggestedFix);
@@ -455,85 +491,159 @@ function validateNumbers(elements, countryCode) {
     let totalNumbers = 0;
 
     elements.forEach(element => {
-        if (element.tags) {
-            const tags = element.tags;
+        if (!element.tags) return;
+        const tags = element.tags;
 
-            let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
-            if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
-                website = `http://${website}`;
+        let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
+        if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
+            website = `http://${website}`;
+        }
+
+        const lat = element.lat || (element.center && element.center.lat);
+        const lon = element.lon || (element.center && element.center.lon);
+        const name = tags.name;
+        const key = `${element.type}-${element.id}`;
+        const couldBeArea =
+            element.type === 'way' &&
+            element['nodes'] &&
+            element['nodes'].at(0) === element['nodes'].at(-1);
+
+        const baseItem = {
+            type: element.type,
+            id: element.id,
+            website,
+            lat,
+            lon,
+            couldBeArea,
+            name,
+            allTags: tags,
+            invalidNumbers: new Map(),
+            suggestedFixes: new Map(),
+            hasTypeMismatch: false,
+            mismatchTypeNumbers: new Map(),
+            duplicateNumbers: new Map(),
+        };
+
+        // Track normalized numbers across all tags
+        const allNormalizedNumbers = new Map();
+
+        for (const tag of PHONE_TAGS) {
+            if (!tags[tag]) continue;
+            const phoneTagValue = tags[tag];
+            if (tag === 'mobile' && phoneTagValue === 'yes') continue;
+
+            const validationResult = validateSingleTag(phoneTagValue, countryCode, tags, tag);
+            totalNumbers += validationResult.numberOfValues;
+
+            const validatedNumbers = validationResult.validNumbersList;
+            let tagShouldBeFlaggedForRemoval = false;
+            let suggestedFix = null;
+
+            // --- Detect internal duplicates within the same tag ---
+            const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));
+            const uniqueFormattedSet = [...new Set(formattedNumbers)];
+            if (uniqueFormattedSet.length < formattedNumbers.length) {
+                tagShouldBeFlaggedForRemoval = true;
+                suggestedFix = uniqueFormattedSet.join('; ');
             }
 
-            const lat = element.lat || (element.center && element.center.lat);
-            const lon = element.lon || (element.center && element.center.lon);
-            const name = tags.name;
-            const key = `${element.type}-${element.id}`;
-            const couldBeArea = (element.type === 'way' && element['nodes'] && element['nodes'].at(0) === element['nodes'].at(-1))
-            const baseItem = {
-                type: element.type,
-                id: element.id,
-                website: website,
-                lat: lat,
-                lon: lon,
-                couldBeArea: couldBeArea,
-                name: name,
-                allTags: tags,
-                invalidNumbers: new Map(),
-                suggestedFixes: new Map(),
-                hasTypeMismatch: false,
-                mismatchTypeNumbers: new Map(),
-            };
+            // --- Detect duplicates across tags ---
+            for (const phoneNumber of validatedNumbers) {
+                // Skip duplicate detection only if unfixable invalid
+                if (validationResult.isInvalid && !validationResult.isAutoFixable) continue;
 
-            for (const tag of PHONE_TAGS) {
-                if (!tags[tag]) {
-                    continue
-                }
-                const phoneTagValue = tags[tag];
-                if (tag === 'mobile' && phoneTagValue === 'yes') {
-                    // May be considered valid tagging, is not a phone number
-                    continue
-                }
+                // Normalise including extension (so different extensions remain distinct)
+                const normalizedNumber = (
+                    phoneNumber.number + (phoneNumber.ext ? `x${phoneNumber.ext}` : '')
+                ).replace(getSpacingRegex(countryCode), '');
+                const existingTag = allNormalizedNumbers.get(normalizedNumber);
 
-                const validationResult = validateSingleTag(phoneTagValue, countryCode, tags, tag);
+                if (existingTag) {
+                    const tagToRemove = keyToRemove(tag, existingTag);
+                    const keptTag = tagToRemove === tag ? existingTag : tag;
 
-                const isInvalid = validationResult.isInvalid;
-                const autoFixable = validationResult.isAutoFixable;
-
-                // Only give a suggested fix if it is fixable
-                const suggestedFix = (isInvalid && autoFixable && validationResult.suggestedNumbersList.length > 0)
-                    ? validationResult.suggestedNumbersList.join('; ')
-                    : null;
-
-                totalNumbers += validationResult.numberOfValues;
-
-                if (isInvalid) {
                     if (!invalidItemsMap.has(key)) {
-                        invalidItemsMap.set(key, { ...baseItem, autoFixable: autoFixable });
+                        invalidItemsMap.set(key, { ...baseItem, autoFixable: true });
                     }
                     const item = invalidItemsMap.get(key);
 
-                    item.invalidNumbers.set(tag, phoneTagValue);
-                    item.suggestedFixes.set(tag, suggestedFix);
+                    const duplicateTag = tagToRemove;
+                    item.invalidNumbers.set(duplicateTag, tags[duplicateTag]);
+                    item.duplicateNumbers.set(duplicateTag, tags[duplicateTag]);
+                    item.suggestedFixes.set(duplicateTag, null);
+                    item.suggestedFixes.set(keptTag, tags[keptTag]);
 
-                    if (validationResult.mismatchTypeNumbers.length > 0) {
-                        item.hasTypeMismatch = true;
-                        item.mismatchTypeNumbers.set(tag, validationResult.mismatchTypeNumbers.join('; '));
-                    }
+                    // If this was previously considered a type mismatch, clear that
+                    item.hasTypeMismatch = false;
+                    item.mismatchTypeNumbers.delete(duplicateTag);
 
-                    item.autoFixable = item.autoFixable && autoFixable;
+                    // Update normalized record to reflect the kept tag
+                    allNormalizedNumbers.set(normalizedNumber, keptTag);
+
+                    if (tagToRemove === tag) tagShouldBeFlaggedForRemoval = true;
+                } else {
+                    allNormalizedNumbers.set(normalizedNumber, tag);
                 }
+            }
+
+            // --- Handle invalid or fixable numbers ---
+            const isInvalid = validationResult.isInvalid;
+            const autoFixable = validationResult.isAutoFixable;
+
+            if (
+                isInvalid &&
+                autoFixable &&
+                !tagShouldBeFlaggedForRemoval &&
+                validationResult.suggestedNumbersList.length > 0
+            ) {
+                suggestedFix = validationResult.suggestedNumbersList.join('; ');
+            }
+
+            // --- Record invalid entries ---
+            if (isInvalid || tagShouldBeFlaggedForRemoval) {
+                if (!invalidItemsMap.has(key)) {
+                    invalidItemsMap.set(key, { ...baseItem, autoFixable });
+                }
+                const item = invalidItemsMap.get(key);
+
+                item.invalidNumbers.set(tag, phoneTagValue);
+
+                if (tagShouldBeFlaggedForRemoval) {
+                    item.suggestedFixes.set(tag, suggestedFix ?? null);
+                    item.duplicateNumbers.set(tag, phoneTagValue);
+                } else {
+                    item.suggestedFixes.set(tag, suggestedFix);
+                }
+
+                // Add type mismatch info only if not a duplicate
+                if (
+                    validationResult.mismatchTypeNumbers.length > 0 &&
+                    !item.duplicateNumbers.has(tag)
+                ) {
+                    item.hasTypeMismatch = true;
+                    item.mismatchTypeNumbers.set(
+                        tag,
+                        validationResult.mismatchTypeNumbers.join('; ')
+                    );
+                }
+
+                item.autoFixable = item.autoFixable && autoFixable;
             }
         }
     });
 
+    // Convert all map fields to plain objects
     const invalidItemsArray = Array.from(invalidItemsMap.values()).map(item => ({
         ...item,
         invalidNumbers: Object.fromEntries(item.invalidNumbers),
         suggestedFixes: Object.fromEntries(item.suggestedFixes),
-        mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers)
+        mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
+        duplicateNumbers: Object.fromEntries(item.duplicateNumbers),
     }));
 
     return { invalidNumbers: invalidItemsArray, totalNumbers };
 }
+
 
 module.exports = {
     safeName,
@@ -545,5 +655,6 @@ module.exports = {
     stripExtension,
     processSingleNumber,
     validateSingleTag,
-    checkExclusions
+    checkExclusions,
+    keyToRemove
 };

@@ -110,11 +110,11 @@
 }
 
 @utility label-fixable {
-  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50;
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50;
 }
 
-@utility label-not-mobile {
-  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50 sm:ml-2 mt-1 mb-1 sm:mt-0 sm:mb-0;
+@utility label-number-problem {
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50 sm:ml-2 mt-1 mb-1 sm:mt-0 sm:mb-0;
 }
 
 @utility label-disused {

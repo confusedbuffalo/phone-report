@@ -7,7 +7,8 @@ const {
     getFeatureTypeName,
     isDisused,
     validateSingleTag,
-    phoneTagToUse
+    phoneTagToUse,
+    keyToRemove
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -137,6 +138,55 @@ describe('phoneTagToUse', () => {
 
     test('should not be affected by other tags', () => {
         expect(phoneTagToUse({'phone': '01234', 'mobile': '07123'})).toBe('phone');
+    });
+});
+
+// =====================================================================
+// keyToRemove Tests
+// =====================================================================
+describe('keyToRemove', () => {
+
+    // Test cases for clear preference based on the defined order
+    test('should remove the lower-preference key (contact:phone) when comparing phone vs contact:phone', () => {
+        expect(keyToRemove('phone', 'contact:phone')).toBe('contact:phone');
+        expect(keyToRemove('contact:phone', 'phone')).toBe('contact:phone');
+    });
+
+    test('should remove the lower-preference key (mobile) when comparing phone vs mobile', () => {
+        expect(keyToRemove('phone', 'mobile')).toBe('mobile');
+        expect(keyToRemove('mobile', 'phone')).toBe('mobile');
+    });
+
+    test('should remove the lowest-preference key (contact:mobile) when comparing mobile vs contact:mobile', () => {
+        expect(keyToRemove('mobile', 'contact:mobile')).toBe('contact:mobile');
+        expect(keyToRemove('contact:mobile', 'mobile')).toBe('contact:mobile');
+    });
+
+    // Test case for tie-breaker rule
+    test('should remove key2 when both keys have the same preference score (tie-breaker)', () => {
+        // Equal known scores
+        expect(keyToRemove('phone', 'phone')).toBe('phone');
+        expect(keyToRemove('mobile', 'mobile')).toBe('mobile');
+        
+        // Ensure key1 is kept if they are equal
+        expect(keyToRemove('contact:phone', 'contact:phone')).toBe('contact:phone');
+    });
+
+    // Test cases involving unknown keys (which get Infinity score and should be removed)
+    test('should remove an unknown key when compared against a known key', () => {
+        const unknownKey = 'fax';
+        const knownKey = 'phone'; 
+        
+        // Case 1: Unknown key is key1 (score: Infinity > 0)
+        expect(keyToRemove(unknownKey, knownKey)).toBe(unknownKey);
+        
+        // Case 2: Unknown key is key2 (score: 0 < Infinity)
+        expect(keyToRemove(knownKey, unknownKey)).toBe(unknownKey);
+    });
+
+    // Test case where both keys are unknown
+    test('should remove key2 when both keys are unknown (Infinity score tie-breaker)', () => {
+        expect(keyToRemove('fax', 'email')).toBe('email');
     });
 });
 
@@ -511,12 +561,14 @@ describe('validateNumbers', () => {
 
     // UK numbers used for testing
     const VALID_LANDLINE = '+44 20 7946 0000';
+    const VALID_LANDLINE_NO_SPACE = '+442079460000';
     const FIXABLE_LANDLINE_INPUT = '0207 9460000';
     const FIXABLE_LANDLINE_SUGGESTED_FIX = '+44 20 7946 0000';
     const VALID_LANDLINE_2 = '+44 20 7946 1111';
     const UNFIXABLE_INPUT = '020 794'; // Too short
     const BAD_SEPARATOR_INPUT = '020 7946 0000, 07712 900000';
     const BAD_SEPARATOR_FIX = '+44 20 7946 0000; +44 7712 900000';
+    const VALID_MOBILE = '+44 7712 900000';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
 
@@ -614,7 +666,7 @@ describe('validateNumbers', () => {
                 tags: {
                     'contact:phone': FIXABLE_LANDLINE_INPUT,
                     'contact:mobile': FIXABLE_MOBILE_INPUT,
-                    phone: VALID_LANDLINE,
+                    phone: VALID_LANDLINE_2,
                     name: 'Mixed Contact Info',
                 },
                 center: { lat: 55.0, lon: 4.0 },
@@ -806,6 +858,252 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
             'contact:mobile': FIXABLE_LANDLINE_SUGGESTED_FIX
+        });
+    });
+
+    test('should remove duplicate number in different tags', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': VALID_LANDLINE,
+                    'phone': VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': VALID_LANDLINE
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': VALID_LANDLINE
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
+            'phone': VALID_LANDLINE
+        });
+    });
+
+    test('should remove duplicate number in the same tag', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': VALID_LANDLINE
+        });
+    });
+
+    test('should remove duplicate numbers with different formatting in the same tag', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': VALID_LANDLINE
+        });
+    });
+
+    test('should fix duplicate numbers with different formatting in the same tag', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': VALID_LANDLINE
+        });
+    });
+
+    test('different extensions are not duplicates', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${VALID_LANDLINE}x123`,
+                    'phone': `${VALID_LANDLINE}x456`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(0);
+    });
+
+    test('different spacing is still a duplicate', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': VALID_LANDLINE_NO_SPACE,
+                    'phone': VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': VALID_LANDLINE_NO_SPACE
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': VALID_LANDLINE_NO_SPACE
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
+            'phone': VALID_LANDLINE
+        });
+    });
+
+    test('fixable and correct formatting are duplicates', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': FIXABLE_LANDLINE_INPUT,
+                    'phone': VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': FIXABLE_LANDLINE_INPUT
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': FIXABLE_LANDLINE_INPUT
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
+            'phone': VALID_LANDLINE
+        });
+    });
+
+    test('duplicate non-mobile numbers in phone and mobile are duplicate, not type mismatch', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'mobile': VALID_LANDLINE,
+                    'phone': VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.hasTypeMismatch).toBe(false);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'mobile': VALID_LANDLINE
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'mobile': VALID_LANDLINE
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'mobile': null,
+            'phone': VALID_LANDLINE
         });
     });
 });
