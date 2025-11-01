@@ -265,6 +265,10 @@ async function main() {
     fs.copyFileSync(path.join(__dirname, 'client', 'chart-generator.js'), path.join(PUBLIC_DIR, 'chart-generator.js'));
     fs.copyFileSync(path.join(__dirname, 'client', 'report-page.js'), path.join(PUBLIC_DIR, 'report-page.js'));
     fs.copyFileSync(path.join(__dirname, 'client', 'country-page.js'), path.join(PUBLIC_DIR, 'country-page.js'));
+    fs.copyFileSync(
+        path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
+        path.join(PUBLIC_DIR, 'vendor', 'osm-api.min.js')
+      );
 
     console.log('Starting full build process...');
 

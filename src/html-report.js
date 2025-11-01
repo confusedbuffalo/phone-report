@@ -342,6 +342,7 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
             }
         }
     </script>
+    <script src="../../vendor/osm-api.min.js"></script>
     <script src="../../report-page.js"></script>
     </body>
     </html>
