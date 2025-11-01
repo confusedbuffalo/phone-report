@@ -541,10 +541,10 @@ function validateNumbers(elements, countryCode) {
 
             // --- Detect internal duplicates within the same tag ---
             const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));
-            const uniqueSet = [...new Set(formattedNumbers)];
-            if (uniqueSet.length < formattedNumbers.length) {
+            const uniqueFormattedSet = [...new Set(formattedNumbers)];
+            if (uniqueFormattedSet.length < formattedNumbers.length) {
                 tagShouldBeFlaggedForRemoval = true;
-                suggestedFix = uniqueSet.join('; ');
+                suggestedFix = uniqueFormattedSet.join('; ');
             }
 
             // --- Detect duplicates across tags ---
@@ -569,10 +569,13 @@ function validateNumbers(elements, countryCode) {
 
                     const duplicateTag = tagToRemove;
                     item.invalidNumbers.set(duplicateTag, tags[duplicateTag]);
-                    // store the original value from the tag
                     item.duplicateNumbers.set(duplicateTag, tags[duplicateTag]);
                     item.suggestedFixes.set(duplicateTag, null);
                     item.suggestedFixes.set(keptTag, tags[keptTag]);
+
+                    // If this was previously considered a type mismatch, clear that
+                    item.hasTypeMismatch = false;
+                    item.mismatchTypeNumbers.delete(duplicateTag);
 
                     // Update normalized record to reflect the kept tag
                     allNormalizedNumbers.set(normalizedNumber, keptTag);
@@ -612,7 +615,11 @@ function validateNumbers(elements, countryCode) {
                     item.suggestedFixes.set(tag, suggestedFix);
                 }
 
-                if (validationResult.mismatchTypeNumbers.length > 0) {
+                // Add type mismatch info only if not a duplicate
+                if (
+                    validationResult.mismatchTypeNumbers.length > 0 &&
+                    !item.duplicateNumbers.has(tag)
+                ) {
                     item.hasTypeMismatch = true;
                     item.mismatchTypeNumbers.set(
                         tag,

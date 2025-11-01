@@ -83,47 +83,42 @@ function createClientItems(item, locale) {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
 
+        // --- Handle type mismatch numbers ---
         if (key in item.mismatchTypeNumbers) {
             const tagToUse = item.phoneTagToUse;
             const existingValuePresent = tagToUse in item.allTags;
 
-            let originalNumber;
-            if (!item.invalidNumbers[tagToUse] && item.allTags[tagToUse]) {
-                originalNumber = item.allTags[tagToUse];
-            } else if (item.invalidNumbers[tagToUse]) {
-                originalNumber = item.invalidNumbers[tagToUse]
-            } else {
-                originalNumber = null;
-            }
+            // Resolve what the "main" tag originally had and what we’ll suggest
+            let originalForMismatch = item.invalidNumbers[tagToUse] ?? item.allTags[tagToUse] ?? null;
+            let suggestedForMismatch;
 
-            let suggestedFix;
-            if (!item.suggestedFixes[tagToUse] && item.allTags[tagToUse]) {
-                suggestedFix = item.allTags[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else if (item.suggestedFixes[tagToUse]) {
-                suggestedFix = item.suggestedFixes[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
+            if (item.suggestedFixes[tagToUse]) {
+                suggestedForMismatch = item.suggestedFixes[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
+            } else if (item.allTags[tagToUse]) {
+                suggestedForMismatch = item.allTags[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
             } else {
-                suggestedFix = item.mismatchTypeNumbers[key];
+                suggestedForMismatch = item.mismatchTypeNumbers[key];
             }
 
             const originalMismatch = item.allTags[key];
             const suggestedMismatch = item.suggestedFixes[key];
 
-            const { oldDiff: originalDiff, newDiff: suggestedDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff: originalDiff, newDiff: suggestedDiff } = getDiffHtml(originalForMismatch, suggestedForMismatch);
             const { oldDiff: originalMismatchDiff, newDiff: suggestedMismatchDiff } = getDiffHtml(originalMismatch, suggestedMismatch);
 
-            const notMobileLabel = `<span class="label label-not-mobile">${translate("notMobileNumber", locale)}</span>`
-
-            const originalRowValue = `<span class="list-item-old-value"><span class="list-item-old-value">${originalMismatchDiff}</span>${notMobileLabel}</span>`;
+            const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
+            const originalRowValue = `<span class="list-item-old-value">${originalMismatchDiff}${notMobileLabel}</span>`;
             const suggestedRowValue = suggestedDiff;
 
             let oldTagDiff = '', newTagDiff = '';
+
             if (!item.suggestedFixes[key] && !existingValuePresent) {
                 // Simply moving from one key to another
                 ({ oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse));
                 return {
                     [oldTagDiff]: originalRowValue,
                     [newTagDiff]: suggestedRowValue
-                }
+                };
             } else if (!item.suggestedFixes[key]) {
                 // Emptying old tag, appending it to existing tag
                 oldTagDiff = `<span class="diff-removed">${key}</span>`;
@@ -132,7 +127,7 @@ function createClientItems(item, locale) {
                     [oldTagDiff]: originalRowValue,
                     [tagToUse]: originalDiff,
                     [newTagDiff]: suggestedRowValue
-                }
+                };
             } else if (existingValuePresent) {
                 // Removing from old tag (leaving something there) and adding to existing tag
                 oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
@@ -142,7 +137,7 @@ function createClientItems(item, locale) {
                     [key]: suggestedMismatchDiff,
                     [tagToUse]: originalDiff,
                     [newTagDiff]: suggestedRowValue
-                }
+                };
             } else {
                 // Removing from old tag, creating new tag
                 oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
@@ -151,15 +146,14 @@ function createClientItems(item, locale) {
                     [oldTagDiff]: originalRowValue,
                     [key]: suggestedMismatchDiff,
                     [newTagDiff]: suggestedRowValue
-                }
+                };
             }
         }
 
-        // Dealt with above
-        if (item.hasTypeMismatch && key === item.phoneTagToUse) {
-            return;
-        }
+        // --- Skip duplicate rendering of type mismatch "main" tag ---
+        if (item.hasTypeMismatch && key === item.phoneTagToUse) return;
 
+        // --- Handle simple fixable numbers ---
         if (suggestedFix) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
             const suggestedRowKey = translate('suggestedFix', locale);
@@ -167,12 +161,45 @@ function createClientItems(item, locale) {
                 [key]: oldDiff,
                 [suggestedRowKey]: newDiff
             };
-        } else {
+        }
+
+        // --- Handle duplicates ---
+        if (key in item.duplicateNumbers) {
+            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
+            const originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
+
+            const otherKeys = Object.keys(item.invalidNumbers).filter(k => k !== key);
+            const suggestedRowKey = translate('suggestedFix', locale);
+            const keptTag = otherKeys.find(k => item.suggestedFixes[k]) ?? null;
+            const keptValue = keptTag ? item.suggestedFixes[keptTag] : null;
+
+            // Show both tags side by side if both exist
+            if (keptTag && keptValue) {
+                return {
+                    [key]: originalRowValue,
+                    [keptTag]: keptValue,
+                    [suggestedRowKey]: keptValue
+                };
+            }
+
+            const suggestedFixKeys = Object.keys(item.suggestedFixes);
+            const otherKey = suggestedFixKeys.find(key => !item.invalidNumbers.hasOwnProperty(key)) ?? null;
+            const otherValue = otherKey ? item.suggestedFixes[otherKey] : null;
+
+            // Otherwise show the value that has the duplicate
             return {
-                [key]: `<span>${escapeHTML(originalNumber)}</span>`
+                [key]: originalRowValue,
+                [otherKey]: otherValue,
             };
         }
+
+        // --- Default fallback for plain invalid numbers (no fix, no duplicate) ---
+        return {
+            [key]: `<span>${escapeHTML(originalNumber)}</span>`
+        };
     }).filter(Boolean);
+
 
     item.josmFixUrl = createJosmFixUrl(item);
 
@@ -231,22 +258,22 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         const onClickString = editor.onClick ? editor.onClick(editorId) : undefined;
 
         OSM_EDITORS_CLIENT[editorId] = {
-            getEditLink: editor.getEditLink, 
+            getEditLink: editor.getEditLink,
             onClick: onClickString,
             // Pre-evaluate the string using the locale
-            editInString: editor.editInString(locale) 
+            editInString: editor.editInString(locale)
         };
     }
 
     const clientOsmEditorsScript = `
         const OSM_EDITORS = ${JSON.stringify(OSM_EDITORS_CLIENT, (key, value) => {
-            // Use a custom replacer function to handle functions (convert them to strings)
-            if (typeof value === 'function') {
-                // Converts the function back to a string so it can be re-evaluated client-side
-                return value.toString();
-            }
-            return value;
-        }, 4)};
+        // Use a custom replacer function to handle functions (convert them to strings)
+        if (typeof value === 'function') {
+            // Converts the function back to a string so it can be re-evaluated client-side
+            return value.toString();
+        }
+        return value;
+    }, 4)};
     `;
 
     const htmlContent = `

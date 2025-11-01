@@ -568,6 +568,7 @@ describe('validateNumbers', () => {
     const UNFIXABLE_INPUT = '020 794'; // Too short
     const BAD_SEPARATOR_INPUT = '020 7946 0000, 07712 900000';
     const BAD_SEPARATOR_FIX = '+44 20 7946 0000; +44 7712 900000';
+    const VALID_MOBILE = '+44 7712 900000';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
 
@@ -1068,6 +1069,40 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
+            'phone': VALID_LANDLINE
+        });
+    });
+
+    test('duplicate non-mobile numbers in phone and mobile are duplicate, not type mismatch', () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'mobile': VALID_LANDLINE,
+                    'phone': VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = validateNumbers(elements, COUNTRY_CODE);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidNumbers).toHaveLength(1);
+        const invalidItem = result.invalidNumbers[0];
+
+        expect(invalidItem.hasTypeMismatch).toBe(false);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'mobile': VALID_LANDLINE
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'mobile': VALID_LANDLINE
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'mobile': null,
             'phone': VALID_LANDLINE
         });
     });
