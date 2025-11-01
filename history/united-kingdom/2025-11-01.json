@@ -1,0 +1,114 @@
+{
+  "name": "United Kingdom",
+  "slug": "united-kingdom",
+  "locale": "en-GB",
+  "invalidCount": 386,
+  "autoFixableCount": 55,
+  "totalNumbers": 160729,
+  "groupedDivisionStats": {
+    "England": [
+      {
+        "name": "East Midlands",
+        "divisionSlug": "england",
+        "slug": "east-midlands",
+        "invalidCount": 26,
+        "autoFixableCount": 2,
+        "totalNumbers": 8650
+      },
+      {
+        "name": "East of England",
+        "divisionSlug": "england",
+        "slug": "east-of-england",
+        "invalidCount": 40,
+        "autoFixableCount": 11,
+        "totalNumbers": 16055
+      },
+      {
+        "name": "Greater London",
+        "divisionSlug": "england",
+        "slug": "greater-london",
+        "invalidCount": 47,
+        "autoFixableCount": 2,
+        "totalNumbers": 23819
+      },
+      {
+        "name": "North East England",
+        "divisionSlug": "england",
+        "slug": "north-east-england",
+        "invalidCount": 16,
+        "autoFixableCount": 0,
+        "totalNumbers": 7490
+      },
+      {
+        "name": "North West England",
+        "divisionSlug": "england",
+        "slug": "north-west-england",
+        "invalidCount": 28,
+        "autoFixableCount": 3,
+        "totalNumbers": 16600
+      },
+      {
+        "name": "South East England",
+        "divisionSlug": "england",
+        "slug": "south-east-england",
+        "invalidCount": 62,
+        "autoFixableCount": 3,
+        "totalNumbers": 25285
+      },
+      {
+        "name": "South West England",
+        "divisionSlug": "england",
+        "slug": "south-west-england",
+        "invalidCount": 24,
+        "autoFixableCount": 6,
+        "totalNumbers": 13804
+      },
+      {
+        "name": "West Midlands",
+        "divisionSlug": "england",
+        "slug": "west-midlands",
+        "invalidCount": 25,
+        "autoFixableCount": 1,
+        "totalNumbers": 9669
+      },
+      {
+        "name": "Yorkshire and the Humber",
+        "divisionSlug": "england",
+        "slug": "yorkshire-and-the-humber",
+        "invalidCount": 30,
+        "autoFixableCount": 6,
+        "totalNumbers": 10114
+      }
+    ],
+    "Northern Ireland": [
+      {
+        "name": "Northern Ireland",
+        "divisionSlug": "northern-ireland",
+        "slug": "northern-ireland",
+        "invalidCount": 22,
+        "autoFixableCount": 14,
+        "totalNumbers": 2282
+      }
+    ],
+    "Scotland": [
+      {
+        "name": "Scotland",
+        "divisionSlug": "scotland",
+        "slug": "scotland",
+        "invalidCount": 33,
+        "autoFixableCount": 6,
+        "totalNumbers": 16167
+      }
+    ],
+    "Wales": [
+      {
+        "name": "Wales",
+        "divisionSlug": "wales",
+        "slug": "wales",
+        "invalidCount": 33,
+        "autoFixableCount": 1,
+        "totalNumbers": 10794
+      }
+    ]
+  }
+}
