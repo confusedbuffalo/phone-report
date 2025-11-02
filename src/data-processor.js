@@ -495,35 +495,46 @@ function validateNumbers(elements, countryCode) {
     elements.forEach(element => {
         if (!element.tags) return;
         const tags = element.tags;
-
-        let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
-        if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
-            website = `http://${website}`;
-        }
-
-        const lat = element.lat || (element.center && element.center.lat);
-        const lon = element.lon || (element.center && element.center.lon);
-        const name = tags.name;
         const key = `${element.type}-${element.id}`;
-        const couldBeArea =
-            element.type === 'way' &&
-            element['nodes'] &&
-            element['nodes'].at(0) === element['nodes'].at(-1);
+        let item = null; // The invalid item, lazily initialized.
 
-        const baseItem = {
-            type: element.type,
-            id: element.id,
-            website,
-            lat,
-            lon,
-            couldBeArea,
-            name,
-            allTags: tags,
-            invalidNumbers: new Map(),
-            suggestedFixes: new Map(),
-            hasTypeMismatch: false,
-            mismatchTypeNumbers: new Map(),
-            duplicateNumbers: new Map(),
+        const getOrCreateItem = (autoFixable) => {
+            if (item) return item;
+
+            if (invalidItemsMap.has(key)) {
+                item = invalidItemsMap.get(key);
+                return item;
+            }
+
+            let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
+            if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
+                website = `http://${website}`;
+            }
+            const lat = element.lat || (element.center && element.center.lat);
+            const lon = element.lon || (element.center && element.center.lon);
+            const couldBeArea =
+                element.type === 'way' &&
+                element['nodes'] &&
+                element['nodes'].at(0) === element['nodes'].at(-1);
+
+            const baseItem = {
+                type: element.type,
+                id: element.id,
+                website,
+                lat,
+                lon,
+                couldBeArea,
+                name: tags.name,
+                allTags: tags,
+                invalidNumbers: new Map(),
+                suggestedFixes: new Map(),
+                hasTypeMismatch: false,
+                mismatchTypeNumbers: new Map(),
+                duplicateNumbers: new Map(),
+            };
+            item = { ...baseItem, autoFixable };
+            invalidItemsMap.set(key, item);
+            return item;
         };
 
         // Track normalized numbers across all tags
@@ -563,11 +574,7 @@ function validateNumbers(elements, countryCode) {
                 if (existingTag) {
                     const tagToRemove = keyToRemove(tag, existingTag);
                     const keptTag = tagToRemove === tag ? existingTag : tag;
-
-                    if (!invalidItemsMap.has(key)) {
-                        invalidItemsMap.set(key, { ...baseItem, autoFixable: true });
-                    }
-                    const item = invalidItemsMap.get(key);
+                    const item = getOrCreateItem(true);
 
                     const duplicateTag = tagToRemove;
                     item.invalidNumbers.set(duplicateTag, tags[duplicateTag]);
@@ -603,10 +610,7 @@ function validateNumbers(elements, countryCode) {
 
             // --- Record invalid entries ---
             if (isInvalid || tagShouldBeFlaggedForRemoval) {
-                if (!invalidItemsMap.has(key)) {
-                    invalidItemsMap.set(key, { ...baseItem, autoFixable });
-                }
-                const item = invalidItemsMap.get(key);
+                const item = getOrCreateItem(autoFixable);
 
                 item.invalidNumbers.set(tag, phoneTagValue);
 
