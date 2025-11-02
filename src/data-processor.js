@@ -583,9 +583,16 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     const currentItem = getOrCreateItem(true);
 
                     currentItem.invalidNumbers.set(tagToRemove, tags[tagToRemove]);
-                    currentItem.duplicateNumbers.set(tagToRemove, tags[tagToRemove]);
+                    currentItem.duplicateNumbers.set(tagToRemove, keptTag);
                     currentItem.suggestedFixes.set(tagToRemove, null);
-                    currentItem.suggestedFixes.set(keptTag, tags[keptTag]);
+
+                    // In case of bad separator and also to fix formatting while here
+                    validatedKeptTag = validateSingleTag(tags[keptTag]);
+                    if (validatedKeptTag !== tags[keptTag]) {
+                        currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
+                    }
+                    currentItem.suggestedFixes.set(keptTag, validatedKeptTag.suggestedNumbersList.join('; '));
+
                     currentItem.hasTypeMismatch = false;
                     currentItem.mismatchTypeNumbers.delete(tagToRemove);
 
@@ -618,7 +625,6 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
                 if (tagShouldBeFlaggedForRemoval) {
                     currentItem.suggestedFixes.set(tag, suggestedFix ?? null);
-                    currentItem.duplicateNumbers.set(tag, phoneTagValue);
                 } else {
                     currentItem.suggestedFixes.set(tag, suggestedFix);
                 }
