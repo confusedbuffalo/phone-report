@@ -5,6 +5,7 @@ let fixableSortKey = 'none'; // 'name', 'invalid', 'fixable'
 let fixableSortDirection = 'asc'; // 'asc', 'desc'
 let invalidSortKey = 'none'; // 'name', 'invalid'
 let invalidSortDirection = 'asc'; // 'asc', 'desc'
+let reportData = null;
 
 /**
  * Sends a command to the JOSM Remote Control API.
@@ -60,7 +61,7 @@ function loadSettings() {
         console.error("Error loading settings from localStorage:", e);
     }
     // Fallback to defaults
-    currentActiveEditors = [...DEFAULT_EDITORS]; 
+    currentActiveEditors = [...DEFAULT_EDITORS];
 }
 
 /**
@@ -107,7 +108,7 @@ function handleEditorChange(event) {
     const checkbox = event.target;
     if (checkbox.type === 'checkbox') {
         const editorId = checkbox.dataset.editorId;
-        
+
         if (checkbox.checked) {
             if (!currentActiveEditors.includes(editorId)) {
                 currentActiveEditors.push(editorId);
@@ -115,7 +116,7 @@ function handleEditorChange(event) {
         } else {
             currentActiveEditors = currentActiveEditors.filter(id => id !== editorId);
         }
-        
+
         saveSettings();
         applyEditorVisibility();
     }
@@ -130,10 +131,10 @@ function handleEditorChange(event) {
 function applyEditorVisibility() {
     // Find all editor buttons using the data-editor-id attribute
     const buttons = document.querySelectorAll(':not(input)[data-editor-id]');
-    
+
     buttons.forEach(button => {
         const editorId = button.dataset.editorId;
-        
+
         // Special handling for the JOSM Fix button: always visible if JOSM is active
         // Display fix label if fix button is invisible
         if (editorId === 'josm-fix') {
@@ -146,7 +147,7 @@ function applyEditorVisibility() {
             button.style.display = isVisible ? 'inline-flex' : 'none';
             return;
         }
-        
+
         const isVisible = currentActiveEditors.includes(editorId);
         button.style.display = isVisible ? 'inline-flex' : 'none';
     });
@@ -163,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsMenu.classList.toggle('hidden');
         event.stopPropagation(); // Stop click from propagating to document listener
     });
-    
+
     // Close the menu if user clicks outside
     document.addEventListener('click', (event) => {
         if (!settingsMenu.contains(event.target) && !settingsToggle.contains(event.target)) {
@@ -238,7 +239,7 @@ function createButtons(item) {
         const onClick = isJosm ? `onclick="openInJosm('${url}', event)"` : '';
 
         return `
-            <a href="${href}" ${target} ${onClick} 
+            <a href="${href}" ${target} ${onClick}
                 data-editor-id="${editorId}"
                 class="btn btn-editor">
                 ${text}
@@ -248,7 +249,7 @@ function createButtons(item) {
 
     // Generate JOSM Fix Button (special case)
     const josmFixButton = item.josmFixUrl ?
-        `<a href="#" onclick="openInJosm('${item.josmFixUrl}', event)" 
+        `<a href="#" onclick="openInJosm('${item.josmFixUrl}', event)"
             data-editor-id="josm-fix"
             class="btn btn-josm-fix">
             ${translate('fixInJOSM')}
@@ -295,7 +296,7 @@ function createListItem(item) {
                 ${websiteButton}
                 ${fixableLabel}
                 ${josmFixButton}
-                ${editorButtons} 
+                ${editorButtons}
             </div>
         </li>
     `;
@@ -435,7 +436,7 @@ function renderPaginatedSection(
             return 'sort-btn-style-inactive'
         }
     };
-    
+
     // Unique ID suffix for this section's controls
     const suffix = isFixableSection ? 'fixable' : 'invalid';
 
@@ -503,12 +504,16 @@ function renderPaginatedSection(
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 function changePage(section, delta) {
+    if (!reportData) {
+        console.error("Cannot change page before data is loaded.");
+        return;
+    }
     if (section === 'fixable') {
-        const totalPages = Math.ceil(invalidItemsClient.filter(item => item.autoFixable).length / pageSize);
+        const totalPages = Math.ceil(reportData.filter(item => item.autoFixable).length / pageSize);
         fixableCurrentPage = Math.max(1, Math.min(totalPages, fixableCurrentPage + delta));
         renderNumbers(); // Re-render the whole page to update the state
     } else if (section === 'invalid') {
-        const totalPages = Math.ceil(invalidItemsClient.filter(item => !item.autoFixable).length / pageSize);
+        const totalPages = Math.ceil(reportData.filter(item => !item.autoFixable).length / pageSize);
         invalidCurrentPage = Math.max(1, Math.min(totalPages, invalidCurrentPage + delta));
         renderNumbers(); // Re-render the whole page
     }
@@ -550,7 +555,7 @@ function handleSort(section, newKey) {
             invalidSortDirection = 'asc';
         }
     }
-    
+
     // Reset to the first page after sorting
     if (section === 'fixable') fixableCurrentPage = 1;
     else invalidCurrentPage = 1;
@@ -567,12 +572,16 @@ function handleSort(section, newKey) {
  * @returns {void}
  */
 function renderNumbers() {
+    if (!reportData) {
+        console.error("Attempted to render numbers before data was loaded.");
+        return;
+    }
     const fixableContainer = document.getElementById("fixableSection");
     const invalidContainer = document.getElementById("invalidSection");
     const noInvalidContainer = document.getElementById("noInvalidSection");
 
-    const autofixableNumbers = invalidItemsClient.filter(item => item.autoFixable);
-    const manualFixNumbers = invalidItemsClient.filter(item => !item.autoFixable);
+    const autofixableNumbers = reportData.filter(item => item.autoFixable);
+    const manualFixNumbers = reportData.filter(item => !item.autoFixable);
 
     const anyInvalid = manualFixNumbers.length > 0;
     const anyFixable = autofixableNumbers.length > 0;
@@ -618,4 +627,26 @@ function renderNumbers() {
     applyEditorVisibility();
 }
 
-renderNumbers();
+/**
+ * Initializes the report page by fetching the data and rendering the numbers.
+ */
+async function initReportPage() {
+    try {
+        const response = await fetch(DATA_FILE_PATH);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        reportData = await response.json();
+    } catch (error) {
+        console.error("Failed to load phone validation data:", error);
+        // Display an error message to the user if data loading fails
+        const container = document.getElementById("reportContainer");
+        if (container) {
+             container.innerHTML = '<p class="text-red-500 font-bold">Error: Could not load report data. Please check the network connection and the data file path.</p>';
+        }
+        return;
+    }
+    renderNumbers();
+}
+
+initReportPage();

@@ -138,6 +138,10 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
 
     await generateHtmlReport(countryName, stats, invalidNumbers, locale, clientTranslations);
 
+    // Clear references to large arrays
+    elements = null;
+    invalidNumbers = null;
+
     return stats;
 }
 
