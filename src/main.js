@@ -127,7 +127,8 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         slug: safeName(subdivision.name),
         invalidCount: invalidNumbers.length,
         autoFixableCount: autoFixableCount,
-        totalNumbers: totalNumbers
+        totalNumbers: totalNumbers,
+        lastUpdated: new Date().toISOString()
     };
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
