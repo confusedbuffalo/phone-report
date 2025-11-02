@@ -9,7 +9,8 @@
     "@tailwindcss/postcss": "^4.1.16",
     "diff": "^8.0.2",
     "libphonenumber-js": "^1.12.25",
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^3.3.0",
+    "stream-json": "^1.9.1"
   },
   "scripts": {
     "download-icons": "node src/download-icons.js",

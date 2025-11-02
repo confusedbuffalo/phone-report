@@ -1,3 +1,4 @@
+const { Readable } = require('stream');
 const {
     safeName,
     stripExtension,
@@ -590,7 +591,7 @@ describe('validateNumbers', () => {
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
 
-    test('should correctly identify a single valid number and return zero invalid items', () => {
+    test('should correctly identify a single valid number and return zero invalid items', async () => {
         const elements = [
             {
                 type: 'node',
@@ -601,13 +602,13 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(1);
         expect(result.invalidNumbers).toHaveLength(0);
     });
 
-    test('should identify a single fixable invalid number (no country code) and provide suggested fix', () => {
+    test('should identify a single fixable invalid number (no country code) and provide suggested fix', async () => {
         const elements = [
             {
                 type: 'way',
@@ -617,7 +618,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(1);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -633,7 +634,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should identify a fundamentally unfixable number (too short) and mark it as unfixable', () => {
+    test('should identify a fundamentally unfixable number (too short) and mark it as unfixable', async () => {
         const elements = [
             {
                 type: 'node',
@@ -644,7 +645,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(1);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -654,7 +655,7 @@ describe('validateNumbers', () => {
         expect(invalidItem.invalidNumbers.mobile).toBe(UNFIXABLE_INPUT);
     });
 
-    test('should handle multiple numbers in a single tag using a bad separator (comma)', () => {
+    test('should handle multiple numbers in a single tag using a bad separator (comma)', async () => {
         const elements = [
             {
                 type: 'node',
@@ -665,7 +666,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -676,7 +677,7 @@ describe('validateNumbers', () => {
         expect(invalidItem.suggestedFixes.phone).toBe(BAD_SEPARATOR_FIX);
     });
 
-    test('should aggregate results from multiple phone tags on a single element', () => {
+    test('should aggregate results from multiple phone tags on a single element', async () => {
         const elements = [
             {
                 type: 'relation',
@@ -691,7 +692,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(3);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -709,7 +710,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should correctly process website tag (without protocol) and include protocol in base item', () => {
+    test('should correctly process website tag (without protocol) and include protocol in base item', async () => {
         const websiteInput = 'www.test-site.co.uk';
         const elements = [
             {
@@ -721,7 +722,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.invalidNumbers).toHaveLength(1);
         const invalidItem = result.invalidNumbers[0];
@@ -729,7 +730,7 @@ describe('validateNumbers', () => {
         expect(invalidItem.website).toBe(`http://${websiteInput}`);
     });
 
-    test('should not change website tag if it already has a protocol', () => {
+    test('should not change website tag if it already has a protocol', async () => {
         const websiteInput = 'https://secure.site.com';
         const elements = [
             {
@@ -741,7 +742,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.invalidNumbers).toHaveLength(1);
         const invalidItem = result.invalidNumbers[0];
@@ -749,7 +750,7 @@ describe('validateNumbers', () => {
         expect(invalidItem.website).toBe(websiteInput);
     });
 
-    test('should correctly calculate totalNumbers across multiple elements', () => {
+    test('should correctly calculate totalNumbers across multiple elements', async () => {
         const elements = [
             {
                 type: 'node',
@@ -779,14 +780,14 @@ describe('validateNumbers', () => {
             }
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         // 1 (7001) + 1 (7002) + 2 (7003) = 4 total numbers checked
         expect(result.totalNumbers).toBe(4);
         expect(result.invalidNumbers).toHaveLength(2); // Elements 7002 and 7003 are invalid
     });
 
-    test('should do nothing with mobile=yes and process actual phone number', () => {
+    test('should do nothing with mobile=yes and process actual phone number', async () => {
         const elements = [
             {
                 type: 'relation',
@@ -800,7 +801,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(1);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -815,7 +816,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should fix and move landline number out of mobile tag', () => {
+    test('should fix and move landline number out of mobile tag', async () => {
         const elements = [
             {
                 type: 'way',
@@ -828,7 +829,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(1);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -847,7 +848,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should keep mobile number in mobile tag when moving another number out', () => {
+    test('should keep mobile number in mobile tag when moving another number out', async () => {
         const elements = [
             {
                 type: 'way',
@@ -860,7 +861,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -879,7 +880,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should remove duplicate number in different tags', () => {
+    test('should remove duplicate number in different tags', async () => {
         const elements = [
             {
                 type: 'way',
@@ -893,7 +894,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -912,7 +913,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should remove duplicate number in the same tag', () => {
+    test('should remove duplicate number in the same tag', async () => {
         const elements = [
             {
                 type: 'way',
@@ -925,7 +926,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -943,7 +944,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should remove duplicate numbers with different formatting in the same tag', () => {
+    test('should remove duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
             {
                 type: 'way',
@@ -956,7 +957,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -974,7 +975,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('should fix duplicate numbers with different formatting in the same tag', () => {
+    test('should fix duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
             {
                 type: 'way',
@@ -987,7 +988,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -1005,7 +1006,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('different extensions are not duplicates', () => {
+    test('different extensions are not duplicates', async () => {
         const elements = [
             {
                 type: 'way',
@@ -1019,13 +1020,13 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(0);
     });
 
-    test('different spacing is still a duplicate', () => {
+    test('different spacing is still a duplicate', async () => {
         const elements = [
             {
                 type: 'way',
@@ -1039,7 +1040,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -1058,7 +1059,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('fixable and correct formatting are duplicates', () => {
+    test('fixable and correct formatting are duplicates', async () => {
         const elements = [
             {
                 type: 'way',
@@ -1072,7 +1073,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);
@@ -1091,7 +1092,7 @@ describe('validateNumbers', () => {
         });
     });
 
-    test('duplicate non-mobile numbers in phone and mobile are duplicate, not type mismatch', () => {
+    test('duplicate non-mobile numbers in phone and mobile are duplicate, not type mismatch', async () => {
         const elements = [
             {
                 type: 'way',
@@ -1105,7 +1106,7 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = validateNumbers(elements, COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
 
         expect(result.totalNumbers).toBe(2);
         expect(result.invalidNumbers).toHaveLength(1);

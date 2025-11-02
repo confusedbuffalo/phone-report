@@ -116,8 +116,8 @@ async function getSubdivisions(countryData, divisionName) {
  */
 async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
-    const elements = await fetchOsmDataForDivision(subdivision);
-    const { invalidNumbers, totalNumbers } = validateNumbers(elements, countryData.countryCode);
+    const elementStream = await fetchOsmDataForDivision(subdivision);
+    const { invalidNumbers, totalNumbers } = await validateNumbers(elementStream, countryData.countryCode);
 
     const autoFixableCount = invalidNumbers.filter(item => item.autoFixable).length;
 
