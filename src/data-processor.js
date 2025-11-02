@@ -324,6 +324,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
     const spacingRegex = getSpacingRegex(countryCode);
 
+    if (numberStr.startsWith('++')) {
+        numberStr = numberStr.slice(1);
+        isInvalid = true;
+    }
+
     try {
         phoneNumber = parsePhoneNumber(numberStr, countryCode);
 

@@ -574,6 +574,16 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 7496 123456']);
         expect(result.numberOfValues).toEqual(2);
     });
+
+    test('double plus can be fixed', () => {
+        const result = validateSingleTag(
+            '++44 1389 123456',
+            'GB'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
+    });
 });
 
 // =====================================================================
