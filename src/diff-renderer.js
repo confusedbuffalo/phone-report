@@ -81,6 +81,27 @@ function replaceInvisibleChars(text) {
  * }} The diff objects for rendering two separate lines.
  */
 function diffPhoneNumbers(original, suggested) {
+    let originalDiff = [];
+    let suggestedDiff = [];
+
+    // --- Early Exit Logic ---
+    if (original === suggested) {
+        originalDiff.push({ value: original, removed: false, added: false });
+        suggestedDiff.push({ value: suggested, removed: false, added: false });
+        return { originalDiff, suggestedDiff };
+    }
+    if (!original && !suggested) {
+        return { originalDiff: [], suggestedDiff: [] };
+    }
+    if (!original) {
+        suggestedDiff.push({ value: suggested, added: true });
+        return { originalDiff: [], suggestedDiff };
+    }
+    if (!suggested) {
+        originalDiff.push({ value: original, removed: true });
+        return { originalDiff, suggestedDiff: [] };
+    }
+
     // --- 1. Semantic Diff (Digits only) ---
     const normalizedOriginal = normalize(original);
     const normalizedSuggested = normalize(suggested);
@@ -95,7 +116,6 @@ function diffPhoneNumbers(original, suggested) {
     });
 
     // --- 2. Visual Diff for Original String (Removals) ---
-    let originalDiff = [];
     let commonPointer = 0; // Tracks position in the commonDigits array
 
     let originalRemainder = original; // We will cut these down to keep track of added/removed separators
@@ -156,7 +176,6 @@ function diffPhoneNumbers(original, suggested) {
     }
 
     // --- 3. Visual Diff for Suggested String (Additions) ---
-    let suggestedDiff = [];
     let commonPointerNew = 0; // Separate pointer for suggested string traversal
 
     let originalRemainderNew = original; // We will cut these down to keep track of added/removed separators
@@ -164,7 +183,7 @@ function diffPhoneNumbers(original, suggested) {
 
     for (let i = 0; i < suggested.length; i++) {
         const char = suggested[i];
-
+        
         // Special handling of adding a prefix to ensure that the whole prefix is marked as added,
         // even if it contains the same digit as the first digit of the actual phone number
         if (
@@ -181,7 +200,9 @@ function diffPhoneNumbers(original, suggested) {
             }
             suggestedDiff.push({ value: ' ', added: true });
 
-            i = suggested.indexOf(' ')
+            if (suggested.indexOf(' ') !== -1){
+                i = suggested.indexOf(' ')
+            }
 
             if (originalRemainderNew[0] === '0' && !actualNumberStartsWithZero) {
                 originalRemainderNew = originalRemainderNew.slice(1) // Remove the 0
@@ -220,7 +241,7 @@ function diffPhoneNumbers(original, suggested) {
                 originalRemainderNew.includes(char)
                 && !(/[-+ \d]/.test(originalRemainderNew[0])) // Check that character is acceptable
             ) {
-                while (originalRemainderNew[0] != char && originalRemainderNew[0] != commonDigits[commonPointerNew]) {
+                while (originalRemainderNew[0] != char && originalRemainderNew[0] != commonDigits[commonPointerNew] && originalRemainderNew != '') {
                     originalRemainderNew = originalRemainderNew.slice(1);
                 }
                 if (char === originalRemainderNew[0]) {

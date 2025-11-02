@@ -89,6 +89,8 @@ function createClientItems(item, locale) {
     item.fixRows = Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
+        const isDuplicateKey = key in item.duplicateNumbers;
+        const isKeptDuplicateValue = Object.values(item.duplicateNumbers).includes(key);
 
         // --- Handle type mismatch numbers ---
         if (key in item.mismatchTypeNumbers) {
@@ -160,44 +162,47 @@ function createClientItems(item, locale) {
         // --- Skip duplicate rendering of type mismatch "main" tag ---
         if (item.hasTypeMismatch && key === item.phoneTagToUse) return;
 
-        // --- Handle simple fixable numbers ---
-        if (suggestedFix) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const suggestedRowKey = translate('suggestedFix', locale);
-            return {
-                [key]: oldDiff,
-                [suggestedRowKey]: newDiff
-            };
-        }
+        if (isKeptDuplicateValue) return;
 
         // --- Handle duplicates ---
-        if (key in item.duplicateNumbers) {
+        if (isDuplicateKey) {
             const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
             const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
             const originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
 
-            const otherKeys = Object.keys(item.invalidNumbers).filter(k => k !== key);
             const suggestedRowKey = translate('suggestedFix', locale);
-            const keptTag = otherKeys.find(k => item.suggestedFixes[k]) ?? null;
-            const keptValue = keptTag ? item.suggestedFixes[keptTag] : null;
+            const keptTag = item.duplicateNumbers[key];
+            const keptOriginal = keptTag ? item.invalidNumbers[keptTag] : null;
+            const keptSuggestedValue = keptTag ? item.suggestedFixes[keptTag] : null;
+
+            const { oldDiff: keptOriginalDiff, newDiff: keptSuggestedValueDiff } = getDiffHtml(keptOriginal, keptSuggestedValue);
 
             // Show both tags side by side if both exist
-            if (keptTag && keptValue) {
+            if (keptTag && keptSuggestedValue) {
                 return {
                     [key]: originalRowValue,
-                    [keptTag]: keptValue,
-                    [suggestedRowKey]: keptValue
+                    [keptTag]: keptOriginalDiff,
+                    [suggestedRowKey]: keptSuggestedValueDiff
                 };
             }
 
-            const suggestedFixKeys = Object.keys(item.suggestedFixes);
-            const otherKey = suggestedFixKeys.find(key => !item.invalidNumbers.hasOwnProperty(key)) ?? null;
+            const otherKey = item.duplicateNumbers[key];
             const otherValue = otherKey ? item.suggestedFixes[otherKey] : null;
 
             // Otherwise show the value that has the duplicate
             return {
                 [key]: originalRowValue,
                 [otherKey]: otherValue,
+            };
+        }
+
+        // --- Handle simple fixable numbers ---
+        if (suggestedFix && !Object.keys(item.duplicateNumbers).includes(key)) {
+            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const suggestedRowKey = translate('suggestedFix', locale);
+            return {
+                [key]: oldDiff,
+                [suggestedRowKey]: newDiff
             };
         }
 
@@ -288,7 +293,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             fs.createReadStream(tmpFilePath),
             parser(),
             streamArray(),
-            new ItemTransformer(createClientItems),
+            new ItemTransformer(createClientItems, { locale: locale }),
             disassembler(),
             stringer(stringerOptions),
             fs.createWriteStream(dataFilePath)
