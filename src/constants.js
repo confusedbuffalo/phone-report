@@ -44,7 +44,6 @@ const OSM_EDITORS = {
     "JOSM": {
         getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
-            // Use item.type[0] for the single-letter type prefix (n/w/r)
             return `${baseUrl}?objects=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["JOSM"]),
@@ -62,7 +61,6 @@ const OSM_EDITORS = {
     "Rapid": {
         getEditLink: function (item) {
             const baseUrl = 'https://rapideditor.org/edit#map=19';
-            // Use item.type[0] for the object type prefix (n/w/r)
             return `${baseUrl}/${item.lat}/${item.lon}&id=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["Rapid"]),

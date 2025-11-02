@@ -270,7 +270,11 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         // Use a custom replacer function to handle functions (convert them to strings)
         if (typeof value === 'function') {
             // Converts the function back to a string so it can be re-evaluated client-side
-            return value.toString();
+            const functionString = value.toString();
+            let cleanedString = functionString.replace(/[\n\t\r]/g, ' ');
+            cleanedString = cleanedString.replace(/ {2,}/g, ' ');
+            cleanedString = cleanedString.trim();
+            return cleanedString;
         }
         return value;
     }, 4)};
