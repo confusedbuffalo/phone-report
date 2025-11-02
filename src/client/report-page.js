@@ -7,6 +7,54 @@ let invalidSortKey = 'none'; // 'name', 'invalid'
 let invalidSortDirection = 'asc'; // 'asc', 'desc'
 let reportData = null;
 
+const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
+
+/**
+ * Adds an item's ID to localStorage to mark it as clicked.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ */
+function recordItemClick(itemId) {
+    try {
+        const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
+        clickedItems[itemId] = true;
+        localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
+    } catch (e) {
+        console.error("Could not save clicked item to localStorage:", e);
+    }
+}
+
+/**
+ * Applies the 'clicked' visual state to all buttons of a specific item.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ */
+function setButtonsAsClicked(itemId) {
+    const listItem = document.querySelector(`li[data-item-id="${itemId}"]`);
+    if (listItem) {
+        const buttons = listItem.querySelectorAll(':not(input)[data-editor-id]');
+        buttons.forEach(button => {
+            button.classList.remove('btn-josm-fix');
+            button.classList.remove('btn-editor');
+            button.classList.remove('label-fixable');
+            button.classList.add('btn-clicked');
+        });
+    }
+}
+
+/**
+ * Checks if an item has been clicked by looking it up in localStorage.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ * @returns {boolean} - True if the item is in the clicked items list, false otherwise.
+ */
+function isItemClicked(itemId) {
+    try {
+        const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
+        return clickedItems.hasOwnProperty(itemId);
+    } catch (e) {
+        console.error("Could not read clicked items from localStorage:", e);
+        return false;
+    }
+}
+
 /**
  * Sends a command to the JOSM Remote Control API.
  * Prevents the default link action and provides user feedback in the console.
@@ -220,7 +268,7 @@ function createDetailsGrid(item) {
  * editorButtons: Element[]
  * }}
  */
-function createButtons(item) {
+function createButtons(item, clickedClass) {
 
     // Generate buttons for ALL editors so client-side script can hide them
     const editorButtons = ALL_EDITOR_IDS.map(editorId => {
@@ -236,12 +284,13 @@ function createButtons(item) {
 
         // JOSM requires an onclick handler; others use a direct href
         const href = isJosm ? '#' : url;
-        const onClick = isJosm ? `onclick="openInJosm('${url}', event)"` : '';
+        const onClick = isJosm ? `openInJosm('${url}', event);` : '';
+        const itemId = `${item.type}/${item.id}`;
 
         return `
-            <a href="${href}" ${target} ${onClick}
+            <a href="${href}" ${target} onclick="recordItemClick('${itemId}'); setButtonsAsClicked('${itemId}'); ${onClick}"
                 data-editor-id="${editorId}"
-                class="btn btn-editor">
+                class="btn ${clickedClass ? clickedClass : 'btn-editor'}">
                 ${text}
             </a>
         `;
@@ -249,14 +298,14 @@ function createButtons(item) {
 
     // Generate JOSM Fix Button (special case)
     const josmFixButton = item.josmFixUrl ?
-        `<a href="#" onclick="openInJosm('${item.josmFixUrl}', event)"
+        `<a href="#" onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); openInJosm('${item.josmFixUrl}', event)"
             data-editor-id="josm-fix"
-            class="btn btn-josm-fix">
+            class="btn ${clickedClass ? clickedClass : 'btn-josm-fix'}">
             ${translate('fixInJOSM')}
         </a>` :
         '';
     const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label label-fixable">${translate('fixable')}</span>` :
+        `<span data-editor-id="fix-label" class="label ${clickedClass ? clickedClass : 'label-fixable'}">${translate('fixable')}</span>` :
         '';
 
     const websiteButton = item.website ?
@@ -273,12 +322,15 @@ function createButtons(item) {
  */
 function createListItem(item) {
 
-    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item);
+    const itemId = `${item.type}/${item.id}`;
+    const clickedClass = isItemClicked(itemId) ? 'btn-clicked' : '';
+
+    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item, clickedClass);
 
     iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
     return `
-        <li class="report-list-item">
+        <li class="report-list-item" data-item-id="${itemId}">
             <div class="list-item-content-wrapper">
                 <a class="list-item-icon-circle-preview" href="https://www.openstreetmap.org/${item.type}/${item.id}" target="_blank" rel="noopener noreferrer">
                     ${iconHtml}

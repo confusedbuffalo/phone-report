@@ -335,6 +335,7 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         const DEFAULT_EDITORS_DESKTOP = ${JSON.stringify(DEFAULT_EDITORS_DESKTOP)};
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
         const DATA_FILE_PATH = './${subdivisionStats.slug}.json';
+        const DATA_LAST_UPDATED = '${subdivisionStats.lastUpdated}';
         const STORAGE_KEY = 'osm_report_editors';
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
