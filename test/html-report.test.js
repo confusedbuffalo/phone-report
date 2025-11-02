@@ -1,14 +1,66 @@
 const { createJosmFixUrl, generateHtmlReport } = require('../src/html-report.js');
 const fs = require('fs');
 
-// Mock dependencies
-jest.mock('fs', () => ({
-    promises: {
-        writeFile: jest.fn().mockResolvedValue(),
-    },
-    readFileSync: jest.fn().mockReturnValue('{}'),
-    existsSync: jest.fn().mockReturnValue(false),
-}));
+jest.mock('fs', () => {
+    const actualFs = jest.requireActual('fs');
+    
+    // Create a mock WriteStream that is recognized by stream-chain
+    const mockWriteStream = () => {
+        const Stream = require('stream');
+        const writable = new Stream.Writable();
+        
+        // --- CRUCIAL ADDITIONS ---
+        // 1. Mock pipe() to allow chaining
+        writable.pipe = jest.fn().mockReturnThis(); 
+        
+        // 2. Ensure 'finish' event is fired to complete the async test
+        writable.on = jest.fn((event, callback) => {
+            if (event === 'finish' && callback) {
+                // Resolve the asynchronous stream completion
+                process.nextTick(callback); 
+            }
+            return writable;
+        });
+
+        // Mock stream methods used by the pipeline
+        writable.end = jest.fn((chunk, encoding, callback) => {
+            if (callback) callback();
+            writable.emit('finish'); 
+        });
+        writable._write = jest.fn((chunk, encoding, callback) => {
+            callback();
+        });
+        // -------------------------
+        
+        return writable;
+    };
+
+    // Create a mock ReadStream (also needs pipe)
+    const mockReadStream = (path) => {
+        const Stream = require('stream');
+        const readable = new Stream.Readable();
+        readable.pipe = jest.fn().mockReturnThis(); // Also needs pipe!
+        
+        // Push content and end stream
+        readable.push(
+            path.includes('.json') ? '[]' : '<html><head></head><body>{reportContent}</body></html>'
+        );
+        readable.push(null); 
+        
+        return readable;
+    };
+
+    return {
+        ...actualFs,
+        promises: {
+            ...actualFs.promises,
+            writeFile: jest.fn().mockResolvedValue(),
+            copyFile: jest.fn().mockResolvedValue(),
+        },
+        createReadStream: jest.fn().mockImplementation(mockReadStream),
+        createWriteStream: jest.fn().mockImplementation(mockWriteStream),
+    };
+});
 
 jest.mock('../src/i18n', () => ({
     translate: (key, locale, args) => {
@@ -151,17 +203,17 @@ describe('generateHtmlReport', () => {
             divisionSlug: 'st-clair-county',
             slug: 'ofallon',
             totalNumbers: 10,
-            invalidCount: 1,
-            autoFixableCount: 1,
+            invalidCount: 0,
+            autoFixableCount: 0,
         };
-        const invalidNumbers = [];
+        const tmpFilePath = 'test.json';
 
-        await generateHtmlReport(countryName, subdivisionStats, invalidNumbers, 'en-US', {});
+        await generateHtmlReport(countryName, subdivisionStats, tmpFilePath, 'en-US', {});
 
         // Verify that fs.promises.writeFile was called
         expect(fs.promises.writeFile).toHaveBeenCalled();
 
-        const writtenContent = fs.promises.writeFile.mock.calls[1][1];
+        const writtenContent = fs.promises.writeFile.mock.calls[0][1];
 
         // Check for the escaped subdivision name in the <title>
         const expectedTitle = `<title>countryReportTitle: O&#039;Fallon</title>`;

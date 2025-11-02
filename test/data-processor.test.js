@@ -1,4 +1,7 @@
 const { Readable } = require('stream');
+const os = require('os');
+const path = require('path');
+const fs = require('fs');
 const {
     safeName,
     stripExtension,
@@ -577,6 +580,19 @@ describe('validateSingleTag', () => {
 // =====================================================================
 describe('validateNumbers', () => {
     const COUNTRY_CODE = 'GB';
+    let testCounter = 0;
+    let tmpFilePath;
+
+    beforeEach(() => {
+        testCounter++;
+        tmpFilePath = path.join(os.tmpdir(), `validate-numbers-test-${testCounter}.json`);
+    });
+
+    afterEach(() => {
+        if (fs.existsSync(tmpFilePath)) {
+            fs.unlinkSync(tmpFilePath);
+        }
+    });
 
     // UK numbers used for testing
     const VALID_LANDLINE = '+44 20 7946 0000';
@@ -602,10 +618,10 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(1);
-        expect(result.invalidNumbers).toHaveLength(0);
+        expect(result.invalidCount).toBe(0);
     });
 
     test('should identify a single fixable invalid number (no country code) and provide suggested fix', async () => {
@@ -618,11 +634,15 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(1);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
 
         expect(invalidItem.id).toBe(2002);
         expect(invalidItem.autoFixable).toBe(true);
@@ -645,11 +665,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(1);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(false);
         expect(invalidItem.invalidNumbers.mobile).toBe(UNFIXABLE_INPUT);
@@ -666,11 +687,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT);
@@ -692,11 +714,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(3);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         // Only the two invalid tags should be recorded in the maps
@@ -722,10 +745,11 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.website).toBe(`http://${websiteInput}`);
     });
@@ -742,10 +766,11 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.website).toBe(websiteInput);
     });
@@ -780,11 +805,11 @@ describe('validateNumbers', () => {
             }
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         // 1 (7001) + 1 (7002) + 2 (7003) = 4 total numbers checked
         expect(result.totalNumbers).toBe(4);
-        expect(result.invalidNumbers).toHaveLength(2); // Elements 7002 and 7003 are invalid
+        expect(result.invalidCount).toBe(2); // Elements 7002 and 7003 are invalid
     });
 
     test('should do nothing with mobile=yes and process actual phone number', async () => {
@@ -801,11 +826,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(1);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
@@ -829,11 +855,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(1);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.hasTypeMismatch).toBe(true);
@@ -861,11 +888,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.hasTypeMismatch).toBe(true);
@@ -894,11 +922,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
@@ -926,11 +955,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
@@ -957,11 +987,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
@@ -988,11 +1019,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
@@ -1020,10 +1052,10 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(0);
+        expect(result.invalidCount).toBe(0);
     });
 
     test('different spacing is still a duplicate', async () => {
@@ -1040,11 +1072,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
@@ -1073,11 +1106,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
@@ -1106,11 +1140,12 @@ describe('validateNumbers', () => {
             },
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE);
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         expect(result.totalNumbers).toBe(2);
-        expect(result.invalidNumbers).toHaveLength(1);
-        const invalidItem = result.invalidNumbers[0];
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
 
         expect(invalidItem.hasTypeMismatch).toBe(false);
         expect(invalidItem.autoFixable).toBe(true);
