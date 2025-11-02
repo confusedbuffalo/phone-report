@@ -99,7 +99,8 @@ const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 // Raw semicolon (';'), semicolon with optional space ('; ?'), comma, slash, 'or' or 'and'.
-const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
 
 // When used in diff, the groups need to be capturing
 const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
@@ -182,6 +183,7 @@ module.exports = {
     EXCLUSIONS,
     BAD_SEPARATOR_REGEX,
     UNIVERSAL_SPLIT_REGEX,
+    UNIVERSAL_SPLIT_REGEX_DE,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
     ICONS_DIR,
     GITHUB_API_BASE_URL,

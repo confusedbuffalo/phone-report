@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
 
 const MobileStatus = {
     MOBILE: 'mobile',
@@ -427,9 +427,11 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     // Check if a bad separator was used
     const hasBadSeparator = originalTagValue.match(BAD_SEPARATOR_REGEX);
 
+    splitRegex = countryCode === 'DE' ? UNIVERSAL_SPLIT_REGEX_DE : UNIVERSAL_SPLIT_REGEX;
+
     // Single-step splitting: The regex finds all separators and removes them.
     const numbers = originalTagValue
-        .split(UNIVERSAL_SPLIT_REGEX)
+        .split(splitRegex)
         .map(s => s.trim())
         .filter(s => s.length > 0);
 
