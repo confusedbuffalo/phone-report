@@ -16,6 +16,7 @@ const {
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
+const SAMPLE_COUNTRY_CODE_DE = 'DE';
 const SAMPLE_COUNTRY_CODE_US = 'US';
 const SAMPLE_COUNTRY_CODE_ZA = 'ZA';
 const SAMPLE_COUNTRY_CODE_PL = 'PL';
@@ -573,6 +574,16 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 7496 123456']);
         expect(result.numberOfValues).toEqual(2);
     });
+
+    test('double plus can be fixed', () => {
+        const result = validateSingleTag(
+            '++44 1389 123456',
+            'GB'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
+    });
 });
 
 // =====================================================================
@@ -580,6 +591,7 @@ describe('validateSingleTag', () => {
 // =====================================================================
 describe('validateNumbers', () => {
     const COUNTRY_CODE = 'GB';
+    const COUNTRY_CODE_DE = 'DE';
     let testCounter = 0;
     let tmpFilePath;
 
@@ -602,10 +614,15 @@ describe('validateNumbers', () => {
     const VALID_LANDLINE_2 = '+44 20 7946 1111';
     const UNFIXABLE_INPUT = '020 794'; // Too short
     const BAD_SEPARATOR_INPUT = '020 7946 0000, 07712 900000';
+    const BAD_SEPARATOR_INPUT_2 = '020 7946 0000/ 07712 900000';
     const BAD_SEPARATOR_FIX = '+44 20 7946 0000; +44 7712 900000';
     const VALID_MOBILE = '+44 7712 900000';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
+
+    // DE numbers
+    const SLASH_IN_NUMBER_DE = '+498131/275715'
+    const SLASH_IN_NUMBER_DE_FIX = '+49 8131 275715'
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
         const elements = [
@@ -697,6 +714,52 @@ describe('validateNumbers', () => {
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT);
         expect(invalidItem.suggestedFixes.phone).toBe(BAD_SEPARATOR_FIX);
+    });
+
+    test('should handle multiple numbers in a single tag using a bad separator (slash)', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 4004,
+                tags: { phone: BAD_SEPARATOR_INPUT_2, name: 'Multiple Contacts' },
+                lat: 54.0,
+                lon: 3.0,
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT_2);
+        expect(invalidItem.suggestedFixes.phone).toBe(BAD_SEPARATOR_FIX);
+    });
+
+    test('should not consider a slash as a separator in DE', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 4004,
+                tags: { phone: SLASH_IN_NUMBER_DE, name: 'Slashing Sales' },
+                lat: 54.0,
+                lon: 3.0,
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_DE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers.phone).toBe(SLASH_IN_NUMBER_DE);
+        expect(invalidItem.suggestedFixes.phone).toBe(SLASH_IN_NUMBER_DE_FIX);
     });
 
     test('should aggregate results from multiple phone tags on a single element', async () => {
