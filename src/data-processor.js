@@ -488,12 +488,12 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
  * @param {string} countryCode - The country code for validation.
  * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}
  */
-function validateNumbers(elements, countryCode) {
+async function validateNumbers(elementStream, countryCode) {
     const invalidItemsMap = new Map();
     let totalNumbers = 0;
 
-    elements.forEach(element => {
-        if (!element.tags) return;
+    for await (const element of elementStream) {
+        if (!element.tags) continue;
         const tags = element.tags;
         const key = `${element.type}-${element.id}`;
         let item = null; // The invalid item, lazily initialized.
@@ -636,7 +636,7 @@ function validateNumbers(elements, countryCode) {
                 item.autoFixable = item.autoFixable && autoFixable;
             }
         }
-    });
+    }
 
     // Convert all map fields to plain objects
     const invalidItemsArray = Array.from(invalidItemsMap.values()).map(item => ({
