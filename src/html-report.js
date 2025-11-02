@@ -223,9 +223,11 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
 
     const subdivisionSlug = path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
     const safeCountryName = safeName(countryName);
-    const filePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
+    const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
+    const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
 
     const invalidItemsClient = invalidNumbers.map(item => createClientItems(item, locale));
+    await fsPromises.writeFile(dataFilePath, JSON.stringify(invalidItemsClient, null));
 
     // Generate the sprite after all list items have been processed
     const svgSprite = generateSvgSprite();
@@ -332,7 +334,7 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         const ALL_EDITOR_IDS = ${JSON.stringify(ALL_EDITOR_IDS)};
         const DEFAULT_EDITORS_DESKTOP = ${JSON.stringify(DEFAULT_EDITORS_DESKTOP)};
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
-        const invalidItemsClient = ${JSON.stringify(invalidItemsClient)};
+        const DATA_FILE_PATH = './${subdivisionSlug}.json';
         const STORAGE_KEY = 'osm_report_editors';
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
@@ -350,8 +352,8 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
     </body>
     </html>
     `;
-    await fsPromises.writeFile(filePath, htmlContent);
-    console.log(`Generated report for ${subdivisionStats.name} at ${filePath}`);
+    await fsPromises.writeFile(htmlFilePath, htmlContent);
+    console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
 }
 
 module.exports = {

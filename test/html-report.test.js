@@ -161,7 +161,7 @@ describe('generateHtmlReport', () => {
         // Verify that fs.promises.writeFile was called
         expect(fs.promises.writeFile).toHaveBeenCalled();
 
-        const writtenContent = fs.promises.writeFile.mock.calls[0][1];
+        const writtenContent = fs.promises.writeFile.mock.calls[1][1];
 
         // Check for the escaped subdivision name in the <title>
         const expectedTitle = `<title>countryReportTitle: O&#039;Fallon</title>`;
