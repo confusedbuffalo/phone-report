@@ -997,7 +997,8 @@ describe('validateNumbers', () => {
             'contact:phone': 'phone'
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': VALID_LANDLINE
+            'contact:phone': VALID_LANDLINE,
+            'phone': VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
@@ -1147,7 +1148,8 @@ describe('validateNumbers', () => {
             'contact:phone': 'phone'
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': VALID_LANDLINE_NO_SPACE
+            'contact:phone': VALID_LANDLINE_NO_SPACE,
+            'phone': VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
@@ -1181,7 +1183,8 @@ describe('validateNumbers', () => {
             'contact:phone': 'phone'
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': FIXABLE_LANDLINE_INPUT
+            'contact:phone': FIXABLE_LANDLINE_INPUT,
+            'phone': VALID_LANDLINE
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
@@ -1216,7 +1219,8 @@ describe('validateNumbers', () => {
             'mobile': 'phone'
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'mobile': VALID_LANDLINE
+            'mobile': VALID_LANDLINE,
+            'phone': VALID_LANDLINE
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'mobile': null,
