@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
 const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
@@ -486,25 +487,27 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
  * they contain bad separators (comma, slash, 'or') or invalid numbers.
  * @param {Array<Object>} elements - OSM elements with phone tags.
  * @param {string} countryCode - The country code for validation.
+ * @param {string} tmpFilePath - The temporary file path to store the invalid items.
  * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}
  */
-async function validateNumbers(elementStream, countryCode) {
-    const invalidItemsMap = new Map();
+async function validateNumbers(elementStream, countryCode, tmpFilePath) {
+    const fileStream = fs.createWriteStream(tmpFilePath);
+    fileStream.write('[\n');
+    let isFirstItem = true;
+
     let totalNumbers = 0;
+    let invalidCount = 0;
+    let autoFixableCount = 0;
 
     for await (const element of elementStream) {
         if (!element.tags) continue;
         const tags = element.tags;
-        const key = `${element.type}-${element.id}`;
-        let item = null; // The invalid item, lazily initialized.
+
+        let item = null;
+        const allNormalizedNumbers = new Map();
 
         const getOrCreateItem = (autoFixable) => {
             if (item) return item;
-
-            if (invalidItemsMap.has(key)) {
-                item = invalidItemsMap.get(key);
-                return item;
-            }
 
             let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
             if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
@@ -514,8 +517,8 @@ async function validateNumbers(elementStream, countryCode) {
             const lon = element.lon || (element.center && element.center.lon);
             const couldBeArea =
                 element.type === 'way' &&
-                element['nodes'] &&
-                element['nodes'].at(0) === element['nodes'].at(-1);
+                element.nodes &&
+                element.nodes.at(0) === element.nodes.at(-1);
 
             const baseItem = {
                 type: element.type,
@@ -533,12 +536,8 @@ async function validateNumbers(elementStream, countryCode) {
                 duplicateNumbers: new Map(),
             };
             item = { ...baseItem, autoFixable };
-            invalidItemsMap.set(key, item);
             return item;
         };
-
-        // Track normalized numbers across all tags
-        const allNormalizedNumbers = new Map();
 
         for (const tag of PHONE_TAGS) {
             if (!tags[tag]) continue;
@@ -574,17 +573,14 @@ async function validateNumbers(elementStream, countryCode) {
                 if (existingTag) {
                     const tagToRemove = keyToRemove(tag, existingTag);
                     const keptTag = tagToRemove === tag ? existingTag : tag;
-                    const item = getOrCreateItem(true);
+                    const currentItem = getOrCreateItem(true);
 
-                    const duplicateTag = tagToRemove;
-                    item.invalidNumbers.set(duplicateTag, tags[duplicateTag]);
-                    item.duplicateNumbers.set(duplicateTag, tags[duplicateTag]);
-                    item.suggestedFixes.set(duplicateTag, null);
-                    item.suggestedFixes.set(keptTag, tags[keptTag]);
-
-                    // If this was previously considered a type mismatch, clear that
-                    item.hasTypeMismatch = false;
-                    item.mismatchTypeNumbers.delete(duplicateTag);
+                    currentItem.invalidNumbers.set(tagToRemove, tags[tagToRemove]);
+                    currentItem.duplicateNumbers.set(tagToRemove, tags[tagToRemove]);
+                    currentItem.suggestedFixes.set(tagToRemove, null);
+                    currentItem.suggestedFixes.set(keptTag, tags[keptTag]);
+                    currentItem.hasTypeMismatch = false;
+                    currentItem.mismatchTypeNumbers.delete(tagToRemove);
 
                     // Update normalized record to reflect the kept tag
                     allNormalizedNumbers.set(normalizedNumber, keptTag);
@@ -610,44 +606,57 @@ async function validateNumbers(elementStream, countryCode) {
 
             // --- Record invalid entries ---
             if (isInvalid || tagShouldBeFlaggedForRemoval) {
-                const item = getOrCreateItem(autoFixable);
-
-                item.invalidNumbers.set(tag, phoneTagValue);
+                const currentItem = getOrCreateItem(autoFixable);
+                currentItem.invalidNumbers.set(tag, phoneTagValue);
 
                 if (tagShouldBeFlaggedForRemoval) {
-                    item.suggestedFixes.set(tag, suggestedFix ?? null);
-                    item.duplicateNumbers.set(tag, phoneTagValue);
+                    currentItem.suggestedFixes.set(tag, suggestedFix ?? null);
+                    currentItem.duplicateNumbers.set(tag, phoneTagValue);
                 } else {
-                    item.suggestedFixes.set(tag, suggestedFix);
+                    currentItem.suggestedFixes.set(tag, suggestedFix);
                 }
 
                 // Add type mismatch info only if not a duplicate
                 if (
                     validationResult.mismatchTypeNumbers.length > 0 &&
-                    !item.duplicateNumbers.has(tag)
+                    !currentItem.duplicateNumbers.has(tag)
                 ) {
-                    item.hasTypeMismatch = true;
-                    item.mismatchTypeNumbers.set(
-                        tag,
-                        validationResult.mismatchTypeNumbers.join('; ')
-                    );
+                    currentItem.hasTypeMismatch = true;
+                    currentItem.mismatchTypeNumbers.set(tag, validationResult.mismatchTypeNumbers.join('; '));
                 }
 
-                item.autoFixable = item.autoFixable && autoFixable;
+                currentItem.autoFixable = currentItem.autoFixable && autoFixable;
             }
+        }
+
+        if (item) {
+            invalidCount++;
+            if (item.autoFixable) {
+                autoFixableCount++;
+            }
+
+            const finalItem = {
+                ...item,
+                invalidNumbers: Object.fromEntries(item.invalidNumbers),
+                suggestedFixes: Object.fromEntries(item.suggestedFixes),
+                mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
+                duplicateNumbers: Object.fromEntries(item.duplicateNumbers),
+            };
+
+            if (!isFirstItem) {
+                fileStream.write(',\n');
+            }
+            fileStream.write(JSON.stringify(finalItem));
+            isFirstItem = false;
         }
     }
 
-    // Convert all map fields to plain objects
-    const invalidItemsArray = Array.from(invalidItemsMap.values()).map(item => ({
-        ...item,
-        invalidNumbers: Object.fromEntries(item.invalidNumbers),
-        suggestedFixes: Object.fromEntries(item.suggestedFixes),
-        mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
-        duplicateNumbers: Object.fromEntries(item.duplicateNumbers),
-    }));
+    fileStream.write('\n]');
+    fileStream.end();
 
-    return { invalidNumbers: invalidItemsArray, totalNumbers };
+    await new Promise(resolve => fileStream.on('finish', resolve));
+
+    return { totalNumbers, invalidCount, autoFixableCount };
 }
 
 

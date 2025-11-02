@@ -1,5 +1,12 @@
+const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { Transform } = require('stream');
+const { chain } = require('stream-chain');
+const { parser } = require('stream-json/Parser');
+const { streamArray } = require('stream-json/streamers/StreamArray');
+const { disassembler } = require('stream-json/Disassembler');
+const { stringer } = require('stream-json/Stringer');
 const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
@@ -209,6 +216,54 @@ function createClientItems(item, locale) {
 }
 
 /**
+ * @typedef {Object} StreamedItem
+ * @property {number} key - The index of the item within the source array.
+ * @property {Object} value - The actual JavaScript object being streamed.
+ * @property {string[]} path - The JSON path to the item.
+ */
+
+/**
+ * Custom Node.js Transform stream designed to process individual JavaScript
+ * objects streamed from a large JSON array.
+ *
+ * This stream operates in object mode for both input and output, ensuring
+ * only single JavaScript objects are held in memory at any given time,
+ * maintaining memory efficiency.
+ * @extends {Transform}
+ */
+class ItemTransformer extends Transform {
+    /**
+     * Creates an instance of ItemTransformer.
+     *
+     * @param {function(Object): Object} transformFn - The synchronous function to apply to each streamed object's value.
+     * It receives the raw object and must return the processed object.
+     * @param {import('stream').TransformOptions} [options] - Optional stream options passed to the base Transform constructor.
+     */
+    constructor(transformFn, options) {
+        super({ ...options, objectMode: true });
+        this.transformFn = transformFn;
+    }
+
+    /**
+     * Internal method called by the streaming mechanism to process each chunk of data.
+     *
+     * @param {StreamedItem} chunk - A chunk containing the item details (key and value) from the upstream streamArray.
+     * @param {string} encoding - The encoding of the chunk (ignored in object mode).
+     * @param {function(Error | null): void} callback - Callback function to signal completion or an error for the current chunk.
+     * @private
+     */
+    _transform(chunk, encoding, callback) {
+        try {
+            const result = this.transformFn(chunk.value);
+            this.push(result);
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    }
+}
+
+/**
  * Generates the HTML report for a single subdivision.
  * @param {string} countryName
  * @param {Object} subdivisionStats - The subdivision statistics object.
@@ -216,9 +271,7 @@ function createClientItems(item, locale) {
  * @param {string} locale
  * @param {Object} translations
  */
-async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers, locale, translations) {
-
-    // Clear the map at the start of report generation for a new page.
+async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations) {
     clearIconSprite();
 
     const subdivisionSlug = path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
@@ -226,21 +279,41 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
     const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
     const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
 
-    const invalidItemsClient = invalidNumbers.map(item => createClientItems(item, locale));
-    await fsPromises.writeFile(dataFilePath, JSON.stringify(invalidItemsClient, null));
+    const { invalidCount, autoFixableCount } = subdivisionStats;
 
-    // Generate the sprite after all list items have been processed
+    const stringerOptions = { makeArray: true };
+
+    const pipelinePromise = new Promise((resolve, reject) => {
+        const pipeline = chain([
+            fs.createReadStream(tmpFilePath),
+            parser(),
+            streamArray(),
+            new ItemTransformer(createClientItems),
+            disassembler(),
+            stringer(stringerOptions),
+            fs.createWriteStream(dataFilePath)
+        ]);
+
+        pipeline.on('error', (err) => {
+            console.error('An error occurred during streaming:', err);
+            reject(err);
+        });
+        pipeline.on('finish', () => {
+            console.log(`Output data written to ${dataFilePath}`);
+            resolve();
+        });
+    });
+
+    await pipelinePromise;
+
+    // Generate the sprite after processing the items
     const svgSprite = generateSvgSprite();
 
-    const autofixableNumbers = invalidNumbers.filter(item => item.autoFixable);
-
-    // Add a confetti easter egg if there are no errors
     let confettiScripts = '';
-    if (invalidNumbers.length === 0) {
+    if (invalidCount === 0) {
         confettiScripts = `
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
         <script>
-            // Fire confetti when the page loads
             document.addEventListener('DOMContentLoaded', function() {
                 confetti({
                     particleCount: 150,
@@ -319,7 +392,7 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
                 <h1 class="page-title">${translate('phoneNumberReport', locale)}</h1>
                 <h2 class="page-subtitle">${escapeHTML(subdivisionStats.name)}</h2>
             </header>
-            ${createStatsBox(subdivisionStats.totalNumbers, invalidNumbers.length, autofixableNumbers.length, locale)}
+            ${createStatsBox(subdivisionStats.totalNumbers, invalidCount, autoFixableCount, locale)}
             <div id="reportContainer" class="space-y-8">
                 <section id="fixableSection" class="space-y-8"></section>
                 <section id="invalidSection" class="space-y-8"></section>
