@@ -587,7 +587,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     currentItem.suggestedFixes.set(tagToRemove, null);
 
                     // In case of bad separator and also to fix formatting while here
-                    validatedKeptTag = validateSingleTag(tags[keptTag]);
+                    validatedKeptTag = validateSingleTag(tags[keptTag], countryCode, tags, keptTag);
                     if (validatedKeptTag !== tags[keptTag]) {
                         currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
                     }

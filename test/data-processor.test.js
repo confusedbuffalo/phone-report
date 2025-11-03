@@ -592,6 +592,7 @@ describe('validateSingleTag', () => {
 describe('validateNumbers', () => {
     const COUNTRY_CODE = 'GB';
     const COUNTRY_CODE_DE = 'DE';
+    const COUNTRY_CODE_US = 'US';
     let testCounter = 0;
     let tmpFilePath;
 
@@ -623,6 +624,9 @@ describe('validateNumbers', () => {
     // DE numbers
     const SLASH_IN_NUMBER_DE = '+498131/275715'
     const SLASH_IN_NUMBER_DE_FIX = '+49 8131 275715'
+
+    // US numbers
+    const VALID_US_NUMBER = '+1 202-627-1951'
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
         const elements = [
@@ -1189,6 +1193,76 @@ describe('validateNumbers', () => {
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
             'phone': VALID_LANDLINE
+        });
+    });
+
+    test('duplicate with bad formatting gets fixed', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': FIXABLE_LANDLINE_INPUT,
+                    'phone': VALID_LANDLINE_NO_SPACE,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': FIXABLE_LANDLINE_INPUT,
+            'phone': VALID_LANDLINE_NO_SPACE
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
+            'phone': VALID_LANDLINE
+        });
+    });
+
+    test('duplicate with bad formatting gets fixed, respecting country formatting', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': VALID_US_NUMBER,
+                    'phone': VALID_US_NUMBER,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': VALID_US_NUMBER,
+            'phone': VALID_US_NUMBER
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
+            'phone': VALID_US_NUMBER
         });
     });
 
