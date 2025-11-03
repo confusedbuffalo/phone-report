@@ -106,15 +106,6 @@ jobs:
           done
         shell: bash
 
-      - name: Run JSON Minifier
-        if: env.BUILD_TYPE == 'full'
-        run: |
-          find public -name "*.json" | while read -r file; do
-            npx node-minify --compressor jsonminify --input "$file" --output "$file.min"
-            mv "$file.min" "$file"
-          done
-        shell: bash
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
