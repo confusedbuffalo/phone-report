@@ -4,24 +4,27 @@ const { translate } = require('./i18n');
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 
-const MOBILE_TAGS = ['mobile', 'contact:mobile'];
+const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
 const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
 
 /**
  * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
  * A lower number indicates a higher preference (i.e., the key to KEEP).
+ * Based on tag usage statistics, accurate as of 2025-11
  * * Preference Order:
  * 1. phone (0)
  * 2. contact:phone (1)
  * 3. mobile (2)
  * 4. contact:mobile (3)
+ * 5. phone:mobile (3)
  */
 const PHONE_TAG_PREFERENCE_ORDER = {
     'phone': 0,
     'contact:phone': 1,
     'mobile': 2,
-    'contact:mobile': 3
+    'contact:mobile': 3,
+    'phone:mobile': 4
 };
 
 const WEBSITE_TAGS = ['website', 'contact:website'];
