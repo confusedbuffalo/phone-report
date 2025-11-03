@@ -4,7 +4,7 @@
   "description": "A GitHub Pages site that reports invalid phone numbers from OpenStreetMap data.",
   "main": "src/main.js",
   "dependencies": {
-    "@openstreetmap/id-tagging-schema": "^6.13.1",
+    "@openstreetmap/id-tagging-schema": "^6.13.4",
     "@tailwindcss/cli": "^4.1.16",
     "@tailwindcss/postcss": "^4.1.16",
     "diff": "^8.0.2",
