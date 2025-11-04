@@ -343,6 +343,11 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+44 20 7946 0000 x123');
     });
 
+    test('US: a valid number with extension is valid', () => {
+        const result = processSingleNumber('+1 304-845-9810 ext. 403', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('US: flag a valid number with non-standard extension as invalid but autoFixable', () => {
         const result = processSingleNumber('+1-304-845-9810 extension 403', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(true);
@@ -618,6 +623,7 @@ describe('validateNumbers', () => {
     const BAD_SEPARATOR_INPUT_2 = '020 7946 0000/ 07712 900000';
     const BAD_SEPARATOR_FIX = '+44 20 7946 0000; +44 7712 900000';
     const VALID_MOBILE = '+44 7712 900000';
+    const VALID_MOBILE_2 = '+44 7712 900001';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
 
@@ -627,6 +633,7 @@ describe('validateNumbers', () => {
 
     // US numbers
     const VALID_US_NUMBER = '+1 202-627-1951'
+    const FIXABLE_US_NUMBER = '+1 2026271951'
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
         const elements = [
@@ -936,6 +943,7 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:mobile': null,
+            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
             "contact:mobile": FIXABLE_LANDLINE_SUGGESTED_FIX
@@ -968,7 +976,8 @@ describe('validateNumbers', () => {
             'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:mobile': FIXABLE_MOBILE_SUGGESTED_FIX
+            'contact:mobile': FIXABLE_MOBILE_SUGGESTED_FIX,
+            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
             'contact:mobile': FIXABLE_LANDLINE_SUGGESTED_FIX
@@ -1005,8 +1014,41 @@ describe('validateNumbers', () => {
             'phone': VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null,
-            'phone': VALID_LANDLINE
+            'contact:phone': null
+        });
+    });
+
+    test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
+                    'phone': VALID_MOBILE,
+                    name: 'Triple phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(3);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:mobile': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
+            'phone': VALID_MOBILE,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:mobile': VALID_MOBILE_2
         });
     });
 
@@ -1126,6 +1168,62 @@ describe('validateNumbers', () => {
         expect(result.invalidCount).toBe(0);
     });
 
+    test('different extensions are not duplicates, US', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${VALID_US_NUMBER} ext. 123`,
+                    'phone': `${VALID_US_NUMBER} ext. 456`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(0);
+    });
+
+    test('duplicate numbers with extensions should be detected and fixed, US', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${FIXABLE_US_NUMBER} ext. 123`,
+                    'phone': `${FIXABLE_US_NUMBER} ext. 123`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': `${FIXABLE_US_NUMBER} ext. 123`,
+            'phone': `${FIXABLE_US_NUMBER} ext. 123`,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
+            'phone': `${VALID_US_NUMBER} ext. 123`
+        });
+    });
+
     test('different spacing is still a duplicate', async () => {
         const elements = [
             {
@@ -1156,8 +1254,7 @@ describe('validateNumbers', () => {
             'phone': VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null,
-            'phone': VALID_LANDLINE
+            'contact:phone': null
         });
     });
 
@@ -1191,8 +1288,7 @@ describe('validateNumbers', () => {
             'phone': VALID_LANDLINE
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null,
-            'phone': VALID_LANDLINE
+            'contact:phone': null
         });
     });
 
@@ -1261,8 +1357,7 @@ describe('validateNumbers', () => {
             'phone': VALID_US_NUMBER
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null,
-            'phone': VALID_US_NUMBER
+            'contact:phone': null
         });
     });
 
@@ -1297,8 +1392,49 @@ describe('validateNumbers', () => {
             'phone': VALID_LANDLINE
         });
         expect(invalidItem.suggestedFixes).toEqual({
+            'mobile': null
+        });
+    });
+
+    test('non-mobile number in mobile tag and other duplicate numbers has duplicate and type mismatch', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': VALID_LANDLINE_2,
+                    'mobile': VALID_LANDLINE,
+                    'phone': VALID_LANDLINE_2,
+                    name: 'Triple phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(3);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.hasTypeMismatch).toBe(true);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': VALID_LANDLINE_2,
+            'mobile': VALID_LANDLINE,
+            'phone': VALID_LANDLINE_2
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null,
             'mobile': null,
-            'phone': VALID_LANDLINE
+            'phone': `${VALID_LANDLINE_2}; ${VALID_LANDLINE}`
+        });
+        expect(invalidItem.mismatchTypeNumbers).toEqual({
+            "mobile": VALID_LANDLINE
         });
     });
 

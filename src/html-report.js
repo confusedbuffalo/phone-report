@@ -162,6 +162,16 @@ function createClientItems(item, locale) {
         // --- Skip duplicate rendering of type mismatch "main" tag ---
         if (item.hasTypeMismatch && key === item.phoneTagToUse) return;
 
+        // Internal duplicate (in same tag)
+        if (isDuplicateKey && item.duplicateNumbers[key] == key) {
+            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const suggestedRowKey = translate('suggestedFix', locale);
+            return {
+                [key]: oldDiff,
+                [suggestedRowKey]: newDiff
+            };
+        }
+
         if (isKeptDuplicateValue) return;
 
         // --- Handle duplicates ---

@@ -321,7 +321,8 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     let phoneNumber = null;
 
     const NON_STANDARD_EXT_PREFIX_REGEX = /([eE][xX][tT])|(\s*\([eE][xX][tT]\)\s*)/;
-    const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
+    const STANDARD_EXT_PREFIX_REGEX_US = /(ext\.)/;
+    const hasNonStandardExtension = countryCode === 'US' ? !STANDARD_EXT_PREFIX_REGEX_US.test(numberStr) : NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
     const spacingRegex = getSpacingRegex(countryCode);
 
     if (numberStr.startsWith('++')) {
@@ -489,6 +490,54 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     return tagValidationResult;
 }
 
+
+/**
+ * Iterates over the mismatchTypeNumbers Map and updates the suggestedFixes Map.
+ * @param {object} item - The item object containing the Maps.
+ * @param {string} countryCode - The country code for validation.
+ */
+function processMismatches(item, countryCode) {
+    if (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map) {
+        for (const [mismatchKey, mismatchValue] of item.mismatchTypeNumbers) {
+
+            const tagToUse = phoneTagToUse(item.allTags);
+            const existingValue = item.allTags[tagToUse];
+            const existingFix = item.suggestedFixes.get(tagToUse);
+
+            let suggestedForMismatch;
+
+            // Check if the number we're moving in is a duplicate
+            if (existingFix || existingValue) {
+                const suggested = existingFix ? existingFix : existingValue;
+
+                const validatedSuggested = validateSingleTag(suggested, countryCode, item.allTags, tagToUse)
+                const validatedMismatch = validateSingleTag(mismatchValue, countryCode, item.allTags, tagToUse)
+
+                const allSuggested = [...validatedSuggested.suggestedNumbersList, ...validatedMismatch.suggestedNumbersList];
+                const suggestedSet = new Set(allSuggested);
+                const filteredSuggested = Array.from(suggestedSet);
+
+                if (
+                    filteredSuggested.join('; ') === validatedSuggested.suggestedNumbersList.join('; ')
+                    && !item.suggestedFixes[mismatchKey]
+                ) {
+                    item.hasTypeMismatch = false;
+                    item.mismatchTypeNumbers.delete(mismatchKey);
+                }
+
+                suggestedForMismatch = filteredSuggested.join('; ');
+            } else {
+                suggestedForMismatch = mismatchValue;
+            }
+
+            // If the numbers were already valid, and invalid is only there to show what the duplicate is matching
+            if (item.invalidNumbers.get(tagToUse) !== suggestedForMismatch) {
+                item.suggestedFixes.set(tagToUse, suggestedForMismatch);
+            }
+        }
+    }
+}
+
 /**
  * Validates phone numbers using libphonenumber-js, marking tags as invalid if
  * they contain bad separators (comma, slash, 'or') or invalid numbers.
@@ -548,6 +597,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
         for (const tag of PHONE_TAGS) {
             if (!tags[tag]) continue;
+
             const phoneTagValue = tags[tag];
             if (tag === 'mobile' && phoneTagValue === 'yes') continue;
 
@@ -557,6 +607,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             const validatedNumbers = validationResult.validNumbersList;
             let tagShouldBeFlaggedForRemoval = false;
             let suggestedFix = null;
+            let duplicateMismatchCount = 0;
 
             // --- Detect internal duplicates within the same tag ---
             const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));
@@ -575,6 +626,16 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 const normalizedNumber = (
                     phoneNumber.number + (phoneNumber.ext ? `x${phoneNumber.ext}` : '')
                 ).replace(getSpacingRegex(countryCode), '');
+
+                // Correct the tag of a mismatch type number early
+                const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number => 
+                    number.replace(getSpacingRegex(countryCode), '')
+                );
+                const isMismatchNumber = validationResult.mismatchTypeNumbers && normalizedMismatch.includes(normalizedNumber);
+                if (isMismatchNumber && allNormalizedNumbers.get(normalizedNumber)) {
+                    duplicateMismatchCount++;
+                }
+
                 const existingTag = allNormalizedNumbers.get(normalizedNumber);
 
                 if (existingTag) {
@@ -584,17 +645,39 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
                     currentItem.invalidNumbers.set(tagToRemove, tags[tagToRemove]);
                     currentItem.duplicateNumbers.set(tagToRemove, keptTag);
-                    currentItem.suggestedFixes.set(tagToRemove, null);
 
-                    // In case of bad separator and also to fix formatting while here
-                    validatedKeptTag = validateSingleTag(tags[keptTag], countryCode, tags, keptTag);
-                    if (validatedKeptTag !== tags[keptTag]) {
-                        currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
+                    // Get fixes for tagToRemove and only mark null if there are no other values
+                    const validatedRemoved = validateSingleTag(tags[tagToRemove], countryCode, tags, tagToRemove);
+                    if (validatedRemoved.suggestedNumbersList) {
+                        const normalizedRemoved = validatedRemoved.suggestedNumbersList.map(number => 
+                            number.replace(getSpacingRegex(countryCode), '')
+                        );
+                        let removedValue = null;
+                        const deduplicatedRemoved = normalizedRemoved.filter(item => item !== normalizedNumber);
+                        if (deduplicatedRemoved) {
+                            const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), countryCode, tags, tagToRemove);
+                            removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
+                        }
+                        if (removedValue) {
+                            currentItem.suggestedFixes.set(tagToRemove, removedValue);
+                        }
                     }
-                    currentItem.suggestedFixes.set(keptTag, validatedKeptTag.suggestedNumbersList.join('; '));
 
-                    currentItem.hasTypeMismatch = false;
-                    currentItem.mismatchTypeNumbers.delete(tagToRemove);
+                    // Validate the kept tag in case of bad separator and also to fix formatting while here
+                    const validatedKept = validateSingleTag(tags[keptTag], countryCode, tags, keptTag);
+                    if (validatedKept.suggestedNumbersList) {
+                        const validatedKeptValue = validatedKept.suggestedNumbersList.join('; ')
+                        if (validatedKeptValue !== tags[keptTag]) {
+                            currentItem.suggestedFixes.set(keptTag, validatedKeptValue);
+                        }
+                    }
+                    // Mark the kept one as invalid to display the duplicate to the user
+                    currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
+
+                    if (tagToRemove in item.mismatchTypeNumbers) {
+                        currentItem.hasTypeMismatch = false;
+                        currentItem.mismatchTypeNumbers.delete(tagToRemove);
+                    }
 
                     // Update normalized record to reflect the kept tag
                     allNormalizedNumbers.set(normalizedNumber, keptTag);
@@ -629,13 +712,12 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     currentItem.suggestedFixes.set(tag, suggestedFix);
                 }
 
-                // Add type mismatch info only if not a duplicate
-                if (
-                    validationResult.mismatchTypeNumbers.length > 0 &&
-                    !currentItem.duplicateNumbers.has(tag)
-                ) {
-                    currentItem.hasTypeMismatch = true;
-                    currentItem.mismatchTypeNumbers.set(tag, validationResult.mismatchTypeNumbers.join('; '));
+                // Add type mismatch info only if there are any non-duplicates
+                if (validationResult.mismatchTypeNumbers.length > duplicateMismatchCount) {
+                    if (!tagShouldBeFlaggedForRemoval) {
+                        currentItem.hasTypeMismatch = true;
+                        currentItem.mismatchTypeNumbers.set(tag, validationResult.mismatchTypeNumbers.join('; '));
+                    }
                 }
 
                 currentItem.autoFixable = currentItem.autoFixable && autoFixable;
@@ -647,6 +729,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (item.autoFixable) {
                 autoFixableCount++;
             }
+
+            processMismatches(item, countryCode);
 
             const finalItem = {
                 ...item,
