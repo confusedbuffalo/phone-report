@@ -1116,6 +1116,38 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('should respect country formatting with duplicate numbers in the same tag', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'contact:phone',
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': VALID_US_NUMBER
+        });
+    });
+
     test('should fix duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
             {

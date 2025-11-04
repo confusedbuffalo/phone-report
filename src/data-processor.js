@@ -2,6 +2,7 @@ const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
 const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
+const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
     MOBILE: 'mobile',
@@ -306,6 +307,57 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 }
 
 /**
+ * Formats a single phone number to the appropriate national standard
+ * @param {PhoneNumber} phoneNumber - The phone number object
+ * @param {string} countryCode - The country code for formatting.
+ * @returns {string} The formatted number
+ */
+function getFormattedNumber(phoneNumber, countryCode) {
+    const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
+
+    const coreNumberE164 = isPolishPrefixed
+        ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
+        : phoneNumber.number;
+
+    const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
+    // Append the extension in the standard format (' x{ext}').
+    const extension = phoneNumber.ext ? ` x${phoneNumber.ext}` : '';
+
+
+    if (countryCode === 'US') {
+        // Use dashes as separator, but space after country code
+        const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
+
+        let nationalNumberFormatted = phoneNumber.format('NATIONAL');
+        nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
+        nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
+
+        // National number has extension in it for US
+        nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' ext. ');
+        return `${countryCodePrefix} ${nationalNumberFormatted}`;
+    }
+
+    return coreFormatted + extension;
+}
+
+/**
+ * Determines if a phone number is a Polish number incorrectly prefixed with a 0
+ * @param {PhoneNumber} phoneNumber - The phone number object
+ * @param {string} countryCode - The country code being checked against
+ * @returns {boolean}
+ */
+function isPolishPrefixedNumber(phoneNumber, countryCode) {
+    // See https://github.com/confusedbuffalo/phone-report/issues/15
+    return (
+        countryCode === 'PL'
+        && phoneNumber
+        && !phoneNumber.isValid()
+        && phoneNumber.isPossible
+        && phoneNumber.nationalNumber.startsWith('0')
+    )
+}
+
+/**
  * Validates a single phone number string using libphonenumber-js.
  * @param {string} numberStr - The phone number string to validate.
  * @param {string} countryCode - The country code for validation.
@@ -344,40 +396,10 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
         let normalizedParsed = '';
 
-        // See https://github.com/confusedbuffalo/phone-report/issues/15
-        const isPolishPrefixed = (
-            countryCode === 'PL'
-            && phoneNumber
-            && !phoneNumber.isValid()
-            && phoneNumber.isPossible
-            && phoneNumber.nationalNumber.startsWith('0')
-        )
+        const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            const coreNumberE164 = isPolishPrefixed
-                ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
-                : phoneNumber.number;
-
-            const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
-            // Append the extension in the standard format (' x{ext}').
-            const extension = phoneNumber.ext ? ` x${phoneNumber.ext}` : '';
-
-            suggestedFix = (() => {
-                if (countryCode === 'US') {
-                    // Use dashes as separator, but space after country code
-                    const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
-
-                    let nationalNumberFormatted = phoneNumber.format('NATIONAL');
-                    nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
-                    nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
-
-                    // National number has extension in it for US
-                    nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' ext. ');
-                    return `${countryCodePrefix} ${nationalNumberFormatted}`;
-                } else {
-                    return coreFormatted + extension;
-                }
-            })();
+            suggestedFix = getFormattedNumber(phoneNumber, countryCode);
         }
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {
@@ -614,7 +636,9 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             const uniqueFormattedSet = [...new Set(formattedNumbers)];
             if (uniqueFormattedSet.length < formattedNumbers.length) {
                 tagShouldBeFlaggedForRemoval = true;
-                suggestedFix = uniqueFormattedSet.join('; ');
+                suggestedFix = uniqueFormattedSet.map((number) => {
+                    return getFormattedNumber(parsePhoneNumber(number, countryCode), countryCode);
+                }).join('; ');
             }
 
             // --- Detect duplicates across tags ---
@@ -628,7 +652,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 ).replace(getSpacingRegex(countryCode), '');
 
                 // Correct the tag of a mismatch type number early
-                const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number => 
+                const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number =>
                     number.replace(getSpacingRegex(countryCode), '')
                 );
                 const isMismatchNumber = validationResult.mismatchTypeNumbers && normalizedMismatch.includes(normalizedNumber);
@@ -649,7 +673,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     // Get fixes for tagToRemove and only mark null if there are no other values
                     const validatedRemoved = validateSingleTag(tags[tagToRemove], countryCode, tags, tagToRemove);
                     if (validatedRemoved.suggestedNumbersList) {
-                        const normalizedRemoved = validatedRemoved.suggestedNumbersList.map(number => 
+                        const normalizedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
                             number.replace(getSpacingRegex(countryCode), '')
                         );
                         let removedValue = null;

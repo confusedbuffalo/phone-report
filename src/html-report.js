@@ -90,136 +90,41 @@ function createClientItems(item, locale) {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
         const isDuplicateKey = key in item.duplicateNumbers;
-        const isKeptDuplicateValue = Object.values(item.duplicateNumbers).includes(key);
+        const isMismatchKey = key in item.mismatchTypeNumbers;
+        const suggestedRowKey = translate('suggestedFix', locale);
 
-        // --- Handle type mismatch numbers ---
-        if (key in item.mismatchTypeNumbers) {
-            const tagToUse = item.phoneTagToUse;
-            const existingValuePresent = tagToUse in item.allTags;
-
-            // Resolve what the "main" tag originally had and what we’ll suggest
-            let originalForMismatch = item.invalidNumbers[tagToUse] ?? item.allTags[tagToUse] ?? null;
-            let suggestedForMismatch;
-
-            if (item.suggestedFixes[tagToUse]) {
-                suggestedForMismatch = item.suggestedFixes[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else if (item.allTags[tagToUse]) {
-                suggestedForMismatch = item.allTags[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else {
-                suggestedForMismatch = item.mismatchTypeNumbers[key];
-            }
-
-            const originalMismatch = item.allTags[key];
-            const suggestedMismatch = item.suggestedFixes[key];
-
-            const { oldDiff: originalDiff, newDiff: suggestedDiff } = getDiffHtml(originalForMismatch, suggestedForMismatch);
-            const { oldDiff: originalMismatchDiff, newDiff: suggestedMismatchDiff } = getDiffHtml(originalMismatch, suggestedMismatch);
-
-            const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
-            const originalRowValue = `<span class="list-item-old-value">${originalMismatchDiff}${notMobileLabel}</span>`;
-            const suggestedRowValue = suggestedDiff;
-
-            let oldTagDiff = '', newTagDiff = '';
-
-            if (!item.suggestedFixes[key] && !existingValuePresent) {
-                // Simply moving from one key to another
-                ({ oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse));
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [newTagDiff]: suggestedRowValue
-                };
-            } else if (!item.suggestedFixes[key]) {
-                // Emptying old tag, appending it to existing tag
-                oldTagDiff = `<span class="diff-removed">${key}</span>`;
-                newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [tagToUse]: originalDiff,
-                    [newTagDiff]: suggestedRowValue
-                };
-            } else if (existingValuePresent) {
-                // Removing from old tag (leaving something there) and adding to existing tag
-                oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
-                newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [key]: suggestedMismatchDiff,
-                    [tagToUse]: originalDiff,
-                    [newTagDiff]: suggestedRowValue
-                };
-            } else {
-                // Removing from old tag, creating new tag
-                oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
-                newTagDiff = `<span class="diff-added">${tagToUse}</span>`;
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [key]: suggestedMismatchDiff,
-                    [newTagDiff]: suggestedRowValue
-                };
-            }
-        }
-
-        // --- Skip duplicate rendering of type mismatch "main" tag ---
-        if (item.hasTypeMismatch && key === item.phoneTagToUse) return;
+        const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
+        const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
 
         // Internal duplicate (in same tag)
         if (isDuplicateKey && item.duplicateNumbers[key] == key) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const suggestedRowKey = translate('suggestedFix', locale);
             return {
-                [key]: oldDiff,
+                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
                 [suggestedRowKey]: newDiff
             };
         }
 
-        if (isKeptDuplicateValue) return;
+        if (suggestedFix) {
+            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
 
-        // --- Handle duplicates ---
-        if (isDuplicateKey) {
-            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
-            const originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
-
-            const suggestedRowKey = translate('suggestedFix', locale);
-            const keptTag = item.duplicateNumbers[key];
-            const keptOriginal = keptTag ? item.invalidNumbers[keptTag] : null;
-            const keptSuggestedValue = keptTag ? item.suggestedFixes[keptTag] : null;
-
-            const { oldDiff: keptOriginalDiff, newDiff: keptSuggestedValueDiff } = getDiffHtml(keptOriginal, keptSuggestedValue);
-
-            // Show both tags side by side if both exist
-            if (keptTag && keptSuggestedValue) {
-                return {
-                    [key]: originalRowValue,
-                    [keptTag]: keptOriginalDiff,
-                    [suggestedRowKey]: keptSuggestedValueDiff
-                };
-            }
-
-            const otherKey = item.duplicateNumbers[key];
-            const otherValue = otherKey ? item.suggestedFixes[otherKey] : null;
-
-            // Otherwise show the value that has the duplicate
+            let originalRowValue = isDuplicateKey ? `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>` : oldDiff;
+            originalRowValue = isMismatchKey ? `<span class="list-item-old-value">${originalMismatchDiff}${notMobileLabel}</span>` : oldDiff;
+            
             return {
                 [key]: originalRowValue,
-                [otherKey]: otherValue,
-            };
-        }
-
-        // --- Handle simple fixable numbers ---
-        if (suggestedFix && !Object.keys(item.duplicateNumbers).includes(key)) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const suggestedRowKey = translate('suggestedFix', locale);
-            return {
-                [key]: oldDiff,
                 [suggestedRowKey]: newDiff
             };
+        } else if (isDuplicateKey) {
+            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            return {
+                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
+            }
+        } else {
+            return {
+                [key]: `<span>${escapeHTML(originalNumber)}</span>`
+            };
         }
-
-        // --- Default fallback for plain invalid numbers (no fix, no duplicate) ---
-        return {
-            [key]: `<span>${escapeHTML(originalNumber)}</span>`
-        };
     }).filter(Boolean);
 
 
