@@ -78,8 +78,8 @@ async function generateCountryIndexHtml(countryData, translations) {
                             <button id="sort-name" data-sort="name" class="sort-btn sort-btn-style">${translate('name', locale)}</button>
                         </div>
                         <div class="checkbox-container">
-                            <label for="hide-empty" class="checkbox-label">${translate('hideEmptyDivisions', locale)}</label>
-                            <input type="checkbox" id="hide-empty" checked class="checkbox-input">
+                            <label for="show-empty" class="checkbox-label">${translate('showEmptyDivisions', locale)}</label>
+                            <input type="checkbox" id="show-empty" class="checkbox-input">
                         </div>
                     </div>
                 </div>

@@ -19,6 +19,10 @@
   "website": "Sitio web",
   "suggestedFix": "Corrección Sugerida",
   "notMobileNumber": "No es un número móvil",
+  "invalidNumber": "Número No Válido",
+  "pageOf": "Página %n de %t",
+  "next": "Siguiente",
+  "previous": "Anterior",
 
   "backToCountryPage": "Volver a la página del país",
   "phoneNumberReport": "Informe de Números de Teléfono",
@@ -31,6 +35,7 @@
   "invalid": "inválido",
   "disused": "En desuso",
   "fixable": "Corregible",
+  "duplicateNumber": "Número duplicado",
 
   "osmPhoneNumberValidation": "Validación de Números de Teléfono OSM",
   "reportSubtitle": "Un informe sobre números de teléfono inválidos en datos de OpenStreetMap para varios países.",
@@ -40,7 +45,7 @@
   "backToAllCountries": "Volver a todos los países",
   "reportSubtitleForCountry": "Un informe sobre números de teléfono inválidos en datos de OpenStreetMap para %c.",
   "divisionalReports": "Informes Divisionales",
-  "hideEmptyDivisions": "Ocultar divisiones sin problemas",
+  "showEmptyDivisions": "Mostrar divisiones sin problemas",
   "sortBy": "Ordenar por:",
   "invalidPercentage": "Porcentaje Inválido",
   "invalidCount": "Conteo Inválido",

@@ -160,6 +160,9 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
             if (str.includes('%n') && substitutions['%n'] !== undefined) {
                 str = str.replace('%n', substitutions['%n']);
             }
+            if (str.includes('%t') && substitutions['%t'] !== undefined) {
+                str = str.replace('%t', substitutions['%t']);
+            }
             return str;
         }
 

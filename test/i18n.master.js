@@ -21,7 +21,7 @@ const MASTER_KEYS = {
     'progressHistory': [],
     'backToAllCountries': [],
     'divisionalReports': [],
-    'hideEmptyDivisions': [],
+    'showEmptyDivisions': [],
     'sortBy': [],
     'invalidPercentage': [],
     'invalidCount': [],
@@ -37,6 +37,11 @@ const MASTER_KEYS = {
     'fixable': [],
     'iconsSourcedFrom': [],
     'notMobileNumber': [],
+    "invalidNumber": [],
+    "next": [],
+    "previous": [],
+    "duplicateNumber": [],
+
 
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
@@ -53,6 +58,8 @@ const MASTER_KEYS = {
 
     'reportSubtitleForCountry': ['%c'],
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a'],
+
+    "pageOf": ['%n', '%t'],
 
     // Time Ago (uses %n for number)
     'timeAgoMinute': ['%n'],

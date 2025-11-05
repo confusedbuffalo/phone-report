@@ -31,7 +31,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22.x'
 
       - name: Install dependencies
         run: npm install
@@ -75,7 +75,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22.x'
 
       - name: Install Dependencies
         run: npm install
@@ -103,15 +103,6 @@ jobs:
         run: |
           find public -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
             npx terser "$file" --output "$file" --compress --mangle
-          done
-        shell: bash
-
-      - name: Run JSON Minifier
-        if: env.BUILD_TYPE == 'full'
-        run: |
-          find public -name "*.json" | while read -r file; do
-            npx node-minify --compressor jsonminify --input "$file" --output "$file.min"
-            mv "$file.min" "$file"
           done
         shell: bash
 
@@ -173,50 +164,3 @@ jobs:
               
               git push
           fi
-
-  comment-on-pr:
-    if: github.event_name == 'pull_request'
-    needs: build-report
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      # Get the Artifact ID from the workflow run
-      - name: Get Artifact ID
-        id: get_artifact
-        uses: actions/github-script@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId,
-            });
-
-            // The artifact uploaded by 'actions/upload-pages-artifact@v3' is usually named 'github-pages'
-            const pagesArtifact = artifacts.data.artifacts.find(
-              artifact => artifact.name === 'github-pages'
-            );
-
-            if (pagesArtifact) {
-              // Set the artifact ID as an output for the next step
-              core.setOutput('artifact_id', pagesArtifact.id);
-            } else {
-              core.setFailed("Could not find the 'github-pages' artifact.");
-            }
-
-      # Create the direct download link and post the comment
-      - name: Create or update comment
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ✅ **Build Complete!**
-
-            The simplified page build has been created. You can **download the zipped artifact** directly here:
-
-            **[Download github-pages.zip](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.get_artifact.outputs.artifact_id }})**
-
-            *Note: You must be logged into GitHub to download this file.*

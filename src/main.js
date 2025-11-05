@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR } = require('./constants');
 const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-api');
 const { safeName, validateNumbers } = require('./data-processor');
@@ -15,7 +17,22 @@ const CLIENT_KEYS = [
     'timeAgoHour',
     'timeAgoHoursPlural',
     'timeAgoError',
-    'dataSourcedTemplate'
+    'dataSourcedTemplate',
+    'fixInJOSM',
+    'fixable',
+    'website',
+    'fixableNumbersHeader',
+    'fixableNumbersDescription',
+    'invalidNumbersHeader',
+    'invalidNumbersDescription',
+    'noInvalidNumbers',
+    'pageOf',
+    'name',
+    'suggestedFix',
+    'invalidNumber',
+    'next',
+    'previous',
+    'sortBy',
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
@@ -101,18 +118,19 @@ async function getSubdivisions(countryData, divisionName) {
  */
 async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
-    const elements = await fetchOsmDataForDivision(subdivision);
-    const { invalidNumbers, totalNumbers } = validateNumbers(elements, countryData.countryCode);
+    const elementStream = await fetchOsmDataForDivision(subdivision);
+    const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
 
-    const autoFixableCount = invalidNumbers.filter(item => item.autoFixable).length;
+    const { totalNumbers, invalidCount, autoFixableCount } = await validateNumbers(elementStream, countryData.countryCode, tmpFilePath);
 
     const stats = {
         name: subdivision.name,
         divisionSlug: safeName(rawDivisionName),
         slug: safeName(subdivision.name),
-        invalidCount: invalidNumbers.length,
+        invalidCount: invalidCount,
         autoFixableCount: autoFixableCount,
-        totalNumbers: totalNumbers
+        totalNumbers: totalNumbers,
+        lastUpdated: new Date().toISOString()
     };
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
@@ -121,7 +139,9 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         fs.mkdirSync(divisionDir, { recursive: true });
     }
 
-    await generateHtmlReport(countryName, stats, invalidNumbers, locale, clientTranslations);
+    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations);
+
+    fs.unlinkSync(tmpFilePath); // Clean up the temporary file
 
     return stats;
 }

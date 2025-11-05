@@ -4,9 +4,28 @@ const { translate } = require('./i18n');
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 
-const MOBILE_TAGS = ['mobile', 'contact:mobile'];
+const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
 const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
+
+/**
+ * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
+ * A lower number indicates a higher preference (i.e., the key to KEEP).
+ * Based on tag usage statistics, accurate as of 2025-11
+ * * Preference Order:
+ * 1. phone (0)
+ * 2. contact:phone (1)
+ * 3. mobile (2)
+ * 4. contact:mobile (3)
+ * 5. phone:mobile (3)
+ */
+const PHONE_TAG_PREFERENCE_ORDER = {
+    'phone': 0,
+    'contact:phone': 1,
+    'mobile': 2,
+    'contact:mobile': 3,
+    'phone:mobile': 4
+};
 
 const WEBSITE_TAGS = ['website', 'contact:website'];
 
@@ -26,38 +45,38 @@ const HISTORIC_AND_DISUSED_PREFIXES = [
 
 const OSM_EDITORS = {
     "JOSM": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
-            // Use item.type[0] for the single-letter type prefix (n/w/r)
             return `${baseUrl}?objects=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["JOSM"]),
-        onClick: (editorId) => `fixWithJosm(OSM_EDITORS['${editorId}'].getEditLink(item), event)`
+        onClick: function (editorId) {
+            return `openInJosm(OSM_EDITORS['${editorId}'].getEditLink(item), event)`
+        }
     },
     "iD": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'https://www.openstreetmap.org/edit?editor=id';
             return `${baseUrl}&${item.type}=${item.id}#map=19/${item.lat}/${item.lon}`;
         },
         editInString: (locale) => translate('editIn', locale, ["iD"]),
     },
     "Rapid": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'https://rapideditor.org/edit#map=19';
-            // Use item.type[0] for the object type prefix (n/w/r)
             return `${baseUrl}/${item.lat}/${item.lon}&id=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["Rapid"]),
     },
     "Level0": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'https://level0.osmz.ru/?url=';
             return `${baseUrl}${item.type}/${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["Level0"]),
     },
     "Geo": {
-        getEditLink: (item) => {
+        getEditLink: function (item) {
             const baseUrl = 'geo:';
             return `${baseUrl}${item.lat},${item.lon}`;
         },
@@ -83,7 +102,8 @@ const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 // Raw semicolon (';'), semicolon with optional space ('; ?'), comma, slash, 'or' or 'and'.
-const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
 
 // When used in diff, the groups need to be capturing
 const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
@@ -166,10 +186,12 @@ module.exports = {
     EXCLUSIONS,
     BAD_SEPARATOR_REGEX,
     UNIVERSAL_SPLIT_REGEX,
+    UNIVERSAL_SPLIT_REGEX_DE,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
     ICONS_DIR,
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
-    HISTORY_DIR
+    HISTORY_DIR,
+    PHONE_TAG_PREFERENCE_ORDER
 };

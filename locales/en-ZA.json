@@ -18,6 +18,7 @@
   "fixInJOSM": "Fix in JOSM",
   "website": "Website",
   "suggestedFix": "Suggested fix",
+  "duplicateNumber": "Duplicate number",
   
   "backToCountryPage": "Back to country page",
   "phoneNumberReport": "Phone Number Report",
@@ -31,6 +32,10 @@
   "disused": "Disused",
   "fixable": "Fixable",
   "notMobileNumber": "Not a cell number",
+  "invalidNumber": "Invalid Number",
+  "pageOf": "Page %n of %t",
+  "next": "Next",
+  "previous": "Previous",
   
   "osmPhoneNumberValidation": "OSM Phone Number Validation",
   "reportSubtitle": "A report on invalid phone numbers in OpenStreetMap data for various countries.",
@@ -40,7 +45,7 @@
   "backToAllCountries": "Back to all countries",
   "reportSubtitleForCountry": "A report on invalid phone numbers in OpenStreetMap data for %c.",
   "divisionalReports": "Province Reports",
-  "hideEmptyDivisions": "Hide provinces with no issues",
+  "showEmptyDivisions": "Show provinces with no issues",
   "sortBy": "Sort by:",
   "invalidPercentage": "Invalid Percentage",
   "invalidCount": "Invalid Count",

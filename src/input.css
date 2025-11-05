@@ -105,16 +105,20 @@
   @apply bg-green-500 text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:text-gray-200;
 }
 
+@utility btn-clicked {
+  @apply bg-gray-300 text-gray-500 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 cursor-pointer;
+}
+
 @utility label {
   @apply text-xs font-semibold inline-flex items-center px-2 py-1 rounded-full text-center;
 }
 
 @utility label-fixable {
-  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50;
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50;
 }
 
-@utility label-not-mobile {
-  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:hover:bg-yellow-500 dark:text-yellow-50 sm:ml-2 mt-1 mb-1 sm:mt-0 sm:mb-0;
+@utility label-number-problem {
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50 sm:ml-2 mt-1 mb-1 sm:mt-0 sm:mb-0;
 }
 
 @utility label-disused {
@@ -301,7 +305,7 @@
 }
 
 @utility checkbox-container {
-  @apply flex items-end sm:mr-4;
+  @apply flex items-end mt-4 sm:mr-4;
 }
 
 @utility checkbox-input {
@@ -313,7 +317,7 @@
 }
 
 @utility sort-controls {
-  @apply flex flex-wrap items-center justify-end gap-2 mb-4;
+  @apply flex flex-wrap items-center justify-end gap-2;
 }
 
 @utility sort-label {
@@ -325,11 +329,39 @@
 }
 
 @utility sort-btn-style-active {
-  @apply bg-blue-500 text-white shadow-sm;
+  @apply bg-blue-500 hover:bg-blue-600 text-white shadow-sm;
 }
 
 @utility sort-btn-style-inactive {
   @apply bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600;
+}
+
+@utility sort-btn-style {
+  @apply px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer;
+}
+
+@utility page-btns-container {
+  @apply flex items-center space-x-2 mb-4 sm:mb-0;
+}
+
+@utility page-btn {
+  @apply px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer;
+}
+
+@utility page-btn-active {
+  @apply bg-blue-500 text-white shadow-sm hover:bg-blue-600;
+}
+
+@utility page-btn-disabled {
+  @apply bg-gray-200/50 dark:bg-gray-700/50 text-gray-800 dark:text-gray-200 cursor-not-allowed;
+}
+
+@utility page-sort-card {
+  @apply card sticky top-0 flex flex-col sm:flex-row items-center justify-between p-4;
+}
+
+@utility page-numbers {
+  @apply text-sm text-gray-700 dark:text-gray-300;
 }
 
 @utility page-container {

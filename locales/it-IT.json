@@ -18,6 +18,10 @@
   "fixInJOSM": "Correggi in JOSM",
   "website": "Sito web",
   "suggestedFix": "Correzione suggerita",
+  "invalidNumber": "Numero Non Valido",
+  "pageOf": "Pagina %n di %t",
+  "next": "Successivo",
+  "previous": "Precedente",
 
   "backToCountryPage": "Torna alla pagina del paese",
   "phoneNumberReport": "Rapporto numeri di telefono",
@@ -31,6 +35,7 @@
   "disused": "Fuori servizio",
   "fixable": "Corregibile",
   "notMobileNumber": "Non è un numero di cellulare",
+  "duplicateNumber": "Numero duplicato",
 
   "osmPhoneNumberValidation": "Validazione numeri di telefono OSM",
   "reportSubtitle": "Un rapporto sui numeri di telefono non validi nei dati OpenStreetMap per vari paesi.",
@@ -40,7 +45,7 @@
   "backToAllCountries": "Torna a tutti i paesi",
   "reportSubtitleForCountry": "Un rapporto sui numeri di telefono non validi nei dati OpenStreetMap per %c.",
   "divisionalReports": "Rapporti divisionali",
-  "hideEmptyDivisions": "Nascondi le divisioni senza problemi",
+  "showEmptyDivisions": "Mostra le divisioni senza problemi",
   "sortBy": "Ordina per:",
   "invalidPercentage": "Percentuale non valida",
   "invalidCount": "Numero di non validi",

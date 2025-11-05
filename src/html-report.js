@@ -1,5 +1,12 @@
+const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { Transform } = require('stream');
+const { chain } = require('stream-chain');
+const { parser } = require('stream-json/Parser');
+const { streamArray } = require('stream-json/streamers/StreamArray');
+const { disassembler } = require('stream-json/Disassembler');
+const { stringer } = require('stream-json/Stringer');
 const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
@@ -7,129 +14,6 @@ const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
 
-
-/**
- * Creates a single row for the HTML grid for displaying an invalid phone number tag and value.
- * @param {string} label - The HTML for the label.
- * @param {string} number - The HTML for the phone number.
- * @returns {string} The HTML string for the details grid.
- */
-function createDetailsRow(label, number) {
-    return `<div class="list-item-phone-label-container">
-                <span class="list-item-phone-label">${label}</span>
-            </div>
-            <div class="list-item-phone-value-container">
-                ${number}
-            </div>`
-}
-
-/**
- * Creates the HTML grid for displaying an invalid phone number tag and its suggested fix.
- * It generates a diff view if a fix is available.
- * @param {Object} item - The invalid item object, containing `invalidNumbers` and `suggestedFixes`.
- * @param {string} locale - The current locale for translations.
- * @returns {string} The HTML string for the details grid.
- */
-function createDetailsGrid(item, locale) {
-    const detailsGrid = Object.keys(item.invalidNumbers).map(key => {
-        const originalNumber = item.invalidNumbers[key];
-        const suggestedFix = item.suggestedFixes[key];
-
-        let originalRow = '', suggestedRow = '', extraRows = '';
-
-        if (key in item.mismatchTypeNumbers) {
-            const tagToUse = phoneTagToUse(item.allTags);
-            const existingValuePresent = tagToUse in item.allTags;
-
-            let originalNumber;
-            if (!item.invalidNumbers[tagToUse] && item.allTags[tagToUse]) {
-                originalNumber = item.allTags[tagToUse];
-            } else if (item.invalidNumbers[tagToUse]) {
-                originalNumber = item.invalidNumbers[tagToUse]
-            } else {
-                originalNumber = null;
-            }
-
-            let suggestedFix;
-            if (!item.suggestedFixes[tagToUse] && item.allTags[tagToUse]) {
-                suggestedFix = item.allTags[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else if (item.suggestedFixes[tagToUse]) {
-                suggestedFix = item.suggestedFixes[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else {
-                suggestedFix = item.mismatchTypeNumbers[key];
-            }
-
-            const originalMismatch = item.allTags[key];
-            const suggestedMismatch = item.suggestedFixes[key];
-
-            const { oldDiff: originalDiff, newDiff: suggestedDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const { oldDiff: originalMismatchDiff, newDiff: suggestedMismatchDiff } = getDiffHtml(originalMismatch, suggestedMismatch);
-
-            const notMobileLabel = `<span class="label label-not-mobile">${translate("notMobileNumber", locale)}</span>`
-
-            let oldTagDiff = '', newTagDiff = '';
-            if (!item.suggestedFixes[key] && !existingValuePresent) {
-                // Simply moving from one key to another
-                ({ oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse));
-            } else if (!item.suggestedFixes[key]) {
-                // Emptying old tag, appending it to existing tag
-                oldTagDiff = `<span class="diff-removed">${key}</span>`;
-                newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                if (tagToUse in item.suggestedFixes) {
-                    extraRows = createDetailsRow(tagToUse, originalDiff)
-                }
-            } else if (existingValuePresent) {
-                // Removing from old tag (leaving something there) and adding to existing tag
-                oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
-                newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-
-                extraRows = createDetailsRow(key, suggestedMismatchDiff);
-                if (tagToUse in item.suggestedFixes) {
-                    extraRows += createDetailsRow(tagToUse, originalDiff);
-                }
-            } else {
-                // Removing from old tag, creating new tag
-                oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
-                newTagDiff = `<span class="diff-added">${tagToUse}</span>`;
-                extraRows = createDetailsRow(key, suggestedMismatchDiff);
-            }
-
-            originalRow = createDetailsRow(oldTagDiff, `<span class="list-item-old-value"><span class="list-item-old-value">${originalMismatchDiff}</span>${notMobileLabel}</span>`);
-            suggestedRow = createDetailsRow(newTagDiff, suggestedDiff);
-
-            return `
-                <div class="list-item-details-grid">
-                    ${originalRow}
-                    ${extraRows}
-                    ${suggestedRow}
-                </div>
-                `;
-        }
-
-        // Dealt with above
-        if (item.hasTypeMismatch && key === phoneTagToUse(item.allTags)) {
-            return;
-        }
-
-        if (suggestedFix) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            originalRow = createDetailsRow(key, oldDiff);
-            suggestedRow = createDetailsRow(translate('suggestedFix', locale), newDiff);
-        } else {
-            originalRow = createDetailsRow(key, `<span>${escapeHTML(originalNumber)}</span>`);
-        }
-
-        return `
-            <div class="list-item-details-grid">
-                ${originalRow}
-                ${extraRows}
-                ${suggestedRow}
-            </div>
-        `;
-    }).filter(Boolean).join('<hr class="phone-separator-line">');
-
-    return detailsGrid;
-}
 
 /**
  * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
@@ -146,7 +30,7 @@ function createJosmFixUrl(item) {
 
     let newSuggestedFixes = {};
     if (item.hasTypeMismatch) {
-        const tagToUse = phoneTagToUse(item.allTags);
+        const tagToUse = item.phoneTagToUse;
         const existingValuePresent = tagToUse in item.allTags;
 
         const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
@@ -182,101 +66,129 @@ function createJosmFixUrl(item) {
 }
 
 /**
- * Creates the website and editor buttons for a single invalid number item.
- * @param {Object} item - The invalid number data item.
- * @param {string} locale - The locale for the text
- * @returns {{
- * websiteButton: Element,
- * fixableLabel: Element,
- * josmFixButton: Element,
- * editorButtons: Element[]
- * }}
- */
-function createButtons(item, locale) {
-    const josmFixUrl = createJosmFixUrl(item);
-
-    // Generate buttons for ALL editors so client-side script can hide them
-    const editorButtons = ALL_EDITOR_IDS.map(editorId => {
-        const editor = OSM_EDITORS[editorId];
-        if (!editor) return '';
-
-        const url = editor.getEditLink(item);
-        const text = editor.editInString(locale);
-        const isJosm = editorId === 'JOSM';
-
-        // Use a standard target="_blank" for non-JOSM/non-GEO links
-        const target = isJosm ? '' : (editorId === 'Geo' ? '' : 'target="_blank"');
-
-        // JOSM requires an onclick handler; others use a direct href
-        const href = isJosm ? '#' : url;
-        const onClick = isJosm ? `onclick="openInJosm('${url}', event)"` : '';
-
-        return `
-            <a href="${href}" ${target} ${onClick} 
-                data-editor-id="${editorId}"
-                class="btn btn-editor">
-                ${text}
-            </a>
-        `;
-    }).join('\n');
-
-    // Generate JOSM Fix Button (special case)
-    const josmFixButton = josmFixUrl ?
-        `<a href="#" onclick="openInJosm('${josmFixUrl}', event)" 
-            data-editor-id="josm-fix"
-            class="btn btn-josm-fix">
-            ${translate('fixInJOSM', locale)}
-        </a>` :
-        '';
-    const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label label-fixable">${translate('fixable', locale)}</span>` :
-        '';
-
-    const websiteButton = item.website ?
-        `<a href="${item.website}" class="btn btn-website" target="_blank">${translate('website', locale)}</a>` :
-        '';
-
-    return { websiteButton, fixableLabel, josmFixButton, editorButtons };
-}
-
-/**
- * Creates the HTML content for a single invalid number item.
+ * Creates the items for client side injection, with extra content.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @returns {string}
  */
-function createListItem(item, locale) {
-
-    const disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
+function createClientItems(item, locale) {
+    item.phoneTagToUse = phoneTagToUse(item.allTags);
+    item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
     const iconName = getFeatureIcon(item, locale);
     const iconHtml = getIconHtml(iconName);
+    if (iconHtml.includes(iconName)) {
+        item.iconName = iconName;
+    } else {
+        item.iconHtml = iconHtml;
+    }
 
-    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item, locale);
+    item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
 
-    return `
-        <li class="report-list-item">
-            <div class="list-item-content-wrapper">
-                <a class="list-item-icon-circle-preview" href="${item.osmUrl}" target="_blank" rel="noopener noreferrer">
-                    ${iconHtml}
-                </a>
-                <div class="list-item-details-wrapper">
-                    <div class="list-item-header">
-                        <h3 class="list-item-title">${escapeHTML(getFeatureTypeName(item, locale))}</h3>
-                        ${disusedLabel}
-                    </div>
-                    ${createDetailsGrid(item, locale)}
-                </div>
-            </div>
 
-            <div class="list-item-actions-container">
-                ${websiteButton}
-                ${fixableLabel}
-                ${josmFixButton}
-                ${editorButtons} 
-            </div>
-        </li>
-    `;
+    item.fixRows = Object.keys(item.invalidNumbers).map(key => {
+        const originalNumber = item.invalidNumbers[key];
+        const suggestedFix = item.suggestedFixes[key];
+        const isDuplicateKey = key in item.duplicateNumbers;
+        const isMismatchKey = key in item.mismatchTypeNumbers;
+        const suggestedRowKey = translate('suggestedFix', locale);
+
+        const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
+        const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
+
+        // Internal duplicate (in same tag)
+        if (isDuplicateKey && item.duplicateNumbers[key] == key) {
+            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+            return {
+                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
+                [suggestedRowKey]: newDiff
+            };
+        }
+
+        if (suggestedFix) {
+            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+
+            let originalRowValue;
+            if (isDuplicateKey && isMismatchKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}${notMobileLabel}</span>`;
+            } else if (isDuplicateKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
+            } else if (isMismatchKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`;
+            } else {
+                originalRowValue = oldDiff;
+            }
+
+            return {
+                [key]: originalRowValue,
+                [suggestedRowKey]: newDiff
+            };
+        } else if (isDuplicateKey) {
+            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            return {
+                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
+            }
+        } else {
+            return {
+                [key]: `<span>${escapeHTML(originalNumber)}</span>`
+            };
+        }
+    }).filter(Boolean);
+
+
+    item.josmFixUrl = createJosmFixUrl(item);
+
+    const { allTags, ...clientItem } = item;
+
+    return clientItem;
+}
+
+/**
+ * @typedef {Object} StreamedItem
+ * @property {number} key - The index of the item within the source array.
+ * @property {Object} value - The actual JavaScript object being streamed.
+ * @property {string[]} path - The JSON path to the item.
+ */
+
+/**
+ * Custom Node.js Transform stream designed to process individual JavaScript
+ * objects streamed from a large JSON array.
+ *
+ * This stream operates in object mode for both input and output, ensuring
+ * only single JavaScript objects are held in memory at any given time,
+ * maintaining memory efficiency.
+ * @extends {Transform}
+ */
+class ItemTransformer extends Transform {
+    /**
+     * Creates an instance of ItemTransformer.
+     *
+     * @param {function(Object): Object} transformFn - The synchronous function to apply to each streamed object's value.
+     * It receives the raw object and must return the processed object.
+     * @param {import('stream').TransformOptions} [options] - Optional stream options passed to the base Transform constructor.
+     */
+    constructor(transformFn, options) {
+        super({ ...options, objectMode: true });
+        this.transformFn = transformFn;
+    }
+
+    /**
+     * Internal method called by the streaming mechanism to process each chunk of data.
+     *
+     * @param {StreamedItem} chunk - A chunk containing the item details (key and value) from the upstream streamArray.
+     * @param {string} encoding - The encoding of the chunk (ignored in object mode).
+     * @param {function(Error | null): void} callback - Callback function to signal completion or an error for the current chunk.
+     * @private
+     */
+    _transform(chunk, encoding, callback) {
+        try {
+            const result = this.transformFn(chunk.value);
+            this.push(result);
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    }
 }
 
 /**
@@ -287,28 +199,49 @@ function createListItem(item, locale) {
  * @param {string} locale
  * @param {Object} translations
  */
-async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers, locale, translations) {
-
-    // Clear the map at the start of report generation for a new page.
+async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations) {
     clearIconSprite();
 
     const subdivisionSlug = path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
     const safeCountryName = safeName(countryName);
-    const filePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
+    const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
+    const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
 
-    const autofixableNumbers = invalidNumbers.filter(item => item.autoFixable);
-    const manualFixNumbers = invalidNumbers.filter(item => !item.autoFixable);
+    const { invalidCount, autoFixableCount } = subdivisionStats;
 
-    const anyInvalid = manualFixNumbers.length > 0
-    const anyFixable = autofixableNumbers.length > 0
+    const stringerOptions = { makeArray: true };
 
-    // Add a confetti easter egg if there are no errors
+    const pipelinePromise = new Promise((resolve, reject) => {
+        const pipeline = chain([
+            fs.createReadStream(tmpFilePath),
+            parser(),
+            streamArray(),
+            new ItemTransformer(createClientItems, { locale: locale }),
+            disassembler(),
+            stringer(stringerOptions),
+            fs.createWriteStream(dataFilePath)
+        ]);
+
+        pipeline.on('error', (err) => {
+            console.error('An error occurred during streaming:', err);
+            reject(err);
+        });
+        pipeline.on('finish', () => {
+            console.log(`Output data written to ${dataFilePath}`);
+            resolve();
+        });
+    });
+
+    await pipelinePromise;
+
+    // Generate the sprite after processing the items
+    const svgSprite = generateSvgSprite();
+
     let confettiScripts = '';
-    if (invalidNumbers.length === 0) {
+    if (invalidCount === 0) {
         confettiScripts = `
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
         <script>
-            // Fire confetti when the page loads
             document.addEventListener('DOMContentLoaded', function() {
                 confetti({
                     particleCount: 150,
@@ -321,40 +254,34 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         `;
     }
 
-    const fixableListContent = autofixableNumbers.map(item => createListItem(item, locale)).join('');
-    const invalidListContent = manualFixNumbers.map(item => createListItem(item, locale)).join('');
+    const OSM_EDITORS_CLIENT = {};
 
-    // Generate the sprite after all list items have been processed
-    const svgSprite = generateSvgSprite();
+    for (const editorId in OSM_EDITORS) {
+        const editor = OSM_EDITORS[editorId];
+        const onClickString = editor.onClick ? editor.onClick(editorId) : undefined;
 
-    const fixableSectionAndHeader = `
-        <div class="section-header-container">
-            <h2 class="section-header">${translate('fixableNumbersHeader', locale)}</h2>
-            <p class="section-description">${translate('fixableNumbersDescription', locale)}</p>
-        </div>
-        <ul class="report-list">
-            ${fixableListContent}
-        </ul>`;
+        OSM_EDITORS_CLIENT[editorId] = {
+            getEditLink: editor.getEditLink,
+            onClick: onClickString,
+            // Pre-evaluate the string using the locale
+            editInString: editor.editInString(locale)
+        };
+    }
 
-    const invalidSectionAndHeader = `
-        <div class="text-center">
-            <h2 class="section-header">${translate('invalidNumbersHeader', locale)}</h2>
-            <p class="section-description">${translate('invalidNumbersDescription', locale)}</p>
-        </div>
-        <ul class="report-list">
-            ${invalidListContent}
-        </ul>`;
-
-    const noInvalidContent = `<li class="report-list-item-empty">${translate('noInvalidNumbers', locale)}</li>`;
-
-    const fixableAndInvalidSectionContent =
-        (anyFixable && anyInvalid) ? fixableSectionAndHeader + invalidSectionAndHeader :
-            anyFixable ? fixableSectionAndHeader :
-                anyInvalid ? invalidSectionAndHeader :
-                    noInvalidContent
-
-    // Dynamically create the list of all editor IDs for the client-side script
-    const allEditorIdsClient = JSON.stringify(ALL_EDITOR_IDS);
+    const clientOsmEditorsScript = `
+        const OSM_EDITORS = ${JSON.stringify(OSM_EDITORS_CLIENT, (key, value) => {
+        // Use a custom replacer function to handle functions (convert them to strings)
+        if (typeof value === 'function') {
+            // Converts the function back to a string so it can be re-evaluated client-side
+            const functionString = value.toString();
+            let cleanedString = functionString.replace(/[\n\t\r]/g, ' ');
+            cleanedString = cleanedString.replace(/ {2,}/g, ' ');
+            cleanedString = cleanedString.trim();
+            return cleanedString;
+        }
+        return value;
+    }, 4)};
+    `;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -393,25 +320,42 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
                 <h1 class="page-title">${translate('phoneNumberReport', locale)}</h1>
                 <h2 class="page-subtitle">${escapeHTML(subdivisionStats.name)}</h2>
             </header>
-            ${createStatsBox(subdivisionStats.totalNumbers, invalidNumbers.length, autofixableNumbers.length, locale)}
-            ${fixableAndInvalidSectionContent}
+            ${createStatsBox(subdivisionStats.totalNumbers, invalidCount, autoFixableCount, locale)}
+            <div id="reportContainer" class="space-y-8">
+                <section id="fixableSection" class="space-y-8"></section>
+                <section id="invalidSection" class="space-y-8"></section>
+                <section id="noInvalidSection"></section>
+            </div>
             <div class="footer-container">
                 ${createFooter(locale, translations, true)}
             </div>
         </div>
     <script>
-        // CLIENT-SIDE LOGIC FOR EDITOR SETTINGS
-        const ALL_EDITOR_IDS = ${allEditorIdsClient};
+        // Client-side constants
+        const ALL_EDITOR_IDS = ${JSON.stringify(ALL_EDITOR_IDS)};
         const DEFAULT_EDITORS_DESKTOP = ${JSON.stringify(DEFAULT_EDITORS_DESKTOP)};
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
+        const DATA_FILE_PATH = './${subdivisionStats.slug}.json';
+        const DATA_LAST_UPDATED = '${subdivisionStats.lastUpdated}';
         const STORAGE_KEY = 'osm_report_editors';
+        ${clientOsmEditorsScript}
+        for (const editorId in OSM_EDITORS) {
+            const editor = OSM_EDITORS[editorId];
+            const funcString = editor.getEditLink;
+            const functionBody = funcString.substring(funcString.indexOf('{') + 1, funcString.lastIndexOf('}'));
+            editor.getEditLink = new Function('item', functionBody);
+            if (editor.onClick) {
+                const onClickBody = editor.onClick;
+                editor.onClick = new Function('event', onClickBody);
+            }
+        }
     </script>
     <script src="../../report-page.js"></script>
     </body>
     </html>
     `;
-    await fsPromises.writeFile(filePath, htmlContent);
-    console.log(`Generated report for ${subdivisionStats.name} at ${filePath}`);
+    await fsPromises.writeFile(htmlFilePath, htmlContent);
+    console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
 }
 
 module.exports = {

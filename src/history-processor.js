@@ -115,7 +115,7 @@ function processHistory() {
         const outputDir = path.join(PUBLIC_DIR, countrySlug);
         const outputPath = path.join(outputDir, 'history-data.json');
         fs.mkdirSync(outputDir, { recursive: true });
-        fs.writeFileSync(outputPath, JSON.stringify(aggregatedCountryData, null, 2));
+        fs.writeFileSync(outputPath, JSON.stringify(aggregatedCountryData, null));
 
         console.log(`History data for ${countrySlug} processed and saved to ${outputPath}`);
     }
@@ -130,7 +130,7 @@ function processHistory() {
     aggregatedData.overall = overallArray;
 
     const outputPath = path.join(PUBLIC_DIR, 'history-data.json');
-    fs.writeFileSync(outputPath, JSON.stringify(aggregatedData, null, 2));
+    fs.writeFileSync(outputPath, JSON.stringify(aggregatedData, null));
 
     console.log(`History data processed and saved to ${outputPath}`);
 }
