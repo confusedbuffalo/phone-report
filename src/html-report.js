@@ -108,9 +108,17 @@ function createClientItems(item, locale) {
         if (suggestedFix) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
 
-            let originalRowValue = isDuplicateKey ? `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>` : oldDiff;
-            originalRowValue = isMismatchKey ? `<span class="list-item-old-value">${originalMismatchDiff}${notMobileLabel}</span>` : oldDiff;
-            
+            let originalRowValue;
+            if (isDuplicateKey && isMismatchKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}${notMobileLabel}</span>`;
+            } else if (isDuplicateKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
+            } else if (isMismatchKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`;
+            } else {
+                originalRowValue = oldDiff;
+            }
+
             return {
                 [key]: originalRowValue,
                 [suggestedRowKey]: newDiff
