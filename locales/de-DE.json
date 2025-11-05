@@ -57,11 +57,11 @@
 
   "timeAgoJustNow": "soeben",
   "timeAgoError": "Fehler bei der Zeit-Berechnung",
-  "timeAgoMinute": "%n&nbsp;vor Minute",
-  "timeAgoMinutesPlural": "%n&nbsp;vor Minuten",
-  "timeAgoHour": "%n&nbsp;vor Stunde",
-  "timeAgoHoursPlural": "%n&nbsp;vor Stunden",
+  "timeAgoMinute": "vor&nbsp;%n&nbsp; Minute",
+  "timeAgoMinutesPlural": "vor&nbsp;%n&nbsp; Minuten",
+  "timeAgoHour": "vor&nbsp;%n&nbsp; Stunde",
+  "timeAgoHoursPlural": "vor&nbsp;%n&nbsp; Stunden",
 
   "mainIndexTitle": "OSM Telefonnummern-Validierung Meldungen",
-  "countryReportTitle": "OSM Telefonnummern-Validierung Berich - %c"
+  "countryReportTitle": "OSM Telefonnummern-Validierung Bericht - %c"
 }
