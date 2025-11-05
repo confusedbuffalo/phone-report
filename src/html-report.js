@@ -28,32 +28,7 @@ function createJosmFixUrl(item) {
     const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
     const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
 
-    let newSuggestedFixes = {};
-    if (item.hasTypeMismatch) {
-        const tagToUse = item.phoneTagToUse;
-        const existingValuePresent = tagToUse in item.allTags;
-
-        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
-            ? item.allTags[tagToUse]
-            : (item.suggestedFixes[tagToUse])
-                ? item.suggestedFixes[tagToUse]
-                : '';
-
-        const existingFixesList = existingFixes
-            .split(';')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-
-        newSuggestedFixes = {
-            ...item.suggestedFixes,
-            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
-        };
-    } else {
-        newSuggestedFixes = item.suggestedFixes;
-    }
-    const fixes = Object.entries(newSuggestedFixes);
-
-    const encodedTags = fixes.map(([key, value]) => {
+    const encodedTags = Object.entries(item.suggestedFixes).map(([key, value]) => {
         const encodedKey = encodeURIComponent(key);
         const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
         return `${encodedKey}=${encodedValue}`;
@@ -129,6 +104,16 @@ function createClientItems(item, locale) {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
         } else {
+            const tagToUse = item.phoneTagToUse;
+            // Mobile is being moved to standard key, which did not exist before
+            if (!(tagToUse in item.invalidNumbers) && (tagToUse in item.suggestedFixes)) {
+                const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
+                const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
+                return {
+                    [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
+                    [newTagDiff]: newDiff
+                }
+            }
             return {
                 [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };

@@ -139,7 +139,10 @@ describe('createJosmFixUrl', () => {
             'contact:mobile': '+44 141 955 0411',
         },
         invalidNumbers: { 'contact:mobile': '+44 141 955 0411' },
-        suggestedFixes: { 'contact:mobile': null },
+        suggestedFixes: {
+            'contact:mobile': null,
+            'phone': '+44 141 955 0411'
+        },
         hasTypeMismatch: true,
         mismatchTypeNumbers: {'contact:mobile': '+44 141 955 0411'},
         autoFixable: true,
@@ -159,7 +162,10 @@ describe('createJosmFixUrl', () => {
             'contact:phone': '+44 141 956 6323',
         },
         invalidNumbers: { 'contact:mobile': '+44 141 955 0411' },
-        suggestedFixes: { 'contact:mobile': null },
+        suggestedFixes: {
+            'contact:mobile': null,
+            'contact:phone': '+44 141 956 6323; +44 141 955 0411',
+        },
         hasTypeMismatch: true,
         mismatchTypeNumbers: {'contact:mobile': '+44 141 955 0411'},
         autoFixable: true,
