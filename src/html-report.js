@@ -10,7 +10,7 @@ const { stringer } = require('stream-json/Stringer');
 const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
-const { getDiffHtml } = require('./diff-renderer');
+const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
 
@@ -104,6 +104,16 @@ function createClientItems(item, locale) {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
         } else {
+            const tagToUse = item.phoneTagToUse;
+            // Mobile is being moved to standard key, which did not exist before
+            if (!(tagToUse in item.invalidNumbers) && (tagToUse in item.suggestedFixes)) {
+                const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
+                const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
+                return {
+                    [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
+                    [newTagDiff]: newDiff
+                }
+            }
             return {
                 [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };
