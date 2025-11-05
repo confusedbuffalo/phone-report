@@ -10,7 +10,7 @@ const { stringer } = require('stream-json/Stringer');
 const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
-const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
+const { getDiffHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
 
@@ -28,32 +28,7 @@ function createJosmFixUrl(item) {
     const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
     const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
 
-    let newSuggestedFixes = {};
-    if (item.hasTypeMismatch) {
-        const tagToUse = item.phoneTagToUse;
-        const existingValuePresent = tagToUse in item.allTags;
-
-        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
-            ? item.allTags[tagToUse]
-            : (item.suggestedFixes[tagToUse])
-                ? item.suggestedFixes[tagToUse]
-                : '';
-
-        const existingFixesList = existingFixes
-            .split(';')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-
-        newSuggestedFixes = {
-            ...item.suggestedFixes,
-            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
-        };
-    } else {
-        newSuggestedFixes = item.suggestedFixes;
-    }
-    const fixes = Object.entries(newSuggestedFixes);
-
-    const encodedTags = fixes.map(([key, value]) => {
+    const encodedTags = Object.entries(item.suggestedFixes).map(([key, value]) => {
         const encodedKey = encodeURIComponent(key);
         const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
         return `${encodedKey}=${encodedValue}`;
