@@ -727,7 +727,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                             const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), countryCode, tags, tagToRemove);
                             removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
                         }
-                        if (removedValue) {
+                        if (removedValue && !hasInternalDuplicate) {
                             currentItem.suggestedFixes.set(tagToRemove, removedValue);
                             suggestedFix = removedValue;
                         } else if (!hasInternalDuplicate) {
