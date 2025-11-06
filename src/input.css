@@ -461,5 +461,11 @@
 }
 
 @utility list-item-old-value {
-  @apply flex sm:items-center items-start sm:flex-row flex-col;
+  @apply flex items-start flex-col;
+
+  @apply sm:block sm:items-center sm:flex-row;
+}
+
+.list-item-old-value > span {
+  @apply align-middle;
 }
