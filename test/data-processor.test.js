@@ -1690,4 +1690,36 @@ describe('validateNumbers', () => {
             'phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_2}`,
         });
     });
+
+    test('should find and remove duplicates among other numbers in one tag', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 5775129635,
+                tags: {
+                    'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+                    name: 'Many phones',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(5);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'phone': 'phone',
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone': '+44 17687 79280; +44 7901 854574; +44 7554 806119',
+        });
+    });
 });
