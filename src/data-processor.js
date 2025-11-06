@@ -670,6 +670,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             const validatedNumbers = validationResult.validNumbersList;
             let tagShouldBeFlaggedForRemoval = false;
+            let hasInternalDuplicate = false;
             let suggestedFix = null;
             let duplicateMismatchCount = 0;
 
@@ -678,6 +679,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             const uniqueFormattedSet = [...new Set(formattedNumbers)];
             if (uniqueFormattedSet.length < formattedNumbers.length) {
                 tagShouldBeFlaggedForRemoval = true;
+                hasInternalDuplicate = true;
                 suggestedFix = uniqueFormattedSet.map((number) => {
                     return getFormattedNumber(parsePhoneNumber(number, countryCode), countryCode);
                 }).join('; ');
@@ -713,7 +715,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     currentItem.duplicateNumbers.set(tagToRemove, keptTag);
 
                     // Get fixes for tagToRemove and only mark null if there are no other values
-                    const validatedRemoved = validateSingleTag(tags[tagToRemove], countryCode, tags, tagToRemove);
+                    const removeTagToValidate = currentItem.suggestedFixes.get(tagToRemove) ? currentItem.suggestedFixes.get(tagToRemove) : tags[tagToRemove];
+                    const validatedRemoved = validateSingleTag(removeTagToValidate, countryCode, tags, tagToRemove);
                     if (validatedRemoved.suggestedNumbersList) {
                         const normalizedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
                             number.replace(getSpacingRegex(countryCode), '')
@@ -726,6 +729,10 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         }
                         if (removedValue) {
                             currentItem.suggestedFixes.set(tagToRemove, removedValue);
+                            suggestedFix = removedValue;
+                        } else if (!hasInternalDuplicate) {
+                            currentItem.suggestedFixes.set(tagToRemove, null);
+                            suggestedFix = null;
                         }
                     }
 
