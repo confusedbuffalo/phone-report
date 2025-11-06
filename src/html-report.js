@@ -1,5 +1,12 @@
+const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { Transform } = require('stream');
+const { chain } = require('stream-chain');
+const { parser } = require('stream-json/Parser');
+const { streamArray } = require('stream-json/streamers/StreamArray');
+const { disassembler } = require('stream-json/Disassembler');
+const { stringer } = require('stream-json/Stringer');
 const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
@@ -21,32 +28,7 @@ function createJosmFixUrl(item) {
     const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
     const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
 
-    let newSuggestedFixes = {};
-    if (item.hasTypeMismatch) {
-        const tagToUse = item.phoneTagToUse;
-        const existingValuePresent = tagToUse in item.allTags;
-
-        const existingFixes = (existingValuePresent && !item.suggestedFixes[tagToUse])
-            ? item.allTags[tagToUse]
-            : (item.suggestedFixes[tagToUse])
-                ? item.suggestedFixes[tagToUse]
-                : '';
-
-        const existingFixesList = existingFixes
-            .split(';')
-            .map(s => s.trim())
-            .filter(s => s.length > 0);
-
-        newSuggestedFixes = {
-            ...item.suggestedFixes,
-            [tagToUse]: [...existingFixesList, ...Object.values(item.mismatchTypeNumbers)].join('; ')
-        };
-    } else {
-        newSuggestedFixes = item.suggestedFixes;
-    }
-    const fixes = Object.entries(newSuggestedFixes);
-
-    const encodedTags = fixes.map(([key, value]) => {
+    const encodedTags = Object.entries(item.suggestedFixes).map(([key, value]) => {
         const encodedKey = encodeURIComponent(key);
         const encodedValue = value ? encodeURIComponent(value) : ''; // null value should lead to tag being removed
         return `${encodedKey}=${encodedValue}`;
@@ -82,122 +64,60 @@ function createClientItems(item, locale) {
     item.fixRows = Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
+        const isDuplicateKey = key in item.duplicateNumbers;
+        const isMismatchKey = key in item.mismatchTypeNumbers;
+        const suggestedRowKey = translate('suggestedFix', locale);
 
-        // --- Handle type mismatch numbers ---
-        if (key in item.mismatchTypeNumbers) {
-            const tagToUse = item.phoneTagToUse;
-            const existingValuePresent = tagToUse in item.allTags;
+        const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
+        const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
 
-            // Resolve what the "main" tag originally had and what we’ll suggest
-            let originalForMismatch = item.invalidNumbers[tagToUse] ?? item.allTags[tagToUse] ?? null;
-            let suggestedForMismatch;
-
-            if (item.suggestedFixes[tagToUse]) {
-                suggestedForMismatch = item.suggestedFixes[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else if (item.allTags[tagToUse]) {
-                suggestedForMismatch = item.allTags[tagToUse] + '; ' + item.mismatchTypeNumbers[key];
-            } else {
-                suggestedForMismatch = item.mismatchTypeNumbers[key];
-            }
-
-            const originalMismatch = item.allTags[key];
-            const suggestedMismatch = item.suggestedFixes[key];
-
-            const { oldDiff: originalDiff, newDiff: suggestedDiff } = getDiffHtml(originalForMismatch, suggestedForMismatch);
-            const { oldDiff: originalMismatchDiff, newDiff: suggestedMismatchDiff } = getDiffHtml(originalMismatch, suggestedMismatch);
-
-            const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
-            const originalRowValue = `<span class="list-item-old-value">${originalMismatchDiff}${notMobileLabel}</span>`;
-            const suggestedRowValue = suggestedDiff;
-
-            let oldTagDiff = '', newTagDiff = '';
-
-            if (!item.suggestedFixes[key] && !existingValuePresent) {
-                // Simply moving from one key to another
-                ({ oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse));
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [newTagDiff]: suggestedRowValue
-                };
-            } else if (!item.suggestedFixes[key]) {
-                // Emptying old tag, appending it to existing tag
-                oldTagDiff = `<span class="diff-removed">${key}</span>`;
-                newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [tagToUse]: originalDiff,
-                    [newTagDiff]: suggestedRowValue
-                };
-            } else if (existingValuePresent) {
-                // Removing from old tag (leaving something there) and adding to existing tag
-                oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
-                newTagDiff = `<span class="diff-unchanged">${tagToUse}</span>`;
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [key]: suggestedMismatchDiff,
-                    [tagToUse]: originalDiff,
-                    [newTagDiff]: suggestedRowValue
-                };
-            } else {
-                // Removing from old tag, creating new tag
-                oldTagDiff = `<span class="diff-unchanged">${key}</span>`;
-                newTagDiff = `<span class="diff-added">${tagToUse}</span>`;
-                return {
-                    [oldTagDiff]: originalRowValue,
-                    [key]: suggestedMismatchDiff,
-                    [newTagDiff]: suggestedRowValue
-                };
-            }
-        }
-
-        // --- Skip duplicate rendering of type mismatch "main" tag ---
-        if (item.hasTypeMismatch && key === item.phoneTagToUse) return;
-
-        // --- Handle simple fixable numbers ---
-        if (suggestedFix) {
+        // Internal duplicate (in same tag)
+        if (isDuplicateKey && item.duplicateNumbers[key] == key) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const suggestedRowKey = translate('suggestedFix', locale);
             return {
-                [key]: oldDiff,
+                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
                 [suggestedRowKey]: newDiff
             };
         }
 
-        // --- Handle duplicates ---
-        if (key in item.duplicateNumbers) {
-            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
-            const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
-            const originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
+        if (suggestedFix) {
+            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
 
-            const otherKeys = Object.keys(item.invalidNumbers).filter(k => k !== key);
-            const suggestedRowKey = translate('suggestedFix', locale);
-            const keptTag = otherKeys.find(k => item.suggestedFixes[k]) ?? null;
-            const keptValue = keptTag ? item.suggestedFixes[keptTag] : null;
-
-            // Show both tags side by side if both exist
-            if (keptTag && keptValue) {
-                return {
-                    [key]: originalRowValue,
-                    [keptTag]: keptValue,
-                    [suggestedRowKey]: keptValue
-                };
+            let originalRowValue;
+            if (isDuplicateKey && isMismatchKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}${notMobileLabel}</span>`;
+            } else if (isDuplicateKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
+            } else if (isMismatchKey) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`;
+            } else {
+                originalRowValue = oldDiff;
             }
 
-            const suggestedFixKeys = Object.keys(item.suggestedFixes);
-            const otherKey = suggestedFixKeys.find(key => !item.invalidNumbers.hasOwnProperty(key)) ?? null;
-            const otherValue = otherKey ? item.suggestedFixes[otherKey] : null;
-
-            // Otherwise show the value that has the duplicate
             return {
                 [key]: originalRowValue,
-                [otherKey]: otherValue,
+                [suggestedRowKey]: newDiff
+            };
+        } else if (isDuplicateKey) {
+            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            return {
+                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
+            }
+        } else {
+            const tagToUse = item.phoneTagToUse;
+            // Mobile is being moved to standard key, which did not exist before
+            if (!(tagToUse in item.invalidNumbers) && (tagToUse in item.suggestedFixes)) {
+                const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
+                const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
+                return {
+                    [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
+                    [newTagDiff]: newDiff
+                }
+            }
+            return {
+                [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };
         }
-
-        // --- Default fallback for plain invalid numbers (no fix, no duplicate) ---
-        return {
-            [key]: `<span>${escapeHTML(originalNumber)}</span>`
-        };
     }).filter(Boolean);
 
 
@@ -209,6 +129,54 @@ function createClientItems(item, locale) {
 }
 
 /**
+ * @typedef {Object} StreamedItem
+ * @property {number} key - The index of the item within the source array.
+ * @property {Object} value - The actual JavaScript object being streamed.
+ * @property {string[]} path - The JSON path to the item.
+ */
+
+/**
+ * Custom Node.js Transform stream designed to process individual JavaScript
+ * objects streamed from a large JSON array.
+ *
+ * This stream operates in object mode for both input and output, ensuring
+ * only single JavaScript objects are held in memory at any given time,
+ * maintaining memory efficiency.
+ * @extends {Transform}
+ */
+class ItemTransformer extends Transform {
+    /**
+     * Creates an instance of ItemTransformer.
+     *
+     * @param {function(Object): Object} transformFn - The synchronous function to apply to each streamed object's value.
+     * It receives the raw object and must return the processed object.
+     * @param {import('stream').TransformOptions} [options] - Optional stream options passed to the base Transform constructor.
+     */
+    constructor(transformFn, options) {
+        super({ ...options, objectMode: true });
+        this.transformFn = transformFn;
+    }
+
+    /**
+     * Internal method called by the streaming mechanism to process each chunk of data.
+     *
+     * @param {StreamedItem} chunk - A chunk containing the item details (key and value) from the upstream streamArray.
+     * @param {string} encoding - The encoding of the chunk (ignored in object mode).
+     * @param {function(Error | null): void} callback - Callback function to signal completion or an error for the current chunk.
+     * @private
+     */
+    _transform(chunk, encoding, callback) {
+        try {
+            const result = this.transformFn(chunk.value);
+            this.push(result);
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    }
+}
+
+/**
  * Generates the HTML report for a single subdivision.
  * @param {string} countryName
  * @param {Object} subdivisionStats - The subdivision statistics object.
@@ -216,29 +184,49 @@ function createClientItems(item, locale) {
  * @param {string} locale
  * @param {Object} translations
  */
-async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers, locale, translations) {
-
-    // Clear the map at the start of report generation for a new page.
+async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations) {
     clearIconSprite();
 
     const subdivisionSlug = path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
     const safeCountryName = safeName(countryName);
-    const filePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
+    const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
+    const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
 
-    const invalidItemsClient = invalidNumbers.map(item => createClientItems(item, locale));
+    const { invalidCount, autoFixableCount } = subdivisionStats;
 
-    // Generate the sprite after all list items have been processed
+    const stringerOptions = { makeArray: true };
+
+    const pipelinePromise = new Promise((resolve, reject) => {
+        const pipeline = chain([
+            fs.createReadStream(tmpFilePath),
+            parser(),
+            streamArray(),
+            new ItemTransformer(createClientItems, { locale: locale }),
+            disassembler(),
+            stringer(stringerOptions),
+            fs.createWriteStream(dataFilePath)
+        ]);
+
+        pipeline.on('error', (err) => {
+            console.error('An error occurred during streaming:', err);
+            reject(err);
+        });
+        pipeline.on('finish', () => {
+            console.log(`Output data written to ${dataFilePath}`);
+            resolve();
+        });
+    });
+
+    await pipelinePromise;
+
+    // Generate the sprite after processing the items
     const svgSprite = generateSvgSprite();
 
-    const autofixableNumbers = invalidNumbers.filter(item => item.autoFixable);
-
-    // Add a confetti easter egg if there are no errors
     let confettiScripts = '';
-    if (invalidNumbers.length === 0) {
+    if (invalidCount === 0) {
         confettiScripts = `
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
         <script>
-            // Fire confetti when the page loads
             document.addEventListener('DOMContentLoaded', function() {
                 confetti({
                     particleCount: 150,
@@ -270,7 +258,11 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         // Use a custom replacer function to handle functions (convert them to strings)
         if (typeof value === 'function') {
             // Converts the function back to a string so it can be re-evaluated client-side
-            return value.toString();
+            const functionString = value.toString();
+            let cleanedString = functionString.replace(/[\n\t\r]/g, ' ');
+            cleanedString = cleanedString.replace(/ {2,}/g, ' ');
+            cleanedString = cleanedString.trim();
+            return cleanedString;
         }
         return value;
     }, 4)};
@@ -313,7 +305,7 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
                 <h1 class="page-title">${translate('phoneNumberReport', locale)}</h1>
                 <h2 class="page-subtitle">${escapeHTML(subdivisionStats.name)}</h2>
             </header>
-            ${createStatsBox(subdivisionStats.totalNumbers, invalidNumbers.length, autofixableNumbers.length, locale)}
+            ${createStatsBox(subdivisionStats.totalNumbers, invalidCount, autoFixableCount, locale)}
             <div id="reportContainer" class="space-y-8">
                 <section id="fixableSection" class="space-y-8"></section>
                 <section id="invalidSection" class="space-y-8"></section>
@@ -328,7 +320,8 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
         const ALL_EDITOR_IDS = ${JSON.stringify(ALL_EDITOR_IDS)};
         const DEFAULT_EDITORS_DESKTOP = ${JSON.stringify(DEFAULT_EDITORS_DESKTOP)};
         const DEFAULT_EDITORS_MOBILE = ${JSON.stringify(DEFAULT_EDITORS_MOBILE)};
-        const invalidItemsClient = ${JSON.stringify(invalidItemsClient)};
+        const DATA_FILE_PATH = './${subdivisionStats.slug}.json';
+        const DATA_LAST_UPDATED = '${subdivisionStats.lastUpdated}';
         const STORAGE_KEY = 'osm_report_editors';
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
@@ -347,8 +340,8 @@ async function generateHtmlReport(countryName, subdivisionStats, invalidNumbers,
     </body>
     </html>
     `;
-    await fsPromises.writeFile(filePath, htmlContent);
-    console.log(`Generated report for ${subdivisionStats.name} at ${filePath}`);
+    await fsPromises.writeFile(htmlFilePath, htmlContent);
+    console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
 }
 
 module.exports = {

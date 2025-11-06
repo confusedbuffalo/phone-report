@@ -5,6 +5,55 @@ let fixableSortKey = 'none'; // 'name', 'invalid', 'fixable'
 let fixableSortDirection = 'asc'; // 'asc', 'desc'
 let invalidSortKey = 'none'; // 'name', 'invalid'
 let invalidSortDirection = 'asc'; // 'asc', 'desc'
+let reportData = null;
+
+const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
+
+/**
+ * Adds an item's ID to localStorage to mark it as clicked.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ */
+function recordItemClick(itemId) {
+    try {
+        const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
+        clickedItems[itemId] = true;
+        localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
+    } catch (e) {
+        console.error("Could not save clicked item to localStorage:", e);
+    }
+}
+
+/**
+ * Applies the 'clicked' visual state to all buttons of a specific item.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ */
+function setButtonsAsClicked(itemId) {
+    const listItem = document.querySelector(`li[data-item-id="${itemId}"]`);
+    if (listItem) {
+        const buttons = listItem.querySelectorAll(':not(input)[data-editor-id]');
+        buttons.forEach(button => {
+            button.classList.remove('btn-josm-fix');
+            button.classList.remove('btn-editor');
+            button.classList.remove('label-fixable');
+            button.classList.add('btn-clicked');
+        });
+    }
+}
+
+/**
+ * Checks if an item has been clicked by looking it up in localStorage.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ * @returns {boolean} - True if the item is in the clicked items list, false otherwise.
+ */
+function isItemClicked(itemId) {
+    try {
+        const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
+        return clickedItems.hasOwnProperty(itemId);
+    } catch (e) {
+        console.error("Could not read clicked items from localStorage:", e);
+        return false;
+    }
+}
 
 /**
  * Sends a command to the JOSM Remote Control API.
@@ -60,7 +109,7 @@ function loadSettings() {
         console.error("Error loading settings from localStorage:", e);
     }
     // Fallback to defaults
-    currentActiveEditors = [...DEFAULT_EDITORS]; 
+    currentActiveEditors = [...DEFAULT_EDITORS];
 }
 
 /**
@@ -107,7 +156,7 @@ function handleEditorChange(event) {
     const checkbox = event.target;
     if (checkbox.type === 'checkbox') {
         const editorId = checkbox.dataset.editorId;
-        
+
         if (checkbox.checked) {
             if (!currentActiveEditors.includes(editorId)) {
                 currentActiveEditors.push(editorId);
@@ -115,7 +164,7 @@ function handleEditorChange(event) {
         } else {
             currentActiveEditors = currentActiveEditors.filter(id => id !== editorId);
         }
-        
+
         saveSettings();
         applyEditorVisibility();
     }
@@ -130,10 +179,10 @@ function handleEditorChange(event) {
 function applyEditorVisibility() {
     // Find all editor buttons using the data-editor-id attribute
     const buttons = document.querySelectorAll(':not(input)[data-editor-id]');
-    
+
     buttons.forEach(button => {
         const editorId = button.dataset.editorId;
-        
+
         // Special handling for the JOSM Fix button: always visible if JOSM is active
         // Display fix label if fix button is invisible
         if (editorId === 'josm-fix') {
@@ -146,7 +195,7 @@ function applyEditorVisibility() {
             button.style.display = isVisible ? 'inline-flex' : 'none';
             return;
         }
-        
+
         const isVisible = currentActiveEditors.includes(editorId);
         button.style.display = isVisible ? 'inline-flex' : 'none';
     });
@@ -163,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         settingsMenu.classList.toggle('hidden');
         event.stopPropagation(); // Stop click from propagating to document listener
     });
-    
+
     // Close the menu if user clicks outside
     document.addEventListener('click', (event) => {
         if (!settingsMenu.contains(event.target) && !settingsToggle.contains(event.target)) {
@@ -219,7 +268,7 @@ function createDetailsGrid(item) {
  * editorButtons: Element[]
  * }}
  */
-function createButtons(item) {
+function createButtons(item, clickedClass) {
 
     // Generate buttons for ALL editors so client-side script can hide them
     const editorButtons = ALL_EDITOR_IDS.map(editorId => {
@@ -235,12 +284,13 @@ function createButtons(item) {
 
         // JOSM requires an onclick handler; others use a direct href
         const href = isJosm ? '#' : url;
-        const onClick = isJosm ? `onclick="openInJosm('${url}', event)"` : '';
+        const onClick = isJosm ? `openInJosm('${url}', event);` : '';
+        const itemId = `${item.type}/${item.id}`;
 
         return `
-            <a href="${href}" ${target} ${onClick} 
+            <a href="${href}" ${target} onclick="recordItemClick('${itemId}'); setButtonsAsClicked('${itemId}'); ${onClick}"
                 data-editor-id="${editorId}"
-                class="btn btn-editor">
+                class="btn ${clickedClass ? clickedClass : 'btn-editor'}">
                 ${text}
             </a>
         `;
@@ -248,14 +298,14 @@ function createButtons(item) {
 
     // Generate JOSM Fix Button (special case)
     const josmFixButton = item.josmFixUrl ?
-        `<a href="#" onclick="openInJosm('${item.josmFixUrl}', event)" 
+        `<a href="#" onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); openInJosm('${item.josmFixUrl}', event)"
             data-editor-id="josm-fix"
-            class="btn btn-josm-fix">
+            class="btn ${clickedClass ? clickedClass : 'btn-josm-fix'}">
             ${translate('fixInJOSM')}
         </a>` :
         '';
     const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label label-fixable">${translate('fixable')}</span>` :
+        `<span data-editor-id="fix-label" class="label ${clickedClass ? clickedClass : 'label-fixable'}">${translate('fixable')}</span>` :
         '';
 
     const websiteButton = item.website ?
@@ -272,12 +322,15 @@ function createButtons(item) {
  */
 function createListItem(item) {
 
-    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item);
+    const itemId = `${item.type}/${item.id}`;
+    const clickedClass = isItemClicked(itemId) ? 'btn-clicked' : '';
+
+    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item, clickedClass);
 
     iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
     return `
-        <li class="report-list-item">
+        <li class="report-list-item" data-item-id="${itemId}">
             <div class="list-item-content-wrapper">
                 <a class="list-item-icon-circle-preview" href="https://www.openstreetmap.org/${item.type}/${item.id}" target="_blank" rel="noopener noreferrer">
                     ${iconHtml}
@@ -295,7 +348,7 @@ function createListItem(item) {
                 ${websiteButton}
                 ${fixableLabel}
                 ${josmFixButton}
-                ${editorButtons} 
+                ${editorButtons}
             </div>
         </li>
     `;
@@ -435,7 +488,7 @@ function renderPaginatedSection(
             return 'sort-btn-style-inactive'
         }
     };
-    
+
     // Unique ID suffix for this section's controls
     const suffix = isFixableSection ? 'fixable' : 'invalid';
 
@@ -503,12 +556,16 @@ function renderPaginatedSection(
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 function changePage(section, delta) {
+    if (!reportData) {
+        console.error("Cannot change page before data is loaded.");
+        return;
+    }
     if (section === 'fixable') {
-        const totalPages = Math.ceil(invalidItemsClient.filter(item => item.autoFixable).length / pageSize);
+        const totalPages = Math.ceil(reportData.filter(item => item.autoFixable).length / pageSize);
         fixableCurrentPage = Math.max(1, Math.min(totalPages, fixableCurrentPage + delta));
         renderNumbers(); // Re-render the whole page to update the state
     } else if (section === 'invalid') {
-        const totalPages = Math.ceil(invalidItemsClient.filter(item => !item.autoFixable).length / pageSize);
+        const totalPages = Math.ceil(reportData.filter(item => !item.autoFixable).length / pageSize);
         invalidCurrentPage = Math.max(1, Math.min(totalPages, invalidCurrentPage + delta));
         renderNumbers(); // Re-render the whole page
     }
@@ -550,7 +607,7 @@ function handleSort(section, newKey) {
             invalidSortDirection = 'asc';
         }
     }
-    
+
     // Reset to the first page after sorting
     if (section === 'fixable') fixableCurrentPage = 1;
     else invalidCurrentPage = 1;
@@ -567,12 +624,16 @@ function handleSort(section, newKey) {
  * @returns {void}
  */
 function renderNumbers() {
+    if (!reportData) {
+        console.error("Attempted to render numbers before data was loaded.");
+        return;
+    }
     const fixableContainer = document.getElementById("fixableSection");
     const invalidContainer = document.getElementById("invalidSection");
     const noInvalidContainer = document.getElementById("noInvalidSection");
 
-    const autofixableNumbers = invalidItemsClient.filter(item => item.autoFixable);
-    const manualFixNumbers = invalidItemsClient.filter(item => !item.autoFixable);
+    const autofixableNumbers = reportData.filter(item => item.autoFixable);
+    const manualFixNumbers = reportData.filter(item => !item.autoFixable);
 
     const anyInvalid = manualFixNumbers.length > 0;
     const anyFixable = autofixableNumbers.length > 0;
@@ -618,4 +679,26 @@ function renderNumbers() {
     applyEditorVisibility();
 }
 
-renderNumbers();
+/**
+ * Initializes the report page by fetching the data and rendering the numbers.
+ */
+async function initReportPage() {
+    try {
+        const response = await fetch(DATA_FILE_PATH);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        reportData = await response.json();
+    } catch (error) {
+        console.error("Failed to load phone validation data:", error);
+        // Display an error message to the user if data loading fails
+        const container = document.getElementById("reportContainer");
+        if (container) {
+             container.innerHTML = '<p class="text-red-500 font-bold">Error: Could not load report data. Please check the network connection and the data file path.</p>';
+        }
+        return;
+    }
+    renderNumbers();
+}
+
+initReportPage();

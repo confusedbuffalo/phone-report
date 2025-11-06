@@ -31,7 +31,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22.x'
 
       - name: Install dependencies
         run: npm install
@@ -75,7 +75,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22.x'
 
       - name: Install Dependencies
         run: npm install
@@ -103,15 +103,6 @@ jobs:
         run: |
           find public -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
             npx terser "$file" --output "$file" --compress --mangle
-          done
-        shell: bash
-
-      - name: Run JSON Minifier
-        if: env.BUILD_TYPE == 'full'
-        run: |
-          find public -name "*.json" | while read -r file; do
-            npx node-minify --compressor jsonminify --input "$file" --output "$file.min"
-            mv "$file.min" "$file"
           done
         shell: bash
 

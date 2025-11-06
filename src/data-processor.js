@@ -1,6 +1,8 @@
+const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX } = require('./constants');
+const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
     MOBILE: 'mobile',
@@ -26,10 +28,10 @@ function safeName(name) {
 
     let processedName = name;
 
-    // 1. Convert to lowercase
+    // Convert to lowercase
     processedName = processedName.toLowerCase();
 
-    // 2. Substitute non-letter (\p{L}), non-number (\p{N}), and non-space (\s) characters with a hyphen.
+    // Substitute non-letter (\p{L}), non-number (\p{N}), and non-space (\s) characters with a hyphen.
     // The 'gu' flags enable global replacement and robust Unicode handling.
     // This step preserves all letters/numbers across all scripts and substitutes all symbols.
     // Note: If running in a very old JS environment that doesn't support \p{L}, this may fail.
@@ -41,13 +43,13 @@ function safeName(name) {
         processedName = processedName.replace(/[^a-z0-9\s\u00C0-\uFFFF]+/g, '-');
     }
 
-    // 3. Replace one or more spaces with a hyphen.
+    // Replace one or more spaces with a hyphen.
     processedName = processedName.replace(/\s+/g, '-');
 
-    // 4. Remove repeated substitutes (e.g., '--' becomes '-')
+    // Remove repeated substitutes (e.g., '--' becomes '-')
     processedName = processedName.replace(/-+/g, '-');
 
-    // 5. Remove substitutes appearing at the start or end of the string.
+    // Remove substitutes appearing at the start or end of the string.
     processedName = processedName.replace(/^-|-$/g, '');
 
     return processedName;
@@ -226,24 +228,31 @@ function keyToRemove(key1, key2) {
  * @param {string} numberStr 
  * @returns {string} The core number string without the extension.
  */
-function stripExtension(numberStr) {
-    // Regex matches common extension prefixes: x, ext, extension, etc.
-    // It captures everything before the extension marker.
-    const extensionRegex = /^(.*?)(?:[xX]|[eE][xX][tT]|\s*\(ext\)\s*).*$/;
-    const match = numberStr.match(extensionRegex);
-
-    // If an extension is found, return the part before it (trimmed).
+function stripStandardExtension(numberStr) {
+    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
     if (match && match[1]) {
         return match[1].trim();
     }
-    // Otherwise, return the original string.
     return numberStr;
+}
+
+/**
+ * Gets the extension from a phone number if it is in a recognisable format.
+ * @param {string} numberStr 
+ * @returns {string} The core number string without the extension.
+ */
+function getStandardExtension(numberStr) {
+    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
+    if (match && match[2]) {
+        return match[2].replace(/[^\d]/g, '');
+    }
+    return null;
 }
 
 /**
  * Gets the relevant regex for valid spacing in the given country code.
  * @param {string} countryCode - The country code.
- * @returns {RegExp} - The regular expression to use for spacing validation.
+ * @returns {RegExp} The regular expression to use for spacing validation.
  */
 function getSpacingRegex(countryCode) {
     return countryCode === 'US' ? /[\s-]/g : /\s/g;
@@ -305,6 +314,92 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 }
 
 /**
+ * Split a number into the core number and the extension, respecting country
+ * formatting for extensions.
+ * @param {PhoneNumber} numberStr - The original phone number string
+ * @param {string} countryCode - The country code for formatting.
+ * @returns {{coreNumber: string, extension: string}} An object containing the core number and the extension.
+ */
+function getNumberAndExtension(numberStr, countryCode) {
+    // DIN format has hyphen then 1-4 digits for extensions
+    if (countryCode === 'DE') {
+        const DE_EXTENSION_REGEX = /^(.*?)-(\d{1,4})$/
+        const match = numberStr.match(DE_EXTENSION_REGEX);
+        if (match && match[1] && match[2]) {
+            try {
+                const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
+                // Only consider this as an extension if the number before it is valid as a number
+                // (since hyphens may have been used as separators in a non-extension number)
+                if (preHyphenNumber.isValid()) {
+                    return {
+                        coreNumber: match[1].trim(),
+                        extension: match[2].trim(),
+                    }
+                }
+            } catch (e) {
+                // Parsing failed due to an exception
+            }
+        }
+    }
+    return {
+        coreNumber: stripStandardExtension(numberStr),
+        extension: getStandardExtension(numberStr)
+    }
+}
+
+/**
+ * Formats a single phone number to the appropriate national standard
+ * @param {PhoneNumber} phoneNumber - The phone number object
+ * @param {string} countryCode - The country code for formatting.
+ * @returns {string} The formatted number
+ */
+function getFormattedNumber(phoneNumber, countryCode) {
+    const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
+
+    const coreNumberE164 = isPolishPrefixed
+        ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
+        : phoneNumber.number;
+
+    const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
+    // Append the extension in the standard format (' x{ext}' or DIN format for DE)
+    const extension = phoneNumber.ext ?
+        (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
+        : '';
+
+    if (countryCode === 'US') {
+        // Use dashes as separator, but space after country code
+        const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
+
+        let nationalNumberFormatted = phoneNumber.format('NATIONAL');
+        nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
+        nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
+
+        // National number has extension in it for US
+        nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
+        return `${countryCodePrefix} ${nationalNumberFormatted}`;
+    }
+
+    return coreFormatted + extension;
+}
+
+/**
+ * Determines if a phone number is a Polish number incorrectly prefixed with a 0
+ * @param {PhoneNumber} phoneNumber - The phone number object
+ * @param {string} countryCode - The country code being checked against
+ * @returns {boolean}
+ */
+function isPolishPrefixedNumber(phoneNumber, countryCode) {
+    // See https://github.com/confusedbuffalo/phone-report/issues/15
+    return (
+        countryCode === 'PL'
+        && phoneNumber
+        && !phoneNumber.isValid()
+        && phoneNumber.isPossible
+        && phoneNumber.nationalNumber.startsWith('0')
+    )
+}
+
+/**
  * Validates a single phone number string using libphonenumber-js.
  * @param {string} numberStr - The phone number string to validate.
  * @param {string} countryCode - The country code for validation.
@@ -323,52 +418,30 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
     const spacingRegex = getSpacingRegex(countryCode);
 
+    if (numberStr.startsWith('++')) {
+        numberStr = numberStr.slice(1);
+        isInvalid = true;
+    }
+
+    const { coreNumber, extension } = getNumberAndExtension(numberStr, countryCode);
+    const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
+
     try {
-        phoneNumber = parsePhoneNumber(numberStr, countryCode);
+        phoneNumber = parsePhoneNumber(standardisedNumber, countryCode);
 
         const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
         if (exclusionResult) {
             return exclusionResult;
         }
 
-        // Strip the extension from the original string for normalization
-        const numberToValidate = stripExtension(numberStr);
-        const normalizedOriginal = numberToValidate.replace(spacingRegex, '');
+        const normalizedOriginal = coreNumber.replace(spacingRegex, '');
 
         let normalizedParsed = '';
 
-        // See https://github.com/confusedbuffalo/phone-report/issues/15
-        const isPolishPrefixed = (
-            countryCode === 'PL'
-            && phoneNumber
-            && !phoneNumber.isValid()
-            && phoneNumber.isPossible
-            && phoneNumber.nationalNumber.startsWith('0')
-        )
+        const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            const coreNumberE164 = isPolishPrefixed
-                ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
-                : phoneNumber.number;
-
-            const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
-            // Append the extension in the standard format (' x{ext}').
-            const extension = phoneNumber.ext ? ` x${phoneNumber.ext}` : '';
-
-            suggestedFix = (() => {
-                if (countryCode === 'US') {
-                    // Use dashes as separator, but space after country code
-                    const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
-
-                    let nationalNumberFormatted = phoneNumber.format('NATIONAL');
-                    nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
-                    nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
-
-                    return `${countryCodePrefix} ${nationalNumberFormatted}${extension}`;
-                } else {
-                    return coreFormatted + extension;
-                }
-            })();
+            suggestedFix = getFormattedNumber(phoneNumber, countryCode);
         }
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {
@@ -424,9 +497,11 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     // Check if a bad separator was used
     const hasBadSeparator = originalTagValue.match(BAD_SEPARATOR_REGEX);
 
+    splitRegex = countryCode === 'DE' ? UNIVERSAL_SPLIT_REGEX_DE : UNIVERSAL_SPLIT_REGEX;
+
     // Single-step splitting: The regex finds all separators and removes them.
     const numbers = originalTagValue
-        .split(UNIVERSAL_SPLIT_REGEX)
+        .split(splitRegex)
         .map(s => s.trim())
         .filter(s => s.length > 0);
 
@@ -479,56 +554,114 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     return tagValidationResult;
 }
 
+
+/**
+ * Iterates over the mismatchTypeNumbers Map and updates the suggestedFixes Map.
+ * @param {object} item - The item object containing the Maps.
+ * @param {string} countryCode - The country code for validation.
+ */
+function processMismatches(item, countryCode) {
+    if (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map) {
+        for (const [mismatchKey, mismatchValue] of item.mismatchTypeNumbers) {
+
+            const tagToUse = phoneTagToUse(item.allTags);
+            const existingValue = item.allTags[tagToUse];
+            const existingFix = item.suggestedFixes.get(tagToUse);
+
+            let suggestedForMismatch;
+
+            // Check if the number we're moving in is a duplicate
+            if (existingFix || existingValue) {
+                const suggested = existingFix ? existingFix : existingValue;
+
+                const validatedSuggested = validateSingleTag(suggested, countryCode, item.allTags, tagToUse)
+                const validatedMismatch = validateSingleTag(mismatchValue, countryCode, item.allTags, tagToUse)
+
+                const allSuggested = [...validatedSuggested.suggestedNumbersList, ...validatedMismatch.suggestedNumbersList];
+                const suggestedSet = new Set(allSuggested);
+                const filteredSuggested = Array.from(suggestedSet);
+
+                if (
+                    filteredSuggested.join('; ') === validatedSuggested.suggestedNumbersList.join('; ')
+                    && !item.suggestedFixes[mismatchKey]
+                ) {
+                    item.hasTypeMismatch = false;
+                    item.mismatchTypeNumbers.delete(mismatchKey);
+                }
+
+                suggestedForMismatch = filteredSuggested.join('; ');
+            } else {
+                suggestedForMismatch = mismatchValue;
+            }
+
+            // If the numbers were already valid, and invalid is only there to show what the duplicate is matching
+            if (item.invalidNumbers.get(tagToUse) !== suggestedForMismatch) {
+                item.suggestedFixes.set(tagToUse, suggestedForMismatch);
+            }
+        }
+    }
+}
+
 /**
  * Validates phone numbers using libphonenumber-js, marking tags as invalid if
  * they contain bad separators (comma, slash, 'or') or invalid numbers.
  * @param {Array<Object>} elements - OSM elements with phone tags.
  * @param {string} countryCode - The country code for validation.
+ * @param {string} tmpFilePath - The temporary file path to store the invalid items.
  * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}
  */
-function validateNumbers(elements, countryCode) {
-    const invalidItemsMap = new Map();
-    let totalNumbers = 0;
+async function validateNumbers(elementStream, countryCode, tmpFilePath) {
+    const fileStream = fs.createWriteStream(tmpFilePath);
+    fileStream.write('[\n');
+    let isFirstItem = true;
 
-    elements.forEach(element => {
-        if (!element.tags) return;
+    let totalNumbers = 0;
+    let invalidCount = 0;
+    let autoFixableCount = 0;
+
+    for await (const element of elementStream) {
+        if (!element.tags) continue;
         const tags = element.tags;
 
-        let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
-        if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
-            website = `http://${website}`;
-        }
-
-        const lat = element.lat || (element.center && element.center.lat);
-        const lon = element.lon || (element.center && element.center.lon);
-        const name = tags.name;
-        const key = `${element.type}-${element.id}`;
-        const couldBeArea =
-            element.type === 'way' &&
-            element['nodes'] &&
-            element['nodes'].at(0) === element['nodes'].at(-1);
-
-        const baseItem = {
-            type: element.type,
-            id: element.id,
-            website,
-            lat,
-            lon,
-            couldBeArea,
-            name,
-            allTags: tags,
-            invalidNumbers: new Map(),
-            suggestedFixes: new Map(),
-            hasTypeMismatch: false,
-            mismatchTypeNumbers: new Map(),
-            duplicateNumbers: new Map(),
-        };
-
-        // Track normalized numbers across all tags
+        let item = null;
         const allNormalizedNumbers = new Map();
+
+        const getOrCreateItem = (autoFixable) => {
+            if (item) return item;
+
+            let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
+            if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
+                website = `http://${website}`;
+            }
+            const lat = element.lat || (element.center && element.center.lat);
+            const lon = element.lon || (element.center && element.center.lon);
+            const couldBeArea =
+                element.type === 'way' &&
+                element.nodes &&
+                element.nodes.at(0) === element.nodes.at(-1);
+
+            const baseItem = {
+                type: element.type,
+                id: element.id,
+                website,
+                lat,
+                lon,
+                couldBeArea,
+                name: tags.name,
+                allTags: tags,
+                invalidNumbers: new Map(),
+                suggestedFixes: new Map(),
+                hasTypeMismatch: false,
+                mismatchTypeNumbers: new Map(),
+                duplicateNumbers: new Map(),
+            };
+            item = { ...baseItem, autoFixable };
+            return item;
+        };
 
         for (const tag of PHONE_TAGS) {
             if (!tags[tag]) continue;
+
             const phoneTagValue = tags[tag];
             if (tag === 'mobile' && phoneTagValue === 'yes') continue;
 
@@ -537,14 +670,19 @@ function validateNumbers(elements, countryCode) {
 
             const validatedNumbers = validationResult.validNumbersList;
             let tagShouldBeFlaggedForRemoval = false;
+            let hasInternalDuplicate = false;
             let suggestedFix = null;
+            let duplicateMismatchCount = 0;
 
             // --- Detect internal duplicates within the same tag ---
             const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));
             const uniqueFormattedSet = [...new Set(formattedNumbers)];
             if (uniqueFormattedSet.length < formattedNumbers.length) {
                 tagShouldBeFlaggedForRemoval = true;
-                suggestedFix = uniqueFormattedSet.join('; ');
+                hasInternalDuplicate = true;
+                suggestedFix = uniqueFormattedSet.map((number) => {
+                    return getFormattedNumber(parsePhoneNumber(number, countryCode), countryCode);
+                }).join('; ');
             }
 
             // --- Detect duplicates across tags ---
@@ -556,26 +694,63 @@ function validateNumbers(elements, countryCode) {
                 const normalizedNumber = (
                     phoneNumber.number + (phoneNumber.ext ? `x${phoneNumber.ext}` : '')
                 ).replace(getSpacingRegex(countryCode), '');
+
+                // Correct the tag of a mismatch type number early
+                const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number =>
+                    number.replace(getSpacingRegex(countryCode), '')
+                );
+                const isMismatchNumber = validationResult.mismatchTypeNumbers && normalizedMismatch.includes(normalizedNumber);
+                if (isMismatchNumber && allNormalizedNumbers.get(normalizedNumber)) {
+                    duplicateMismatchCount++;
+                }
+
                 const existingTag = allNormalizedNumbers.get(normalizedNumber);
 
                 if (existingTag) {
                     const tagToRemove = keyToRemove(tag, existingTag);
                     const keptTag = tagToRemove === tag ? existingTag : tag;
+                    const currentItem = getOrCreateItem(true);
 
-                    if (!invalidItemsMap.has(key)) {
-                        invalidItemsMap.set(key, { ...baseItem, autoFixable: true });
+                    currentItem.invalidNumbers.set(tagToRemove, tags[tagToRemove]);
+                    currentItem.duplicateNumbers.set(tagToRemove, keptTag);
+
+                    // Get fixes for tagToRemove and only mark null if there are no other values
+                    const removeTagToValidate = currentItem.suggestedFixes.get(tagToRemove) ? currentItem.suggestedFixes.get(tagToRemove) : tags[tagToRemove];
+                    const validatedRemoved = validateSingleTag(removeTagToValidate, countryCode, tags, tagToRemove);
+                    if (validatedRemoved.suggestedNumbersList) {
+                        const normalizedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
+                            number.replace(getSpacingRegex(countryCode), '')
+                        );
+                        let removedValue = null;
+                        const deduplicatedRemoved = normalizedRemoved.filter(item => item !== normalizedNumber);
+                        if (deduplicatedRemoved) {
+                            const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), countryCode, tags, tagToRemove);
+                            removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
+                        }
+                        if (removedValue) {
+                            currentItem.suggestedFixes.set(tagToRemove, removedValue);
+                            suggestedFix = removedValue;
+                        } else if (!hasInternalDuplicate) {
+                            currentItem.suggestedFixes.set(tagToRemove, null);
+                            suggestedFix = null;
+                        }
                     }
-                    const item = invalidItemsMap.get(key);
 
-                    const duplicateTag = tagToRemove;
-                    item.invalidNumbers.set(duplicateTag, tags[duplicateTag]);
-                    item.duplicateNumbers.set(duplicateTag, tags[duplicateTag]);
-                    item.suggestedFixes.set(duplicateTag, null);
-                    item.suggestedFixes.set(keptTag, tags[keptTag]);
+                    // Validate the kept tag in case of bad separator and also to fix formatting while here
+                    const validatedKept = validateSingleTag(tags[keptTag], countryCode, tags, keptTag);
+                    if (validatedKept.suggestedNumbersList) {
+                        const validatedKeptValue = validatedKept.suggestedNumbersList.join('; ')
+                        if (validatedKeptValue !== tags[keptTag]) {
+                            currentItem.suggestedFixes.set(keptTag, validatedKeptValue);
+                        }
+                    }
+                    // Mark the kept one as invalid to display the duplicate to the user
+                    currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
 
-                    // If this was previously considered a type mismatch, clear that
-                    item.hasTypeMismatch = false;
-                    item.mismatchTypeNumbers.delete(duplicateTag);
+                    if (tagToRemove in item.mismatchTypeNumbers) {
+                        currentItem.hasTypeMismatch = false;
+                        currentItem.mismatchTypeNumbers.delete(tagToRemove);
+                    }
 
                     // Update normalized record to reflect the kept tag
                     allNormalizedNumbers.set(normalizedNumber, keptTag);
@@ -601,47 +776,57 @@ function validateNumbers(elements, countryCode) {
 
             // --- Record invalid entries ---
             if (isInvalid || tagShouldBeFlaggedForRemoval) {
-                if (!invalidItemsMap.has(key)) {
-                    invalidItemsMap.set(key, { ...baseItem, autoFixable });
-                }
-                const item = invalidItemsMap.get(key);
-
-                item.invalidNumbers.set(tag, phoneTagValue);
+                const currentItem = getOrCreateItem(autoFixable);
+                currentItem.invalidNumbers.set(tag, phoneTagValue);
 
                 if (tagShouldBeFlaggedForRemoval) {
-                    item.suggestedFixes.set(tag, suggestedFix ?? null);
-                    item.duplicateNumbers.set(tag, phoneTagValue);
+                    currentItem.suggestedFixes.set(tag, suggestedFix ?? null);
                 } else {
-                    item.suggestedFixes.set(tag, suggestedFix);
+                    currentItem.suggestedFixes.set(tag, suggestedFix);
                 }
 
-                // Add type mismatch info only if not a duplicate
-                if (
-                    validationResult.mismatchTypeNumbers.length > 0 &&
-                    !item.duplicateNumbers.has(tag)
-                ) {
-                    item.hasTypeMismatch = true;
-                    item.mismatchTypeNumbers.set(
-                        tag,
-                        validationResult.mismatchTypeNumbers.join('; ')
-                    );
+                // Add type mismatch info only if there are any non-duplicates
+                if (validationResult.mismatchTypeNumbers.length > duplicateMismatchCount) {
+                    if (!tagShouldBeFlaggedForRemoval) {
+                        currentItem.hasTypeMismatch = true;
+                        currentItem.mismatchTypeNumbers.set(tag, validationResult.mismatchTypeNumbers.join('; '));
+                    }
                 }
 
-                item.autoFixable = item.autoFixable && autoFixable;
+                currentItem.autoFixable = currentItem.autoFixable && autoFixable;
             }
         }
-    });
 
-    // Convert all map fields to plain objects
-    const invalidItemsArray = Array.from(invalidItemsMap.values()).map(item => ({
-        ...item,
-        invalidNumbers: Object.fromEntries(item.invalidNumbers),
-        suggestedFixes: Object.fromEntries(item.suggestedFixes),
-        mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
-        duplicateNumbers: Object.fromEntries(item.duplicateNumbers),
-    }));
+        if (item) {
+            invalidCount++;
+            if (item.autoFixable) {
+                autoFixableCount++;
+            }
 
-    return { invalidNumbers: invalidItemsArray, totalNumbers };
+            processMismatches(item, countryCode);
+
+            const finalItem = {
+                ...item,
+                invalidNumbers: Object.fromEntries(item.invalidNumbers),
+                suggestedFixes: Object.fromEntries(item.suggestedFixes),
+                mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
+                duplicateNumbers: Object.fromEntries(item.duplicateNumbers),
+            };
+
+            if (!isFirstItem) {
+                fileStream.write(',\n');
+            }
+            fileStream.write(JSON.stringify(finalItem));
+            isFirstItem = false;
+        }
+    }
+
+    fileStream.write('\n]');
+    fileStream.end();
+
+    await new Promise(resolve => fileStream.on('finish', resolve));
+
+    return { totalNumbers, invalidCount, autoFixableCount };
 }
 
 
@@ -652,7 +837,9 @@ module.exports = {
     getFeatureTypeName,
     getFeatureIcon,
     phoneTagToUse,
-    stripExtension,
+    stripStandardExtension,
+    getStandardExtension,
+    getNumberAndExtension,
     processSingleNumber,
     validateSingleTag,
     checkExclusions,

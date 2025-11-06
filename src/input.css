@@ -105,6 +105,10 @@
   @apply bg-green-500 text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-600 dark:text-gray-200;
 }
 
+@utility btn-clicked {
+  @apply bg-gray-300 text-gray-500 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 cursor-pointer;
+}
+
 @utility label {
   @apply text-xs font-semibold inline-flex items-center px-2 py-1 rounded-full text-center;
 }
@@ -457,5 +461,11 @@
 }
 
 @utility list-item-old-value {
-  @apply flex sm:items-center items-start sm:flex-row flex-col;
+  @apply flex items-start flex-col;
+
+  @apply sm:block sm:items-center sm:flex-row;
+}
+
+.list-item-old-value > span {
+  @apply align-middle;
 }

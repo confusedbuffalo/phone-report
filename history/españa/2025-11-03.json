@@ -1,0 +1,486 @@
+{
+  "name": "España",
+  "slug": "españa",
+  "locale": "es-ES",
+  "invalidCount": 4356,
+  "autoFixableCount": 3370,
+  "totalNumbers": 129369,
+  "groupedDivisionStats": {
+    "Andalucía": [
+      {
+        "name": "Huelva",
+        "divisionSlug": "andalucía",
+        "slug": "huelva",
+        "invalidCount": 20,
+        "autoFixableCount": 18,
+        "totalNumbers": 532,
+        "lastUpdated": "2025-11-03T10:06:24.982Z"
+      },
+      {
+        "name": "Almería",
+        "divisionSlug": "andalucía",
+        "slug": "almería",
+        "invalidCount": 62,
+        "autoFixableCount": 49,
+        "totalNumbers": 1570,
+        "lastUpdated": "2025-11-03T10:06:28.832Z"
+      },
+      {
+        "name": "Jaén",
+        "divisionSlug": "andalucía",
+        "slug": "jaén",
+        "invalidCount": 63,
+        "autoFixableCount": 53,
+        "totalNumbers": 1289,
+        "lastUpdated": "2025-11-03T10:06:31.804Z"
+      },
+      {
+        "name": "Sevilla",
+        "divisionSlug": "andalucía",
+        "slug": "sevilla",
+        "invalidCount": 191,
+        "autoFixableCount": 171,
+        "totalNumbers": 2862,
+        "lastUpdated": "2025-11-03T10:06:34.946Z"
+      },
+      {
+        "name": "Córdoba",
+        "divisionSlug": "andalucía",
+        "slug": "córdoba",
+        "invalidCount": 31,
+        "autoFixableCount": 25,
+        "totalNumbers": 861,
+        "lastUpdated": "2025-11-03T10:07:41.949Z"
+      },
+      {
+        "name": "Cádiz",
+        "divisionSlug": "andalucía",
+        "slug": "cádiz",
+        "invalidCount": 101,
+        "autoFixableCount": 91,
+        "totalNumbers": 1779,
+        "lastUpdated": "2025-11-03T10:07:44.933Z"
+      },
+      {
+        "name": "Granada",
+        "divisionSlug": "andalucía",
+        "slug": "granada",
+        "invalidCount": 72,
+        "autoFixableCount": 54,
+        "totalNumbers": 6474,
+        "lastUpdated": "2025-11-03T10:07:49.632Z"
+      },
+      {
+        "name": "Málaga",
+        "divisionSlug": "andalucía",
+        "slug": "málaga",
+        "invalidCount": 135,
+        "autoFixableCount": 110,
+        "totalNumbers": 3239,
+        "lastUpdated": "2025-11-03T10:07:54.172Z"
+      }
+    ],
+    "Aragón": [
+      {
+        "name": "Teruel",
+        "divisionSlug": "aragón",
+        "slug": "teruel",
+        "invalidCount": 25,
+        "autoFixableCount": 22,
+        "totalNumbers": 436,
+        "lastUpdated": "2025-11-03T10:10:14.533Z"
+      },
+      {
+        "name": "Huesca",
+        "divisionSlug": "aragón",
+        "slug": "huesca",
+        "invalidCount": 42,
+        "autoFixableCount": 40,
+        "totalNumbers": 885,
+        "lastUpdated": "2025-11-03T10:10:20.506Z"
+      },
+      {
+        "name": "Zaragoza",
+        "divisionSlug": "aragón",
+        "slug": "zaragoza",
+        "invalidCount": 66,
+        "autoFixableCount": 52,
+        "totalNumbers": 1779,
+        "lastUpdated": "2025-11-03T10:10:28.231Z"
+      }
+    ],
+    "Asturias": [
+      {
+        "name": "Asturias / Asturies",
+        "divisionSlug": "asturias",
+        "slug": "asturias-asturies",
+        "invalidCount": 93,
+        "autoFixableCount": 84,
+        "totalNumbers": 2846,
+        "lastUpdated": "2025-11-03T10:11:42.540Z"
+      }
+    ],
+    "Islas Baleares": [
+      {
+        "name": "Illes Balears",
+        "divisionSlug": "islas-baleares",
+        "slug": "illes-balears",
+        "invalidCount": 173,
+        "autoFixableCount": 150,
+        "totalNumbers": 2876,
+        "lastUpdated": "2025-11-03T10:11:50.827Z"
+      }
+    ],
+    "Islas Canarias": [
+      {
+        "name": "Santa Cruz de Tenerife",
+        "divisionSlug": "islas-canarias",
+        "slug": "santa-cruz-de-tenerife",
+        "invalidCount": 152,
+        "autoFixableCount": 118,
+        "totalNumbers": 2217,
+        "lastUpdated": "2025-11-03T10:14:10.993Z"
+      },
+      {
+        "name": "Las Palmas",
+        "divisionSlug": "islas-canarias",
+        "slug": "las-palmas",
+        "invalidCount": 149,
+        "autoFixableCount": 128,
+        "totalNumbers": 1431,
+        "lastUpdated": "2025-11-03T10:14:16.872Z"
+      }
+    ],
+    "Cantabria": [
+      {
+        "name": "Cantabria",
+        "divisionSlug": "cantabria",
+        "slug": "cantabria",
+        "invalidCount": 92,
+        "autoFixableCount": 59,
+        "totalNumbers": 5190,
+        "lastUpdated": "2025-11-03T10:14:29.216Z"
+      }
+    ],
+    "Castilla-La Mancha": [
+      {
+        "name": "Toledo",
+        "divisionSlug": "castilla-la-mancha",
+        "slug": "toledo",
+        "invalidCount": 46,
+        "autoFixableCount": 38,
+        "totalNumbers": 1267,
+        "lastUpdated": "2025-11-03T10:16:46.225Z"
+      },
+      {
+        "name": "Albacete",
+        "divisionSlug": "castilla-la-mancha",
+        "slug": "albacete",
+        "invalidCount": 30,
+        "autoFixableCount": 26,
+        "totalNumbers": 323,
+        "lastUpdated": "2025-11-03T10:16:49.923Z"
+      },
+      {
+        "name": "Ciudad Real",
+        "divisionSlug": "castilla-la-mancha",
+        "slug": "ciudad-real",
+        "invalidCount": 50,
+        "autoFixableCount": 42,
+        "totalNumbers": 793,
+        "lastUpdated": "2025-11-03T10:16:54.314Z"
+      },
+      {
+        "name": "Cuenca",
+        "divisionSlug": "castilla-la-mancha",
+        "slug": "cuenca",
+        "invalidCount": 19,
+        "autoFixableCount": 14,
+        "totalNumbers": 585,
+        "lastUpdated": "2025-11-03T10:18:02.224Z"
+      },
+      {
+        "name": "Guadalajara",
+        "divisionSlug": "castilla-la-mancha",
+        "slug": "guadalajara",
+        "invalidCount": 20,
+        "autoFixableCount": 11,
+        "totalNumbers": 635,
+        "lastUpdated": "2025-11-03T10:18:07.574Z"
+      }
+    ],
+    "Castilla y León": [
+      {
+        "name": "Zamora",
+        "divisionSlug": "castilla-y-león",
+        "slug": "zamora",
+        "invalidCount": 17,
+        "autoFixableCount": 11,
+        "totalNumbers": 1069,
+        "lastUpdated": "2025-11-03T10:18:15.981Z"
+      },
+      {
+        "name": "Valladolid",
+        "divisionSlug": "castilla-y-león",
+        "slug": "valladolid",
+        "invalidCount": 10,
+        "autoFixableCount": 3,
+        "totalNumbers": 2596,
+        "lastUpdated": "2025-11-03T10:19:24.626Z"
+      },
+      {
+        "name": "Burgos",
+        "divisionSlug": "castilla-y-león",
+        "slug": "burgos",
+        "invalidCount": 47,
+        "autoFixableCount": 19,
+        "totalNumbers": 3242,
+        "lastUpdated": "2025-11-03T10:21:42.456Z"
+      },
+      {
+        "name": "Soria",
+        "divisionSlug": "castilla-y-león",
+        "slug": "soria",
+        "invalidCount": 7,
+        "autoFixableCount": 6,
+        "totalNumbers": 600,
+        "lastUpdated": "2025-11-03T10:21:46.301Z"
+      },
+      {
+        "name": "Segovia",
+        "divisionSlug": "castilla-y-león",
+        "slug": "segovia",
+        "invalidCount": 18,
+        "autoFixableCount": 15,
+        "totalNumbers": 696,
+        "lastUpdated": "2025-11-03T10:21:48.741Z"
+      },
+      {
+        "name": "Ávila",
+        "divisionSlug": "castilla-y-león",
+        "slug": "ávila",
+        "invalidCount": 11,
+        "autoFixableCount": 7,
+        "totalNumbers": 527,
+        "lastUpdated": "2025-11-03T10:21:51.353Z"
+      },
+      {
+        "name": "León",
+        "divisionSlug": "castilla-y-león",
+        "slug": "león",
+        "invalidCount": 49,
+        "autoFixableCount": 37,
+        "totalNumbers": 1634,
+        "lastUpdated": "2025-11-03T10:24:10.104Z"
+      },
+      {
+        "name": "Salamanca",
+        "divisionSlug": "castilla-y-león",
+        "slug": "salamanca",
+        "invalidCount": 43,
+        "autoFixableCount": 13,
+        "totalNumbers": 2655,
+        "lastUpdated": "2025-11-03T10:24:13.764Z"
+      },
+      {
+        "name": "Palencia",
+        "divisionSlug": "castilla-y-león",
+        "slug": "palencia",
+        "invalidCount": 12,
+        "autoFixableCount": 8,
+        "totalNumbers": 684,
+        "lastUpdated": "2025-11-03T10:24:18.979Z"
+      }
+    ],
+    "Cataluña": [
+      {
+        "name": "Tarragona",
+        "divisionSlug": "cataluña",
+        "slug": "tarragona",
+        "invalidCount": 79,
+        "autoFixableCount": 68,
+        "totalNumbers": 2105,
+        "lastUpdated": "2025-11-03T10:25:56.083Z"
+      },
+      {
+        "name": "Lleida",
+        "divisionSlug": "cataluña",
+        "slug": "lleida",
+        "invalidCount": 14,
+        "autoFixableCount": 10,
+        "totalNumbers": 2330,
+        "lastUpdated": "2025-11-03T10:26:09.258Z"
+      },
+      {
+        "name": "Girona",
+        "divisionSlug": "cataluña",
+        "slug": "girona",
+        "invalidCount": 37,
+        "autoFixableCount": 24,
+        "totalNumbers": 2764,
+        "lastUpdated": "2025-11-03T10:26:17.095Z"
+      },
+      {
+        "name": "Barcelona",
+        "divisionSlug": "cataluña",
+        "slug": "barcelona",
+        "invalidCount": 449,
+        "autoFixableCount": 303,
+        "totalNumbers": 16925,
+        "lastUpdated": "2025-11-03T10:26:29.528Z"
+      }
+    ],
+    "Comunidad Valenciana": [
+      {
+        "name": "València / Valencia",
+        "divisionSlug": "comunidad-valenciana",
+        "slug": "valència-valencia",
+        "invalidCount": 164,
+        "autoFixableCount": 102,
+        "totalNumbers": 3975,
+        "lastUpdated": "2025-11-03T10:27:44.639Z"
+      },
+      {
+        "name": "Alacant / Alicante",
+        "divisionSlug": "comunidad-valenciana",
+        "slug": "alacant-alicante",
+        "invalidCount": 134,
+        "autoFixableCount": 97,
+        "totalNumbers": 3971,
+        "lastUpdated": "2025-11-03T10:27:51.066Z"
+      },
+      {
+        "name": "Castelló / Castellón",
+        "divisionSlug": "comunidad-valenciana",
+        "slug": "castelló-castellón",
+        "invalidCount": 42,
+        "autoFixableCount": 31,
+        "totalNumbers": 1447,
+        "lastUpdated": "2025-11-03T10:27:54.262Z"
+      }
+    ],
+    "Extremadura": [],
+    "Galicia": [
+      {
+        "name": "Pontevedra",
+        "divisionSlug": "galicia",
+        "slug": "pontevedra",
+        "invalidCount": 118,
+        "autoFixableCount": 101,
+        "totalNumbers": 2183,
+        "lastUpdated": "2025-11-03T10:31:28.528Z"
+      },
+      {
+        "name": "Ourense",
+        "divisionSlug": "galicia",
+        "slug": "ourense",
+        "invalidCount": 24,
+        "autoFixableCount": 17,
+        "totalNumbers": 500,
+        "lastUpdated": "2025-11-03T10:31:33.319Z"
+      },
+      {
+        "name": "Lugo",
+        "divisionSlug": "galicia",
+        "slug": "lugo",
+        "invalidCount": 23,
+        "autoFixableCount": 14,
+        "totalNumbers": 1118,
+        "lastUpdated": "2025-11-03T10:31:38.184Z"
+      },
+      {
+        "name": "A Coruña",
+        "divisionSlug": "galicia",
+        "slug": "a-coruña",
+        "invalidCount": 226,
+        "autoFixableCount": 214,
+        "totalNumbers": 4055,
+        "lastUpdated": "2025-11-03T10:32:48.534Z"
+      }
+    ],
+    "La Rioja": [
+      {
+        "name": "La Rioja",
+        "divisionSlug": "la-rioja",
+        "slug": "la-rioja",
+        "invalidCount": 21,
+        "autoFixableCount": 17,
+        "totalNumbers": 499,
+        "lastUpdated": "2025-11-03T10:32:53.889Z"
+      }
+    ],
+    "Comunidad de Madrid": [
+      {
+        "name": "Comunidad de Madrid",
+        "divisionSlug": "comunidad-de-madrid",
+        "slug": "comunidad-de-madrid",
+        "invalidCount": 555,
+        "autoFixableCount": 435,
+        "totalNumbers": 18413,
+        "lastUpdated": "2025-11-03T10:35:16.884Z"
+      }
+    ],
+    "Región de Murcia": [
+      {
+        "name": "Región de Murcia",
+        "divisionSlug": "región-de-murcia",
+        "slug": "región-de-murcia",
+        "invalidCount": 129,
+        "autoFixableCount": 108,
+        "totalNumbers": 1726,
+        "lastUpdated": "2025-11-03T10:35:29.427Z"
+      }
+    ],
+    "Comunidad Foral de Navarra": [
+      {
+        "name": "Navarra - Nafarroa",
+        "divisionSlug": "comunidad-foral-de-navarra",
+        "slug": "navarra-nafarroa",
+        "invalidCount": 68,
+        "autoFixableCount": 47,
+        "totalNumbers": 1448,
+        "lastUpdated": "2025-11-03T10:36:41.707Z"
+      }
+    ],
+    "País Vasco": [
+      {
+        "name": "Pyrénées-Atlantiques",
+        "divisionSlug": "país-vasco",
+        "slug": "pyrénées-atlantiques",
+        "invalidCount": 125,
+        "autoFixableCount": 33,
+        "totalNumbers": 7143,
+        "lastUpdated": "2025-11-03T10:36:56.101Z"
+      },
+      {
+        "name": "Araba / Álava",
+        "divisionSlug": "país-vasco",
+        "slug": "araba-álava",
+        "invalidCount": 74,
+        "autoFixableCount": 71,
+        "totalNumbers": 582,
+        "lastUpdated": "2025-11-03T10:37:02.209Z"
+      },
+      {
+        "name": "Gipuzkoa",
+        "divisionSlug": "país-vasco",
+        "slug": "gipuzkoa",
+        "invalidCount": 123,
+        "autoFixableCount": 113,
+        "totalNumbers": 1825,
+        "lastUpdated": "2025-11-03T10:38:11.362Z"
+      },
+      {
+        "name": "Bizkaia",
+        "divisionSlug": "país-vasco",
+        "slug": "bizkaia",
+        "invalidCount": 105,
+        "autoFixableCount": 91,
+        "totalNumbers": 2788,
+        "lastUpdated": "2025-11-03T10:38:17.117Z"
+      }
+    ],
+    "Ceuta": [],
+    "Melilla": []
+  }
+}

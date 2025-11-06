@@ -1,4 +1,8 @@
 const { OVERPASS_API_URL, PHONE_TAGS } = require('./constants');
+const { parser } = require('stream-json');
+const { pick } = require('stream-json/filters/Pick');
+const { streamArray } = require('stream-json/streamers/StreamArray');
+const { Readable } = require('stream');
 
 /**
  * Fetches administrative subdivisions for a given parent area from the Overpass API.
@@ -105,11 +109,21 @@ async function fetchOsmDataForDivision(division, retries = 3) {
         if (!response.ok) {
             throw new Error(`Overpass API response error: ${response.statusText}`);
         }
-        const data = await response.json();
-        return data.elements;
+
+        const jsonStream = response.body.pipe(parser({ jsonStreaming: true }));
+        const elementStream = jsonStream.pipe(pick({ filter: 'elements' })).pipe(streamArray());
+        return Readable.from(elementStream.map(item => item.value));
     } catch (error) {
+        const retryAfter = 60;
+        if (error.code === 'ECONNRESET' || error.message.includes('socket hang up')) {
+            if (retries > 0) {
+                console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
+                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+                return await fetchOsmDataForDivision(division, retries - 1);
+            }
+        }
         console.error(`Error fetching OSM data for ${division.name}:`, error);
-        return [];
+        return Readable.from([]);
     }
 }
 

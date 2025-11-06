@@ -4,24 +4,27 @@ const { translate } = require('./i18n');
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 
-const MOBILE_TAGS = ['mobile', 'contact:mobile'];
+const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
 const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
 
 /**
  * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
  * A lower number indicates a higher preference (i.e., the key to KEEP).
+ * Based on tag usage statistics, accurate as of 2025-11
  * * Preference Order:
  * 1. phone (0)
  * 2. contact:phone (1)
  * 3. mobile (2)
  * 4. contact:mobile (3)
+ * 5. phone:mobile (3)
  */
 const PHONE_TAG_PREFERENCE_ORDER = {
     'phone': 0,
     'contact:phone': 1,
     'mobile': 2,
-    'contact:mobile': 3
+    'contact:mobile': 3,
+    'phone:mobile': 4
 };
 
 const WEBSITE_TAGS = ['website', 'contact:website'];
@@ -44,7 +47,6 @@ const OSM_EDITORS = {
     "JOSM": {
         getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
-            // Use item.type[0] for the single-letter type prefix (n/w/r)
             return `${baseUrl}?objects=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["JOSM"]),
@@ -62,7 +64,6 @@ const OSM_EDITORS = {
     "Rapid": {
         getEditLink: function (item) {
             const baseUrl = 'https://rapideditor.org/edit#map=19';
-            // Use item.type[0] for the object type prefix (n/w/r)
             return `${baseUrl}/${item.lat}/${item.lon}&id=${item.type[0]}${item.id}`;
         },
         editInString: (locale) => translate('editIn', locale, ["Rapid"]),
@@ -96,15 +97,21 @@ const EXCLUSIONS = {
     },
 };
 
+// Regex matches common extension prefixes: x, ext, extension, etc.
+// It captures each of everything before the extension marker and everything after
+const EXTENSION_REGEX = /^(.*?)\s*(?:x|ext\.?|extension)\s*(\d*)$/;
+
 // Define the regex for separators that are definitively "bad" and should trigger a fix report.
 const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 // Raw semicolon (';'), semicolon with optional space ('; ?'), comma, slash, 'or' or 'and'.
-const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
 
 // When used in diff, the groups need to be capturing
-const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = /(; ?)|(\s*,\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
 
 const ICON_ATTRIBUTION = [
     {
@@ -184,11 +191,14 @@ module.exports = {
     EXCLUSIONS,
     BAD_SEPARATOR_REGEX,
     UNIVERSAL_SPLIT_REGEX,
+    UNIVERSAL_SPLIT_REGEX_DE,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
+    UNIVERSAL_SPLIT_CAPTURE_REGEX_DE,
     ICONS_DIR,
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
     HISTORY_DIR,
-    PHONE_TAG_PREFERENCE_ORDER
+    PHONE_TAG_PREFERENCE_ORDER,
+    EXTENSION_REGEX
 };
