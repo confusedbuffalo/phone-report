@@ -110,7 +110,8 @@ const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:
 const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
 
 // When used in diff, the groups need to be capturing
-const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = /(; ?)|(\s*,\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
 
 const ICON_ATTRIBUTION = [
     {
@@ -192,6 +193,7 @@ module.exports = {
     UNIVERSAL_SPLIT_REGEX,
     UNIVERSAL_SPLIT_REGEX_DE,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
+    UNIVERSAL_SPLIT_CAPTURE_REGEX_DE,
     ICONS_DIR,
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,

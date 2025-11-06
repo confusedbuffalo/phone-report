@@ -1,5 +1,5 @@
 const { diffChars } = require('diff');
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX } = require('./constants.js');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
@@ -330,7 +330,8 @@ function getDiffHtml(oldString, newString) {
     const oldStringCleaned = replaceInvisibleChars(oldString)
     const newStringCleaned = replaceInvisibleChars(newString)
     // Split and initial filter for both strings
-    const oldPartsUnfiltered = oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
+    // DE doesn't consider '/' as separator
+    const oldPartsUnfiltered = newString.startsWith('+49') ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE) : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
     // Filter out falsey values (undefined from capturing groups) and empty strings
     const oldParts = oldPartsUnfiltered.filter(s => s && s.trim().length > 0);
 
