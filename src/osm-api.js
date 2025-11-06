@@ -114,6 +114,14 @@ async function fetchOsmDataForDivision(division, retries = 3) {
         const elementStream = jsonStream.pipe(pick({ filter: 'elements' })).pipe(streamArray());
         return Readable.from(elementStream.map(item => item.value));
     } catch (error) {
+        const retryAfter = 60;
+        if (error.code === 'ECONNRESET' || error.message.includes('socket hang up')) {
+            if (retries > 0) {
+                console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
+                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+                return await fetchOsmDataForDivision(division, retries - 1);
+            }
+        }
         console.error(`Error fetching OSM data for ${division.name}:`, error);
         return Readable.from([]);
     }

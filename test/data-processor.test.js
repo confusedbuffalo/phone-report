@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const {
     safeName,
-    stripExtension,
+    stripStandardExtension,
     checkExclusions,
     processSingleNumber,
     validateNumbers,
@@ -12,7 +12,9 @@ const {
     isDisused,
     validateSingleTag,
     phoneTagToUse,
-    keyToRemove
+    keyToRemove,
+    getStandardExtension,
+    getNumberAndExtension
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -105,23 +107,151 @@ describe("isDisused", () => {
 });
 
 // =====================================================================
-// stripExtension Tests
+// stripStandardExtension Tests
 // =====================================================================
-describe('stripExtension', () => {
+describe('stripStandardExtension', () => {
     test('should strip an extension prefixed by "x"', () => {
-        expect(stripExtension('020 7946 0000 x123')).toBe('020 7946 0000');
+        expect(stripStandardExtension('020 7946 0000 x123')).toBe('020 7946 0000');
     });
 
     test('should strip an extension prefixed by "ext"', () => {
-        expect(stripExtension('+44 20 7946 0000 ext. 456')).toBe('+44 20 7946 0000');
+        expect(stripStandardExtension('+44 20 7946 0000 ext. 456')).toBe('+44 20 7946 0000');
     });
 
     test('should strip an extension prefixed by "extension"', () => {
-        expect(stripExtension('+44 20 7946 0000 extension 456')).toBe('+44 20 7946 0000');
+        expect(stripStandardExtension('+44 20 7946 0000 extension 456')).toBe('+44 20 7946 0000');
     });
 
     test('should return the original string if no extension is present', () => {
-        expect(stripExtension('0800 123 4567')).toBe('0800 123 4567');
+        expect(stripStandardExtension('0800 123 4567')).toBe('0800 123 4567');
+    });
+});
+
+
+// =====================================================================
+// getStandardExtension Tests
+// =====================================================================
+describe('getStandardExtension', () => {
+
+    test('should extract a numeric extension prefixed by "x"', () => {
+        expect(getStandardExtension('020 7946 0000 x123')).toBe('123');
+    });
+
+    test('should extract a numeric extension prefixed by uppercase "X"', () => {
+        expect(getStandardExtension('020 7946 0000 X99')).toBe('99');
+    });
+
+    test('should extract a numeric extension prefixed by "ext."', () => {
+        expect(getStandardExtension('+44 20 7946 0000 ext. 456')).toBe('456');
+    });
+
+    test('should extract a numeric extension prefixed by "ext" without a dot', () => {
+        expect(getStandardExtension('1-800-CALL EXT500')).toBe('500');
+    });
+
+    test('should extract a numeric extension prefixed by uppercase "EXT."', () => {
+        expect(getStandardExtension('123 EXT.789')).toBe('789');
+    });
+
+    test('should extract a numeric extension prefixed by "extension"', () => {
+        expect(getStandardExtension('+44 20 7946 0000 extension 808')).toBe('808');
+    });
+
+    test('should extract an extension when prefixed by uppercase "EXTENSION"', () => {
+        expect(getStandardExtension('Office Number EXTENSION 101')).toBe('101');
+    });
+
+    test('should return null if no extension prefix is present', () => {
+        expect(getStandardExtension('0800 123 4567')).toBeNull();
+    });
+    
+    test('should return null if the prefix is present but no digits follow', () => {
+        expect(getStandardExtension('555-1212 x')).toBeNull();
+    });
+
+    test('should return null if the string is empty', () => {
+        expect(getStandardExtension('')).toBeNull();
+    });
+});
+
+// =====================================================================
+// getNumberAndExtension Tests
+// =====================================================================
+describe('getNumberAndExtension', () => {
+
+    // --- DE (German) Specific Tests (DIN Format) ---
+
+    describe('DE Country Code (DIN Format)', () => {
+        const countryCode = 'DE';
+
+        test('should correctly parse DIN-style extension (1-4 digits) when core number is valid', () => {
+            expect(getNumberAndExtension('+49 489 123456-789', countryCode)).toEqual({
+                coreNumber: '+49 489 123456',
+                extension: '789',
+            });
+        });
+
+        test('should correctly parse a 4-digit DIN extension', () => {
+            expect(getNumberAndExtension('+49 489 1234-4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
+        test('should fall back to standard logic if DIN-style extension has more than 4 digits (and thus matches standard)', () => {
+            expect(getNumberAndExtension('+49 489 123456-78901', countryCode)).toEqual({
+                coreNumber: '+49 489 123456-78901',
+                extension: null,
+            });
+        });
+
+        test('should fall back to standard logic if the core number fails validation', () => {
+            expect(getNumberAndExtension('+49 123456-789', countryCode)).toEqual({
+                coreNumber: '+49 123456-789',
+                extension: null,
+            });
+        });
+
+        test('should fall back to standard logic if DE number has standard extension format (x, ext)', () => {
+            expect(getNumberAndExtension('+49 489 123456 ext. 789', countryCode)).toEqual({
+                coreNumber: '+49 489 123456',
+                extension: '789',
+            });
+        });
+    });
+
+    // --- Standard (Fallback) Tests (Any Country Code other than DE) ---
+
+    describe('Non-DE Country Code (Standard Format)', () => {
+        const countryCode = 'US';
+
+        test('should handle "x" prefixed extension using standard logic', () => {
+            expect(getNumberAndExtension('1-800-555-1212 x456', countryCode)).toEqual({
+                coreNumber: '1-800-555-1212',
+                extension: '456',
+            });
+        });
+
+        test('should handle "ext." prefixed extension using standard logic', () => {
+            expect(getNumberAndExtension('800-123-4567 ext.1234', countryCode)).toEqual({
+                coreNumber: '800-123-4567',
+                extension: '1234',
+            });
+        });
+
+        test('should handle "extension" prefixed extension using standard logic', () => {
+            expect(getNumberAndExtension('(555) 123 4567 extension 99', countryCode)).toEqual({
+                coreNumber: '(555) 123 4567',
+                extension: '99',
+            });
+        });
+
+        test('should return null extension if no extension is present', () => {
+            expect(getNumberAndExtension('0800 123 4567', countryCode)).toEqual({
+                coreNumber: '0800 123 4567',
+                extension: null,
+            });
+        });
     });
 });
 
@@ -343,18 +473,6 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+44 20 7946 0000 x123');
     });
 
-    test('US: a valid number with extension is valid', () => {
-        const result = processSingleNumber('+1 304-845-9810 ext. 403', SAMPLE_COUNTRY_CODE_US);
-        expect(result.isInvalid).toBe(false);
-    });
-
-    test('US: flag a valid number with non-standard extension as invalid but autoFixable', () => {
-        const result = processSingleNumber('+1-304-845-9810 extension 403', SAMPLE_COUNTRY_CODE_US);
-        expect(result.isInvalid).toBe(true);
-        expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('+1 304-845-9810 ext. 403');
-    });
-
     test('GB: mobile number in phone tag is valid', () => {
         const result = processSingleNumber('+44 7946 123456', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(false);
@@ -408,6 +526,20 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('US: a valid number with extension is valid', () => {
+        const result = processSingleNumber('+1 304-845-9810 x403', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('US: flag a valid number with non-standard extension as invalid but autoFixable', () => {
+        const result = processSingleNumber('+1-304-845-9810 extension 403', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+1 304-845-9810 x403');
+    });
+
+    // --- PL Tests ---
+
     test('PL: leading 0 is invaid but fixable', () => {
         const result = processSingleNumber('0586774478', SAMPLE_COUNTRY_CODE_PL);
         expect(result.isInvalid).toBe(true);
@@ -420,6 +552,26 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+48 58 677 44 78');
+    });
+
+    // --- DE Tests ---
+    test('DE: DIN format extension is valid', () => {
+        const result = processSingleNumber('+49 491 4567-1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('DE: hyphen and DIN format extension is invalid and fixable', () => {
+        const result = processSingleNumber('+49 491-4567-1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 491 4567-1234');
+    });
+
+    test('DE: hyphens not denoting extension is invalid and fixable', () => {
+        const result = processSingleNumber('+49-4761-3163', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 4761 3163');
     });
 });
 
@@ -1052,6 +1204,40 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag, phone and contact:phone', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': '+27 11 984 4050;+27 83 462 3316',
+                    'phone': '+27 11 984 4050',
+                    name: 'Triple phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(3);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': '+27 11 984 4050;+27 83 462 3316',
+            'phone': '+27 11 984 4050',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': '+27 83 462 3316'
+        });
+    });
+
     test('should remove duplicate number in the same tag', async () => {
         const elements = [
             {
@@ -1206,8 +1392,8 @@ describe('validateNumbers', () => {
                 type: 'way',
                 id: 1234,
                 tags: {
-                    'contact:phone': `${VALID_US_NUMBER} ext. 123`,
-                    'phone': `${VALID_US_NUMBER} ext. 456`,
+                    'contact:phone': `${VALID_US_NUMBER} x123`,
+                    'phone': `${VALID_US_NUMBER} x456`,
                     name: 'Double phone',
                 },
                 center: { lat: 55.0, lon: 4.0 },
@@ -1226,8 +1412,8 @@ describe('validateNumbers', () => {
                 type: 'way',
                 id: 1234,
                 tags: {
-                    'contact:phone': `${FIXABLE_US_NUMBER} ext. 123`,
-                    'phone': `${FIXABLE_US_NUMBER} ext. 123`,
+                    'contact:phone': `${FIXABLE_US_NUMBER} x123`,
+                    'phone': `${FIXABLE_US_NUMBER} x123`,
                     name: 'Double phone',
                 },
                 center: { lat: 55.0, lon: 4.0 },
@@ -1247,12 +1433,12 @@ describe('validateNumbers', () => {
             'contact:phone': 'phone'
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': `${FIXABLE_US_NUMBER} ext. 123`,
-            'phone': `${FIXABLE_US_NUMBER} ext. 123`,
+            'contact:phone': `${FIXABLE_US_NUMBER} x123`,
+            'phone': `${FIXABLE_US_NUMBER} x123`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
-            'phone': `${VALID_US_NUMBER} ext. 123`
+            'phone': `${VALID_US_NUMBER} x123`
         });
     });
 

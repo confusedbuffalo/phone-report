@@ -97,6 +97,10 @@ const EXCLUSIONS = {
     },
 };
 
+// Regex matches common extension prefixes: x, ext, extension, etc.
+// It captures each of everything before the extension marker and everything after
+const EXTENSION_REGEX = /^(.*?)\s*(?:x|ext\.?|extension)\s*(\d*)$/;
+
 // Define the regex for separators that are definitively "bad" and should trigger a fix report.
 const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 
@@ -106,7 +110,8 @@ const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:
 const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
 
 // When used in diff, the groups need to be capturing
-const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = /(; ?)|(\s*,\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
 
 const ICON_ATTRIBUTION = [
     {
@@ -188,10 +193,12 @@ module.exports = {
     UNIVERSAL_SPLIT_REGEX,
     UNIVERSAL_SPLIT_REGEX_DE,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
+    UNIVERSAL_SPLIT_CAPTURE_REGEX_DE,
     ICONS_DIR,
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
     HISTORY_DIR,
-    PHONE_TAG_PREFERENCE_ORDER
+    PHONE_TAG_PREFERENCE_ORDER,
+    EXTENSION_REGEX
 };
