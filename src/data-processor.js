@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -228,24 +228,31 @@ function keyToRemove(key1, key2) {
  * @param {string} numberStr 
  * @returns {string} The core number string without the extension.
  */
-function stripExtension(numberStr) {
-    // Regex matches common extension prefixes: x, ext, extension, etc.
-    // It captures everything before the extension marker.
-    const extensionRegex = /^(.*?)(?:[xX]|[eE][xX][tT]|\s*\(ext|extension\)\s*).*$/;
-    const match = numberStr.match(extensionRegex);
-
-    // If an extension is found, return the part before it (trimmed).
+function stripStandardExtension(numberStr) {
+    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
     if (match && match[1]) {
         return match[1].trim();
     }
-    // Otherwise, return the original string.
     return numberStr;
+}
+
+/**
+ * Gets the extension from a phone number if it is in a recognisable format.
+ * @param {string} numberStr 
+ * @returns {string} The core number string without the extension.
+ */
+function getStandardExtension(numberStr) {
+    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
+    if (match && match[2]) {
+        return match[2].replace(/[^\d]/g, '');
+    }
+    return null;
 }
 
 /**
  * Gets the relevant regex for valid spacing in the given country code.
  * @param {string} countryCode - The country code.
- * @returns {RegExp} - The regular expression to use for spacing validation.
+ * @returns {RegExp} The regular expression to use for spacing validation.
  */
 function getSpacingRegex(countryCode) {
     return countryCode === 'US' ? /[\s-]/g : /\s/g;
@@ -307,6 +314,40 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 }
 
 /**
+ * Split a number into the core number and the extension, respecting country
+ * formatting for extensions.
+ * @param {PhoneNumber} numberStr - The original phone number string
+ * @param {string} countryCode - The country code for formatting.
+ * @returns {{coreNumber: string, extension: string}} An object containing the core number and the extension.
+ */
+function getNumberAndExtension(numberStr, countryCode) {
+    // DIN format has hyphen then 1-4 digits for extensions
+    if (countryCode === 'DE') {
+        const DE_EXTENSION_REGEX = /^(.*?)-(\d{1,4})$/
+        const match = numberStr.match(DE_EXTENSION_REGEX);
+        if (match && match[1] && match[2]) {
+            try {
+                const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
+                // Only consider this as an extension if the number before it is valid as a number
+                // (since hyphens may have been used as separators in a non-extension number)
+                if (preHyphenNumber.isValid()) {
+                    return {
+                        coreNumber: match[1].trim(),
+                        extension: match[2].trim(),
+                    }
+                }
+            } catch (e) {
+                // Parsing failed due to an exception
+            }
+        }
+    }
+    return {
+        coreNumber: stripStandardExtension(numberStr),
+        extension: getStandardExtension(numberStr)
+    }
+}
+
+/**
  * Formats a single phone number to the appropriate national standard
  * @param {PhoneNumber} phoneNumber - The phone number object
  * @param {string} countryCode - The country code for formatting.
@@ -320,9 +361,10 @@ function getFormattedNumber(phoneNumber, countryCode) {
         : phoneNumber.number;
 
     const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
-    // Append the extension in the standard format (' x{ext}').
-    const extension = phoneNumber.ext ? ` x${phoneNumber.ext}` : '';
-
+    // Append the extension in the standard format (' x{ext}' or DIN format for DE)
+    const extension = phoneNumber.ext ?
+        (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
+        : '';
 
     if (countryCode === 'US') {
         // Use dashes as separator, but space after country code
@@ -381,17 +423,18 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
+    const { coreNumber, extension } = getNumberAndExtension(numberStr, countryCode);
+    const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
+
     try {
-        phoneNumber = parsePhoneNumber(numberStr, countryCode);
+        phoneNumber = parsePhoneNumber(standardisedNumber, countryCode);
 
         const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
         if (exclusionResult) {
             return exclusionResult;
         }
 
-        // Strip the extension from the original string for normalization
-        const numberToValidate = stripExtension(numberStr);
-        const normalizedOriginal = numberToValidate.replace(spacingRegex, '');
+        const normalizedOriginal = coreNumber.replace(spacingRegex, '');
 
         let normalizedParsed = '';
 
@@ -787,7 +830,9 @@ module.exports = {
     getFeatureTypeName,
     getFeatureIcon,
     phoneTagToUse,
-    stripExtension,
+    stripStandardExtension,
+    getStandardExtension,
+    getNumberAndExtension,
     processSingleNumber,
     validateSingleTag,
     checkExclusions,
