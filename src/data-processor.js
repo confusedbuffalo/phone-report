@@ -333,7 +333,7 @@ function getFormattedNumber(phoneNumber, countryCode) {
         nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
 
         // National number has extension in it for US
-        nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' ext. ');
+        nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
         return `${countryCodePrefix} ${nationalNumberFormatted}`;
     }
 
@@ -373,8 +373,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     let phoneNumber = null;
 
     const NON_STANDARD_EXT_PREFIX_REGEX = /([eE][xX][tT])|(\s*\([eE][xX][tT]\)\s*)/;
-    const STANDARD_EXT_PREFIX_REGEX_US = /(ext\.)/;
-    const hasNonStandardExtension = countryCode === 'US' ? !STANDARD_EXT_PREFIX_REGEX_US.test(numberStr) : NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
+    const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
     const spacingRegex = getSpacingRegex(countryCode);
 
     if (numberStr.startsWith('++')) {

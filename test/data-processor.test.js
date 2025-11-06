@@ -344,7 +344,7 @@ describe('processSingleNumber', () => {
     });
 
     test('US: a valid number with extension is valid', () => {
-        const result = processSingleNumber('+1 304-845-9810 ext. 403', SAMPLE_COUNTRY_CODE_US);
+        const result = processSingleNumber('+1 304-845-9810 x403', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(false);
     });
 
@@ -352,7 +352,7 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('+1-304-845-9810 extension 403', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('+1 304-845-9810 ext. 403');
+        expect(result.suggestedFix).toBe('+1 304-845-9810 x403');
     });
 
     test('GB: mobile number in phone tag is valid', () => {
@@ -1206,8 +1206,8 @@ describe('validateNumbers', () => {
                 type: 'way',
                 id: 1234,
                 tags: {
-                    'contact:phone': `${VALID_US_NUMBER} ext. 123`,
-                    'phone': `${VALID_US_NUMBER} ext. 456`,
+                    'contact:phone': `${VALID_US_NUMBER} x123`,
+                    'phone': `${VALID_US_NUMBER} x456`,
                     name: 'Double phone',
                 },
                 center: { lat: 55.0, lon: 4.0 },
@@ -1226,8 +1226,8 @@ describe('validateNumbers', () => {
                 type: 'way',
                 id: 1234,
                 tags: {
-                    'contact:phone': `${FIXABLE_US_NUMBER} ext. 123`,
-                    'phone': `${FIXABLE_US_NUMBER} ext. 123`,
+                    'contact:phone': `${FIXABLE_US_NUMBER} x123`,
+                    'phone': `${FIXABLE_US_NUMBER} x123`,
                     name: 'Double phone',
                 },
                 center: { lat: 55.0, lon: 4.0 },
@@ -1247,12 +1247,12 @@ describe('validateNumbers', () => {
             'contact:phone': 'phone'
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': `${FIXABLE_US_NUMBER} ext. 123`,
-            'phone': `${FIXABLE_US_NUMBER} ext. 123`,
+            'contact:phone': `${FIXABLE_US_NUMBER} x123`,
+            'phone': `${FIXABLE_US_NUMBER} x123`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
-            'phone': `${VALID_US_NUMBER} ext. 123`
+            'phone': `${VALID_US_NUMBER} x123`
         });
     });
 
