@@ -3,14 +3,15 @@ const path = require('path');
 const { PUBLIC_DIR } = require('./constants');
 const { translate } = require('./i18n');
 const {favicon, themeButton, createFooter, createStatsBox, escapeHTML} = require('./html-utils');
+const { safeName } = require('./data-processor');
 
 /**
  * Creates the renderListScript for the country index page.
- * @param {Object} groupedDivisionStats
+ * @param {Object} countryData
  * @param {string} locale
  * @returns {string}
  */
-function createClientConstants(groupedDivisionStats, locale) {
+function createClientConstants(countryData, locale) {
 
     // --- Server-side translation of dynamic client script strings ---
     // These strings are translated on the server and embedded as literals in the page.
@@ -22,7 +23,8 @@ function createClientConstants(groupedDivisionStats, locale) {
 
     return `
     <script>
-        const groupedDivisionStats = ${JSON.stringify(groupedDivisionStats)};
+        const safeCountryName = '${safeName(countryData.name)}';
+        const groupedDivisionStats = ${JSON.stringify(countryData.groupedDivisionStats)};
         const locale = '${locale}'; 
         const T_CLIENT = {
             invalidNumbersOutOf: \`${T.invalidNumbersOutOf}\`,
@@ -91,7 +93,7 @@ async function generateCountryIndexHtml(countryData, translations) {
             </div>
         </div>
         <script src="../background-colour.js"></script>
-        ${createClientConstants(countryData.groupedDivisionStats, locale)}
+        ${createClientConstants(countryData, locale)}
         <script src="../country-page.js"></script>
     </body>
     </html>

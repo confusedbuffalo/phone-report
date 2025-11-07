@@ -1,6 +1,5 @@
 {
-    "Belgium": {
-        "name": "België / Belgique / Belgien",
+    "België / Belgique / Belgien": {
         "divisions": {
             "Vlaanderen": 53134,
             "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": 54094,
@@ -10,7 +9,6 @@
         "locale": "en"
     },
     "Deutschland": {
-        "name": "Deutschland",
         "divisionMap": {
             "Baden-Württemberg": {
                 "Regierungsbezirk Freiburg": 2106112,
@@ -80,7 +78,6 @@
         "locale": "de-DE"
     },
     "España": {
-        "name": "España",
         "divisions": {
             "Andalucía": 349044,
             "Aragón": 349045,
@@ -107,7 +104,6 @@
         "subdivisionAdminLevel": 6
     },
     "France": {
-        "name": "France",
         "divisions": {
             "Auvergne-Rhône-Alpes": 3792877,
             "Bourgogne – Franche-Comté": 3792878,
@@ -128,7 +124,6 @@
         "subdivisionAdminLevel": 6
     },
     "Italia": {
-        "name": "Italia",
         "divisionMap": {
             "Centro": {
                 "Lazio": 40784,
@@ -165,7 +160,6 @@
         "locale": "it-IT"
     },
     "Lesotho": {
-        "name": "Lesotho",
         "divisions": {
             "Lesotho": 2093234
         },
@@ -173,7 +167,6 @@
         "locale": "en-ZA"
     },
     "Nederland": {
-        "name": "Nederland",
         "divisions": {
             "Drenthe": 47540,
             "Flevoland": 47407,
@@ -192,7 +185,6 @@
         "locale": "nl-NL"
     },
     "Polska": {
-        "name": "Polska",
         "divisions": {
             "województwo dolnośląskie": 224457,
             "województwo kujawsko-pomorskie": 223407,
@@ -215,7 +207,6 @@
         "locale": "en"
     },
     "South Africa": {
-        "name": "South Africa",
         "divisions": {
             "Eastern Cape": 4782250,
             "Free State": 92417,
@@ -230,8 +221,7 @@
         "countryCode": "ZA",
         "locale": "en-ZA"
     },
-    "Switzerland": {
-        "name": "Schweiz / Suisse / Svizzera / Svizra",
+    "Schweiz / Suisse / Svizzera / Svizra": {
         "divisions": {
             "Aargau": 1686359,
             "Appenzell Ausserrhoden": 1686649,
@@ -264,7 +254,6 @@
         "locale": "en"
     },
     "United Kingdom": {
-        "name": "United Kingdom",
         "divisionMap": {
             "England": {
                 "East Midlands": 151279,
@@ -291,7 +280,6 @@
         "locale": "en-GB"
     },
     "United States Of America": {
-        "name": "United States Of America",
         "countryCode": "US",
         "locale": "en-US",
         "divisions": {

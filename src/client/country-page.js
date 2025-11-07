@@ -250,7 +250,9 @@ function renderList() {
 
             // --- LIST ITEM RENDERING (Common Logic) ---
             sortedData.forEach(subdivision => {
-                const subdivisionSlug = subdivision.slug;
+                const singleLevelDivision = safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
+                const subdivisionSlug = singleLevelDivision ? subdivision.slug : path.join(subdivision.divisionSlug, subdivision.slug);
+    
                 const percentage = subdivision.totalNumbers > 0 ? (subdivision.invalidCount / subdivision.totalNumbers) * 100 : 0;
                 const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
@@ -272,7 +274,7 @@ function renderList() {
                 li.className = 'subdivision-list-item';
 
                 li.innerHTML = `
-                    <a href="${subdivision.divisionSlug}/${subdivisionSlug}.html">
+                    <a href="${subdivisionSlug}.html">
                         <div class="subdivision-link-content">
                             <div class="list-item-main-container">
                                 <div class="color-indicator" data-percentage="${invalidPercentage}"></div>
