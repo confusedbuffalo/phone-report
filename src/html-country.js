@@ -23,8 +23,8 @@ function createClientConstants(countryData, locale) {
 
     return `
     <script>
-        const safeCountryName = '${safeName(countryData.name)}';
         const groupedDivisionStats = ${JSON.stringify(countryData.groupedDivisionStats)};
+        const safeCountryName = '${safeName(countryData.name)}';
         const locale = '${locale}'; 
         const T_CLIENT = {
             invalidNumbersOutOf: \`${T.invalidNumbersOutOf}\`,
