@@ -499,6 +499,23 @@ describe('processSingleNumber', () => {
         expect(result.typeMismatch).toBe(true);
     });
 
+    test('GB: free phone number is valid', () => {
+        const result = processSingleNumber('0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('GB: free phone number with country code is valid', () => {
+        const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('GB: free phone number with dashes is fixable to non-international format', () => {
+        const result = processSingleNumber('0800-00-1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('0800 001234');
+    });
+
     // --- ZA Tests (Johannesburg number: 011 555 1234) ---
 
     test('ZA: correctly validate and format a simple valid local number', () => {

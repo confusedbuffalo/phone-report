@@ -367,6 +367,10 @@ function getFormattedNumber(phoneNumber, countryCode) {
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
+    if (phoneNumber.getType() === 'TOLL_FREE') {
+        return phoneNumber.format('NATIONAL') + extension;
+    }
+
     if (countryCode === 'US') {
         // Use dashes as separator, but space after country code
         const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
@@ -457,7 +461,14 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            isInvalid = isInvalid || normalizedOriginal !== normalizedParsed || isPolishPrefixed;
+            let numbersMatch = false;
+            if (phoneNumber.getType() === 'TOLL_FREE') {
+                const normalizedTollFree = suggestedFix.replace(spacingRegex, '');
+                numbersMatch = normalizedOriginal === normalizedTollFree;
+            }
+            numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
+
+            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed;
 
             if (phoneNumber.ext && hasNonStandardExtension) {
                 isInvalid = true;
