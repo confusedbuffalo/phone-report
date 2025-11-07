@@ -331,7 +331,7 @@ function getNumberAndExtension(numberStr, countryCode) {
                 const extensionDigits = match[2].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
-                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 4) {
+                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 5) {
                     return {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,
@@ -366,6 +366,10 @@ function getFormattedNumber(phoneNumber, countryCode) {
     const extension = phoneNumber.ext ?
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
+
+    if (phoneNumber.getType() === 'TOLL_FREE') {
+        return phoneNumber.format('NATIONAL') + extension;
+    }
 
     if (countryCode === 'US') {
         // Use dashes as separator, but space after country code
@@ -457,7 +461,14 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            isInvalid = isInvalid || normalizedOriginal !== normalizedParsed || isPolishPrefixed;
+            let numbersMatch = false;
+            if (phoneNumber.getType() === 'TOLL_FREE') {
+                const normalizedTollFree = suggestedFix.replace(spacingRegex, '');
+                numbersMatch = normalizedOriginal === normalizedTollFree;
+            }
+            numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
+
+            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed;
 
             if (phoneNumber.ext && hasNonStandardExtension) {
                 isInvalid = true;

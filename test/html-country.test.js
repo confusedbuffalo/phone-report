@@ -7,6 +7,13 @@ jest.mock('fs', () => ({
     promises: {
         writeFile: jest.fn().mockResolvedValue(),
     },
+    // Needed because data-processor relies on preset-matcher
+    readFileSync: jest.fn(() => 
+        JSON.stringify({
+            presets: []
+        })
+    ),
+    existsSync: jest.fn(() => true),
 }));
 
 jest.mock('../src/html-utils.js', () => ({
@@ -47,12 +54,12 @@ describe('generateCountryIndexHtml', () => {
 
         await generateCountryIndexHtml(countryData, {});
 
-        // 1. Verify the server-side template escapes the country name
+        // Verify the server-side template escapes the country name
         const writtenContent = fs.promises.writeFile.mock.calls[0][1];
         const escapedCountryName = escapeHTML(countryData.name);
         expect(writtenContent).toContain(`<title>countryReportTitle: ${escapedCountryName}</title>`);
 
-        // 2. Verify the client-side script receives raw, unescaped division names
+        // Verify the client-side script receives raw, unescaped division names
         const scriptContentRegex = /<script>\s*const groupedDivisionStats = (\{.*?\});/s;
         const match = writtenContent.match(scriptContentRegex);
         expect(match).not.toBeNull();

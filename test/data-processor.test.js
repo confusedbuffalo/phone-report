@@ -212,9 +212,9 @@ describe('getNumberAndExtension', () => {
             });
         });
 
-        test('should fall back to standard logic if DIN-style extension has more than 4 digits (and thus matches standard)', () => {
-            expect(getNumberAndExtension('+49 489 123456-78901', countryCode)).toEqual({
-                coreNumber: '+49 489 123456-78901',
+        test('should fall back to standard logic if DIN-style extension has more than 5 digits (and thus matches standard)', () => {
+            expect(getNumberAndExtension('+49 489 123456-789012', countryCode)).toEqual({
+                coreNumber: '+49 489 123456-789012',
                 extension: null,
             });
         });
@@ -499,6 +499,23 @@ describe('processSingleNumber', () => {
         expect(result.typeMismatch).toBe(true);
     });
 
+    test('GB: free phone number is valid', () => {
+        const result = processSingleNumber('0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('GB: free phone number with country code is valid', () => {
+        const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('GB: free phone number with dashes is fixable to non-international format', () => {
+        const result = processSingleNumber('0800-00-1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('0800 001234');
+    });
+
     // --- ZA Tests (Johannesburg number: 011 555 1234) ---
 
     test('ZA: correctly validate and format a simple valid local number', () => {
@@ -571,6 +588,11 @@ describe('processSingleNumber', () => {
     // --- DE Tests ---
     test('DE: DIN format extension is valid', () => {
         const result = processSingleNumber('+49 491 4567-1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('DE: DIN format extension with 5 digit extension is valid', () => {
+        const result = processSingleNumber('+49 491 4567-12345', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(false);
     });
 
