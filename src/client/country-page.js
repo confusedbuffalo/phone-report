@@ -163,11 +163,13 @@ function renderList() {
                 if (currentSort === 'percentage') {
                     const percentageA = a.totalNumbers > 0 ? (a.invalidCount / a.totalNumbers) : 0;
                     const percentageB = b.totalNumbers > 0 ? (b.invalidCount / b.totalNumbers) : 0;
-                    return percentageB - percentageA;
+                    const diff = percentageB - percentageA;
+                    return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'invalidCount') {
-                    return b.invalidCount - a.invalidCount;
+                    const diff = b.invalidCount - a.invalidCount;
+                    return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'name') {
-                    return a.name.localeCompare(b.name);
+                    return sortDirection === 'asc' ? a.name.localeCompare(b.name): b.name.localeCompare(a.name);
                 }
             });
 
