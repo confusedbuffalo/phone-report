@@ -198,6 +198,20 @@ describe('getNumberAndExtension', () => {
             });
         });
 
+        test('should correctly parse a 4-digit DIN extension with spaces around hyphen', () => {
+            expect(getNumberAndExtension('+49 489 1234 - 4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
+        test('should correctly parse a 4-digit DIN extension with spaces in the extension', () => {
+            expect(getNumberAndExtension('+49 489 1234-43 21', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
         test('should fall back to standard logic if DIN-style extension has more than 4 digits (and thus matches standard)', () => {
             expect(getNumberAndExtension('+49 489 123456-78901', countryCode)).toEqual({
                 coreNumber: '+49 489 123456-78901',
@@ -562,6 +576,13 @@ describe('processSingleNumber', () => {
 
     test('DE: hyphen and DIN format extension is invalid and fixable', () => {
         const result = processSingleNumber('+49 491-4567-1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 491 4567-1234');
+    });
+
+    test('DE: hyphen and DIN format extension with spaces is invalid and fixable', () => {
+        const result = processSingleNumber('+49 491-4567 - 1234', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+49 491 4567-1234');
