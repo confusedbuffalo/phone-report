@@ -212,9 +212,9 @@ describe('getNumberAndExtension', () => {
             });
         });
 
-        test('should fall back to standard logic if DIN-style extension has more than 4 digits (and thus matches standard)', () => {
-            expect(getNumberAndExtension('+49 489 123456-78901', countryCode)).toEqual({
-                coreNumber: '+49 489 123456-78901',
+        test('should fall back to standard logic if DIN-style extension has more than 5 digits (and thus matches standard)', () => {
+            expect(getNumberAndExtension('+49 489 123456-789012', countryCode)).toEqual({
+                coreNumber: '+49 489 123456-789012',
                 extension: null,
             });
         });
@@ -571,6 +571,11 @@ describe('processSingleNumber', () => {
     // --- DE Tests ---
     test('DE: DIN format extension is valid', () => {
         const result = processSingleNumber('+49 491 4567-1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('DE: DIN format extension with 5 digit extension is valid', () => {
+        const result = processSingleNumber('+49 491 4567-12345', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(false);
     });
 

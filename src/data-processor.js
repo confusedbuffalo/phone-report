@@ -331,7 +331,7 @@ function getNumberAndExtension(numberStr, countryCode) {
                 const extensionDigits = match[2].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
-                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 4) {
+                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 5) {
                     return {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,
