@@ -323,17 +323,18 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 function getNumberAndExtension(numberStr, countryCode) {
     // DIN format has hyphen then 1-4 digits for extensions
     if (countryCode === 'DE') {
-        const DE_EXTENSION_REGEX = /^(.*?)-(\d{1,4})$/
+        const DE_EXTENSION_REGEX = /^(.*?)-([^-]+)$/;
         const match = numberStr.match(DE_EXTENSION_REGEX);
         if (match && match[1] && match[2]) {
             try {
                 const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
+                const extensionDigits = match[2].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
-                if (preHyphenNumber.isValid()) {
+                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 4) {
                     return {
                         coreNumber: match[1].trim(),
-                        extension: match[2].trim(),
+                        extension: extensionDigits,
                     }
                 }
             } catch (e) {
