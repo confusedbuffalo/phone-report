@@ -296,8 +296,9 @@ async function main() {
         console.error('Error copying files:', err);
     }
 
-    if (!fs.existsSync(PUBLIC_DIR)) {
-        fs.mkdirSync(path.join(PUBLIC_DIR, 'vendor'));
+    const VENDOR_DIR = path.join(PUBLIC_DIR, 'vendor')
+    if (!fs.existsSync(VENDOR_DIR)) {
+        fs.mkdirSync(VENDOR_DIR);
     }
 
     fs.copyFileSync(
