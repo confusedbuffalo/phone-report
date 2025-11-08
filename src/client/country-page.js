@@ -253,7 +253,7 @@ function renderList() {
             // --- LIST ITEM RENDERING (Common Logic) ---
             sortedData.forEach(subdivision => {
                 const singleLevelDivision = safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
-                const subdivisionSlug = singleLevelDivision ? subdivision.slug : path.join(subdivision.divisionSlug, subdivision.slug);
+                const subdivisionSlug = singleLevelDivision ? subdivision.slug : `${subdivision.divisionSlug}/${subdivision.slug}`;
     
                 const percentage = subdivision.totalNumbers > 0 ? (subdivision.invalidCount / subdivision.totalNumbers) * 100 : 0;
                 const invalidPercentage = Math.max(0, Math.min(100, percentage));
