@@ -33,6 +33,20 @@ const CLIENT_KEYS = [
     'next',
     'previous',
     'sortBy',
+    "login",
+    "logout",
+    "discard",
+    "keep",
+    "close",
+    "cancel",
+    "upload",
+    "restoreUnsavedEdits",
+    "uploadChanges",
+    "restoreChanges",
+    "applyFix",
+    "enterComment",
+    "noChangesSubmitted",
+    "changesetCreated"
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
@@ -265,15 +279,28 @@ async function main() {
         fs.mkdirSync(PUBLIC_DIR);
     }
 
-    fs.copyFileSync(path.join(__dirname, 'client', 'theme.js'), path.join(PUBLIC_DIR, 'theme.js'));
-    fs.copyFileSync(path.join(__dirname, 'client', 'background-colour.js'), path.join(PUBLIC_DIR, 'background-colour.js'));
-    fs.copyFileSync(path.join(__dirname, 'client', 'chart-generator.js'), path.join(PUBLIC_DIR, 'chart-generator.js'));
-    fs.copyFileSync(path.join(__dirname, 'client', 'report-page.js'), path.join(PUBLIC_DIR, 'report-page.js'));
-    fs.copyFileSync(path.join(__dirname, 'client', 'country-page.js'), path.join(PUBLIC_DIR, 'country-page.js'));
+    const CLIENT_DIR = path.join(__dirname, 'client');
+    try {
+        const filesToCopy = fs.readdirSync(CLIENT_DIR);
+
+        filesToCopy.forEach(file => {
+            const source = path.join(CLIENT_DIR, file);
+            const destination = path.join(PUBLIC_DIR, file);
+
+            // Only copy files, ignore subdirectories (if any)
+            if (fs.statSync(source).isFile()) {
+                fs.copyFileSync(source, destination);
+            }
+        });
+        console.log('Successfully copied client directory contents to public');
+    } catch (err) {
+        console.error('Error copying files:', err);
+    }
+
     fs.copyFileSync(
         path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
         path.join(PUBLIC_DIR, 'vendor', 'osm-api.min.js')
-      );
+    );
 
     console.log('Starting full build process...');
 

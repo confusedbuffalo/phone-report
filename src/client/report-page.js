@@ -8,6 +8,7 @@ let invalidSortDirection = 'asc'; // 'asc', 'desc'
 let reportData = null;
 
 const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
+const UPLOADED_ITEMS_KEY = `uploaded_${DATA_LAST_UPDATED}`;
 
 /**
  * Adds an item's ID to localStorage to mark it as clicked.
@@ -20,6 +21,48 @@ function recordItemClick(itemId) {
         localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
     } catch (e) {
         console.error("Could not save clicked item to localStorage:", e);
+    }
+}
+
+/**
+ * Clears an item's ID from localStorage to stop marking it as clicked.
+ * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
+ */
+function clearItemClick(itemId) {
+    try {
+        const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
+        clickedItems[itemId] = false;
+        localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
+    } catch (e) {
+        console.error("Could not save clicked item to localStorage:", e);
+    }
+}
+
+/**
+ * Resets the list item, to reset the clicked style of the buttons
+ * @param {string} osmType - The OSM type of the item (e.g., "node", "way", "relation"
+ * @param {number} osmId - The OSM id of the item (e.g. 12345).
+ */
+function resetListItem(osmType, osmId) {
+    const item = reportData.find(item => {
+        return item.id === osmId && item.type === osmType;
+    });
+    if (!item) {
+        console.log(`Could not find ${osmType}/${osmId}`);
+        return;
+    }
+    const listItemId = `${osmType}/${osmId}`;
+    const oldListItem = document.querySelector(`li[data-item-id="${listItemId}"]`);
+
+    if (oldListItem) {
+        const newListItemHtmlString = createListItem(item);
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newListItemHtmlString.trim();
+        const newListItem = tempDiv.firstChild;
+
+        oldListItem.replaceWith(newListItem);
+        applyEditorVisibility();
     }
 }
 
@@ -48,7 +91,7 @@ function setButtonsAsClicked(itemId) {
 function isItemClicked(itemId) {
     try {
         const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
-        return clickedItems.hasOwnProperty(itemId);
+        return clickedItems.hasOwnProperty(itemId) && clickedItems[itemId];
     } catch (e) {
         console.error("Could not read clicked items from localStorage:", e);
         return false;
@@ -185,6 +228,10 @@ function applyEditorVisibility() {
 
         // Special handling for the JOSM Fix button: always visible if JOSM is active
         // Display fix label if fix button is invisible
+        if (editorId === 'apply-fix') {
+            button.style.display = 'inline-flex';
+            return;
+        }
         if (editorId === 'josm-fix') {
             const isVisible = currentActiveEditors.includes('JOSM');
             button.style.display = isVisible ? 'inline-flex' : 'none';
@@ -265,6 +312,7 @@ function createDetailsGrid(item) {
  * websiteButton: Element,
  * fixableLabel: Element,
  * josmFixButton: Element,
+ * fixButton: Element,
  * editorButtons: Element[]
  * }}
  */
@@ -296,6 +344,14 @@ function createButtons(item, clickedClass) {
         `;
     }).join('\n');
 
+    const fixButton = item.autoFixable ?
+        `<button onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); saveChangeToStorage('${item.type}', ${item.id})"
+        data-editor-id="apply-fix"
+        class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
+        ${translate('applyFix')}
+    </button>` :
+        '';
+
     // Generate JOSM Fix Button (special case)
     const josmFixButton = item.josmFixUrl ?
         `<a href="#" onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); openInJosm('${item.josmFixUrl}', event)"
@@ -312,7 +368,7 @@ function createButtons(item, clickedClass) {
         `<a href="${item.website}" class="btn btn-website" target="_blank">${translate('website')}</a>` :
         '';
 
-    return { websiteButton, fixableLabel, josmFixButton, editorButtons };
+    return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons };
 }
 
 /**
@@ -325,7 +381,7 @@ function createListItem(item) {
     const itemId = `${item.type}/${item.id}`;
     const clickedClass = isItemClicked(itemId) ? 'btn-clicked' : '';
 
-    const { websiteButton, fixableLabel, josmFixButton, editorButtons } = createButtons(item, clickedClass);
+    const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons } = createButtons(item, clickedClass);
 
     iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
@@ -347,6 +403,7 @@ function createListItem(item) {
             <div class="list-item-actions-container">
                 ${websiteButton}
                 ${fixableLabel}
+                ${fixButton}
                 ${josmFixButton}
                 ${editorButtons}
             </div>
@@ -424,7 +481,7 @@ function sortItems(items, key, direction) {
         }
 
         if (key === 'name') {
-            return direction === 'asc' ? valA.localeCompare(valB): valB.localeCompare(valA);
+            return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
 
         // Regular comparison
@@ -492,43 +549,64 @@ function renderPaginatedSection(
     // Unique ID suffix for this section's controls
     const suffix = isFixableSection ? 'fixable' : 'invalid';
 
-    const pageControls = totalItems > pageSize ? `<div class="page-btns-container">
-                <button id="prevPage${suffix}" onclick="changePage('${suffix}', -1)"
-                        class="page-btn
-                               ${currentPage <= 1 ? 'page-btn-disabled' : 'page-btn-active'}"
-                        ${currentPage <= 1 ? 'disabled' : ''}>
-                    ${translate('previous')}
-                </button>
-                <span class="page-numbers">
-                    ${translate('pageOf', {'%n': currentPage, '%t': totalPages})}
-                </span>
-                <button id="nextPage${suffix}" onclick="changePage('${suffix}', 1)"
-                        class="page-btn
-                               ${currentPage >= totalPages ? 'page-btn-disabled' : 'page-btn-active'}"
-                        ${currentPage >= totalPages ? 'disabled' : ''}>
-                        ${translate('next')}
-                </button>
-            </div>` : '<div></div>';
+    const pageControls = totalItems > pageSize ? `
+        <div class="page-btns-container">
+            <button id="prevPage${suffix}" onclick="changePage('${suffix}', -1)"
+                    class="page-btn
+                            ${currentPage <= 1 ? 'page-btn-disabled' : 'page-btn-active'}"
+                    ${currentPage <= 1 ? 'disabled' : ''}>
+                ${translate('previous')}
+            </button>
+            <span class="page-numbers">
+                ${translate('pageOf', { '%n': currentPage, '%t': totalPages })}
+            </span>
+            <button id="nextPage${suffix}" onclick="changePage('${suffix}', 1)"
+                    class="page-btn
+                            ${currentPage >= totalPages ? 'page-btn-disabled' : 'page-btn-active'}"
+                    ${currentPage >= totalPages ? 'disabled' : ''}>
+                    ${translate('next')}
+            </button>
+        </div>` : '<div></div>';
+
+    const saveRow = isFixableSection ? `
+        <div class="save-undo-row">
+            <span class="flex items-center">
+                <button id="undo-btn" class="btn-undo-redo gray-btn-disabled" onclick="undoChange()" disabled><svg class="icon-svg"><use href="#icon-undo"></use></svg></button>
+                <button id="redo-btn" class="btn-undo-redo gray-btn-disabled" onclick="redoChange()" disabled><svg class="icon-svg"><use href="#icon-redo"></use></svg></button>
+            </span>
+            <div id="save-btn-container">
+                <button id="save-btn" class="btn-squared gray-btn-disabled" onclick="openUploadModal()" disabled>Save</button>
+            </div>
+        </div>` : '';
+
+    const pageAndSortControls = `
+        ${pageControls}
+        <div class="sort-controls">
+            <span class="sort-label">${translate('sortBy')}</span>
+            <button onclick="handleSort('${suffix}', 'name')"
+                    class="sort-btn sort-btn-style ${getSortStyle('name')}">
+                ${translate('name')}
+            </button>
+            ${isFixableSection ? `
+            <button onclick="handleSort('${suffix}', 'fixable')"
+                    class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
+                ${translate('suggestedFix')}
+            </button>` : ''}
+            <button onclick="handleSort('${suffix}', 'invalid')"
+                    class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
+                    ${translate('invalidNumber')}
+            </button>
+        </div>`
 
     const paginationSortCard = `
         <div class="page-sort-card">
-            ${pageControls}
-            <div class="sort-controls">
-                <span class="sort-label">${translate('sortBy')}</span>
-                <button onclick="handleSort('${suffix}', 'name')"
-                        class="sort-btn sort-btn-style ${getSortStyle('name')}">
-                    ${translate('name')}
-                </button>
-                ${isFixableSection ? `
-                <button onclick="handleSort('${suffix}', 'fixable')"
-                        class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
-                    ${translate('suggestedFix')}
-                </button>` : ''}
-                <button onclick="handleSort('${suffix}', 'invalid')"
-                        class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
-                        ${translate('invalidNumber')}
-                </button>
-            </div>
+            ${isFixableSection ? `
+                <div class="save-sort-container">
+                    <div>${saveRow}</div>
+                    <div>${pageAndSortControls}</div>
+                </div>
+                `
+            : pageAndSortControls}
         </div>
     `;
 
@@ -569,7 +647,7 @@ function changePage(section, delta) {
         invalidCurrentPage = Math.max(1, Math.min(totalPages, invalidCurrentPage + delta));
         renderNumbers(); // Re-render the whole page
     }
-    document.getElementById(`${section}Section`).scrollIntoView({'behavior':'smooth'});
+    document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
 }
 
 /**
@@ -613,8 +691,10 @@ function handleSort(section, newKey) {
     else invalidCurrentPage = 1;
 
     renderNumbers();
-    document.getElementById(`${section}Section`).scrollIntoView({'behavior':'smooth'});
+    document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
 }
+
+let firstLoad = true;
 
 /**
  * Main rendering function for the phone number report.
@@ -632,8 +712,34 @@ function renderNumbers() {
     const invalidContainer = document.getElementById("invalidSection");
     const noInvalidContainer = document.getElementById("noInvalidSection");
 
-    const autofixableNumbers = reportData.filter(item => item.autoFixable);
-    const manualFixNumbers = reportData.filter(item => !item.autoFixable);
+    const edits = JSON.parse(localStorage.getItem('edits'));
+
+    let count = 0;
+    if (edits[subdivisionName]) {
+        for (const type in edits[subdivisionName]) {
+            count += Object.keys(edits[subdivisionName][type]).length;
+        }
+    }
+    if (firstLoad && count > 0) {
+        openEditsModal(count);
+    }
+
+    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+
+    const autofixableNumbers = reportData.filter(item => {
+        const isAutoFixable = item.autoFixable;
+        const isNotInUploadedChanges = !(
+            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
+        );
+        return isAutoFixable && isNotInUploadedChanges;
+    });
+    const manualFixNumbers = reportData.filter(item => {
+        const notAutoFixable = !item.autoFixable;
+        const isNotInUploadedChanges = !(
+            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
+        );
+        return notAutoFixable && isNotInUploadedChanges;
+    });
 
     const anyInvalid = manualFixNumbers.length > 0;
     const anyFixable = autofixableNumbers.length > 0;
@@ -677,6 +783,7 @@ function renderNumbers() {
         `;
     }
     applyEditorVisibility();
+    firstLoad = false;
 }
 
 /**
@@ -694,11 +801,518 @@ async function initReportPage() {
         // Display an error message to the user if data loading fails
         const container = document.getElementById("reportContainer");
         if (container) {
-             container.innerHTML = '<p class="text-red-500 font-bold">Error: Could not load report data. Please check the network connection and the data file path.</p>';
+            container.innerHTML = '<p class="text-red-500 font-bold">Error: Could not load report data. Please check the network connection and the data file path.</p>';
         }
         return;
     }
     renderNumbers();
 }
 
+// OSM editing
+
+const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
+let undoStack = [];
+let undoPosition = 0;
+const uploadSpinner = document.getElementById('upload-spinner');
+
+function login() {
+    const errorDiv = document.querySelector("#error-div");
+    errorDiv.innerText = "";
+    errorDiv.hidden = true;
+
+    OSM.login({
+        mode: "popup",
+        clientId: "bexjmcD0H12VKCGMYNmbIA10FYh1O96vgF4-1xH6qKs",
+        redirectUrl: redirectUrl,
+        scopes: ["write_api", "read_prefs", "write_notes"],
+    })
+        .then(initLogin)
+        .catch((err) => {
+            errorDiv.hidden = false;
+            errorDiv.innerText = `${err}`;
+        });
+}
+
+function logout() {
+    OSM.logout();
+    localStorage.removeItem('osm_display_name');
+    initLogin();
+}
+
+function getUser() {
+    const logoutBtn = document.getElementById("logout-btn");
+    const errorDiv = document.getElementById("error-div");
+    const displayName = localStorage.getItem('osm_display_name');
+
+    if (displayName) {
+        logoutBtn.innerText = `Logout ${displayName}`;
+        return;
+    }
+
+    OSM.getUser("me")
+        .then((result) => {
+            logoutBtn.innerText = `Logout ${result.display_name}`;
+            localStorage.setItem('osm_display_name', result.display_name);
+            errorDiv.innerText = '';
+            errorDiv.hidden = true;
+        })
+        .catch((err) => {
+            logoutBtn.innerText = `${err}`;
+        });
+}
+
+function initLogin() {
+    if (OSM.isLoggedIn()) {
+        document.getElementById("logout-btn").hidden = false;
+        document.getElementById("login-btn").hidden = true;
+        getUser();
+    } else {
+        document.getElementById("logout-btn").hidden = true;
+        document.getElementById("login-btn").hidden = false;
+    }
+}
+
+/**
+ * Applies edits to a feature's tags object.
+ * If an edit value is null, the corresponding key is removed from feature.tags.
+ *
+ * @param {object} feature The feature object containing the 'tags' object.
+ * @param {object} elementEdits The object of key-value edits to apply.
+ */
+function applyEditsToFeatureTags(feature, elementEdits) {
+    if (!feature.tags || typeof feature.tags !== 'object') {
+        feature.tags = {};
+    }
+
+    const tags = feature.tags;
+
+    for (const key in elementEdits) {
+        if (Object.hasOwn(elementEdits, key)) {
+            const value = elementEdits[key];
+
+            if (value === null) {
+                delete tags[key];
+            } else {
+                tags[key] = value;
+            }
+        }
+    }
+}
+
+function moveEditsToUploadedStorage() {
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+
+    let uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+    if (uploadedChanges && uploadedChanges[subdivisionName]) {
+        for (const type in uploadedChanges[subdivisionName]) {
+            uploadedChanges[subdivisionName][type] = {
+                ...edits[subdivisionName][type] || {},
+                ...uploadedChanges[subdivisionName][type]
+            }
+        }
+    } else if (uploadedChanges) {
+        uploadedChanges[subdivisionName] = edits[subdivisionName]
+    } else {
+        uploadedChanges = {};
+        uploadedChanges[subdivisionName] = edits[subdivisionName]
+    }
+
+    localStorage.setItem(UPLOADED_ITEMS_KEY, JSON.stringify(uploadedChanges));
+    delete edits[subdivisionName];
+    localStorage.setItem('edits', JSON.stringify(edits));
+}
+
+async function uploadChanges() {
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+
+    let modifications = [];
+    const subdivisionEdits = edits[subdivisionName];
+
+    const elementTypes = ['node', 'way', 'relation'];
+
+    for (const type of elementTypes) {
+        const editsForType = subdivisionEdits[type];
+
+        if (editsForType) {
+            const featureIds = Object.keys(editsForType);
+
+            if (featureIds.length > 0) {
+                try {
+                    const features = await OSM.getFeatures(type, featureIds);
+                    for (const feature of features) {
+                        const originalTags = { ...feature.tags }
+                        applyEditsToFeatureTags(feature, editsForType[feature.id])
+                        if (
+                            JSON.stringify(originalTags, Object.keys(originalTags).sort()) !== JSON.stringify(feature.tags, Object.keys(feature.tags).sort())
+                        ) {
+                            modifications.push(feature);
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error fetching or processing ${type} features:`, error);
+                }
+            }
+        }
+    }
+
+    if (modifications.length > 0) {
+        const changesetId = await OSM.uploadChangeset(
+            { ...CHANGESET_TAGS, ...{ 'comment': commentBox.value.trim() } },
+            { create: [], modify: modifications, delete: [] }
+        );
+        moveEditsToUploadedStorage();
+        return changesetId;
+    }
+    moveEditsToUploadedStorage();
+}
+
+const uploadCloseBtnTop = document.getElementById('upload-close-modal-btn-top');
+const uploadCancelBtn = document.getElementById('cancel-modal-btn');
+const uploadCloseBtnBottom = document.getElementById('close-modal-btn-bottom');
+const uploadBtn = document.getElementById('upload-changes-btn');
+const uploadModal = document.getElementById('upload-modal-overlay');
+const uploadModalTitle = document.getElementById('upload-modal-title');
+
+const editsCloseBtnTop = document.getElementById('edits-close-modal-btn-top');
+const editsDiscardBtn = document.getElementById('edits-modal-discard-btn');
+const editsKeepBtn = document.getElementById('edits-modal-keep-btn');
+const editsModal = document.getElementById('edits-modal-overlay');
+const editsModalTitle = document.getElementById('edits-modal-title');
+
+function enableSave() {
+    const saveBtn = document.getElementById('save-btn');
+    enableGrayBtn(saveBtn);
+}
+
+function disableSave() {
+    const saveBtn = document.getElementById('save-btn');
+    if (saveBtn) { disableGrayBtn(saveBtn) };
+}
+
+function enableUndo() {
+    const undoBtn = document.getElementById('undo-btn');
+    if (undoBtn) { enableGrayBtn(undoBtn) };
+}
+
+function disableUndo() {
+    const undoBtn = document.getElementById('undo-btn');
+    if (undoBtn) { disableGrayBtn(undoBtn) };
+}
+
+function enableRedo() {
+    const redoBtn = document.getElementById('redo-btn');
+    if (redoBtn) { enableGrayBtn(redoBtn) };
+}
+
+function disableRedo() {
+    const redoBtn = document.getElementById('redo-btn');
+    if (redoBtn) { disableGrayBtn(redoBtn) };
+}
+
+function disableGrayBtn(selector) {
+    selector.classList.remove('gray-btn-enabled');
+    selector.classList.add('gray-btn-disabled')
+    selector.disabled = true;
+}
+
+function enableGrayBtn(selector) {
+    selector.classList.remove('gray-btn-disabled');
+    selector.classList.add('gray-btn-enabled')
+    selector.disabled = false;
+}
+
+function saveChangeToStorage(osmType, osmId) {
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    if (!edits[subdivisionName]) {
+        edits[subdivisionName] = {};
+    }
+    if (!edits[subdivisionName][osmType]) {
+        edits[subdivisionName][osmType] = {};
+    }
+
+    const item = reportData.find(item => {
+        return item.id === osmId && item.type === osmType;
+    });
+
+    edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+
+    localStorage.setItem('edits', JSON.stringify(edits));
+    addToUndo(osmType, osmId);
+    setUpSaveBtn();
+}
+
+function addToUndo(osmType, osmId) {
+    const undoBtn = document.getElementById('undo-btn');
+    if (undoStack.length !== undoPosition) {
+        undoStack = undoStack.slice(0, undoPosition);
+    }
+    undoStack.push([osmType, osmId]);
+    undoPosition = undoStack.length;
+    if (undoStack.length > 0 && undoBtn.disabled) {
+        enableUndo();
+    }
+    if (OSM.isLoggedIn()) {
+        enableSave();
+    }
+    disableRedo();
+}
+
+function undoChange() {
+    if (undoPosition === 0) {
+        return
+    }
+    undoPosition -= 1;
+    if (undoPosition === 0) {
+        disableUndo();
+    }
+    const redoBtn = document.getElementById('redo-btn');
+    if (redoBtn.disabled) {
+        enableRedo();
+    }
+
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const undoneElement = undoStack[undoPosition];
+    const osmType = undoneElement[0];
+    const osmId = undoneElement[1];
+
+    delete edits[subdivisionName][osmType][osmId];
+    clearItemClick(`${osmType}/${osmId}`);
+
+    resetListItem(osmType, osmId);
+    localStorage.setItem('edits', JSON.stringify(edits));
+    setUpSaveBtn();
+}
+
+function redoChange() {
+    if (undoPosition === undoStack.length) {
+        return
+    }
+
+    const undoneElement = undoStack[undoPosition];
+    const osmType = undoneElement[0];
+    const osmId = undoneElement[1];
+
+    const item = reportData.find(item => {
+        return item.id === osmId && item.type === osmType;
+    });
+
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+
+    edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+    recordItemClick(`${osmType}/${osmId}`);
+
+    undoPosition += 1;
+    if (undoPosition === undoStack.length) {
+        disableRedo();
+    }
+    const undoBtn = document.getElementById('undo-btn');
+    if (undoBtn.disabled) {
+        enableUndo();
+    }
+
+    resetListItem(osmType, osmId);
+    localStorage.setItem('edits', JSON.stringify(edits));
+    setUpSaveBtn();
+}
+
+function openUploadModal() {
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    let totalChanges = 0;
+
+    if (edits.hasOwnProperty(subdivisionName)) {
+        const subdivisionData = edits[subdivisionName];
+        const osmTypeObjects = Object.values(subdivisionData);
+        const editCountForCounty = osmTypeObjects.reduce((accumulator, currentOsmTypeObject) => {
+            return accumulator + Object.keys(currentOsmTypeObject).length;
+        }, 0);
+        totalChanges += editCountForCounty;
+    }
+
+    uploadModalTitle.innerHTML = translate('uploadChanges', { '%n': totalChanges });
+
+    if (commentBox) {
+        commentBox.disabled = false;
+        commentBox.classList.remove('cursor-not-allowed');
+        commentBox.value = `${subdivisionName}: ` + CHANGESET_TAGS['comment'];
+    }
+    uploadModal.classList.remove('hidden');
+    setTimeout(() => {
+        uploadModal.classList.add('active');
+    }, 10);
+}
+
+function closeUploadModal() {
+    const messageBox = document.getElementById('message-box');
+    uploadModal.classList.remove('active');
+    setTimeout(() => {
+        uploadModal.classList.add('hidden');
+        messageBox.classList.add('hidden');
+    }, 300);
+}
+
+function openEditsModal(count) {
+    editsModalTitle.innerHTML = translate('restoreChanges', { '%n': count });
+
+    editsModal.classList.remove('hidden');
+    setTimeout(() => {
+        editsModal.classList.add('active');
+    }, 10);
+}
+
+function closeEditsModal() {
+    setUpSaveBtn();
+    editsModal.classList.remove('active');
+    setTimeout(() => {
+        editsModal.classList.add('hidden');
+    }, 300);
+}
+
+function discardEdits() {
+    let edits = JSON.parse(localStorage.getItem('edits'));
+    if (edits[subdivisionName]) {
+        for (const osmType in edits[subdivisionName]) {
+            for (const osmIdStr in edits[subdivisionName][osmType]) {
+                const osmId = parseInt(osmIdStr, 10);
+                clearItemClick(`${osmType}/${osmId}`);
+                resetListItem(osmType, osmId);
+            }
+        }
+        delete edits[subdivisionName];
+        localStorage.setItem('edits', JSON.stringify(edits));
+        setUpSaveBtn();
+        closeEditsModal();
+    }
+}
+
+// Close upload modal when clicking the semi-transparent backdrop
+const handleUploadModalClick = (event) => {
+    if (event.target === uploadModal) {
+        closeUploadModal();
+    }
+};
+
+const handleDocumentKeydown = (event) => {
+    if (event.key === 'Escape') {
+        if (!uploadModal.classList.contains('hidden')) {
+            closeUploadModal();
+        }
+        if (!editsModal.classList.contains('hidden')) {
+            discardEdits();
+        }
+    }
+};
+
+function enableModalCloseListeners() {
+    uploadModal.addEventListener('click', handleUploadModalClick);
+    document.addEventListener('keydown', handleDocumentKeydown);
+}
+
+function disableModalCloseListeners() {
+    uploadModal.removeEventListener('click', handleUploadModalClick);
+    document.removeEventListener('keydown', handleDocumentKeydown);
+}
+
+// Add changeset comment to upload modal
+const commentBox = document.getElementById('changesetComment');
+commentBox.value = CHANGESET_TAGS['comment'];
+
+// Add event listener to prevent new lines and handle submission
+commentBox.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        // Prevent the default action (inserting a new line)
+        event.preventDefault();
+        if (!event.shiftKey) {
+            checkAndSubmit();
+        }
+    }
+});
+
+function toggleUploadingSpinner(isLoading) {
+    if (isLoading) {
+        uploadSpinner.classList.remove('hidden');
+    } else {
+        uploadSpinner.classList.add('hidden');
+    }
+}
+
+function checkAndSubmit() {
+    const commentBox = document.getElementById('changesetComment')
+    const comment = commentBox.value.trim();
+    const messageBox = document.getElementById('message-box');
+
+    if (comment.length > 0) {
+        messageBox.classList.add('hidden');
+
+        disableModalCloseListeners();
+
+        uploadBtn.innerHTML = 'Uploading';
+        uploadBtn.classList.remove('cursor-pointer');
+        uploadBtn.classList.add('cursor-progress');
+        uploadBtn.disabled = true;
+
+        uploadCancelBtn.classList.add('hidden');
+        commentBox.disabled = true;
+        commentBox.classList.add('cursor-not-allowed');
+        toggleUploadingSpinner(true);
+        uploadChanges()
+            .then((result) => {
+                if (result) {
+                    const successMessage = translate(
+                        'changesetCreated',
+                        { '%n': `<a href="https://www.openstreetmap.org/changeset/${result}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${result}</a>` }
+                    );
+                    messageBox.className = 'message-box-success';
+                    messageBox.innerHTML = successMessage;
+                } else {
+                    messageBox.className = 'message-box-error';
+                    messageBox.innerHTML = translate('noChangesSubmitted');
+                }
+                messageBox.classList.remove('hidden');
+                toggleUploadingSpinner(false);
+                uploadBtn.classList.add('hidden');
+                uploadCloseBtnBottom.classList.remove('hidden');
+                enableModalCloseListeners();
+                setUpSaveBtn();
+            })
+            .catch((err) => {
+                toggleUploadingSpinner(false);
+                uploadBtn.innerHTML = 'Upload';
+                uploadBtn.disabled = false;
+                uploadBtn.classList.add('cursor-pointer');
+                uploadBtn.classList.remove('cursor-progress');
+
+                messageBox.className = 'message-box-error';
+                messageBox.innerHTML = `There was an error: ${err}`;
+                messageBox.classList.remove('hidden');
+
+                uploadCancelBtn.classList.remove('hidden');
+                enableModalCloseListeners();
+            });
+    } else {
+        messageBox.className = 'message-box-error';
+        messageBox.innerHTML = translate('enterComment');
+        messageBox.classList.remove('hidden');
+    }
+}
+
+function setUpSaveBtn() {
+    const saveBtn = document.getElementById('save-btn');
+    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    let count = 0;
+    if (edits[subdivisionName]) {
+        for (const type in edits[subdivisionName]) {
+            count += Object.keys(edits[subdivisionName][type]).length;
+        }
+    }
+    if (count > 0) {
+        enableSave();
+        saveBtn.innerText = `Save ${count}`;
+    } else {
+        disableSave();
+        saveBtn.innerText = `Save`;
+    }
+}
+
+enableModalCloseListeners();
 initReportPage();
+initLogin();

@@ -1,5 +1,6 @@
 const path = require('path');
 const { translate } = require('./i18n');
+const packageInfo = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
@@ -86,7 +87,7 @@ const OSM_EDITORS = {
 
 const ALL_EDITOR_IDS = Object.keys(OSM_EDITORS);
 
-const DEFAULT_EDITORS_DESKTOP = ["iD", "JOSM"];
+const DEFAULT_EDITORS_DESKTOP = ["JOSM"];
 const DEFAULT_EDITORS_MOBILE = ["Geo", "Level0"];
 
 const EXCLUSIONS = {
@@ -174,6 +175,17 @@ const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 
+const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
+
+const PACKAGE_NAME = packageInfo.name;
+const PACKAGE_VERSION = packageInfo.version;
+
+const CHANGESET_TAGS = {
+    "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
+    "created_by": `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
+    "host": HOST_URL
+}
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
@@ -200,5 +212,6 @@ module.exports = {
     ICON_ATTRIBUTION,
     HISTORY_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
-    EXTENSION_REGEX
+    EXTENSION_REGEX,
+    CHANGESET_TAGS
 };

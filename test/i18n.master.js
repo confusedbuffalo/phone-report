@@ -41,7 +41,17 @@ const MASTER_KEYS = {
     "next": [],
     "previous": [],
     "duplicateNumber": [],
-
+    "login": [],
+    "logout": [],
+    "discard": [],
+    "keep": [],
+    "close": [],
+    "cancel": [],
+    "upload": [],
+    "restoreUnsavedEdits": [],
+    "applyFix": [],
+    "enterComment": [],
+    "noChangesSubmitted": [],
 
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
@@ -60,6 +70,10 @@ const MASTER_KEYS = {
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a'],
 
     "pageOf": ['%n', '%t'],
+
+    "uploadChanges": ['%n'],
+    "restoreChanges": ['%n'],
+    "changesetCreated": ['%n'],
 
     // Time Ago (uses %n for number)
     'timeAgoMinute': ['%n'],

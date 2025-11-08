@@ -7,7 +7,7 @@ const { parser } = require('stream-json/Parser');
 const { streamArray } = require('stream-json/streamers/StreamArray');
 const { disassembler } = require('stream-json/Disassembler');
 const { stringer } = require('stream-json/Stringer');
-const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE } = require('./constants');
+const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
@@ -282,6 +282,15 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
     </head>
     <body class="body-styles">
         ${svgSprite}
+        <svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+            <!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+            <symbol id="icon-undo" viewBox="0 0 640 640" fill="currentColor">
+                <path d="M88 256L232 256C241.7 256 250.5 250.2 254.2 241.2C257.9 232.2 255.9 221.9 249 215L202.3 168.3C277.6 109.7 386.6 115 455.8 184.2C530.8 259.2 530.8 380.7 455.8 455.7C380.8 530.7 259.3 530.7 184.3 455.7C174.1 445.5 165.3 434.4 157.9 422.7C148.4 407.8 128.6 403.4 113.7 412.9C98.8 422.4 94.4 442.2 103.9 457.1C113.7 472.7 125.4 487.5 139 501C239 601 401 601 501 501C601 401 601 239 501 139C406.8 44.7 257.3 39.3 156.7 122.8L105 71C98.1 64.2 87.8 62.1 78.8 65.8C69.8 69.5 64 78.3 64 88L64 232C64 245.3 74.7 256 88 256z"/>
+            </symbol>
+            <symbol id="icon-redo" viewBox="0 0 640 640" fill="currentColor">
+                <path d="M552 256L408 256C398.3 256 389.5 250.2 385.8 241.2C382.1 232.2 384.1 221.9 391 215L437.7 168.3C362.4 109.7 253.4 115 184.2 184.2C109.2 259.2 109.2 380.7 184.2 455.7C259.2 530.7 380.7 530.7 455.7 455.7C463.9 447.5 471.2 438.8 477.6 429.6C487.7 415.1 507.7 411.6 522.2 421.7C536.7 431.8 540.2 451.8 530.1 466.3C521.6 478.5 511.9 490.1 501 501C401 601 238.9 601 139 501C39.1 401 39 239 139 139C233.3 44.7 382.7 39.4 483.3 122.8L535 71C541.9 64.1 552.2 62.1 561.2 65.8C570.2 69.5 576 78.3 576 88L576 232C576 245.3 565.3 256 552 256z"/>
+            </symbol>
+        </svg>
         <div class="page-container">
             <header class="page-header">
                 <div class="action-row">
@@ -291,6 +300,11 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                         </svg>
                         <span class="align-middle">${translate('backToCountryPage', locale)}</span>
                     </a>
+                    <div class="flex items-center space-x-2 relative">
+                        <div id="error-div" class="text-black bg-red-500 rounded-md" hidden></div>
+                        <button id="login-btn" class="btn-squared cursor-pointer text-white bg-blue-500" onclick="login()">${translate('login')}</button>
+                        <button id="logout-btn" class="btn-squared cursor-pointer btn-editor" onclick="logout()" hidden>${translate('logout')}</button>
+                    </div>
                     <div class="flex items-center space-x-2 relative">
                         <button id="settings-toggle" class="settings-button" aria-label="${translate('settings', locale)}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340.274 340.274" fill="currentColor" class="7 w-7">
@@ -315,6 +329,49 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                 ${createFooter(locale, translations, true)}
             </div>
         </div>
+        <div id="upload-modal-overlay" class="save-modal-overlay modal-overlay hidden">
+            <div class="save-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+                <div class="save-modal-content">
+                    <h3 id="upload-modal-title" class="save-modal-title"></h3>
+                    <button id="upload-close-modal-btn-top" class="modal-close" onclick="closeUploadModal()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <textarea id="changesetComment" rows="3" class="changeset-comment-box"></textarea>
+                <div id="message-box" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-lg hidden" role="alert"></div>
+                <div class="modal-button-container">
+                    <div id="upload-spinner" class="hidden spinner mr-4"></div>
+                    <button id="close-modal-btn-bottom" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer hidden" onclick="closeUploadModal()">
+                        ${translate('close')}
+                    </button>
+                    <button id="cancel-modal-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="closeUploadModal()">
+                        ${translate('cancel')}
+                    </button>
+                    <button id="upload-changes-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" onclick="checkAndSubmit()">
+                        ${translate('upload')}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="edits-modal-overlay" class="save-modal-overlay modal-overlay hidden">
+            <div class="save-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+                <div class="save-modal-content">
+                    <h3 id="edits-modal-title" class="save-modal-title"></h3>
+                    <button id="edits-close-modal-btn-top" class="modal-close" onclick="discardEdits()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <p class="modal-decription">${translate('restoreUnsavedEdits')}</p>
+                <div class="modal-button-container">
+                    <button id="edits-modal-discard-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="discardEdits()">
+                        ${translate('discard')}
+                    </button>
+                    <button id="edits-modal-keep-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" onclick="closeEditsModal()">
+                        ${translate('keep')}
+                    </button>
+                </div>
+            </div>
+        </div>
     <script>
         // Client-side constants
         const ALL_EDITOR_IDS = ${JSON.stringify(ALL_EDITOR_IDS)};
@@ -323,6 +380,8 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         const DATA_FILE_PATH = './${subdivisionStats.slug}.json';
         const DATA_LAST_UPDATED = '${subdivisionStats.lastUpdated}';
         const STORAGE_KEY = 'osm_report_editors';
+        const subdivisionName = '${subdivisionStats.name}';
+        const CHANGESET_TAGS = ${JSON.stringify(CHANGESET_TAGS)};
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
             const editor = OSM_EDITORS[editorId];
