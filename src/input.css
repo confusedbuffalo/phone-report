@@ -460,10 +460,206 @@
   @apply fill-white dark:fill-gray-200 w-8 h-8;
 }
 
+@utility spinner {
+  @apply
+    w-8 h-8
+    border-4
+    border-t-blue-700
+    border-gray-400
+    rounded-full
+    animate-spin;
+}
+
 @utility list-item-old-value {
   @apply items-center;
 }
 
 .list-item-old-value > span {
   @apply align-middle;
+}
+
+
+.modal-overlay {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@utility save-modal-overlay {
+  @apply
+    fixed
+    inset-0
+    z-50
+    flex
+    items-center
+    justify-center
+    bg-black/75
+    transition-opacity
+    duration-300;
+}
+
+@utility save-modal-dialog {
+  @apply
+    bg-white
+    rounded-2xl
+    shadow-2xl
+    p-8
+    m-4
+    w-full
+    max-w-lg
+    transform
+    scale-100
+    transition-transform
+    duration-300;
+}
+
+@utility save-modal-content {
+  @apply
+    flex
+    justify-between
+    items-start
+    mb-6;
+}
+
+@utility save-modal-title {
+  @apply
+    text-3xl
+    font-bold
+    text-gray-800;
+}
+
+@utility changeset-comment-box {
+  @apply
+    w-full
+    p-4
+    text-gray-700
+    bg-white
+    border-2 border-gray-300
+    rounded-xl
+    shadow-inner
+    transition duration-300 ease-in-out
+    focus:border-blue-500
+    focus:ring-4 focus:ring-blue-100
+    focus:outline-none
+    resize-none;
+}
+
+@utility modal-close {
+  @apply
+    text-gray-400
+    hover:text-gray-600
+    transition-colors;
+}
+
+@utility modal-button-container {
+  @apply
+    pt-6
+    flex
+    justify-end
+    items-center;
+}
+
+@utility btn-modal {
+  @apply
+    ml-4
+    px-6
+    py-3
+    text-white
+    font-semibold
+    rounded-xl
+    shadow-md
+    transition
+    duration-200;
+}
+
+@utility btn-squared {
+  @apply
+    m-1
+    px-6
+    py-3
+    font-semibold
+    rounded-xl
+    shadow-md;
+}
+
+@utility gray-btn-enabled {
+  @apply
+    text-gray-200
+    dark:text-gray-900
+    bg-gray-600
+    hover:bg-gray-500
+    dark:bg-gray-200
+    dark:hover:bg-gray-300
+    cursor-pointer;
+}
+
+@utility gray-btn-disabled {
+  @apply
+    text-gray-200
+    dark:text-gray-900
+    bg-gray-600/50
+    dark:bg-gray-200/50
+    cursor-not-allowed;
+}
+
+@utility btn-undo-redo {
+  @apply
+    m-3
+    inline-flex
+    items-center
+    rounded-full
+    px-3
+    py-1.5
+    shadow-sm
+    transition-colors
+    cursor-pointer;
+}
+
+@utility modal-decription {
+  @apply
+    text-gray-800
+}
+
+@utility save-undo-row {
+  @apply
+    flex
+    flex-row
+    justify-between
+    mb-2
+    sticky
+    top-0
+    z-10;
+}
+
+@utility save-sort-container {
+  @apply
+    flex flex-col
+    w-full;
+}
+
+@utility message-box-success {
+  @apply
+    mt-4
+    p-3
+    bg-green-100
+    text-green-700
+    border
+    border-green-300
+    rounded-lg;
+}
+
+@utility message-box-error {
+  @apply
+    mt-4
+    p-3
+    bg-red-100
+    text-red-700
+    border
+    border-red-300
+    rounded-lg;
 }

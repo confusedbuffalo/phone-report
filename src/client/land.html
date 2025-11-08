@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  if (new URLSearchParams(location.search).has("code")) {
+    new BroadcastChannel("osm-api-auth-complete").postMessage(location.href);
+    window.close();
+  } else{
+    window.close();
+  }
+</script>
+</head>
+<body>
+</body>
+</html>
