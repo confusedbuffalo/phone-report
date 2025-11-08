@@ -198,9 +198,23 @@ describe('getNumberAndExtension', () => {
             });
         });
 
-        test('should fall back to standard logic if DIN-style extension has more than 4 digits (and thus matches standard)', () => {
-            expect(getNumberAndExtension('+49 489 123456-78901', countryCode)).toEqual({
-                coreNumber: '+49 489 123456-78901',
+        test('should correctly parse a 4-digit DIN extension with spaces around hyphen', () => {
+            expect(getNumberAndExtension('+49 489 1234 - 4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
+        test('should correctly parse a 4-digit DIN extension with spaces in the extension', () => {
+            expect(getNumberAndExtension('+49 489 1234-43 21', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
+        test('should fall back to standard logic if DIN-style extension has more than 5 digits (and thus matches standard)', () => {
+            expect(getNumberAndExtension('+49 489 123456-789012', countryCode)).toEqual({
+                coreNumber: '+49 489 123456-789012',
                 extension: null,
             });
         });
@@ -485,6 +499,23 @@ describe('processSingleNumber', () => {
         expect(result.typeMismatch).toBe(true);
     });
 
+    test('GB: free phone number is valid', () => {
+        const result = processSingleNumber('0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('GB: free phone number with country code is valid', () => {
+        const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('GB: free phone number with dashes is fixable to non-international format', () => {
+        const result = processSingleNumber('0800-00-1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('0800 001234');
+    });
+
     // --- ZA Tests (Johannesburg number: 011 555 1234) ---
 
     test('ZA: correctly validate and format a simple valid local number', () => {
@@ -560,8 +591,20 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('DE: DIN format extension with 5 digit extension is valid', () => {
+        const result = processSingleNumber('+49 491 4567-12345', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('DE: hyphen and DIN format extension is invalid and fixable', () => {
         const result = processSingleNumber('+49 491-4567-1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 491 4567-1234');
+    });
+
+    test('DE: hyphen and DIN format extension with spaces is invalid and fixable', () => {
+        const result = processSingleNumber('+49 491-4567 - 1234', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+49 491 4567-1234');
@@ -1688,6 +1731,38 @@ describe('validateNumbers', () => {
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
             'phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_2}`,
+        });
+    });
+
+    test('should find and remove duplicates among other numbers in one tag', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 5775129635,
+                tags: {
+                    'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+                    name: 'Many phones',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(5);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'phone': 'phone',
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone': '+44 17687 79280; +44 7901 854574; +44 7554 806119',
         });
     });
 });

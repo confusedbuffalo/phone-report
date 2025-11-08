@@ -205,11 +205,10 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
 /**
  * Processes all divisions and subdivisions for a single country.
- * @param {string} countryKey - The key of the country in the COUNTRIES object.
  * @param {Object} countryData - The configuration object for the country.
  * @returns {Promise<Object>} A promise that resolves to the aggregated statistics for the country.
  */
-async function processCountry(countryKey, countryData) {
+async function processCountry(countryData) {
     const countryName = countryData.name;
     const locale = countryData.locale;
 
@@ -230,7 +229,7 @@ async function processCountry(countryKey, countryData) {
 
     // If no subdivision admin level then use the list of divisions as is, one level deep
     const divisions = (countryData.divisions && !countryData.subdivisionAdminLevel)
-        ? { [countryKey]: countryData.divisions }
+        ? { [countryData.name]: countryData.divisions }
         : (countryData.divisions ?? countryData.divisionMap);
 
     let divisionCount = 0;
@@ -312,7 +311,8 @@ async function main() {
 
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
-        const stats = await processCountry(countryKey, countryData);
+        countryData.name = countryKey;
+        const stats = await processCountry(countryData);
         allCountryStats.push(stats);
 
         if (testMode) {

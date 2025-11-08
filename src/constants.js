@@ -107,12 +107,12 @@ const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 // Raw semicolon (';'), semicolon with optional space ('; ?'), comma, slash, 'or' or 'and'.
-const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
-const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)|(?:\s+y\s+)/gi;
+const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)|(?:\s+y\s+)/gi;
 
 // When used in diff, the groups need to be capturing
-const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
-const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = /(; ?)|(\s*,\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)|(\s+y\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = /(; ?)|(\s*,\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)|(\s+y\s+)/gi;
 
 const ICON_ATTRIBUTION = [
     {

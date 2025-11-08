@@ -187,8 +187,9 @@ class ItemTransformer extends Transform {
 async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations) {
     clearIconSprite();
 
-    const subdivisionSlug = path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
     const safeCountryName = safeName(countryName);
+    const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
+    const subdivisionSlug = singleLevelDivision ? subdivisionStats.slug : path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
     const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
     const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
 
@@ -276,8 +277,8 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${translate('countryReportTitle', locale, [escapeHTML(subdivisionStats.name)])}</title>
         ${favicon}
-        <link href="../../styles.css" rel="stylesheet">
-        <script src="../../theme.js"></script>
+        <link href="${singleLevelDivision ? '' : '../'}../styles.css" rel="stylesheet">
+        <script src="${singleLevelDivision ? '' : '../'}../theme.js"></script>
         ${confettiScripts}
     </head>
     <body class="body-styles">
@@ -294,7 +295,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         <div class="page-container">
             <header class="page-header">
                 <div class="action-row">
-                    <a href="../" class="back-link">
+                    <a href="${singleLevelDivision ? './' : '../'}" class="back-link">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block align-middle mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                         </svg>
@@ -394,8 +395,8 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             }
         }
     </script>
-    <script src="../../vendor/osm-api.min.js"></script>
-    <script src="../../report-page.js"></script>
+    <script src="${singleLevelDivision ? '' : '../'}../vendor/osm-api.min.js"></script>
+    <script src="${singleLevelDivision ? '' : '../'}../report-page.js"></script>
     </body>
     </html>
     `;

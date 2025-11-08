@@ -323,17 +323,18 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 function getNumberAndExtension(numberStr, countryCode) {
     // DIN format has hyphen then 1-4 digits for extensions
     if (countryCode === 'DE') {
-        const DE_EXTENSION_REGEX = /^(.*?)-(\d{1,4})$/
+        const DE_EXTENSION_REGEX = /^(.*?)-([^-]+)$/;
         const match = numberStr.match(DE_EXTENSION_REGEX);
         if (match && match[1] && match[2]) {
             try {
                 const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
+                const extensionDigits = match[2].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
-                if (preHyphenNumber.isValid()) {
+                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 5) {
                     return {
                         coreNumber: match[1].trim(),
-                        extension: match[2].trim(),
+                        extension: extensionDigits,
                     }
                 }
             } catch (e) {
@@ -365,6 +366,10 @@ function getFormattedNumber(phoneNumber, countryCode) {
     const extension = phoneNumber.ext ?
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
+
+    if (phoneNumber.getType() === 'TOLL_FREE') {
+        return phoneNumber.format('NATIONAL') + extension;
+    }
 
     if (countryCode === 'US') {
         // Use dashes as separator, but space after country code
@@ -456,7 +461,14 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            isInvalid = isInvalid || normalizedOriginal !== normalizedParsed || isPolishPrefixed;
+            let numbersMatch = false;
+            if (phoneNumber.getType() === 'TOLL_FREE') {
+                const normalizedTollFree = suggestedFix.replace(spacingRegex, '');
+                numbersMatch = normalizedOriginal === normalizedTollFree;
+            }
+            numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
+
+            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed;
 
             if (phoneNumber.ext && hasNonStandardExtension) {
                 isInvalid = true;
@@ -727,7 +739,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                             const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), countryCode, tags, tagToRemove);
                             removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
                         }
-                        if (removedValue) {
+                        if (removedValue && !hasInternalDuplicate) {
                             currentItem.suggestedFixes.set(tagToRemove, removedValue);
                             suggestedFix = removedValue;
                         } else if (!hasInternalDuplicate) {

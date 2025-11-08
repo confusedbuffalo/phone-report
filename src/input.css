@@ -118,7 +118,7 @@
 }
 
 @utility label-number-problem {
-  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50 sm:ml-2 mt-1 mb-1 sm:mt-0 sm:mb-0;
+  @apply bg-yellow-200 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-50 ml-2 mt-1 mb-1;
 }
 
 @utility label-disused {
@@ -433,15 +433,15 @@
 }
 
 @utility diff-added {
-  @apply bg-green-200 dark:bg-green-900 rounded-md;
+  @apply bg-green-200 dark:bg-green-900 rounded-sm;
 }
 
 @utility diff-removed {
-  @apply bg-red-200 dark:bg-red-900 rounded-md leading-none;
+  @apply bg-red-200 dark:bg-red-900 rounded-sm;
 }
 
 @utility diff-unchanged {
-  @apply bg-transparent;
+  @apply bg-transparent rounded-sm;
 }
 
 @utility action-row {
@@ -471,9 +471,7 @@
 }
 
 @utility list-item-old-value {
-  @apply flex items-start flex-col;
-
-  @apply sm:block sm:items-center sm:flex-row;
+  @apply items-center;
 }
 
 .list-item-old-value > span {

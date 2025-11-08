@@ -105,7 +105,7 @@ if (require.main === module) {
 
         for (const countryKey in COUNTRIES) {
             const countryData = COUNTRIES[countryKey];
-            const countryName = escapeHTML(countryData.name);
+            const countryName = escapeHTML(countryKey);
             const locale = countryData.locale;
 
             await generateProgressPage(safeName(countryName), locale)
