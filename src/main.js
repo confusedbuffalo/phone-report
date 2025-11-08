@@ -296,6 +296,10 @@ async function main() {
         console.error('Error copying files:', err);
     }
 
+    if (!fs.existsSync(PUBLIC_DIR)) {
+        fs.mkdirSync(os.path.join(PUBLIC_DIR, 'vendor'));
+    }
+
     fs.copyFileSync(
         path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
         path.join(PUBLIC_DIR, 'vendor', 'osm-api.min.js')
