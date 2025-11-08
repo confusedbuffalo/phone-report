@@ -498,17 +498,6 @@ function sortItems(items, key, direction) {
 }
 
 /**
- * Updates the visual styles of the sort buttons to indicate which one is active.
- */
-function updateButtonStyles() {
-    sortButtons.forEach(button => {
-        const isActive = button.dataset.sort === currentSort;
-        button.classList.toggle('sort-btn-style-active', isActive);
-        button.classList.toggle('sort-btn-style-inactive', !isActive);
-    });
-}
-
-/**
  * Renders a paginated list section with controls.
  * @param {string} containerId - The ID of the HTML element to render into.
  * @param {Array<Object>} items - The full array of items for this section.
@@ -783,6 +772,8 @@ function renderNumbers() {
         `;
     }
     applyEditorVisibility();
+    setUpSaveBtn();
+    setUpUndoRedoBtns();
     firstLoad = false;
 }
 
@@ -901,10 +892,10 @@ function applyEditsToFeatureTags(feature, elementEdits) {
 
 function moveEditsToUploadedStorage() {
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
-
     let uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+
     if (uploadedChanges && uploadedChanges[subdivisionName]) {
-        for (const type in uploadedChanges[subdivisionName]) {
+        for (const type in edits[subdivisionName]) {
             uploadedChanges[subdivisionName][type] = {
                 ...edits[subdivisionName][type] || {},
                 ...uploadedChanges[subdivisionName][type]
@@ -937,19 +928,15 @@ async function uploadChanges() {
             const featureIds = Object.keys(editsForType);
 
             if (featureIds.length > 0) {
-                try {
-                    const features = await OSM.getFeatures(type, featureIds);
-                    for (const feature of features) {
-                        const originalTags = { ...feature.tags }
-                        applyEditsToFeatureTags(feature, editsForType[feature.id])
-                        if (
-                            JSON.stringify(originalTags, Object.keys(originalTags).sort()) !== JSON.stringify(feature.tags, Object.keys(feature.tags).sort())
-                        ) {
-                            modifications.push(feature);
-                        }
+                const features = await OSM.getFeatures(type, featureIds);
+                for (const feature of features) {
+                    const originalTags = { ...feature.tags }
+                    applyEditsToFeatureTags(feature, editsForType[feature.id])
+                    if (
+                        JSON.stringify(originalTags, Object.keys(originalTags).sort()) !== JSON.stringify(feature.tags, Object.keys(feature.tags).sort())
+                    ) {
+                        modifications.push(feature);
                     }
-                } catch (error) {
-                    console.error(`Error fetching or processing ${type} features:`, error);
                 }
             }
         }
@@ -1130,11 +1117,18 @@ function openUploadModal() {
 
     uploadModalTitle.innerHTML = translate('uploadChanges', { '%n': totalChanges });
 
-    if (commentBox) {
-        commentBox.disabled = false;
-        commentBox.classList.remove('cursor-not-allowed');
-        commentBox.value = `${subdivisionName}: ` + CHANGESET_TAGS['comment'];
-    }
+    // Reset buttons etc. in case of previous upload in this session
+    uploadBtn.classList.add('cursor-pointer');
+    uploadBtn.classList.remove('cursor-progress');
+    uploadBtn.disabled = false;
+    uploadBtn.classList.remove('hidden');
+    uploadCancelBtn.classList.remove('hidden');
+    uploadCloseBtnBottom.classList.add('hidden');
+
+    commentBox.disabled = false;
+    commentBox.classList.remove('cursor-not-allowed');
+    commentBox.value = `${subdivisionName}: ` + CHANGESET_TAGS['comment'];
+
     uploadModal.classList.remove('hidden');
     setTimeout(() => {
         uploadModal.classList.add('active');
@@ -1245,12 +1239,11 @@ function checkAndSubmit() {
 
         disableModalCloseListeners();
 
-        uploadBtn.innerHTML = 'Uploading';
         uploadBtn.classList.remove('cursor-pointer');
         uploadBtn.classList.add('cursor-progress');
         uploadBtn.disabled = true;
-
         uploadCancelBtn.classList.add('hidden');
+
         commentBox.disabled = true;
         commentBox.classList.add('cursor-not-allowed');
         toggleUploadingSpinner(true);
@@ -1271,12 +1264,14 @@ function checkAndSubmit() {
                 toggleUploadingSpinner(false);
                 uploadBtn.classList.add('hidden');
                 uploadCloseBtnBottom.classList.remove('hidden');
+                // Re-render numbers to hide uploaded elements
+                renderNumbers();
                 enableModalCloseListeners();
                 setUpSaveBtn();
             })
             .catch((err) => {
                 toggleUploadingSpinner(false);
-                uploadBtn.innerHTML = 'Upload';
+                uploadBtn.innerHTML = translate('upload');
                 uploadBtn.disabled = false;
                 uploadBtn.classList.add('cursor-pointer');
                 uploadBtn.classList.remove('cursor-progress');
@@ -1310,6 +1305,19 @@ function setUpSaveBtn() {
     } else {
         disableSave();
         saveBtn.innerText = `Save`;
+    }
+}
+
+function setUpUndoRedoBtns() {
+    if (undoPosition === 0) {
+        disableUndo();
+    } else {
+        enableRedo();
+    }
+    if (undoPosition < undoStack.length) {
+        enableRedo();
+    } else {
+        disableRedo();
     }
 }
 
