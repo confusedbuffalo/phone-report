@@ -701,10 +701,10 @@ function renderNumbers() {
     const invalidContainer = document.getElementById("invalidSection");
     const noInvalidContainer = document.getElementById("noInvalidSection");
 
-    const edits = JSON.parse(localStorage.getItem('edits'));
+    const edits = JSON.parse(localStorage.getItem('edits')) || {};
 
     let count = 0;
-    if (edits[subdivisionName]) {
+    if (edits && edits[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
             count += Object.keys(edits[subdivisionName][type]).length;
         }
@@ -1294,7 +1294,7 @@ function setUpSaveBtn() {
     const saveBtn = document.getElementById('save-btn');
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
     let count = 0;
-    if (edits[subdivisionName]) {
+    if (edits && edits[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
             count += Object.keys(edits[subdivisionName][type]).length;
         }
