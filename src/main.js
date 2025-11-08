@@ -297,7 +297,7 @@ async function main() {
     }
 
     if (!fs.existsSync(PUBLIC_DIR)) {
-        fs.mkdirSync(os.path.join(PUBLIC_DIR, 'vendor'));
+        fs.mkdirSync(path.join(PUBLIC_DIR, 'vendor'));
     }
 
     fs.copyFileSync(
