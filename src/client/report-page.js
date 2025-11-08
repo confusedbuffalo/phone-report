@@ -1120,6 +1120,7 @@ function openUploadModal() {
     // Reset buttons etc. in case of previous upload in this session
     uploadBtn.classList.add('cursor-pointer');
     uploadBtn.classList.remove('cursor-progress');
+    uploadBtn.classList.remove('cursor-not-allowed');
     uploadBtn.disabled = false;
     uploadBtn.classList.remove('hidden');
     uploadCancelBtn.classList.remove('hidden');
@@ -1128,6 +1129,17 @@ function openUploadModal() {
     commentBox.disabled = false;
     commentBox.classList.remove('cursor-not-allowed');
     commentBox.value = `${subdivisionName}: ` + CHANGESET_TAGS['comment'];
+
+    if (!OSM.isLoggedIn()) {
+        uploadBtn.disabled = true;
+        uploadBtn.classList.add('cursor-not-allowed');
+        uploadBtn.classList.remove('cursor-pointer');
+
+        const messageBox = document.getElementById('message-box');
+        messageBox.className = 'message-box-error';
+        messageBox.innerHTML = translate('notLoggedIn');
+        messageBox.classList.remove('hidden');
+    }
 
     uploadModal.classList.remove('hidden');
     setTimeout(() => {

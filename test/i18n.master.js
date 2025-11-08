@@ -52,6 +52,7 @@ const MASTER_KEYS = {
     "applyFix": [],
     "enterComment": [],
     "noChangesSubmitted": [],
+    "notLoggedIn": [],
 
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
