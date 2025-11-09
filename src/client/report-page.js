@@ -1276,10 +1276,10 @@ function checkAndSubmit() {
                 toggleUploadingSpinner(false);
                 uploadBtn.classList.add('hidden');
                 uploadCloseBtnBottom.classList.remove('hidden');
+
                 // Re-render numbers to hide uploaded elements
                 renderNumbers();
                 enableModalCloseListeners();
-                setUpSaveBtn();
             })
             .catch((err) => {
                 toggleUploadingSpinner(false);
@@ -1304,6 +1304,7 @@ function checkAndSubmit() {
 
 function setUpSaveBtn() {
     const saveBtn = document.getElementById('save-btn');
+    if (!saveBtn) return;
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
     let count = 0;
     if (edits && edits[subdivisionName]) {
