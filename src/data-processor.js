@@ -368,7 +368,17 @@ function getFormattedNumber(phoneNumber, countryCode) {
         : '';
 
     if (phoneNumber.getType() === 'TOLL_FREE') {
-        return phoneNumber.format('NATIONAL') + extension;
+        if (countryCode === 'US') {
+            let nationalNumberFormatted = phoneNumber.format('NATIONAL');
+            nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
+            nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
+
+            // National number has extension in it for US
+            nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
+            return nationalNumberFormatted;
+        } else {
+            return phoneNumber.format('NATIONAL');
+        }
     }
 
     if (countryCode === 'US') {
