@@ -198,6 +198,20 @@ describe('getNumberAndExtension', () => {
             });
         });
 
+        test('should correctly parse a 4-digit DIN extension with en dash', () => {
+            expect(getNumberAndExtension('+49 489 1234–4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
+        test('should correctly parse a 4-digit DIN extension with em dash', () => {
+            expect(getNumberAndExtension('+49 489 1234—4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
         test('should correctly parse a 4-digit DIN extension with spaces around hyphen', () => {
             expect(getNumberAndExtension('+49 489 1234 - 4321', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
@@ -514,6 +528,13 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('0800 001234');
+    });
+
+    test('GB: a number with tabs is invalid but fixable', () => {
+        const result = processSingleNumber('+44 20\t7946\t0000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
     });
 
     // --- ZA Tests (Johannesburg number: 011 555 1234) ---

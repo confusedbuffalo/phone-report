@@ -5,6 +5,11 @@ let fixableSortKey = 'none'; // 'name', 'invalid', 'fixable'
 let fixableSortDirection = 'asc'; // 'asc', 'desc'
 let invalidSortKey = 'none'; // 'name', 'invalid'
 let invalidSortDirection = 'asc'; // 'asc', 'desc'
+
+/**
+ * Global variable storing the last loaded report data.
+ * @type {Array<Object>|null}
+ */
 let reportData = null;
 
 const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
@@ -35,34 +40,6 @@ function clearItemClick(itemId) {
         localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
     } catch (e) {
         console.error("Could not save clicked item to localStorage:", e);
-    }
-}
-
-/**
- * Resets the list item, to reset the clicked style of the buttons
- * @param {string} osmType - The OSM type of the item (e.g., "node", "way", "relation"
- * @param {number} osmId - The OSM id of the item (e.g. 12345).
- */
-function resetListItem(osmType, osmId) {
-    const item = reportData.find(item => {
-        return item.id === osmId && item.type === osmType;
-    });
-    if (!item) {
-        console.log(`Could not find ${osmType}/${osmId}`);
-        return;
-    }
-    const listItemId = `${osmType}/${osmId}`;
-    const oldListItem = document.querySelector(`li[data-item-id="${listItemId}"]`);
-
-    if (oldListItem) {
-        const newListItemHtmlString = createListItem(item);
-
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = newListItemHtmlString.trim();
-        const newListItem = tempDiv.firstChild;
-
-        oldListItem.replaceWith(newListItem);
-        applyEditorVisibility();
     }
 }
 
@@ -308,13 +285,14 @@ function createDetailsGrid(item) {
 /**
  * Creates the website and editor buttons for a single invalid number item.
  * @param {Object} item - The invalid number data item.
+ * @param {string} clickedClass - A class string to apply if the item has been clicked (e.g., 'btn-clicked').
  * @returns {{
- * websiteButton: Element,
- * fixableLabel: Element,
- * josmFixButton: Element,
- * fixButton: Element,
- * editorButtons: Element[]
- * }}
+ * websiteButton: string,
+ * fixableLabel: string,
+ * josmFixButton: string,
+ * fixButton: string,
+ * editorButtons: string
+ * }} An object containing the HTML strings for all generated buttons.
  */
 function createButtons(item, clickedClass) {
 
@@ -345,7 +323,7 @@ function createButtons(item, clickedClass) {
     }).join('\n');
 
     const fixButton = item.autoFixable ?
-        `<button onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); saveChangeToStorage('${item.type}', ${item.id})"
+        `<button onclick="applyFix('${item.type}', ${item.id})"
         data-editor-id="apply-fix"
         class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
         ${translate('applyFix')}
@@ -374,7 +352,7 @@ function createButtons(item, clickedClass) {
 /**
  * Creates the HTML content for a single invalid number item.
  * @param {Object} item - The invalid number data item.
- * @returns {string}
+ * @returns {string} The full HTML string for the list item element.
  */
 function createListItem(item) {
 
@@ -519,6 +497,12 @@ function renderPaginatedSection(
     const totalItems = items.length;
     const totalPages = Math.ceil(totalItems / pageSize);
 
+    // e.g. when uploading, there could be fewer pages than there were
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+        setCurrentPageFn(totalPages);
+    }
+
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalItems);
 
@@ -605,7 +589,7 @@ function renderPaginatedSection(
             <p class="section-description">${descriptionStr}</p>
         </div>
         ${paginationSortCard}
-        <ul class="report-list mt-4">
+        <ul class="report-list mt-4" id="${isFixableSection ? 'report-list-fixable' : 'report-list-invalid'}">
             ${totalItems > 0 ? listContent : ''}
         </ul>
     `;
@@ -683,6 +667,35 @@ function handleSort(section, newKey) {
     document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
 }
 
+/**
+ * Retrieves the subset of report items (either autofixable or manual fix)
+ * that have not been marked as edited or uploaded, and applies the current
+ * section-specific sorting parameters.
+ *
+ * @param {boolean} fixable - True to get autofixable items, false for manual fix items.
+ * @returns {Array<Object>} A new, sorted array of items for the specified section.
+ */
+function getSortedItems(fixable) {
+    const edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+
+    const targetItems = reportData.filter(item => {
+        const isWanted = fixable ? item.autoFixable : !item.autoFixable;
+        const isNotInUploadedChanges = !(
+            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
+        );
+        const isNotInCurrentEdits = !(
+            edits?.[subdivisionName]?.[item.type]?.[item.id]
+        );
+        return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
+    });
+
+    const sortKey = fixable ? fixableSortKey : invalidSortKey;
+    const sortDirection = fixable ? fixableSortDirection : invalidSortDirection;
+    const sortedItems = sortItems(targetItems, sortKey, sortDirection);
+    return sortedItems;
+}
+
 let firstLoad = true;
 
 /**
@@ -703,46 +716,34 @@ function renderNumbers() {
 
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
 
-    let count = 0;
+    let editCount = 0;
     if (edits && edits[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
-            count += Object.keys(edits[subdivisionName][type]).length;
+            editCount += Object.keys(edits[subdivisionName][type]).length;
         }
     }
-    if (firstLoad && count > 0) {
-        openEditsModal(count);
+    if (firstLoad) {
+        if (editCount > 0) {
+            openEditsModal(editCount);
+        } else {
+            undoPosition = 0;
+            undoStack = [];
+        }
     }
 
-    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+    const sortedFixable = getSortedItems(true);
+    const sortedInvalid = getSortedItems(false);
 
-    const autofixableNumbers = reportData.filter(item => {
-        const isAutoFixable = item.autoFixable;
-        const isNotInUploadedChanges = !(
-            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
-        );
-        return isAutoFixable && isNotInUploadedChanges;
-    });
-    const manualFixNumbers = reportData.filter(item => {
-        const notAutoFixable = !item.autoFixable;
-        const isNotInUploadedChanges = !(
-            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
-        );
-        return notAutoFixable && isNotInUploadedChanges;
-    });
-
-    const anyInvalid = manualFixNumbers.length > 0;
-    const anyFixable = autofixableNumbers.length > 0;
-
-    const sortedFixable = sortItems(autofixableNumbers, fixableSortKey, fixableSortDirection);
-    const sortedInvalid = sortItems(manualFixNumbers, invalidSortKey, invalidSortDirection);
+    const anyInvalid = sortedInvalid.length > 0;
+    const anyFixable = sortedFixable.length > 0;
 
     // Clear all containers first
     fixableContainer.innerHTML = '';
     invalidContainer.innerHTML = '';
     noInvalidContainer.innerHTML = '';
 
-    if (anyFixable || anyInvalid) {
-        if (anyFixable) {
+    if (anyFixable || anyInvalid || editCount > 0) {
+        if (anyFixable || editCount > 0) {
             renderPaginatedSection(
                 "fixableSection",
                 sortedFixable,
@@ -778,7 +779,11 @@ function renderNumbers() {
 }
 
 /**
- * Initializes the report page by fetching the data and rendering the numbers.
+ * Initializes the report page by fetching the report data from the defined
+ * path and then triggering the main rendering function. Displays an error
+ * if data loading fails.
+ * @async
+ * @returns {void}
  */
 async function initReportPage() {
     try {
@@ -802,10 +807,16 @@ async function initReportPage() {
 // OSM editing
 
 const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
-let undoStack = [];
-let undoPosition = 0;
+let undoStack = JSON.parse(localStorage.getItem(`undoStack_${subdivisionName}`)) ?? [];
+let undoPosition = localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0;
 const uploadSpinner = document.getElementById('upload-spinner');
 
+/**
+ * Initiates the OAuth 2.0 login flow with the OpenStreetMap (OSM) API.
+ * Uses a popup mode and requests specific scopes (write_api, read_prefs, write_notes).
+ * Upon successful login, it calls initLogin. Displays an error on failure.
+ * @returns {void}
+ */
 function login() {
     const errorDiv = document.querySelector("#error-div");
     errorDiv.innerText = "";
@@ -824,12 +835,23 @@ function login() {
         });
 }
 
+/**
+ * Logs the user out of the OSM API and clears the local storage of the display name.
+ * Triggers re-initialization of the login state.
+ * @returns {void}
+ */
 function logout() {
     OSM.logout();
     localStorage.removeItem('osm_display_name');
     initLogin();
 }
 
+/**
+ * Fetches the currently logged-in OSM user's details and updates the logout button text
+ * to include the user's display name. Stores the display name in localStorage.
+ * Handles errors if the user is not logged in or the request fails.
+ * @returns {void}
+ */
 function getUser() {
     const logoutBtn = document.getElementById("logout-btn");
     const errorDiv = document.getElementById("error-div");
@@ -852,6 +874,11 @@ function getUser() {
         });
 }
 
+/**
+ * Checks the OSM login status and updates the visibility and text of the
+ * login and logout buttons accordingly. Calls getUser if logged in.
+ * @returns {void}
+ */
 function initLogin() {
     if (OSM.isLoggedIn()) {
         document.getElementById("logout-btn").hidden = false;
@@ -864,11 +891,13 @@ function initLogin() {
 }
 
 /**
- * Applies edits to a feature's tags object.
- * If an edit value is null, the corresponding key is removed from feature.tags.
+ * Applies a set of tag edits (key-value pairs) to an OSM feature's 'tags' object.
+ * If an edit value is explicitly set to null, the corresponding tag key is deleted
+ * from the feature's tags.
  *
- * @param {object} feature The feature object containing the 'tags' object.
- * @param {object} elementEdits The object of key-value edits to apply.
+ * @param {object} feature - The feature object (node, way, or relation) containing the 'tags' object.
+ * @param {object} elementEdits - The object of key-value edits to apply. A value of null indicates a deletion.
+ * @returns {void}
  */
 function applyEditsToFeatureTags(feature, elementEdits) {
     if (!feature.tags || typeof feature.tags !== 'object') {
@@ -890,6 +919,13 @@ function applyEditsToFeatureTags(feature, elementEdits) {
     }
 }
 
+/**
+ * Moves the currently saved local edits for the current subdivision from the
+ * 'edits' localStorage key to the 'uploaded' localStorage key, and then clears
+ * the edits for the subdivision from the 'edits' key.
+ * This function is called after a successful OSM upload.
+ * @returns {void}
+ */
 function moveEditsToUploadedStorage() {
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
     let uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
@@ -913,6 +949,14 @@ function moveEditsToUploadedStorage() {
     localStorage.setItem('edits', JSON.stringify(edits));
 }
 
+/**
+ * Asynchronously uploads the local edits for the current subdivision to OpenStreetMap
+ * as a single changeset. It fetches the latest feature data, applies the local
+ * edits, checks for actual tag changes, and then calls the OSM API to upload.
+ *
+ * @async
+ * @returns {Promise<number|undefined>} A promise that resolves with the new changeset ID if modifications were uploaded, or undefined if no modifications were submitted.
+ */
 async function uploadChanges() {
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
 
@@ -966,48 +1010,90 @@ const editsKeepBtn = document.getElementById('edits-modal-keep-btn');
 const editsModal = document.getElementById('edits-modal-overlay');
 const editsModalTitle = document.getElementById('edits-modal-title');
 
+/**
+ * Enables the 'Save' button by changing its styling and setting its disabled property to false.
+ * @returns {void}
+ */
 function enableSave() {
     const saveBtn = document.getElementById('save-btn');
     enableGrayBtn(saveBtn);
 }
 
+/**
+ * Disables the 'Save' button by changing its styling and setting its disabled property to true.
+ * @returns {void}
+ */
 function disableSave() {
     const saveBtn = document.getElementById('save-btn');
     if (saveBtn) { disableGrayBtn(saveBtn) };
 }
 
+/**
+ * Enables the 'Undo' button by changing its styling and setting its disabled property to false.
+ * @returns {void}
+ */
 function enableUndo() {
     const undoBtn = document.getElementById('undo-btn');
     if (undoBtn) { enableGrayBtn(undoBtn) };
 }
 
+/**
+ * Disables the 'Undo' button by changing its styling and setting its disabled property to true.
+ * @returns {void}
+ */
 function disableUndo() {
     const undoBtn = document.getElementById('undo-btn');
     if (undoBtn) { disableGrayBtn(undoBtn) };
 }
 
+/**
+ * Enables the 'Redo' button by changing its styling and setting its disabled property to false.
+ * @returns {void}
+ */
 function enableRedo() {
     const redoBtn = document.getElementById('redo-btn');
     if (redoBtn) { enableGrayBtn(redoBtn) };
 }
 
+/**
+ * Disables the 'Redo' button by changing its styling and setting its disabled property to true.
+ * @returns {void}
+ */
 function disableRedo() {
     const redoBtn = document.getElementById('redo-btn');
     if (redoBtn) { disableGrayBtn(redoBtn) };
 }
 
+/**
+ * Applies the disabled visual and functional state to a gray-style button element.
+ * @param {HTMLElement} selector - The button element to disable.
+ * @returns {void}
+ */
 function disableGrayBtn(selector) {
     selector.classList.remove('gray-btn-enabled');
     selector.classList.add('gray-btn-disabled')
     selector.disabled = true;
 }
 
+/**
+ * Applies the enabled visual and functional state to a gray-style button element.
+ * @param {HTMLElement} selector - The button element to enable.
+ * @returns {void}
+ */
 function enableGrayBtn(selector) {
     selector.classList.remove('gray-btn-disabled');
     selector.classList.add('gray-btn-enabled')
     selector.disabled = false;
 }
 
+/**
+ * Saves a proposed fix for an OpenStreetMap element to the local 'edits' storage.
+ * It also marks the item as 'clicked' and adds the action to the undo stack.
+ *
+ * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {void}
+ */
 function saveChangeToStorage(osmType, osmId) {
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
     if (!edits[subdivisionName]) {
@@ -1028,6 +1114,167 @@ function saveChangeToStorage(osmType, osmId) {
     setUpSaveBtn();
 }
 
+/**
+ * Animates the insertion of a new list item by smoothly transitioning its
+ * `max-height` and `opacity` from a collapsed state.
+ * @param {HTMLElement} newListItem - The list item DOM element to animate.
+ * @returns {void}
+ */
+function animateInItem(newListItem) {
+    window.requestAnimationFrame(() => {
+        const contentHeight = newListItem.scrollHeight;
+
+        window.requestAnimationFrame(() => {
+            newListItem.style.maxHeight = `${contentHeight + 100}px`;
+            newListItem.style.opacity = '1';
+            newListItem.classList.remove('fade-in-start');
+
+            newListItem.addEventListener('transitionend', function handler(e) {
+                if (e.propertyName === 'max-height') {
+                    if (newListItem.style.maxHeight) {
+                        newListItem.style.maxHeight = null;
+                        renderNumbers();
+                    }
+                    if (newListItem.style.opacity) {
+                        newListItem.style.opacity = null;
+                    }
+
+                    newListItem.removeEventListener('transitionend', handler);
+                }
+            });
+        });
+    });
+}
+
+/**
+ * Finds a report item in the currently sorted list for a given section (fixable/invalid)
+ * and returns the item object along with its current index in the sorted array.
+ *
+ * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @param {boolean} fixable - True to search the fixable section, false for the invalid section.
+ * @returns {{item: Object, index: number}|void} An object containing the item and its index, or void if not found.
+ */
+function getItemWithIndex(osmType, osmId, fixable) {
+    const sortedItems = getSortedItems(fixable);
+    const targetItem = sortedItems.filter(item => {
+        return item.type === osmType && item.id === osmId;
+    });
+    if (targetItem.length !== 1) {
+        console.log('No item or too many items found');
+        return
+    }
+    item = targetItem[0];
+    return {
+        'item': item,
+        'index': sortedItems.indexOf(item),
+    };
+}
+
+/**
+ * Inserts a newly "undone" item back into the fixable report list with a
+ * transition animation, maintaining the current sort order.
+ *
+ * @param {string} osmType - The OpenStreetMap element type.
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {void}
+ */
+function transitionInsertItem(osmType, osmId) {
+    const sortedItems = getSortedItems(true);
+    const { item: newItem, index } = getItemWithIndex(osmType, osmId, true);
+
+    const newListItemHtmlString = createListItem(newItem);
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = newListItemHtmlString.trim();
+    const newListItem = tempDiv.firstChild;
+
+    newListItem.classList.add('fade-in-start');
+    const reportList = document.getElementById('report-list-fixable');
+
+    if (index === sortedItems.length - 1) {
+        // End of the list
+        reportList.appendChild(newListItem);
+        applyEditorVisibility();
+        animateInItem(newListItem);
+    } else if (index >= 0) {
+        console.log(index)
+        // Find which item to put it before
+        const nextItem = sortedItems.at(index + 1);
+        const nextListItem = document.querySelector(`li[data-item-id="${nextItem.type}/${nextItem.id}"]`);
+
+        if (!nextListItem) {
+            // Change is happening on a different page
+            renderNumbers();
+            return
+        }
+
+        nextListItem.insertAdjacentElement('beforebegin', newListItem);
+        applyEditorVisibility();
+
+        animateInItem(newListItem);
+    } else {
+        console.error('Target item to insert not found')
+    }
+}
+
+/**
+ * Initiates the transition animation for removing a list item (e.g., when a fix is applied or redone).
+ * The item collapses and slides out before a full re-render is triggered.
+ *
+ * @param {string} osmType - The OpenStreetMap element type.
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {void}
+ */
+function transitionRemoveItem(osmType, osmId) {
+    const listItem = document.querySelector(`li[data-item-id="${osmType}/${osmId}"]`);
+
+    if (listItem) {
+        listItem.style.maxHeight = `${listItem.scrollHeight}px`;
+        const transitionHandler = function (e) {
+            if (e.propertyName === 'max-height') {
+                renderNumbers();
+                listItem.removeEventListener('transitionend', transitionHandler);
+            }
+        };
+        window.requestAnimationFrame(() => {
+            listItem.style.maxHeight = `${listItem.scrollHeight + 100}px`;
+
+            window.requestAnimationFrame(() => {
+                listItem.addEventListener('transitionend', transitionHandler);
+                listItem.classList.add('fade-out-slide-up');
+            });
+        });
+    } else {
+        renderNumbers();
+    }
+}
+
+/**
+ * Handles the application of an autofix. It records the item as clicked,
+ * saves the change to local storage, and initiates the visual removal transition.
+ *
+ * @param {string} osmType - The OpenStreetMap element type.
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {void}
+ */
+function applyFix(osmType, osmId) {
+    const itemIdTypeStr = `${osmType}/${osmId}`;
+
+    recordItemClick(itemIdTypeStr);
+    setButtonsAsClicked(itemIdTypeStr);
+    saveChangeToStorage(osmType, osmId);
+    transitionRemoveItem(osmType, osmId);
+}
+
+/**
+ * Adds a fixed item's ID and type to the local undo stack and updates the
+ * `undoPosition`. It also enables the Undo button and updates the Save button state.
+ *
+ * @param {string} osmType - The OpenStreetMap element type.
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {void}
+ */
 function addToUndo(osmType, osmId) {
     const undoBtn = document.getElementById('undo-btn');
     if (undoStack.length !== undoPosition) {
@@ -1042,8 +1289,16 @@ function addToUndo(osmType, osmId) {
         enableSave();
     }
     disableRedo();
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
 }
 
+/**
+ * Undoes the last recorded change by moving the undo position back,
+ * removing the edit from local storage, and transitioning the item back
+ * into the fixable list section. Updates button states (Undo/Redo/Save).
+ * @returns {void}
+ */
 function undoChange() {
     if (undoPosition === 0) {
         return
@@ -1065,11 +1320,20 @@ function undoChange() {
     delete edits[subdivisionName][osmType][osmId];
     clearItemClick(`${osmType}/${osmId}`);
 
-    resetListItem(osmType, osmId);
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
+
+    transitionInsertItem(osmType, osmId);
 }
 
+/**
+ * Redoes the last undone change by moving the undo position forward,
+ * re-applying the fix to local storage, and transitioning the item out
+ * of the fixable list section. Updates button states (Undo/Redo/Save).
+ * @returns {void}
+ */
 function redoChange() {
     if (undoPosition === undoStack.length) {
         return
@@ -1089,19 +1353,20 @@ function redoChange() {
     recordItemClick(`${osmType}/${osmId}`);
 
     undoPosition += 1;
-    if (undoPosition === undoStack.length) {
-        disableRedo();
-    }
-    const undoBtn = document.getElementById('undo-btn');
-    if (undoBtn.disabled) {
-        enableUndo();
-    }
+    setUpUndoRedoBtns();
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
 
-    resetListItem(osmType, osmId);
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
+    transitionRemoveItem(osmType, osmId);
 }
 
+/**
+ * Displays the modal window for uploading changes, calculates the total
+ * number of pending changes, and checks if the user is logged into OSM.
+ * @returns {void}
+ */
 function openUploadModal() {
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
     let totalChanges = 0;
@@ -1147,6 +1412,10 @@ function openUploadModal() {
     }, 10);
 }
 
+/**
+ * Hides the upload modal window with a brief transition and clears any displayed messages.
+ * @returns {void}
+ */
 function closeUploadModal() {
     const messageBox = document.getElementById('message-box');
     uploadModal.classList.remove('active');
@@ -1156,6 +1425,12 @@ function closeUploadModal() {
     }, 300);
 }
 
+/**
+ * Displays the modal window prompting the user to restore or discard
+ * previously saved local edits upon initial page load.
+ * @param {number} count - The number of pending edits found in local storage.
+ * @returns {void}
+ */
 function openEditsModal(count) {
     editsModalTitle.innerHTML = translate('restoreChanges', { '%n': count });
 
@@ -1165,6 +1440,10 @@ function openEditsModal(count) {
     }, 10);
 }
 
+/**
+ * Hides the edits restoration modal with a brief transition.
+ * @returns {void}
+ */
 function closeEditsModal() {
     setUpSaveBtn();
     editsModal.classList.remove('active');
@@ -1173,6 +1452,11 @@ function closeEditsModal() {
     }, 300);
 }
 
+/**
+ * Permanently discards all locally saved edits for the current subdivision,
+ * clears the undo/redo stack, and updates the UI to reflect no pending changes.
+ * @returns {void}
+ */
 function discardEdits() {
     let edits = JSON.parse(localStorage.getItem('edits'));
     if (edits[subdivisionName]) {
@@ -1180,13 +1464,22 @@ function discardEdits() {
             for (const osmIdStr in edits[subdivisionName][osmType]) {
                 const osmId = parseInt(osmIdStr, 10);
                 clearItemClick(`${osmType}/${osmId}`);
-                resetListItem(osmType, osmId);
             }
         }
+
         delete edits[subdivisionName];
         localStorage.setItem('edits', JSON.stringify(edits));
+
+        localStorage.removeItem(`undoPosition_${subdivisionName}`);
+        localStorage.removeItem(`undoStack_${subdivisionName}`);
+
+        undoPosition = 0;
+        undoStack = [];
+
         setUpSaveBtn();
+        setUpUndoRedoBtns();
         closeEditsModal();
+        renderNumbers();
     }
 }
 
@@ -1208,11 +1501,20 @@ const handleDocumentKeydown = (event) => {
     }
 };
 
+/**
+ * Adds event listeners to enable closing the modals by clicking outside the content
+ * (for the upload modal) or pressing the 'Escape' key (for both modals).
+ * @returns {void}
+ */
 function enableModalCloseListeners() {
     uploadModal.addEventListener('click', handleUploadModalClick);
     document.addEventListener('keydown', handleDocumentKeydown);
 }
 
+/**
+ * Removes the event listeners used for closing modals, typically called during an upload process.
+ * @returns {void}
+ */
 function disableModalCloseListeners() {
     uploadModal.removeEventListener('click', handleUploadModalClick);
     document.removeEventListener('keydown', handleDocumentKeydown);
@@ -1233,6 +1535,11 @@ commentBox.addEventListener('keydown', (event) => {
     }
 });
 
+/**
+ * Toggles the visibility of the upload spinner element.
+ * @param {boolean} isLoading - True to show the spinner, false to hide it.
+ * @returns {void}
+ */
 function toggleUploadingSpinner(isLoading) {
     if (isLoading) {
         uploadSpinner.classList.remove('hidden');
@@ -1241,6 +1548,12 @@ function toggleUploadingSpinner(isLoading) {
     }
 }
 
+/**
+ * Validates the changeset comment, initiates the upload process if valid,
+ * and handles the UI state (disabling/enabling buttons, showing messages/spinner)
+ * before, during, and after the upload or error.
+ * @returns {void}
+ */
 function checkAndSubmit() {
     const commentBox = document.getElementById('changesetComment')
     const comment = commentBox.value.trim();
@@ -1277,6 +1590,9 @@ function checkAndSubmit() {
                 uploadBtn.classList.add('hidden');
                 uploadCloseBtnBottom.classList.remove('hidden');
 
+                undoPosition = 0;
+                undoStack = [];
+
                 // Re-render numbers to hide uploaded elements
                 renderNumbers();
                 enableModalCloseListeners();
@@ -1302,6 +1618,11 @@ function checkAndSubmit() {
     }
 }
 
+/**
+ * Updates the 'Save' button text and state (enabled/disabled) based on
+ * the current count of pending local edits in the 'edits' storage.
+ * @returns {void}
+ */
 function setUpSaveBtn() {
     const saveBtn = document.getElementById('save-btn');
     if (!saveBtn) return;
@@ -1321,11 +1642,16 @@ function setUpSaveBtn() {
     }
 }
 
+/**
+ * Sets the disabled/enabled state of the 'Undo' and 'Redo' buttons based
+ * on the current state of the `undoPosition` and `undoStack`.
+ * @returns {void}
+ */
 function setUpUndoRedoBtns() {
     if (undoPosition === 0) {
         disableUndo();
     } else {
-        enableRedo();
+        enableUndo();
     }
     if (undoPosition < undoStack.length) {
         enableRedo();

@@ -323,7 +323,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 function getNumberAndExtension(numberStr, countryCode) {
     // DIN format has hyphen then 1-4 digits for extensions
     if (countryCode === 'DE') {
-        const DE_EXTENSION_REGEX = /^(.*?)-([^-]+)$/;
+        const DE_EXTENSION_REGEX = /^(.*?)[-–—]([^-]+)$/;
         const match = numberStr.match(DE_EXTENSION_REGEX);
         if (match && match[1] && match[2]) {
             try {
@@ -437,8 +437,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         numberStr = numberStr.slice(1);
         isInvalid = true;
     }
+    if (numberStr.match(/\t/g)) {
+        isInvalid = true;
+    }
 
-    const { coreNumber, extension } = getNumberAndExtension(numberStr, countryCode);
+    const { coreNumber, extension } = getNumberAndExtension(numberStr.replace(/\t/g, " "), countryCode);
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
 
     try {

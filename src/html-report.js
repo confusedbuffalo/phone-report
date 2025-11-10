@@ -202,7 +202,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             fs.createReadStream(tmpFilePath),
             parser(),
             streamArray(),
-            new ItemTransformer(createClientItems, { locale: locale }),
+            new ItemTransformer(item => createClientItems(item, locale), {}),
             disassembler(),
             stringer(stringerOptions),
             fs.createWriteStream(dataFilePath)
@@ -303,8 +303,8 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                     </a>
                     <div class="flex items-center space-x-2 relative">
                         <div id="error-div" class="text-black bg-red-500 rounded-md" hidden></div>
-                        <button id="login-btn" class="btn-squared cursor-pointer text-white bg-blue-500" onclick="login()">${translate('login')}</button>
-                        <button id="logout-btn" class="btn-squared cursor-pointer btn-editor" onclick="logout()" hidden>${translate('logout')}</button>
+                        <button id="login-btn" class="btn-squared cursor-pointer text-white bg-blue-500" onclick="login()">${translate('login', locale)}</button>
+                        <button id="logout-btn" class="btn-squared cursor-pointer btn-editor" onclick="logout()" hidden>${translate('logout', locale)}</button>
                     </div>
                     <div class="flex items-center space-x-2 relative">
                         <button id="settings-toggle" class="settings-button" aria-label="${translate('settings', locale)}">
@@ -322,7 +322,9 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             </header>
             ${createStatsBox(subdivisionStats.totalNumbers, invalidCount, autoFixableCount, locale)}
             <div id="reportContainer" class="space-y-8">
-                <section id="fixableSection" class="space-y-8"></section>
+                <section id="fixableSection" class="space-y-8">
+                    <div class="spinner mx-auto"></div>
+                </section>
                 <section id="invalidSection" class="space-y-8"></section>
                 <section id="noInvalidSection"></section>
             </div>
@@ -343,13 +345,13 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                 <div class="modal-button-container">
                     <div id="upload-spinner" class="hidden spinner mr-4"></div>
                     <button id="close-modal-btn-bottom" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer hidden" onclick="closeUploadModal()">
-                        ${translate('close')}
+                        ${translate('close', locale)}
                     </button>
                     <button id="cancel-modal-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="closeUploadModal()">
-                        ${translate('cancel')}
+                        ${translate('cancel', locale)}
                     </button>
                     <button id="upload-changes-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" onclick="checkAndSubmit()">
-                        ${translate('upload')}
+                        ${translate('upload', locale)}
                     </button>
                 </div>
             </div>
@@ -362,13 +364,13 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                <p class="modal-decription">${translate('restoreUnsavedEdits')}</p>
+                <p class="modal-decription">${translate('restoreUnsavedEdits', locale)}</p>
                 <div class="modal-button-container">
                     <button id="edits-modal-discard-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="discardEdits()">
-                        ${translate('discard')}
+                        ${translate('discard', locale)}
                     </button>
                     <button id="edits-modal-keep-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" onclick="closeEditsModal()">
-                        ${translate('keep')}
+                        ${translate('keep', locale)}
                     </button>
                 </div>
             </div>
