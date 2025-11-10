@@ -322,7 +322,9 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             </header>
             ${createStatsBox(subdivisionStats.totalNumbers, invalidCount, autoFixableCount, locale)}
             <div id="reportContainer" class="space-y-8">
-                <section id="fixableSection" class="space-y-8"></section>
+                <section id="fixableSection" class="space-y-8">
+                    <div class="spinner mx-auto"></div>
+                </section>
                 <section id="invalidSection" class="space-y-8"></section>
                 <section id="noInvalidSection"></section>
             </div>
