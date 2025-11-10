@@ -519,6 +519,11 @@ function renderPaginatedSection(
     const totalItems = items.length;
     const totalPages = Math.ceil(totalItems / pageSize);
 
+    // e.g. when uploading, there could be fewer pages than there were
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+    }
+
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = Math.min(startIndex + pageSize, totalItems);
 
