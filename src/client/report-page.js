@@ -1325,7 +1325,7 @@ function setUpUndoRedoBtns() {
     if (undoPosition === 0) {
         disableUndo();
     } else {
-        enableRedo();
+        enableUndo();
     }
     if (undoPosition < undoStack.length) {
         enableRedo();
