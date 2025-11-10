@@ -323,7 +323,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 function getNumberAndExtension(numberStr, countryCode) {
     // DIN format has hyphen then 1-4 digits for extensions
     if (countryCode === 'DE') {
-        const DE_EXTENSION_REGEX = /^(.*?)-([^-]+)$/;
+        const DE_EXTENSION_REGEX = /^(.*?)[-–—]([^-]+)$/;
         const match = numberStr.match(DE_EXTENSION_REGEX);
         if (match && match[1] && match[2]) {
             try {

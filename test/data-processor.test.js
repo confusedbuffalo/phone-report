@@ -198,6 +198,20 @@ describe('getNumberAndExtension', () => {
             });
         });
 
+        test('should correctly parse a 4-digit DIN extension with en dash', () => {
+            expect(getNumberAndExtension('+49 489 1234–4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
+        test('should correctly parse a 4-digit DIN extension with em dash', () => {
+            expect(getNumberAndExtension('+49 489 1234—4321', countryCode)).toEqual({
+                coreNumber: '+49 489 1234',
+                extension: '4321',
+            });
+        });
+
         test('should correctly parse a 4-digit DIN extension with spaces around hyphen', () => {
             expect(getNumberAndExtension('+49 489 1234 - 4321', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
