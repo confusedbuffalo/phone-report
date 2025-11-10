@@ -437,8 +437,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         numberStr = numberStr.slice(1);
         isInvalid = true;
     }
+    if (numberStr.match(/\t/g)) {
+        isInvalid = true;
+    }
 
-    const { coreNumber, extension } = getNumberAndExtension(numberStr, countryCode);
+    const { coreNumber, extension } = getNumberAndExtension(numberStr.replace(/\t/g, " "), countryCode);
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
 
     try {
