@@ -61,7 +61,44 @@
 }
 
 @utility report-list-item {
-  @apply list-none bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col sm:flex-row justify-between sm:items-center space-y-4 sm:space-y-0 sm:space-x-4;
+  @apply
+    list-none
+    bg-white dark:bg-gray-800
+    rounded-xl shadow-md
+    p-6
+    mb-4
+    flex flex-col sm:flex-row
+    justify-between sm:items-center
+    space-y-4 sm:space-y-0 sm:space-x-4
+    transition-[max-height,opacity,margin,padding] 
+    duration-300
+    ease-in-out
+    max-h-screen opacity-100;
+}
+
+.report-list-item.transition-start {
+  max-height: 300px;
+  opacity: 1;
+  transition: all 300ms ease-in-out;
+}
+
+.report-list-item.fade-out-slide-up {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important; 
+  overflow: hidden;
+}
+
+.report-list-item.fade-in-start {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 @utility subdivision-link-content {
@@ -402,10 +439,6 @@
 
 @utility section-header-container {
   @apply text-center;
-}
-
-@utility report-list {
-  @apply space-y-4;
 }
 
 @utility country-link-content {

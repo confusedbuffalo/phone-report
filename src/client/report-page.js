@@ -39,34 +39,6 @@ function clearItemClick(itemId) {
 }
 
 /**
- * Resets the list item, to reset the clicked style of the buttons
- * @param {string} osmType - The OSM type of the item (e.g., "node", "way", "relation"
- * @param {number} osmId - The OSM id of the item (e.g. 12345).
- */
-function resetListItem(osmType, osmId) {
-    const item = reportData.find(item => {
-        return item.id === osmId && item.type === osmType;
-    });
-    if (!item) {
-        console.log(`Could not find ${osmType}/${osmId}`);
-        return;
-    }
-    const listItemId = `${osmType}/${osmId}`;
-    const oldListItem = document.querySelector(`li[data-item-id="${listItemId}"]`);
-
-    if (oldListItem) {
-        const newListItemHtmlString = createListItem(item);
-
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = newListItemHtmlString.trim();
-        const newListItem = tempDiv.firstChild;
-
-        oldListItem.replaceWith(newListItem);
-        applyEditorVisibility();
-    }
-}
-
-/**
  * Applies the 'clicked' visual state to all buttons of a specific item.
  * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
  */
@@ -345,7 +317,7 @@ function createButtons(item, clickedClass) {
     }).join('\n');
 
     const fixButton = item.autoFixable ?
-        `<button onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); saveChangeToStorage('${item.type}', ${item.id})"
+        `<button onclick="applyFix('${item.type}', ${item.id})"
         data-editor-id="apply-fix"
         class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
         ${translate('applyFix')}
@@ -522,6 +494,7 @@ function renderPaginatedSection(
     // e.g. when uploading, there could be fewer pages than there were
     if (currentPage > totalPages) {
         currentPage = totalPages;
+        setCurrentPageFn(totalPages);
     }
 
     const startIndex = (currentPage - 1) * pageSize;
@@ -610,7 +583,7 @@ function renderPaginatedSection(
             <p class="section-description">${descriptionStr}</p>
         </div>
         ${paginationSortCard}
-        <ul class="report-list mt-4">
+        <ul class="report-list mt-4" id="${isFixableSection ? 'report-list-fixable' : 'report-list-invalid'}">
             ${totalItems > 0 ? listContent : ''}
         </ul>
     `;
@@ -688,6 +661,27 @@ function handleSort(section, newKey) {
     document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
 }
 
+function getSortedItems(fixable) {
+    const edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+
+    const targetItems = reportData.filter(item => {
+        const isWanted = fixable ? item.autoFixable : !item.autoFixable;
+        const isNotInUploadedChanges = !(
+            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
+        );
+        const isNotInCurrentEdits = !(
+            edits?.[subdivisionName]?.[item.type]?.[item.id]
+        );
+        return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
+    });
+
+    const sortKey = fixable ? fixableSortKey : invalidSortKey;
+    const sortDirection = fixable ? fixableSortDirection : invalidSortDirection;
+    const sortedItems = sortItems(targetItems, sortKey, sortDirection);
+    return sortedItems;
+}
+
 let firstLoad = true;
 
 /**
@@ -708,51 +702,34 @@ function renderNumbers() {
 
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
 
-    let count = 0;
+    let editCount = 0;
     if (edits && edits[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
-            count += Object.keys(edits[subdivisionName][type]).length;
+            editCount += Object.keys(edits[subdivisionName][type]).length;
         }
     }
     if (firstLoad) {
-        if (count > 0) {
-            openEditsModal(count);
+        if (editCount > 0) {
+            openEditsModal(editCount);
         } else {
             undoPosition = 0;
             undoStack = [];
         }
     }
 
-    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+    const sortedFixable = getSortedItems(true);
+    const sortedInvalid = getSortedItems(false);
 
-    const autofixableNumbers = reportData.filter(item => {
-        const isAutoFixable = item.autoFixable;
-        const isNotInUploadedChanges = !(
-            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
-        );
-        return isAutoFixable && isNotInUploadedChanges;
-    });
-    const manualFixNumbers = reportData.filter(item => {
-        const notAutoFixable = !item.autoFixable;
-        const isNotInUploadedChanges = !(
-            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
-        );
-        return notAutoFixable && isNotInUploadedChanges;
-    });
-
-    const anyInvalid = manualFixNumbers.length > 0;
-    const anyFixable = autofixableNumbers.length > 0;
-
-    const sortedFixable = sortItems(autofixableNumbers, fixableSortKey, fixableSortDirection);
-    const sortedInvalid = sortItems(manualFixNumbers, invalidSortKey, invalidSortDirection);
+    const anyInvalid = sortedInvalid.length > 0;
+    const anyFixable = sortedFixable.length > 0;
 
     // Clear all containers first
     fixableContainer.innerHTML = '';
     invalidContainer.innerHTML = '';
     noInvalidContainer.innerHTML = '';
 
-    if (anyFixable || anyInvalid) {
-        if (anyFixable) {
+    if (anyFixable || anyInvalid || editCount > 0) {
+        if (anyFixable || editCount > 0) {
             renderPaginatedSection(
                 "fixableSection",
                 sortedFixable,
@@ -1038,6 +1015,120 @@ function saveChangeToStorage(osmType, osmId) {
     setUpSaveBtn();
 }
 
+function animateInItem(newListItem) {
+    window.requestAnimationFrame(() => {
+        const contentHeight = newListItem.scrollHeight;
+        
+        window.requestAnimationFrame(() => {
+            newListItem.style.maxHeight = `${contentHeight + 100}px`; 
+            newListItem.style.opacity = '1'; 
+            newListItem.classList.remove('fade-in-start');
+            
+            newListItem.addEventListener('transitionend', function handler(e) {
+                if (e.propertyName === 'max-height') {
+                    if (newListItem.style.maxHeight) {
+                        newListItem.style.maxHeight = null;
+                        renderNumbers();
+                    }
+                    if (newListItem.style.opacity) {
+                        newListItem.style.opacity = null; 
+                    }
+
+                    newListItem.removeEventListener('transitionend', handler);
+                }
+            });
+        });
+    });
+}
+
+function getItemWithIndex(osmType, osmId, fixable) {
+    const sortedItems = getSortedItems(fixable);
+    const targetItem = sortedItems.filter(item => {
+        return item.type === osmType && item.id === osmId;
+    });
+    if (targetItem.length !== 1) {
+        console.log('No item or too many items found');
+        return
+    }
+    item = targetItem[0];
+    return {
+        'item': item,
+        'index': sortedItems.indexOf(item),
+    };
+}
+
+function transitionInsertItem(osmType, osmId) {
+    const sortedItems = getSortedItems(true);
+    const { item: newItem, index } = getItemWithIndex(osmType, osmId, true);
+
+    const newListItemHtmlString = createListItem(newItem);
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = newListItemHtmlString.trim();
+    const newListItem = tempDiv.firstChild;
+
+    newListItem.classList.add('fade-in-start');
+    const reportList = document.getElementById('report-list-fixable');
+
+    if (index === sortedItems.length - 1) {
+        // End of the list
+        reportList.appendChild(newListItem);
+        applyEditorVisibility();
+        animateInItem(newListItem);
+    } else if (index >= 0) {
+        console.log(index)
+        // Find which item to put it before
+        const nextItem = sortedItems.at(index + 1);
+        const nextListItem = document.querySelector(`li[data-item-id="${nextItem.type}/${nextItem.id}"]`);
+
+        if (!nextListItem) {
+            // Change is happening on a different page
+            renderNumbers();
+            return
+        }
+        
+        nextListItem.insertAdjacentElement('beforebegin', newListItem);
+        applyEditorVisibility();
+
+        animateInItem(newListItem);
+    } else {
+        console.error('Target item to insert not found')
+    }
+}
+
+function transitionRemoveItem(osmType, osmId) {
+    const listItem = document.querySelector(`li[data-item-id="${osmType}/${osmId}"]`);
+
+    if (listItem) {
+        listItem.style.maxHeight = `${listItem.scrollHeight}px`;
+        const transitionHandler = function (e) {
+            if (e.propertyName === 'max-height') {
+                renderNumbers();
+                listItem.removeEventListener('transitionend', transitionHandler);
+            }
+        };
+        window.requestAnimationFrame(() => {
+            listItem.style.maxHeight = `${listItem.scrollHeight+100}px`;
+
+            window.requestAnimationFrame(() => {
+                listItem.addEventListener('transitionend', transitionHandler);
+                listItem.classList.add('fade-out-slide-up');
+            });
+        });
+    } else {
+        renderNumbers();
+    }
+}
+
+function applyFix(osmType, osmId) {
+    const itemIdTypeStr = `${osmType}/${osmId}`;
+
+    recordItemClick(itemIdTypeStr);
+    setButtonsAsClicked(itemIdTypeStr);
+    saveChangeToStorage(osmType, osmId);
+    transitionRemoveItem(osmType, osmId);
+}
+
 function addToUndo(osmType, osmId) {
     const undoBtn = document.getElementById('undo-btn');
     if (undoStack.length !== undoPosition) {
@@ -1077,11 +1168,12 @@ function undoChange() {
     delete edits[subdivisionName][osmType][osmId];
     clearItemClick(`${osmType}/${osmId}`);
 
-    resetListItem(osmType, osmId);
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
     localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
     localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
+
+    transitionInsertItem(osmType, osmId);
 }
 
 function redoChange() {
@@ -1103,19 +1195,13 @@ function redoChange() {
     recordItemClick(`${osmType}/${osmId}`);
 
     undoPosition += 1;
-    if (undoPosition === undoStack.length) {
-        disableRedo();
-    }
-    const undoBtn = document.getElementById('undo-btn');
-    if (undoBtn.disabled) {
-        enableUndo();
-    }
-
-    resetListItem(osmType, osmId);
-    localStorage.setItem('edits', JSON.stringify(edits));
-    setUpSaveBtn();
+    setUpUndoRedoBtns();
     localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
     localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
+
+    localStorage.setItem('edits', JSON.stringify(edits));
+    setUpSaveBtn();
+    transitionRemoveItem(osmType, osmId);
 }
 
 function openUploadModal() {
@@ -1196,7 +1282,6 @@ function discardEdits() {
             for (const osmIdStr in edits[subdivisionName][osmType]) {
                 const osmId = parseInt(osmIdStr, 10);
                 clearItemClick(`${osmType}/${osmId}`);
-                resetListItem(osmType, osmId);
             }
         }
 
@@ -1212,6 +1297,7 @@ function discardEdits() {
         setUpSaveBtn();
         setUpUndoRedoBtns();
         closeEditsModal();
+        renderNumbers();
     }
 }
 
