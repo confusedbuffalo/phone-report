@@ -714,8 +714,13 @@ function renderNumbers() {
             count += Object.keys(edits[subdivisionName][type]).length;
         }
     }
-    if (firstLoad && count > 0) {
-        openEditsModal(count);
+    if (firstLoad) {
+        if (count > 0) {
+            openEditsModal(count);
+        } else {
+            undoPosition = 0;
+            undoStack = [];
+        }
     }
 
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
@@ -807,8 +812,8 @@ async function initReportPage() {
 // OSM editing
 
 const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
-let undoStack = [];
-let undoPosition = 0;
+let undoStack = JSON.parse(localStorage.getItem(`undoStack_${subdivisionName}`)) ?? [];
+let undoPosition = localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0;
 const uploadSpinner = document.getElementById('upload-spinner');
 
 function login() {
@@ -1047,6 +1052,8 @@ function addToUndo(osmType, osmId) {
         enableSave();
     }
     disableRedo();
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
 }
 
 function undoChange() {
@@ -1073,6 +1080,8 @@ function undoChange() {
     resetListItem(osmType, osmId);
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
 }
 
 function redoChange() {
@@ -1105,6 +1114,8 @@ function redoChange() {
     resetListItem(osmType, osmId);
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
 }
 
 function openUploadModal() {
@@ -1188,9 +1199,18 @@ function discardEdits() {
                 resetListItem(osmType, osmId);
             }
         }
+
         delete edits[subdivisionName];
         localStorage.setItem('edits', JSON.stringify(edits));
+
+        localStorage.removeItem(`undoPosition_${subdivisionName}`);
+        localStorage.removeItem(`undoStack_${subdivisionName}`);
+
+        undoPosition = 0;
+        undoStack = [];
+
         setUpSaveBtn();
+        setUpUndoRedoBtns();
         closeEditsModal();
     }
 }
@@ -1281,6 +1301,9 @@ function checkAndSubmit() {
                 toggleUploadingSpinner(false);
                 uploadBtn.classList.add('hidden');
                 uploadCloseBtnBottom.classList.remove('hidden');
+
+                undoPosition = 0;
+                undoStack = [];
 
                 // Re-render numbers to hide uploaded elements
                 renderNumbers();
