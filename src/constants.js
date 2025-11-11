@@ -186,6 +186,34 @@ const CHANGESET_TAGS = {
     "host": HOST_URL
 }
 
+const NANP_COUNTRY_CODES = [
+    'US', // United States
+    'CA', // Canada
+    'AG', // Antigua and Barbuda
+    'AI', // Anguilla
+    'AS', // American Samoa
+    'BB', // Barbados
+    'BM', // Bermuda
+    'BS', // Bahamas
+    'DM', // Dominica
+    'DO', // Dominican Republic
+    'GD', // Grenada
+    'GU', // Guam
+    'JM', // Jamaica
+    'KN', // Saint Kitts and Nevis
+    'KY', // Cayman Islands
+    'LC', // Saint Lucia
+    'MP', // Northern Mariana Islands
+    'MS', // Montserrat
+    'PR', // Puerto Rico
+    'SX', // Sint Maarten
+    'TC', // Turks and Caicos Islands
+    'TT', // Trinidad and Tobago
+    'VC', // Saint Vincent and the Grenadines
+    'VG', // British Virgin Islands
+    'VI', // U.S. Virgin Islands
+  ];
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
@@ -213,5 +241,6 @@ module.exports = {
     HISTORY_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
-    CHANGESET_TAGS
+    CHANGESET_TAGS,
+    NANP_COUNTRY_CODES
 };
