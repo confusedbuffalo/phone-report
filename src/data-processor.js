@@ -255,7 +255,7 @@ function getStandardExtension(numberStr) {
  * @returns {RegExp} The regular expression to use for spacing validation.
  */
 function getSpacingRegex(countryCode) {
-    return countryCode === 'US' ? /[\s-]/g : /\s/g;
+    return NANP_COUNTRY_CODES.includes(countryCode) ? /[\s-]/g : /\s/g;
 }
 
 /**
@@ -373,7 +373,7 @@ function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = 
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
-    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational && countryCode !== 'US') {
+    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational && NANP_COUNTRY_CODES.includes(countryCode)) {
         const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
         return coreFormattedNational + extension;
     }
