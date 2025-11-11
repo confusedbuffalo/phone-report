@@ -125,7 +125,7 @@ jobs:
 
   bot-edit:
     needs: build-report
-    if: needs.build-report.outputs.is-full-build == 'true'
+    # if: needs.build-report.outputs.is-full-build == 'true'
     runs-on: ubuntu-latest
 
     steps:
