@@ -1821,7 +1821,7 @@ describe('isSafeEdit', () => {
 
     test('should return true for a safe edit where original US number matches fixed international format', () => {
         const originalNumber = '(213) 373-1234';
-        const newNumber = '+1 213-373-1234';
+        const newNumber = '+1-213-373-1234';
         const countryCode = 'US';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
@@ -1924,8 +1924,8 @@ describe('isSafeItemEdit', () => {
             ['contact:phone', '(213) 373-5678'],
         ]),
         suggestedFixes: new Map([
-            ['phone', '+1 213-373-1234'],
-            ['contact:phone', '+1 213-373-5678'],
+            ['phone', '+1-213-373-1234'],
+            ['contact:phone', '+1-213-373-5678'],
         ]),
     };
 
