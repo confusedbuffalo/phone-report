@@ -101,6 +101,13 @@ describe('replaceInvisibleChars', () => {
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
+    test('should replace tab character with ␣', () => {
+        // "MNO(SFT)PQR"
+        const input = "MNO\tPQR";
+        const expected = "MNO␣PQR";
+        expect(replaceInvisibleChars(input)).toBe(expected);
+    });
+
     // Test for multiple characters, including ranges from the pattern
     test('should replace a mixed sequence of invisible characters with multiple ␣ symbols', () => {
         // ZWSP, ZWJ, LRE (U+202A), Invisible Times (U+2062)
