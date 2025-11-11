@@ -44,9 +44,15 @@ function createJosmFixUrl(item) {
  * Creates the items for client side injection, with extra content.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
+ * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @returns {string}
  */
-function createClientItems(item, locale) {
+function createClientItems(item, locale, botEnabled) {
+    // Skip safe edit items if the bot is enabled here
+    if (botEnabled && item.safeEdit){
+        return null;
+    }
+    
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
@@ -176,6 +182,14 @@ class ItemTransformer extends Transform {
     }
 }
 
+function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSlug) {
+    const safeCountryName = safeName(countryName);
+    const singleLevelDivision = safeCountryName === divisionSlug || divisionSlug === subdivisionSlug;
+    const finalSubdivisionSlug = singleLevelDivision ? subdivisionSlug : path.join(divisionSlug, subdivisionSlug);
+    const filePath = path.join(safeCountryName, finalSubdivisionSlug);
+    return filePath
+}
+
 /**
  * Generates the HTML report for a single subdivision.
  * @param {string} countryName
@@ -183,15 +197,16 @@ class ItemTransformer extends Transform {
  * @param {Array<Object>} invalidNumbers - List of invalid items.
  * @param {string} locale
  * @param {Object} translations
+ * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  */
-async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations) {
+async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled) {
     clearIconSprite();
 
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
-    const subdivisionSlug = singleLevelDivision ? subdivisionStats.slug : path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
-    const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
-    const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
+    const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug)
+    const htmlFilePath = `${path.join(PUBLIC_DIR, relativeFilePath)}.html`
+    const dataFilePath = `${path.join(PUBLIC_DIR, relativeFilePath)}.json`
 
     const { invalidCount, autoFixableCount } = subdivisionStats;
 
@@ -202,7 +217,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             fs.createReadStream(tmpFilePath),
             parser(),
             streamArray(),
-            new ItemTransformer(item => createClientItems(item, locale), {}),
+            new ItemTransformer(item => createClientItems(item, locale, botEnabled), {}),
             disassembler(),
             stringer(stringerOptions),
             fs.createWriteStream(dataFilePath)
@@ -409,4 +424,5 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
 module.exports = {
     generateHtmlReport,
     createJosmFixUrl,
+    getSubdivisionRelativeFilePath,
 };

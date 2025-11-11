@@ -90,6 +90,13 @@ jobs:
           name: new-history-data
           path: history/
 
+      - name: Upload Safe Edits Artifact
+        if: env.BUILD_TYPE == 'full'
+        uses: actions/upload-artifact@v4
+        with:
+          name: safe-edits-data
+          path: safe_edits/
+
       - name: Run HTML Minifier
         if: env.BUILD_TYPE == 'full'
         run: |
@@ -115,6 +122,29 @@ jobs:
         if: env.BUILD_TYPE == 'full'
         id: deployment
         uses: actions/deploy-pages@v4
+
+  bot-edit:
+    needs: build-report
+    if: needs.build-report.outputs.is-full-build == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download safe edits artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: safe-edits-data
+          path: safe_edits
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run the bot process
+        env:
+          BOT_AUTH_TOKEN: ${{ secrets.BOT_AUTH_TOKEN }}
+        run: npm run bot:autofix
 
   push-history:
     needs: build-report

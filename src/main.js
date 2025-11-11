@@ -9,6 +9,7 @@ const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
 const { generateHtmlReport } = require('./html-report')
 const { getTranslations } = require('./i18n');
+const { generateSafeEditFile } = require('./osm-safe-edits');
 
 const CLIENT_KEYS = [
     'timeAgoJustNow',
@@ -154,7 +155,8 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         fs.mkdirSync(divisionDir, { recursive: true });
     }
 
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations);
+    await generateSafeEditFile(countryName, stats, tmpFilePath)
+    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled);
 
     fs.unlinkSync(tmpFilePath); // Clean up the temporary file
 

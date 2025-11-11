@@ -1,14 +1,18 @@
 {
     "België / Belgique / Belgien": {
+        "countryCode": "BE",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Vlaanderen": 53134,
             "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": 54094,
             "Wallonie": 90348
-        },
-        "countryCode": "BE",
-        "locale": "en"
+        }
     },
     "Deutschland": {
+        "countryCode": "DE",
+        "locale": "de-DE",
+        "safeAutoFixBotEnabled": false,
         "divisionMap": {
             "Baden-Württemberg": {
                 "Regierungsbezirk Freiburg": 2106112,
@@ -73,11 +77,13 @@
             "Thüringen": {
                 "Thüringen": 62366
             }
-        },
-        "countryCode": "DE",
-        "locale": "de-DE"
+        }
     },
     "España": {
+        "countryCode": "ES",
+        "locale": "es-ES",
+        "subdivisionAdminLevel": 6,
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Andalucía": 349044,
             "Aragón": 349045,
@@ -98,12 +104,13 @@
             "País Vasco": 349042,
             "Ceuta": 1154756,
             "Melilla": 1154757
-        },
-        "countryCode": "ES",
-        "locale": "es-ES",
-        "subdivisionAdminLevel": 6
+        }
     },
     "France": {
+        "countryCode": "FR",
+        "locale": "fr-FR",
+        "subdivisionAdminLevel": 6,
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Auvergne-Rhône-Alpes": 3792877,
             "Bourgogne – Franche-Comté": 3792878,
@@ -118,12 +125,12 @@
             "Occitania": 3792883,
             "Pays de la Loire": 8650,
             "Provence-Alpes-Côte d'Azur": 8654
-        },
-        "countryCode": "FR",
-        "locale": "fr-FR",
-        "subdivisionAdminLevel": 6
+        }
     },
     "Italia": {
+        "countryCode": "IT",
+        "locale": "it-IT",
+        "safeAutoFixBotEnabled": false,
         "divisionMap": {
             "Centro": {
                 "Lazio": 40784,
@@ -155,18 +162,20 @@
                 "Abruzzo": 53937,
                 "Calabria": 1783980
             }
-        },
-        "countryCode": "IT",
-        "locale": "it-IT"
+        }
     },
     "Lesotho": {
+        "countryCode": "LS",
+        "locale": "en-ZA",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Lesotho": 2093234
-        },
-        "countryCode": "LS",
-        "locale": "en-ZA"
+        }
     },
     "Nederland": {
+        "countryCode": "NL",
+        "locale": "nl-NL",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Drenthe": 47540,
             "Flevoland": 47407,
@@ -180,11 +189,12 @@
             "Zuid-Holland": 47772,
             "Utrecht": 47667,
             "Zeeland": 47806
-        },
-        "countryCode": "NL",
-        "locale": "nl-NL"
+        }
     },
     "Polska": {
+        "countryCode": "PL",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "województwo dolnośląskie": 224457,
             "województwo kujawsko-pomorskie": 223407,
@@ -202,11 +212,12 @@
             "województwo warmińsko-mazurskie": 223408,
             "województwo wielkopolskie": 130971,
             "województwo zachodniopomorskie": 104401
-        },
-        "countryCode": "PL",
-        "locale": "en"
+        }
     },
     "South Africa": {
+        "countryCode": "ZA",
+        "locale": "en-ZA",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Eastern Cape": 4782250,
             "Free State": 92417,
@@ -217,11 +228,12 @@
             "North West": 349519,
             "Northern Cape": 86720,
             "Western Cape": 80501
-        },
-        "countryCode": "ZA",
-        "locale": "en-ZA"
+        }
     },
     "Schweiz / Suisse / Svizzera / Svizra": {
+        "countryCode": "CH",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Aargau": 1686359,
             "Appenzell Ausserrhoden": 1686649,
@@ -249,11 +261,12 @@
             "Vaud": 1702421,
             "Zug": 1686447,
             "Zürich": 1690227
-        },
-        "countryCode": "CH",
-        "locale": "en"
+        }
     },
     "United Kingdom": {
+        "countryCode": "GB",
+        "locale": "en-GB",
+        "safeAutoFixBotEnabled": false,
         "divisionMap": {
             "England": {
                 "East Midlands": 151279,
@@ -275,13 +288,12 @@
             "Wales": {
                 "Wales": 58437
             }
-        },
-        "countryCode": "GB",
-        "locale": "en-GB"
+        }
     },
     "United States Of America": {
         "countryCode": "US",
         "locale": "en-US",
+        "safeAutoFixBotEnabled": false,
         "divisions": {
             "Alabama": 161950,
             "Alaska": 1116270,
