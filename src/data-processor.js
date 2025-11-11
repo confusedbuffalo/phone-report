@@ -373,7 +373,7 @@ function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = 
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
-    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational && NANP_COUNTRY_CODES.includes(countryCode)) {
+    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational) {
         const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
         return coreFormattedNational + extension;
     }
@@ -443,7 +443,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            const tollFreeAsInternational = numberStr.includes('+') || numberStr.startsWith('00');
+            const tollFreeAsInternational = numberStr.includes('+') || numberStr.startsWith('00') || NANP_COUNTRY_CODES.includes(countryCode);
             suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 
