@@ -156,7 +156,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     }
 
     await generateSafeEditFile(countryName, stats, tmpFilePath)
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations);
+    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled);
 
     fs.unlinkSync(tmpFilePath); // Clean up the temporary file
 

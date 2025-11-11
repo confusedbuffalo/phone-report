@@ -44,9 +44,15 @@ function createJosmFixUrl(item) {
  * Creates the items for client side injection, with extra content.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
+ * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @returns {string}
  */
-function createClientItems(item, locale) {
+function createClientItems(item, locale, botEnabled) {
+    // Skip safe edit items if the bot is enabled here
+    if (botEnabled && item.safeEdit){
+        return null;
+    }
+    
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
@@ -191,8 +197,9 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {Array<Object>} invalidNumbers - List of invalid items.
  * @param {string} locale
  * @param {Object} translations
+ * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  */
-async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations) {
+async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled) {
     clearIconSprite();
 
     const safeCountryName = safeName(countryName);
@@ -210,7 +217,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             fs.createReadStream(tmpFilePath),
             parser(),
             streamArray(),
-            new ItemTransformer(item => createClientItems(item, locale), {}),
+            new ItemTransformer(item => createClientItems(item, locale, botEnabled), {}),
             disassembler(),
             stringer(stringerOptions),
             fs.createWriteStream(dataFilePath)
