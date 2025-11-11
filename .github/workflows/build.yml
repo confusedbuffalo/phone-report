@@ -91,7 +91,7 @@ jobs:
           path: history/
 
       - name: Upload Safe Edits Artifact
-        if: env.BUILD_TYPE == 'full'
+        # if: env.BUILD_TYPE == 'full'
         uses: actions/upload-artifact@v4
         with:
           name: safe-edits-data
