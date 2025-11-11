@@ -267,9 +267,6 @@ async function uploadSafeChanges(filePath) {
         const relativePagePath = getSubdivisionRelativeFilePath(subdivisionData.countryName, subdivisionData.divisionSlug, subdivisionData.subdivisionSlug)
         const pageLink = `${HOST_URL}/${relativePagePath}`
 
-        // Configure with the auth token
-        OSM.configure({ authHeader: `Bearer ${BOT_AUTH_TOKEN}` });
-
         // Define changeset tags
         const changesetId = await OSM.uploadChangeset(
             {
@@ -318,6 +315,9 @@ async function processSafeEdits() {
             }
         }
     }
+
+    // Configure with the auth token
+    OSM.configure({ authHeader: `Bearer ${BOT_AUTH_TOKEN}` });
 
     try {
         console.log(`Starting file collection in ${SAFE_EDITS_DIR}...`);
