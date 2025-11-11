@@ -90,6 +90,13 @@ jobs:
           name: new-history-data
           path: history/
 
+      - name: Upload Safe Edits Artifact
+        if: env.BUILD_TYPE == 'full'
+        uses: actions/upload-artifact@v4
+        with:
+          name: safe-edits-data
+          path: safe_edits/
+
       - name: Run HTML Minifier
         if: env.BUILD_TYPE == 'full'
         run: |

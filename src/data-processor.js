@@ -223,6 +223,35 @@ function keyToRemove(key1, key2) {
 }
 
 /**
+ * Checks if a change is only to the formatting or adding a country code and 
+ * so can be safely made automatically.
+ * @param {string} originalNumberStr - The original OSM tag
+ * @param {string} newNumberStr - The suggested fix
+ * @param {string} countryCode - The country code.
+ * @returns {boolean}
+ */
+function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
+    if (!originalNumberStr || !newNumberStr) return false;
+
+    // Digits, spaces, plus, dash and hypens and invisible spacing characters
+    const originalSimple = originalNumberStr.match(/[\d\s\(\)+\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g)
+    if (!originalSimple) return false;
+
+    processedOriginal = processSingleNumber(originalNumberStr, countryCode);
+
+    // Double check that the original number parses to the new number
+    if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
+
+    // Confirm that the number is in the same country
+    const parsedNew = parsePhoneNumber(newNumberStr);
+    if (parsedNew.country === countryCode && parsedNew.isValid()) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * Strips phone number extensions (x, ext, etc.) and non-dialable characters 
  * to isolate the core number for comparison.
  * @param {string} numberStr 
@@ -628,6 +657,51 @@ function processMismatches(item, countryCode) {
 }
 
 /**
+ * Checks all of the edits and determines if all edits are safe to be
+ * made automatically.
+ * @param {object} item - The item object containing the Maps.
+ * @param {string} countryCode - The country code for validation.
+ * @returns {boolean}
+ */
+function isSafeItemEdit(item, countryCode){
+    // Not safe if there are any mismatch type numbers or duplicate numbers
+    if (
+        !item.autoFixable
+        || item.hasTypeMismatch
+        || (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map && item.mismatchTypeNumbers.size !== 0)
+        || (item.duplicateNumbers && item.duplicateNumbers instanceof Map && item.duplicateNumbers.size !== 0)
+    ) {
+        return false
+    }
+
+    // If sizes are different, there are unpaired items.
+    if (item.invalidNumbers.size !== item.suggestedFixes.size) {
+        return false;
+    }
+
+    // Ensure every key in one map exists in the other.
+    for (const key of item.invalidNumbers.keys()) {
+        if (!item.suggestedFixes.has(key)) {
+            return false;
+        }
+    }
+
+    let isSafe = true;
+    
+    for (const [key, invalidValue] of item.invalidNumbers.entries()) {
+        const suggestedValue = item.suggestedFixes.get(key);
+        
+        isSafe = isSafe && isSafeEdit(invalidValue, suggestedValue, countryCode);
+
+        if (!isSafe) {
+            return false; 
+        }
+    }
+
+    return isSafe;
+}
+
+/**
  * Validates phone numbers using libphonenumber-js, marking tags as invalid if
  * they contain bad separators (comma, slash, 'or') or invalid numbers.
  * @param {Array<Object>} elements - OSM elements with phone tags.
@@ -832,6 +906,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             const finalItem = {
                 ...item,
+                safeEdit: isSafeItemEdit(item, countryCode),
                 invalidNumbers: Object.fromEntries(item.invalidNumbers),
                 suggestedFixes: Object.fromEntries(item.suggestedFixes),
                 mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
@@ -868,5 +943,7 @@ module.exports = {
     processSingleNumber,
     validateSingleTag,
     checkExclusions,
-    keyToRemove
+    keyToRemove,
+    isSafeEdit,
+    isSafeItemEdit
 };
