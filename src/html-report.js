@@ -176,6 +176,14 @@ class ItemTransformer extends Transform {
     }
 }
 
+function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSlug) {
+    const safeCountryName = safeName(countryName);
+    const singleLevelDivision = safeCountryName === divisionSlug || divisionSlug === subdivisionSlug;
+    const finalSubdivisionSlug = singleLevelDivision ? subdivisionSlug : path.join(divisionSlug, subdivisionSlug);
+    const filePath = path.join(safeCountryName, finalSubdivisionSlug);
+    return filePath
+}
+
 /**
  * Generates the HTML report for a single subdivision.
  * @param {string} countryName
@@ -189,9 +197,9 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
 
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
-    const subdivisionSlug = singleLevelDivision ? subdivisionStats.slug : path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
-    const htmlFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.html`);
-    const dataFilePath = path.join(PUBLIC_DIR, safeCountryName, `${subdivisionSlug}.json`);
+    const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug)
+    const htmlFilePath = `${path.join(PUBLIC_DIR, relativeFilePath)}.html`
+    const dataFilePath = `${path.join(PUBLIC_DIR, relativeFilePath)}.json`
 
     const { invalidCount, autoFixableCount } = subdivisionStats;
 
@@ -409,4 +417,5 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
 module.exports = {
     generateHtmlReport,
     createJosmFixUrl,
+    getSubdivisionRelativeFilePath,
 };

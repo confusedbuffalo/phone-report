@@ -1,6 +1,5 @@
 const { translate } = require('./i18n');
-const { ICON_ATTRIBUTION } = require('./constants.js')
-const githubLink = "https://github.com/confusedbuffalo/phone-report/";
+const { ICON_ATTRIBUTION, GITHUB_LINK } = require('./constants.js')
 
 /**
  * Phone number emoji as the favicon
@@ -141,7 +140,7 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
        data-timestamp="${dataTimestamp.getTime()}">
         ${dataSourcedTemplate}
     </p>
-    <p class="footer-text">${suggestionIssueLink} <a href="${githubLink}" target="_blank" rel="noopener noreferrer" class="footer-link">${letMeKnowOnGitHub}</a>.</p>
+    <p class="footer-text">${suggestionIssueLink} <a href="${GITHUB_LINK}" target="_blank" rel="noopener noreferrer" class="footer-link">${letMeKnowOnGitHub}</a>.</p>
     ${dataAttribution}
     ${iconAttribution}
     <script>

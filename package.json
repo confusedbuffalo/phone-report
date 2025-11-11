@@ -21,7 +21,8 @@
     "build:css": "npx @tailwindcss/cli -i src/input.css -o public/styles.css",
     "build:history": "node src/history-processor.js",
     "build:progress": "node src/html-progress.js",
-    "build": "node src/main.js && npm run build:history && npm run build:progress && npm run build:css"
+    "build": "node src/main.js && npm run build:history && npm run build:progress && npm run build:css",
+    "bot:autofix": "node src/osm-safe-edits.js"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^7.0.1",

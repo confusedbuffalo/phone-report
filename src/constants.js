@@ -176,6 +176,7 @@ const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
 
+const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
 const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
 
 const PACKAGE_NAME = packageInfo.name;
@@ -185,6 +186,15 @@ const CHANGESET_TAGS = {
     "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
     "created_by": `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
     "host": HOST_URL
+}
+
+const AUTO_CHANGESET_TAGS = {
+    "comment": "Automatically fix phone number issues: missing country code, extra punctuation",
+    "created_by": `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
+    "bot": "yes",
+    "automatic": "yes",
+    "source_code": GITHUB_LINK,
+    "osm_wiki_documentation_page": "https://wiki.openstreetmap.org/wiki/Automated_edits/confusedbuffalo/Fix_basic_phone_number_issues",
 }
 
 module.exports = {
@@ -215,5 +225,8 @@ module.exports = {
     SAFE_EDITS_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
-    CHANGESET_TAGS
+    CHANGESET_TAGS,
+    AUTO_CHANGESET_TAGS,
+    GITHUB_LINK,
+    HOST_URL
 };
