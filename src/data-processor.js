@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -361,7 +361,12 @@ function getFormattedNumber(phoneNumber, countryCode) {
         ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
         : phoneNumber.number;
 
-    const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
+    const internationalNumber = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL')
+
+    const coreFormatted = NANP_COUNTRY_CODES.includes(countryCode)
+        ? internationalNumber.replace(/\s/g, '-').replace('-ext.-', ' x')
+        : internationalNumber;
+
     // Append the extension in the standard format (' x{ext}' or DIN format for DE)
     const extension = phoneNumber.ext ?
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
@@ -379,19 +384,6 @@ function getFormattedNumber(phoneNumber, countryCode) {
         } else {
             return phoneNumber.format('NATIONAL');
         }
-    }
-
-    if (countryCode === 'US') {
-        // Use dashes as separator, but space after country code
-        const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
-
-        let nationalNumberFormatted = phoneNumber.format('NATIONAL');
-        nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
-        nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
-
-        // National number has extension in it for US
-        nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
-        return `${countryCodePrefix} ${nationalNumberFormatted}`;
     }
 
     return coreFormatted + extension;

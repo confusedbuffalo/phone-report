@@ -564,7 +564,7 @@ describe('processSingleNumber', () => {
     test('US: correctly validate and format a simple valid local number', () => {
         const result = processSingleNumber('213 373 4253', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(true);
-        expect(result.suggestedFix).toBe('+1 213-373-4253');
+        expect(result.suggestedFix).toBe('+1-213-373-4253');
         expect(result.autoFixable).toBe(true);
     });
 
@@ -587,7 +587,7 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('+1-304-845-9810 extension 403', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('+1 304-845-9810 x403');
+        expect(result.suggestedFix).toBe('+1-304-845-9810 x403');
     });
 
     // --- PL Tests ---
@@ -848,7 +848,7 @@ describe('validateNumbers', () => {
     const SLASH_IN_NUMBER_DE_FIX = '+49 8131 275715'
 
     // US numbers
-    const VALID_US_NUMBER = '+1 202-627-1951'
+    const VALID_US_NUMBER = '+1-202-627-1951'
     const FIXABLE_US_NUMBER = '+1 2026271951'
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
