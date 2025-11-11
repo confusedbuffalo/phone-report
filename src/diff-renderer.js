@@ -64,7 +64,7 @@ function replaceInvisibleChars(text) {
         "";
     }
     // The pattern targets the common zero-width, joiner, and directional marks.
-    const invisibleCharPattern = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
+    const invisibleCharPattern = /[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
     return text.replace(invisibleCharPattern, '␣');
 }
 
