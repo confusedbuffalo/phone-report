@@ -1815,9 +1815,9 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });
 
-    test('should return true when original GB number is already international but fixable/valid', () => {
-        const originalNumber = '+442079460000'; // Original is already in international format but without spaces
-        const newNumber = '+44 20 7946 0000'; // New number is same
+    test('should return true when original GB number is already international but fixable', () => {
+        const originalNumber = '+44.20.7946.0000';
+        const newNumber = '+44 20 7946 0000';
         const countryCode = 'GB';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);

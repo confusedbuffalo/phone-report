@@ -234,7 +234,7 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     if (!originalNumberStr || !newNumberStr) return false;
 
     // Digits, spaces, plus, dash and hypens and invisible spacing characters
-    const originalSimple = originalNumberStr.match(/[\d\s\(\)+\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g)
+    const originalSimple = originalNumberStr.match(/[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g)
     if (!originalSimple) return false;
 
     processedOriginal = processSingleNumber(originalNumberStr, countryCode);
