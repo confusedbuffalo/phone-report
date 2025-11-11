@@ -390,15 +390,25 @@ function createListItem(item) {
 }
 
 /**
- * Helper to retrieve the value of the first key in an object.
+ * Helper to retrieve the first non-null value in an object.
  * Used for getting the phone number string from invalidNumbers or suggestedFixes objects.
- * @param {Object} obj - The object to extract the first value from (e.g., { "phone": "123" }).
- * @returns {string} The value of the first key, or an empty string if invalid.
+ * @param {Object} obj - The object to extract the value from (e.g., { "phone": "123" }).
+ * @returns {string} The first non-null value, or an empty string if none is found.
  */
-function getFirstValue(obj) {
-    if (!obj || typeof obj !== 'object') return '';
-    const firstKey = Object.keys(obj)[0];
-    return firstKey ? obj[firstKey] : '';
+function getFirstNonNullValue(obj) {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+        return '';
+    }
+
+    const values = Object.values(obj);
+
+    for (const value of values) {
+        if (value !== null && value !== undefined) {
+            return value; // Return the first one found
+        }
+    }
+
+    return '';
 }
 
 /**
@@ -431,13 +441,13 @@ function sortItems(items, key, direction) {
                 break;
             case 'invalid':
                 // Get the value of the first key in invalidNumbers
-                valA = getFirstValue(a.invalidNumbers);
-                valB = getFirstValue(b.invalidNumbers);
+                valA = getFirstNonNullValue(a.invalidNumbers);
+                valB = getFirstNonNullValue(b.invalidNumbers);
                 break;
             case 'fixable':
                 // Get the value of the first key in suggestedFixes
-                valA = getFirstValue(a.suggestedFixes);
-                valB = getFirstValue(b.suggestedFixes);
+                valA = getFirstNonNullValue(a.suggestedFixes);
+                valB = getFirstNonNullValue(b.suggestedFixes);
                 break;
             default:
                 return 0;

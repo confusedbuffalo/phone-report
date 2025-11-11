@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -284,7 +284,7 @@ function getStandardExtension(numberStr) {
  * @returns {RegExp} The regular expression to use for spacing validation.
  */
 function getSpacingRegex(countryCode) {
-    return countryCode === 'US' ? /[\s-]/g : /\s/g;
+    return NANP_COUNTRY_CODES.includes(countryCode) ? /[\s-]/g : /\s/g;
 }
 
 /**
@@ -381,46 +381,30 @@ function getNumberAndExtension(numberStr, countryCode) {
  * Formats a single phone number to the appropriate national standard
  * @param {PhoneNumber} phoneNumber - The phone number object
  * @param {string} countryCode - The country code for formatting.
+ * @param {boolean} tollFreeAsInternational - Whether or not toll free numbers should be formatted with a country code.
  * @returns {string} The formatted number
  */
-function getFormattedNumber(phoneNumber, countryCode) {
+function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = false) {
     const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
     const coreNumberE164 = isPolishPrefixed
         ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
         : phoneNumber.number;
 
-    const coreFormatted = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL');
+    const internationalNumber = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL')
+
+    const coreFormatted = NANP_COUNTRY_CODES.includes(countryCode)
+        ? internationalNumber.replace(/\s/g, '-').replace('-ext.-', ' x')
+        : internationalNumber;
+
     // Append the extension in the standard format (' x{ext}' or DIN format for DE)
     const extension = phoneNumber.ext ?
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
-    if (phoneNumber.getType() === 'TOLL_FREE') {
-        if (countryCode === 'US') {
-            let nationalNumberFormatted = phoneNumber.format('NATIONAL');
-            nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
-            nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
-
-            // National number has extension in it for US
-            nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
-            return nationalNumberFormatted;
-        } else {
-            return phoneNumber.format('NATIONAL');
-        }
-    }
-
-    if (countryCode === 'US') {
-        // Use dashes as separator, but space after country code
-        const countryCodePrefix = `+${phoneNumber.countryCallingCode}`;
-
-        let nationalNumberFormatted = phoneNumber.format('NATIONAL');
-        nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
-        nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
-
-        // National number has extension in it for US
-        nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
-        return `${countryCodePrefix} ${nationalNumberFormatted}`;
+    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational) {
+        const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
+        return coreFormattedNational + extension;
     }
 
     return coreFormatted + extension;
@@ -488,7 +472,8 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            suggestedFix = getFormattedNumber(phoneNumber, countryCode);
+            const tollFreeAsInternational = numberStr.includes('+') || numberStr.startsWith('00') || NANP_COUNTRY_CODES.includes(countryCode);
+            suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {

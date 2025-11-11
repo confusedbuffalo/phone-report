@@ -1,14 +1,14 @@
 {
   "name": "osm-phone-report",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A GitHub Pages site that reports invalid phone numbers from OpenStreetMap data.",
   "main": "src/main.js",
   "dependencies": {
     "@openstreetmap/id-tagging-schema": "^6.13.4",
-    "@tailwindcss/cli": "^4.1.16",
-    "@tailwindcss/postcss": "^4.1.16",
+    "@tailwindcss/cli": "^4.1.17",
+    "@tailwindcss/postcss": "^4.1.17",
     "diff": "^8.0.2",
-    "libphonenumber-js": "^1.12.25",
+    "libphonenumber-js": "^1.12.26",
     "node-fetch": "^3.3.0",
     "osm-api": "^3.3.0",
     "stream-json": "^1.9.1",
@@ -34,7 +34,7 @@
     "html-minifier-terser": "^7.0.0",
     "jest": "^30.1.3",
     "tailwindcss": "^4.1.14",
-    "terser": "^5.0.0"
+    "terser": "^5.44.1"
   },
   "author": "confusedbuffalo",
   "license": "GNU GPL v3.0"
