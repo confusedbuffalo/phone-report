@@ -352,9 +352,10 @@ function getNumberAndExtension(numberStr, countryCode) {
  * Formats a single phone number to the appropriate national standard
  * @param {PhoneNumber} phoneNumber - The phone number object
  * @param {string} countryCode - The country code for formatting.
+ * @param {boolean} tollFreeAsInternational - Whether or not toll free numbers should be formatted with a country code.
  * @returns {string} The formatted number
  */
-function getFormattedNumber(phoneNumber, countryCode) {
+function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = false) {
     const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
     const coreNumberE164 = isPolishPrefixed
@@ -372,18 +373,9 @@ function getFormattedNumber(phoneNumber, countryCode) {
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
-    if (phoneNumber.getType() === 'TOLL_FREE') {
-        if (countryCode === 'US') {
-            let nationalNumberFormatted = phoneNumber.format('NATIONAL');
-            nationalNumberFormatted = nationalNumberFormatted.replace(/[\(\)]/g, '').trim();
-            nationalNumberFormatted = nationalNumberFormatted.replace(/\s/g, '-');
-
-            // National number has extension in it for US
-            nationalNumberFormatted = nationalNumberFormatted.replace('-ext.-', ' x');
-            return nationalNumberFormatted;
-        } else {
-            return phoneNumber.format('NATIONAL');
-        }
+    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational && countryCode !== 'US') {
+        const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
+        return coreFormattedNational + extension;
     }
 
     return coreFormatted + extension;
@@ -451,7 +443,8 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            suggestedFix = getFormattedNumber(phoneNumber, countryCode);
+            const tollFreeAsInternational = numberStr.includes('+') || numberStr.startsWith('00');
+            suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {

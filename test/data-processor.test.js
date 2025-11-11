@@ -513,21 +513,35 @@ describe('processSingleNumber', () => {
         expect(result.typeMismatch).toBe(true);
     });
 
-    test('GB: free phone number is valid', () => {
+    test('GB: toll free phone number without country code is valid', () => {
         const result = processSingleNumber('0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(false);
     });
 
-    test('GB: free phone number with country code is valid', () => {
+    test('GB: toll free phone number with country code is valid', () => {
         const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(false);
     });
 
-    test('GB: free phone number with dashes is fixable to non-international format', () => {
+    test('GB: toll free phone number with dashes is fixable to national format', () => {
         const result = processSingleNumber('0800-00-1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('0800 001234');
+    });
+
+    test('GB: toll free phone number with country code and invalid formatting is fixable to international format', () => {
+        const result = processSingleNumber('(+44) 0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 800 001234');
+    });
+
+    test('GB: toll free phone number with 00 and country code is fixable to international format', () => {
+        const result = processSingleNumber('0044 0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 800 001234');
     });
 
     test('GB: a number with tabs is invalid but fixable', () => {
@@ -576,6 +590,12 @@ describe('processSingleNumber', () => {
     test('US: dashes is not invalid', () => {
         const result = processSingleNumber('+1-213-373-4253', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(false);
+    });
+
+    test('US: toll free number is fixable to international format', () => {
+        const result = processSingleNumber('866-590-0601', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.suggestedFix).toBe('+1-866-590-0601');
     });
 
     test('US: a valid number with extension is valid', () => {
