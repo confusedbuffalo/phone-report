@@ -446,8 +446,21 @@ function sortItems(items, key, direction) {
                 break;
             case 'fixable':
                 // Get the value of the first key in suggestedFixes
-                valA = getFirstNonNullValue(a.suggestedFixes);
-                valB = getFirstNonNullValue(b.suggestedFixes);
+                // If there isn't one, get the first from invalid numbers
+                // (suggested might be null if the value is being removed)
+
+                let firstA = getFirstNonNullValue(a.suggestedFixes);
+                if (!firstA) {
+                    firstA = getFirstNonNullValue(a.invalidNumbers)
+                }
+
+                let firstB = getFirstNonNullValue(b.suggestedFixes);
+                if (!firstB) {
+                    firstB = getFirstNonNullValue(b.invalidNumbers)
+                }
+
+                valA = firstA;
+                valB = firstB;
                 break;
             default:
                 return 0;
