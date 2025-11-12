@@ -217,9 +217,15 @@ function keyToRemove(key1, key2) {
 function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     if (!originalNumberStr || !newNumberStr) return false;
 
-    // Digits, spaces, plus, dash and hypens and invisible spacing characters
-    const originalSimple = originalNumberStr.match(/[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g)
-    if (!originalSimple) return false;
+    // Digits, spaces, plus, dash and hyphens and invisible spacing characters
+    // DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
+    const SAFE_CHARACTER_REGEX =
+        countryCode === 'DE'
+            ? /[\d\s\(\)+\.\\\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g
+            : /[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
+
+    const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX)
+    if (!hasOnlySafeChars) return false;
 
     processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
