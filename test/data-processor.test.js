@@ -659,6 +659,25 @@ describe('processSingleNumber', () => {
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+49 4761 3163');
     });
+
+    test('DE: number starting with 49 is invalid and not fixable', () => {
+        const result = processSingleNumber('49 4761 3163', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
+
+    test('DE: number starting with (+49) is valid and fixable', () => {
+        const result = processSingleNumber('(+49) 04761 3163', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 4761 3163');
+    });
+
+    test('DE: number starting with some other characters then 49 is invalid and unfixable', () => {
+        const result = processSingleNumber('-49 521 557666', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
 });
 
 // =====================================================================

@@ -502,6 +502,20 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         suggestedFix = null;
     }
 
+    // DE numbers do not have fixed length and could start with 49, but maybe a + was missed off
+    // so it is not clear what the correct fix should be
+    // see https://github.com/confusedbuffalo/phone-report/issues/78 and https://github.com/confusedbuffalo/phone-report/issues/53
+    if (
+        isInvalid
+        && autoFixable
+        && countryCode === 'DE'
+        && coreNumber.replace(/[^\d]/g, '').startsWith('49')
+        && !coreNumber.split('49')[0].includes('+')
+    ) {
+        autoFixable = false;
+        suggestedFix = null;
+    }
+
     return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch };
 }
 
