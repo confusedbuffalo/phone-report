@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -81,7 +81,6 @@ function isDisused(item) {
 /**
  * Determines a feature's primary type value from its OSM tags.
  * For example, for a feature with `amenity=restaurant`, it returns 'restaurant'.
- * It checks standard feature tags first, then prefixed tags (e.g. `disused:amenity`).
  * @param {object} item - An OSM object including allTags.
  * @returns {string|null} The value of the most relevant feature tag, or null if not found.
  */
@@ -89,14 +88,6 @@ function getFeatureType(item) {
     for (const tag of FEATURE_TAGS) {
         if (item.allTags[tag]) {
             return item.allTags[tag];
-        }
-    }
-
-    for (const prefix of HISTORIC_AND_DISUSED_PREFIXES) {
-        for (const tag of FEATURE_TAGS) {
-            if (item.allTags[`${prefix}:${tag}`]) {
-                return item.allTags[tag];
-            }
         }
     }
     return null
@@ -120,15 +111,8 @@ function getFeatureTypeName(item, locale) {
         return preset.name;
     }
 
-    const featureType = getFeatureType(item);
-
-    if (featureType) {
-        const formattedType = featureType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        return `${formattedType}`;
-    } else {
-        const formattedType = item.type.replace(/\b\w/g, c => c.toUpperCase());
-        return `OSM ${formattedType}`;
-    }
+    const formattedType = item.type.replace(/\b\w/g, c => c.toUpperCase());
+    return `OSM ${formattedType}`;
 }
 
 /**
