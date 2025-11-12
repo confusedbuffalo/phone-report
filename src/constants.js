@@ -106,13 +106,40 @@ const EXTENSION_REGEX = /^(.*?)\s*(?:x|ext\.?|extension)\s*(\d*)$/;
 const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
-// Raw semicolon (';'), semicolon with optional space ('; ?'), comma, slash, 'or' or 'and'.
-const UNIVERSAL_SPLIT_REGEX = /(?:; ?)|(?:\s*,\s*)|(?:\s*\/\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)|(?:\s+y\s+)/gi;
-const UNIVERSAL_SPLIT_REGEX_DE = /(?:; ?)|(?:\s*,\s*)|(?:\s+or\s+)|(?:\s+and\s+)|(?:\s+oder\s+)|(?:\s+y\s+)/gi;
 
+const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/'];
+const SEPARATOR_OPTIONAL_SPACE_DE = [';', ','];
+const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y'];
+
+const escapeRegex = (string) => {
+    return string.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&');
+};
+
+const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
+    const escapedSep = escapeRegex(sep);
+    return `(\\s*${escapedSep}\\s*)`;
+}).join('|');
+
+const spaceOptionalGroupsDe = SEPARATOR_OPTIONAL_SPACE_DE.map(sep => {
+    const escapedSep = escapeRegex(sep);
+    return `(\\s*${escapedSep}\\s*)`;
+}).join('|');
+
+const needSpacesGroups = SEPARATOR_NEED_SPACE.map(sep => {
+    const escapedSep = escapeRegex(sep);
+    return `(\\s+${escapedSep}\\s+)`;
+}).join('|');
+
+const ALL_SEPARATOR_GROUPS = `${spaceOptionalGroups}|${needSpacesGroups}`;
+const allGroupsDe = `${spaceOptionalGroupsDe}|${needSpacesGroups}`;
+
+// Includes capturing groups to get the separators back
 // When used in diff, the groups need to be capturing
-const UNIVERSAL_SPLIT_CAPTURE_REGEX = /(; ?)|(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)|(\s+y\s+)/gi;
-const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = /(; ?)|(\s*,\s*)|(\s+or\s+)|(\s+and\s+)|(\s+oder\s+)|(\s+y\s+)/gi;
+const UNIVERSAL_SPLIT_CAPTURE_REGEX = new RegExp(ALL_SEPARATOR_GROUPS, 'gi');
+const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = new RegExp(allGroupsDe, 'gi');
+
+const UNIVERSAL_SPLIT_REGEX = new RegExp(ALL_SEPARATOR_GROUPS.replace(/\((.*?)\)/g, '(?:$1)'), 'gi');
+const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(allGroupsDe.replace(/\((.*?)\)/g, '(?:$1)'), 'gi');
 
 const ICON_ATTRIBUTION = [
     {
@@ -245,6 +272,10 @@ module.exports = {
     UNIVERSAL_SPLIT_REGEX_DE,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
     UNIVERSAL_SPLIT_CAPTURE_REGEX_DE,
+    ALL_SEPARATOR_GROUPS,
+    SEPARATOR_NEED_SPACE,
+    SEPARATOR_OPTIONAL_SPACE,
+    SEPARATOR_OPTIONAL_SPACE_DE,
     ICONS_DIR,
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,

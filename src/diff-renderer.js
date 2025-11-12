@@ -1,5 +1,6 @@
+const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE } = require('./constants.js');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DE } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
@@ -64,7 +65,7 @@ function replaceInvisibleChars(text) {
         "";
     }
     // The pattern targets the common zero-width, joiner, and directional marks.
-    const invisibleCharPattern = /[\t\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
+    const invisibleCharPattern = /[\t\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g;
     return text.replace(invisibleCharPattern, '␣');
 }
 
@@ -124,7 +125,7 @@ function diffPhoneNumbers(original, suggested) {
     const actualNumberStartsWithZero = suggested.split(' ')[1]
         ?.startsWith('0')
         ?? false;
-    
+
     const onlyAddingPlus = normalizedOriginal === normalizedSuggested;
     const numericalPrefix = suggested.split(' ')[0].slice(1);
 
@@ -183,13 +184,13 @@ function diffPhoneNumbers(original, suggested) {
 
     for (let i = 0; i < suggested.length; i++) {
         const char = suggested[i];
-        
+
         // Special handling of adding a prefix to ensure that the whole prefix is marked as added,
         // even if it contains the same digit as the first digit of the actual phone number
         if (
             char === '+'
             && !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
-            && normalizedOriginal.slice(0,2) != '00' // This gets handled properly by the rest of the logic anyway
+            && normalizedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
             && normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
         ) {
@@ -201,12 +202,12 @@ function diffPhoneNumbers(original, suggested) {
             }
             if (isNanp) {
                 suggestedDiff.push({ value: '-', added: true });
-                if (suggested.indexOf('-') !== -1){
+                if (suggested.indexOf('-') !== -1) {
                     i = suggested.indexOf('-')
                 }
             } else {
                 suggestedDiff.push({ value: ' ', added: true });
-                if (suggested.indexOf(' ') !== -1){
+                if (suggested.indexOf(' ') !== -1) {
                     i = suggested.indexOf(' ')
                 }
             }
@@ -312,13 +313,81 @@ function getDiffTagsHtml(oldTag, newTag) {
             oldTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-removed">${actualOldTag}</span>`,
             newTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-added">${actualNewTag}</span>`
         }
-    } else{
+    } else {
         return {
             oldTagDiff: `<span class="diff-removed">${oldTag}</span>`,
             newTagDiff: `<span class="diff-added">${newTag}</span>`
         }
     }
 }
+
+/**
+ * Merges consecutive string tokens in an array if they are identified as separator characters.
+ *
+ * This function iterates through an array of tokens and, when it encounters a separator
+ * (as defined by the external constants SEPARATOR_NEED_SPACE and SEPARATOR_OPTIONAL_SPACE),
+ * it consumes and concatenates all subsequent consecutive separator tokens into a single token.
+ * It also skips any tokens that are empty strings.
+ *
+ * @param {Token[]} inputArray - The array of string tokens (parts) to process.
+ * @returns {Token[]} A new array where all sequences of consecutive separators have been merged.
+ */
+function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
+
+    const mergedArray = [];
+
+    const ALL_SEPARATORS = useDeSeparators ? [ ...SEPARATOR_OPTIONAL_SPACE_DE, ...SEPARATOR_NEED_SPACE ] : [ ...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE ];
+
+    for (let i = 0; i < inputArray.length; i++) {
+        let currentElement = inputArray[i];
+
+        if (currentElement.length === 0) {
+            continue;
+        }
+
+        const isCurrentSeparator = ALL_SEPARATORS.includes(currentElement.toLowerCase().trim());
+
+        if (isCurrentSeparator) {
+            let j = i + 1;
+
+            while (
+                j < inputArray.length
+                && inputArray[j].length > 0
+                && (ALL_SEPARATORS.includes(inputArray[j].toLowerCase().trim()))
+            ) {
+                currentElement += inputArray[j];
+                j++;
+            }
+
+            i = j - 1;
+        }
+
+        mergedArray.push(currentElement);
+    }
+
+    return mergedArray;
+}
+
+
+/**
+ * Splits an input string into tokenized parts and merges consecutive separator tokens.
+ *
+ * This is a two-step process:
+ * 1. The input string is split using the globally defined UNIVERSAL_SPLIT_CAPTURE_REGEX,
+ * which captures the separators, resulting in an array of text and separator tokens.
+ * 2. Empty or false tokens are filtered out.
+ * 3. The resulting parts are passed to mergeConsecutiveSeparators to ensure no two
+ * separator characters appear as distinct, consecutive tokens.
+ *
+ * @param {string} input - The string (e.g., a phone number) to be tokenized and merged.
+ * @returns {Token[]} An array of processed tokens, ready for further parsing.
+ */
+function splitAndMergePhoneString(input, useDeSeparators) {
+    const captureRegex = useDeSeparators ? UNIVERSAL_SPLIT_CAPTURE_REGEX_DE : UNIVERSAL_SPLIT_CAPTURE_REGEX;
+    const parts = input.split(captureRegex).filter(Boolean);
+    return mergeConsecutiveSeparators(parts, useDeSeparators);
+}
+
 
 /**
  * Creates an HTML string with diff highlighting for two phone number strings, 
@@ -339,11 +408,15 @@ function getDiffHtml(oldString, newString) {
     // Split and initial filter for both strings
     // DE doesn't consider '/' as separator
     const oldPartsUnfiltered = newString.startsWith('+49') ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE) : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
+    
+    const useDeSeparators = newString.startsWith('+49');
+    
     // Filter out falsey values (undefined from capturing groups) and empty strings
-    const oldParts = oldPartsUnfiltered.filter(s => s && s.trim().length > 0);
+    // Remove consecutive separators, e.g. '//'
+    const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
 
     const newPartsUnfiltered = newStringCleaned.split(NEW_SPLIT_CAPTURE_REGEX);
-    const newParts = newPartsUnfiltered.filter(s => s && s.trim().length > 0);
+    const newParts = mergeConsecutiveSeparators(newPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
 
     // Apply consolidation to both old and new parts
     const consolidatedOldParts = consolidatePlusSigns(oldParts);
@@ -355,45 +428,80 @@ function getDiffHtml(oldString, newString) {
     // Iterate over the minimum length of the new, consolidated arrays
     const numSegments = Math.min(consolidatedOldParts.length, consolidatedNewParts.length);
 
-    for (let i = 0; i < numSegments; i++) {
-        const oldSegment = consolidatedOldParts[i];
-        const newSegment = consolidatedNewParts[i];
+    // Number is being removed
+    if (
+        consolidatedOldParts.length === 3
+        && consolidatedNewParts.length === 1
+        && /\d/.test(consolidatedOldParts[0])
+        && /\d/.test(consolidatedOldParts[2])
+    ) {
+        // More robust checking and comparison would be possible
+        // However, most common case is two numbers, one being removed
+        // If it's the first, then the diff is fine
+        // If it's the second it needs special treatment
 
-        // Identify a phone number: MUST contain at least one digit.
-        const isPhoneNumber = /\d/.test(oldSegment);
+        const oldNum1 = consolidatedOldParts[0];
+        const oldNum2 = consolidatedOldParts[2];
+        const newNum = consolidatedNewParts[0];
+        const num1Score = stringSimilarity(oldNum1.replace(/[^d]/, ''), newNum.replace(/[^d]/, ''));
+        const num2Score = stringSimilarity(oldNum2.replace(/[^d]/, ''), newNum.replace(/[^d]/, ''));
 
-        if (isPhoneNumber) {
-            // --- This is a phone number segment ---
-            const { originalDiff, suggestedDiff } = diffPhoneNumbers(oldSegment, newSegment);
+        if (num1Score > num2Score) {
+            const { originalDiff, suggestedDiff } = diffPhoneNumbers(oldNum1, newNum);
             allOriginalDiff = [...allOriginalDiff, ...originalDiff];
-            allSuggestedDiff = [...allSuggestedDiff, ...suggestedDiff]
+            allSuggestedDiff = [...allSuggestedDiff, ...suggestedDiff];
+
+            allOriginalDiff.push({ value: consolidatedOldParts[1], removed: true });
+            allOriginalDiff.push({ value: consolidatedOldParts[2], removed: true });
         } else {
-            // --- This is a separator (e.g., ';', 'or', ',') ---
+            allOriginalDiff.push({ value: consolidatedOldParts[0], removed: true });
+            allOriginalDiff.push({ value: consolidatedOldParts[1], removed: true });
 
-            // Just do a regular diffChars on the separators
-            separatorDiff = diffChars(oldSegment, newSegment);
+            const { originalDiff, suggestedDiff } = diffPhoneNumbers(oldNum2, newNum);
+            allOriginalDiff = [...allOriginalDiff, ...originalDiff];
+            allSuggestedDiff = [...allSuggestedDiff, ...suggestedDiff];
+        }
+    } else {
+        for (let i = 0; i < numSegments; i++) {
+            const oldSegment = consolidatedOldParts[i];
+            const newSegment = consolidatedNewParts[i];
 
-            for (const part of separatorDiff) {
-                if (part.removed) {
-                    allOriginalDiff.push({ value: part.value, removed: true });
-                } else if (part.added) {
-                    allSuggestedDiff.push({ value: part.value, added: true });
-                } else {
-                    allOriginalDiff.push({ value: part.value, removed: false, added: false });
-                    allSuggestedDiff.push({ value: part.value, removed: false, added: false });
+            // Identify a phone number: MUST contain at least one digit.
+            const isPhoneNumber = /\d/.test(oldSegment);
+
+            if (isPhoneNumber) {
+                // --- This is a phone number segment ---
+                const { originalDiff, suggestedDiff } = diffPhoneNumbers(oldSegment, newSegment);
+                allOriginalDiff = [...allOriginalDiff, ...originalDiff];
+                allSuggestedDiff = [...allSuggestedDiff, ...suggestedDiff];
+            } else {
+                // --- This is a separator (e.g., ';', 'or', ',') ---
+
+                // Just do a regular diffChars on the separators
+                const separatorDiff = diffChars(oldSegment, newSegment);
+
+                for (const part of separatorDiff) {
+                    if (part.removed) {
+                        allOriginalDiff.push({ value: part.value, removed: true });
+                    } else if (part.added) {
+                        allSuggestedDiff.push({ value: part.value, added: true });
+                    } else {
+                        allOriginalDiff.push({ value: part.value, removed: false, added: false });
+                        allSuggestedDiff.push({ value: part.value, removed: false, added: false });
+                    }
                 }
             }
         }
-    }
 
-    // Append any trailing parts
-    const trailingOriginal = consolidatedOldParts.slice(numSegments).join('')
-    const trailingSuggested = consolidatedNewParts.slice(numSegments).join('')
-    if (trailingOriginal){
-        allOriginalDiff.push({ value: trailingOriginal, removed: true, added: false });
-    }
-    if (trailingSuggested) {
-        allSuggestedDiff.push({ value: trailingSuggested, removed: false, added: true });
+        // Append any trailing parts
+        const trailingOriginal = consolidatedOldParts.slice(numSegments).join('')
+        const trailingSuggested = consolidatedNewParts.slice(numSegments).join('')
+        if (trailingOriginal) {
+            allOriginalDiff.push({ value: trailingOriginal, removed: true, added: false });
+        }
+        if (trailingSuggested) {
+            allSuggestedDiff.push({ value: trailingSuggested, removed: false, added: true });
+        }
     }
 
     const mergedOriginalDiff = mergeDiffs(allOriginalDiff);
@@ -415,4 +523,4 @@ function getDiffHtml(oldString, newString) {
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
 }
 
-module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml };
+module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml, splitAndMergePhoneString };

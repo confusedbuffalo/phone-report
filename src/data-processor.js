@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, NON_MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -81,7 +81,6 @@ function isDisused(item) {
 /**
  * Determines a feature's primary type value from its OSM tags.
  * For example, for a feature with `amenity=restaurant`, it returns 'restaurant'.
- * It checks standard feature tags first, then prefixed tags (e.g. `disused:amenity`).
  * @param {object} item - An OSM object including allTags.
  * @returns {string|null} The value of the most relevant feature tag, or null if not found.
  */
@@ -89,14 +88,6 @@ function getFeatureType(item) {
     for (const tag of FEATURE_TAGS) {
         if (item.allTags[tag]) {
             return item.allTags[tag];
-        }
-    }
-
-    for (const prefix of HISTORIC_AND_DISUSED_PREFIXES) {
-        for (const tag of FEATURE_TAGS) {
-            if (item.allTags[`${prefix}:${tag}`]) {
-                return item.allTags[tag];
-            }
         }
     }
     return null
@@ -120,15 +111,8 @@ function getFeatureTypeName(item, locale) {
         return preset.name;
     }
 
-    const featureType = getFeatureType(item);
-
-    if (featureType) {
-        const formattedType = featureType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        return `${formattedType}`;
-    } else {
-        const formattedType = item.type.replace(/\b\w/g, c => c.toUpperCase());
-        return `OSM ${formattedType}`;
-    }
+    const formattedType = item.type.replace(/\b\w/g, c => c.toUpperCase());
+    return `OSM ${formattedType}`;
 }
 
 /**
@@ -233,9 +217,15 @@ function keyToRemove(key1, key2) {
 function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     if (!originalNumberStr || !newNumberStr) return false;
 
-    // Digits, spaces, plus, dash and hypens and invisible spacing characters
-    const originalSimple = originalNumberStr.match(/[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g)
-    if (!originalSimple) return false;
+    // Digits, spaces, plus, dash and hyphens and invisible spacing characters
+    // DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
+    const SAFE_CHARACTER_REGEX =
+        countryCode === 'DE'
+            ? /[\d\s\(\)+\.\\\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g
+            : /[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g;
+
+    const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX)
+    if (!hasOnlySafeChars) return false;
 
     processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
@@ -518,6 +508,20 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         suggestedFix = null;
     }
 
+    // DE numbers do not have fixed length and could start with 49, but maybe a + was missed off
+    // so it is not clear what the correct fix should be
+    // see https://github.com/confusedbuffalo/phone-report/issues/78 and https://github.com/confusedbuffalo/phone-report/issues/53
+    if (
+        isInvalid
+        && autoFixable
+        && countryCode === 'DE'
+        && coreNumber.replace(/[^\d]/g, '').startsWith('49')
+        && !coreNumber.split('49')[0].includes('+')
+    ) {
+        autoFixable = false;
+        suggestedFix = null;
+    }
+
     return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch };
 }
 
@@ -635,6 +639,11 @@ function processMismatches(item, countryCode) {
                 suggestedForMismatch = filteredSuggested.join('; ');
             } else {
                 suggestedForMismatch = mismatchValue;
+            }
+
+            if (item.hasTypeMismatch) {
+                // Ensure that existing value is always shown (even if valid) so that it can be displayed
+                item.invalidNumbers.set(tagToUse, existingValue);
             }
 
             // If the numbers were already valid, and invalid is only there to show what the duplicate is matching

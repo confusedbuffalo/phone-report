@@ -659,6 +659,25 @@ describe('processSingleNumber', () => {
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+49 4761 3163');
     });
+
+    test('DE: number starting with 49 is invalid and not fixable', () => {
+        const result = processSingleNumber('49 4761 3163', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
+
+    test('DE: number starting with (+49) is valid and fixable', () => {
+        const result = processSingleNumber('(+49) 04761 3163', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 4761 3163');
+    });
+
+    test('DE: number starting with some other characters then 49 is invalid and unfixable', () => {
+        const result = processSingleNumber('-49 521 557666', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
 });
 
 // =====================================================================
@@ -1182,6 +1201,42 @@ describe('validateNumbers', () => {
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:mobile': null,
             'phone': FIXABLE_LANDLINE_SUGGESTED_FIX
+        });
+        expect(invalidItem.mismatchTypeNumbers).toEqual({
+            "contact:mobile": FIXABLE_LANDLINE_SUGGESTED_FIX
+        });
+    });
+
+    test('should fix and move landline number out of mobile tag and append to existing phone tag', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:mobile': FIXABLE_LANDLINE_INPUT,
+                    'phone': VALID_LANDLINE_2,
+                    name: 'Landline in Mobile',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.hasTypeMismatch).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:mobile': FIXABLE_LANDLINE_INPUT,
+            'phone': VALID_LANDLINE_2,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:mobile': null,
+            'phone': `${VALID_LANDLINE_2}; ${FIXABLE_LANDLINE_SUGGESTED_FIX}`
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
             "contact:mobile": FIXABLE_LANDLINE_SUGGESTED_FIX
@@ -1819,7 +1874,7 @@ describe('isSafeEdit', () => {
     // Test: Success Scenarios
     // =======================================================
 
-    test('should return true for a safe edit where original US number matches fixed international format', () => {
+    test('US: should return true for a safe edit where original number matches fixed international format', () => {
         const originalNumber = '(213) 373-1234';
         const newNumber = '+1-213-373-1234';
         const countryCode = 'US';
@@ -1827,7 +1882,7 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });
 
-    test('should return true for a safe edit where original GB number matches fixed international format', () => {
+    test('GB: should return true for a safe edit where original number matches fixed international format', () => {
         const originalNumber = '020 7946 0000';
         const newNumber = '+44 20 7946 0000';
         const countryCode = 'GB';
@@ -1835,10 +1890,18 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });
 
-    test('should return true when original GB number is already international but fixable', () => {
+    test('GB: should return true when original number is already international but fixable', () => {
         const originalNumber = '+44.20.7946.0000';
         const newNumber = '+44 20 7946 0000';
         const countryCode = 'GB';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
+    });
+
+    test('DE: number containing slashes is a safe fix', () => {
+        const originalNumber = '+49 7731 / 49225';
+        const newNumber = '+49 7731 49225';
+        const countryCode = 'DE';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });
@@ -1875,11 +1938,19 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(false);
     });
 
+    test('DE: number containing hyphen is not a safe fix', () => {
+        const originalNumber = '+49-7736-9219';
+        const newNumber = '+49 7731 49225';
+        const countryCode = 'DE';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(false);
+    });
+
     // =======================================================
     // Test: parsePhoneNumber Failures (New number checks)
     // =======================================================
 
-    test('should return false if the new number is invalid (US)', () => {
+    test('US: should return false if the new number is invalid', () => {
         const originalNumber = '(555) 123-4567';
         const newNumber = '+1555123';
         const countryCode = 'US';

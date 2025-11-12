@@ -446,8 +446,21 @@ function sortItems(items, key, direction) {
                 break;
             case 'fixable':
                 // Get the value of the first key in suggestedFixes
-                valA = getFirstNonNullValue(a.suggestedFixes);
-                valB = getFirstNonNullValue(b.suggestedFixes);
+                // If there isn't one, get the first from invalid numbers
+                // (suggested might be null if the value is being removed)
+
+                let firstA = getFirstNonNullValue(a.suggestedFixes);
+                if (!firstA) {
+                    firstA = getFirstNonNullValue(a.invalidNumbers)
+                }
+
+                let firstB = getFirstNonNullValue(b.suggestedFixes);
+                if (!firstB) {
+                    firstB = getFirstNonNullValue(b.invalidNumbers)
+                }
+
+                valA = firstA;
+                valB = firstB;
                 break;
             default:
                 return 0;
@@ -910,6 +923,8 @@ function initLogin() {
  * @returns {void}
  */
 function applyEditsToFeatureTags(feature, elementEdits) {
+    let changed = false;
+
     if (!feature.tags || typeof feature.tags !== 'object') {
         feature.tags = {};
     }
@@ -921,12 +936,18 @@ function applyEditsToFeatureTags(feature, elementEdits) {
             const value = elementEdits[key];
 
             if (value === null) {
-                delete tags[key];
-            } else {
+                if (Object.hasOwn(tags, key)) {
+                    delete tags[key];
+                    changed = true;
+                }
+            } else if (tags[key] !== value) {
                 tags[key] = value;
+                changed = true;
             }
         }
     }
+
+    return changed;
 }
 
 /**
@@ -975,6 +996,8 @@ async function uploadChanges() {
 
     const elementTypes = ['node', 'way', 'relation'];
 
+    const MAX_FEATURES_PER_FETCH = 500;
+
     for (const type of elementTypes) {
         const editsForType = subdivisionEdits[type];
 
@@ -982,13 +1005,22 @@ async function uploadChanges() {
             const featureIds = Object.keys(editsForType);
 
             if (featureIds.length > 0) {
-                const features = await OSM.getFeatures(type, featureIds);
-                for (const feature of features) {
+                const featureIdChunks = [];
+                for (let i = 0; i < featureIds.length; i += MAX_FEATURES_PER_FETCH) {
+                    featureIdChunks.push(featureIds.slice(i, i + MAX_FEATURES_PER_FETCH));
+                }
+
+                let allFeatures = [];
+                for (const chunk of featureIdChunks) {
+                    const features = await OSM.getFeatures(type, chunk);
+                    allFeatures.push(...features);
+                }
+                
+                for (const feature of allFeatures) {
                     const originalTags = { ...feature.tags }
-                    applyEditsToFeatureTags(feature, editsForType[feature.id])
-                    if (
-                        JSON.stringify(originalTags, Object.keys(originalTags).sort()) !== JSON.stringify(feature.tags, Object.keys(feature.tags).sort())
-                    ) {
+                    changed = applyEditsToFeatureTags(feature, editsForType[feature.id])
+
+                    if (changed) {
                         modifications.push(feature);
                     }
                 }
@@ -1004,6 +1036,7 @@ async function uploadChanges() {
         moveEditsToUploadedStorage();
         return changesetId;
     }
+    
     moveEditsToUploadedStorage();
 }
 

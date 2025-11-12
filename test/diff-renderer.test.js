@@ -1,3 +1,4 @@
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE } = require('../src/constants');
 const {
     normalize,
     consolidatePlusSigns,
@@ -5,7 +6,8 @@ const {
     diffPhoneNumbers,
     mergeDiffs,
     getDiffHtml,
-    getDiffTagsHtml
+    getDiffTagsHtml,
+    splitAndMergePhoneString,
 } = require('../src/diff-renderer');
 
 // --- Test Suites ---
@@ -104,6 +106,13 @@ describe('replaceInvisibleChars', () => {
     test('should replace tab character with ␣', () => {
         // "MNO(SFT)PQR"
         const input = "MNO\tPQR";
+        const expected = "MNO␣PQR";
+        expect(replaceInvisibleChars(input)).toBe(expected);
+    });
+
+    test('should replace pop directional isolate (U+2069) character with ␣', () => {
+        // "MNO(PDI)PQR"
+        const input = "MNO\u2069PQR";
         const expected = "MNO␣PQR";
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
@@ -674,6 +683,57 @@ describe('getDiffTagsHtml', () => {
 });
 
 
+
+describe('splitAndMergePhoneString', () => {
+    test('merges simple comma and slash', () => {
+        const input = '0123456789, / 0987654321';
+        expect(splitAndMergePhoneString(input, false)).toEqual([
+            '0123456789',
+            ', / ',
+            '0987654321',
+        ]);
+    });
+
+    test('merges double slash', () => {
+        const input = '0123456789 // 0987654321';
+        expect(splitAndMergePhoneString(input, false)).toEqual([
+            '0123456789',
+            ' // ',
+            '0987654321',
+        ]);
+    });
+
+    test('handles multiple phone numbers cleanly', () => {
+        const input = '0123 456 789 or 0987 654 321 / 011 222 3333';
+        expect(splitAndMergePhoneString(input, false)).toEqual([
+            '0123 456 789',
+            ' or ',
+            '0987 654 321',
+            ' / ',
+            '011 222 3333',
+        ]);
+    });
+
+    test('handles extra whitespace', () => {
+        const input = '0123 456 789 ,  /  0987 654 321';
+        expect(splitAndMergePhoneString(input, false)).toEqual([
+            '0123 456 789',
+            ' ,  /  ',
+            '0987 654 321',
+        ]);
+    });
+
+    test('DE regex does not split or merge by slash', () => {
+        const input = '0123/456/789; 0987/654/321';
+        expect(splitAndMergePhoneString(input, true)).toEqual([
+            '0123/456/789',
+            '; ',
+            '0987/654/321',
+        ]);
+    });
+});
+
+
 describe('getDiffHtml', () => {
 
     // Single number, adding country code
@@ -849,4 +909,35 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-added">+39 </span><span class="diff-unchanged">070</span><span class="diff-added"> </span><span class="diff-unchanged">867</span><span class="diff-added"> </span><span class="diff-unchanged">6778</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('US: should correctly diff numbers when double separator is used', () => {
+        const original = '787-728-1111//787-265-2525';
+        const suggested = '+1-787-728-1111; +1-787-265-2525';
+
+        const result = getDiffHtml(original, suggested);
+
+        // --- Original HTML (Removals) ---
+        const expectedOriginal = '<span class="diff-unchanged">787-728-1111</span><span class="diff-removed">//</span><span class="diff-unchanged">787-265-2525</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        // --- Suggested HTML (Additions) ---
+        const expectedSuggested = '<span class="diff-added">+1-</span><span class="diff-unchanged">787-728-1111</span><span class="diff-added">; +1-</span><span class="diff-unchanged">787-265-2525</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('should diff correct numbers when first one of multiple is removed (e.g. due to duplicate)', () => {
+        const original = '+27 11 984;+27 83 462';
+        const suggested = '+27 83 462';
+
+        const result = getDiffHtml(original, suggested);
+
+        // --- Original HTML (Removals) ---
+        const expectedOriginal = '<span class="diff-removed">+27 11 984;</span><span class="diff-unchanged">+27 83 462</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        // --- Suggested HTML (Additions) ---
+        const expectedSuggested = '<span class="diff-unchanged">+27 83 462</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
 });

@@ -5,8 +5,7 @@ const OSM = require("osm-api");
 const { chain } = require('stream-chain');
 const { parser } = require('stream-json/Parser');
 const { streamArray } = require('stream-json/streamers/StreamArray');
-const { disassembler } = require('stream-json/Disassembler');
-const { stringer } = require('stream-json/Stringer');
+const { Transform } = require('stream');
 const { safeName } = require('./data-processor');
 const { SAFE_EDITS_DIR, HOST_URL, AUTO_CHANGESET_TAGS, COUNTRIES } = require('./constants');
 const { getSubdivisionRelativeFilePath } = require('./html-report');
@@ -17,6 +16,29 @@ const { getSubdivisionRelativeFilePath } = require('./html-report');
  * This is retrieved from the environment variable AUTH_TOKEN.
  */
 const BOT_AUTH_TOKEN = process.env.BOT_AUTH_TOKEN;
+
+/**
+ * A custom stream transform that takes a single object chunk and stringifies it
+ * with 2-space indentation (pretty-printing).
+ * @augments stream.Transform
+ */
+class StringifyTransform extends Transform {
+    constructor(options) {
+        // Use object mode for input, standard stream for output (the JSON string)
+        super({ objectMode: true, ...options });
+    }
+
+    _transform(chunk, encoding, callback) {
+        try {
+            // Apply JSON.stringify with 2 spaces for pretty printing
+            const jsonString = JSON.stringify(chunk, null, 2); 
+            this.push(jsonString); // Push the complete JSON string
+            callback();
+        } catch (error) {
+            callback(error);
+        }
+    }
+}
 
 /**
  * Reads a temporary JSON file containing potential edits, filters for 'safeEdit: true' items,
@@ -42,25 +64,34 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
     const dataFilePath = path.join(safeCountryDir, `${subdivisionSlug}.json`);
 
-    const stringerOptions = {};
-
     const FilterStream = require('stream').Transform;
 
     /**
      * A custom stream transform that filters JSON array objects, keeping only those
-     * where the property 'safeEdit' is explicitly true, and extracting only the
-     * necessary fields for the safe edits file.
+     * where the property 'safeEdit' is explicitly true, and extracts only the
+     * necessary fields. It also counts total original items, suggested edits and safe edits.
      * @augments stream.Transform
      */
     class SafeEditFilter extends FilterStream {
         constructor(options) {
             super({ objectMode: true, ...options });
-            this.edits = []; // Collect filtered items
+            this.edits = [];
+            this.totalOriginalItems = 0;
+            this.totalSuggestedEdits = 0;
+            this.totalSafeEdits = 0;
         }
 
         _transform(chunk, encoding, callback) {
+            this.totalOriginalItems++;
+            
             const item = chunk.value;
+
+            if (item && item.autoFixable) {
+                this.totalSuggestedEdits++;
+            }
             if (item && item.safeEdit === true) {
+                this.totalSafeEdits++;
+
                 const disassembledItem = {
                     type: item.type,
                     id: item.id,
@@ -74,14 +105,19 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
         }
         
         _flush(callback) {
-            this.push(this.edits); 
+            this.push({ 
+                edits: this.edits, 
+                totalOriginalItems: this.totalOriginalItems,
+                totalSuggestedEdits: this.totalSuggestedEdits,
+                totalSafeEdits: this.totalSafeEdits
+            });
             callback();
         }
     }
 
     /**
-     * A custom stream transform that wraps the final array of edits into the 
-     * desired output object structure with metadata.
+     * A custom stream transform that wraps the final array of edits, with 
+     * counts of edits, into the output object structure with metadata.
      * @augments stream.Transform
      */
     class SafeEditWrapper extends FilterStream {
@@ -96,18 +132,21 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
         _transform(chunk, encoding, callback) {
             if (this.dataPushed) {
-                // Should not happen, but for safety: 
-                // reject any subsequent chunks if already processed the array
+                // Reject any subsequent chunks if already processed the array
                 return callback(); 
             }
 
-            const editsArray = chunk;
+            const { edits, totalOriginalItems, totalSuggestedEdits, totalSafeEdits } = chunk;
+
             const finalObject = {
                 countryName: this.countryName,
                 subdivisionName: this.subdivisionName,
                 divisionSlug: this.divisionSlug,
                 subdivisionSlug: this.subdivisionSlug,
-                edits: editsArray,
+                totalOriginalItems: totalOriginalItems,
+                totalSuggestedEdits: totalSuggestedEdits,
+                totalSafeEdits: totalSafeEdits,
+                edits: edits,
             };
 
             this.push(finalObject);
@@ -128,8 +167,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
                 subdivisionStats.divisionSlug, 
                 subdivisionStats.slug
             ),
-            disassembler(),
-            stringer(stringerOptions),
+            new StringifyTransform(),
             fs.createWriteStream(dataFilePath)
         ]);
 
@@ -272,7 +310,6 @@ async function uploadSafeChanges(filePath) {
         const relativePagePath = getSubdivisionRelativeFilePath(subdivisionData.countryName, subdivisionData.divisionSlug, subdivisionData.subdivisionSlug)
         const pageLink = `${HOST_URL}/${relativePagePath}`
 
-        // Define changeset tags
         const changesetId = await OSM.uploadChangeset(
             {
                 ...AUTO_CHANGESET_TAGS,
@@ -302,6 +339,7 @@ async function uploadSafeChanges(filePath) {
  */
 async function processSafeEdits() {
     const filesToProcess = [];
+    const countryStats = {};
 
     /**
      * Recursively reads directories and collects file paths.
@@ -343,21 +381,43 @@ async function processSafeEdits() {
                     continue;
                 }
 
+                if (!countryStats[countryName]) {
+                    countryStats[countryName] = {
+                        totalOriginalItems: 0,
+                        totalSuggestedEdits: 0,
+                        totalSafeEdits: 0,
+                        uploaded: 0,
+                        skipped: 0
+                    };
+                }
+
+                const stats = countryStats[countryName];
+                stats.totalOriginalItems += (data.totalOriginalItems || 0);
+                stats.totalSuggestedEdits += (data.totalSuggestedEdits || 0);
+                stats.totalSafeEdits += (data.totalSafeEdits || 0);
+
                 const countryConfig = COUNTRIES[countryName];
 
                 if (!countryConfig) {
                     console.warn(`Skipping file ${filePath}: No config found for '${countryName}'.`);
+                    stats.skipped++;
                     continue;
                 }
 
                 if (countryConfig.safeAutoFixBotEnabled === true) {
                     console.log(`Uploading edits for ${countryName} subdivision: ${data.subdivisionName}`);
-                    const uploadPromise = uploadSafeChanges(filePath);
+                    const uploadPromise = uploadSafeChanges(filePath)
+                        .then(() => {
+                            stats.uploaded++;
+                        })
+                        .catch(err => {
+                            console.error(`Upload failed for ${filePath}:`, err.message);
+                        }); 
                     uploadPromises.push(uploadPromise);
                 } else {
-                    // Rewrite file, formatted for readability to analyse for bot suitability
-                    await fsp.writeFile(filePath, JSON.stringify(data, null, space=2))
+                    stats.skipped++;
                 }
+
             } catch (error) {
                 console.error(`Error processing file ${filePath}:`, error.message);
             }
@@ -365,8 +425,20 @@ async function processSafeEdits() {
 
         // Wait for all successful uploads to complete
         const results = await Promise.allSettled(uploadPromises);
-        
+
         const uploadedCount = results.filter(r => r.status === 'fulfilled').length;
+
+        console.log(`\n--- Country Processing Statistics ---`);
+        for (const country in countryStats) {
+            const stats = countryStats[country];
+            console.log(`\nCountry: ${country}`);
+            console.log(`  Invalid items: ${stats.totalOriginalItems}`);
+            console.log(`  Suggested Fixes: ${stats.totalSuggestedEdits}`);
+            console.log(`  Safe Edits: ${stats.totalSafeEdits}`);
+            console.log(`  Files Uploaded (Active Bot): ${stats.uploaded}`);
+            console.log(`  Files Skipped (No Config/Bot Disabled): ${stats.skipped}`);
+        }
+
         console.log(`\n--- Processing Complete ---`);
         console.log(`Total files processed: ${filesToProcess.length}`);
         console.log(`Successful uploads: ${uploadedCount}`);
