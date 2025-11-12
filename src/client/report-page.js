@@ -158,7 +158,7 @@ function createSettingsCheckboxes() {
             <div class="flex items-center justify-between py-5 px-5">
                 <label for="editor-${id}" class="text-sm text-gray-700 dark:text-gray-300 w-full text-right mr-2">${id}</label>
                 <input id="editor-${id}" type="checkbox" data-editor-id="${id}" ${isChecked ? 'checked' : ''}
-                    class="h-4 w-4 text-blue-600 border-gray-300 rounded-sm focus:ring-blue-500 flex-shrink-0">
+                    class="h-4 w-4 text-blue-600 border-gray-300 rounded-sm focus:ring-blue-500 shrink-0">
             </div>
         `;
         settingsMenu.insertAdjacentHTML('beforeend', checkboxHtml);
@@ -586,7 +586,7 @@ function renderPaginatedSection(
             ${isFixableSection ? `
                 <div class="save-sort-container">
                     <div>${saveRow}</div>
-                    <div>${pageAndSortControls}</div>
+                    <div class="page-sort-controls">${pageAndSortControls}</div>
                 </div>
                 `
             : pageAndSortControls}
