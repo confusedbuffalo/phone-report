@@ -1207,6 +1207,42 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('should fix and move landline number out of mobile tag and append to existing phone tag', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:mobile': FIXABLE_LANDLINE_INPUT,
+                    'phone': VALID_LANDLINE_2,
+                    name: 'Landline in Mobile',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.hasTypeMismatch).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:mobile': FIXABLE_LANDLINE_INPUT,
+            'phone': VALID_LANDLINE_2,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:mobile': null,
+            'phone': `${VALID_LANDLINE_2}; ${FIXABLE_LANDLINE_SUGGESTED_FIX}`
+        });
+        expect(invalidItem.mismatchTypeNumbers).toEqual({
+            "contact:mobile": FIXABLE_LANDLINE_SUGGESTED_FIX
+        });
+    });
+
     test('should keep mobile number in mobile tag when moving another number out', async () => {
         const elements = [
             {

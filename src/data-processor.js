@@ -641,6 +641,11 @@ function processMismatches(item, countryCode) {
                 suggestedForMismatch = mismatchValue;
             }
 
+            if (item.hasTypeMismatch) {
+                // Ensure that existing value is always shown (even if valid) so that it can be displayed
+                item.invalidNumbers.set(tagToUse, existingValue);
+            }
+
             // If the numbers were already valid, and invalid is only there to show what the duplicate is matching
             if (item.invalidNumbers.get(tagToUse) !== suggestedForMismatch) {
                 item.suggestedFixes.set(tagToUse, suggestedForMismatch);

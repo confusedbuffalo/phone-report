@@ -73,8 +73,9 @@ function createClientItems(item, locale, botEnabled) {
         const isMismatchKey = key in item.mismatchTypeNumbers;
         const suggestedRowKey = translate('suggestedFix', locale);
 
-        const duplicateLabel = `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>`;
-        const notMobileLabel = `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>`;
+        const duplicateLabel = isDuplicateKey ? `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>` : '';
+        const notMobileLabel = isMismatchKey ? `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>` : '';
+        const problemLabel = duplicateLabel + notMobileLabel;
 
         // Internal duplicate (in same tag)
         if (isDuplicateKey && item.duplicateNumbers[key] == key) {
@@ -89,12 +90,8 @@ function createClientItems(item, locale, botEnabled) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
 
             let originalRowValue;
-            if (isDuplicateKey && isMismatchKey) {
-                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}${notMobileLabel}</span>`;
-            } else if (isDuplicateKey) {
-                originalRowValue = `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`;
-            } else if (isMismatchKey) {
-                originalRowValue = `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`;
+            if (problemLabel) {
+                originalRowValue = `<span class="list-item-old-value">${oldDiff}${problemLabel}</span>`;
             } else {
                 originalRowValue = oldDiff;
             }
@@ -107,6 +104,11 @@ function createClientItems(item, locale, botEnabled) {
             const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
+            }
+        } else if (isMismatchKey) {
+            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            return {
+                [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
         } else {
             const tagToUse = item.phoneTagToUse;
