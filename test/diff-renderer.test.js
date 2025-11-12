@@ -260,6 +260,48 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         expect(result.suggestedDiff).toEqual(expectedSuggested)
     });
 
+    test('should correctly handle US number without country code adding country code (+1- example)', () => {
+        const original = '8596352440';
+        const suggested = '+1-859-635-2440';
+
+        const result = diffPhoneNumbers(original, suggested);
+
+        // Everything present is unchanged
+        const expectedOriginal = [
+            { value: '8', removed: false, added: false },
+            { value: '5', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '6', removed: false, added: false },
+            { value: '3', removed: false, added: false },
+            { value: '5', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+            { value: '4', removed: false, added: false },
+            { value: '4', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+        ]
+        expect(result.originalDiff).toEqual(expectedOriginal)
+
+        // + and dashes are added
+        const expectedSuggested = [
+            { value: '+', added: true },
+            { value: '1', added: true },
+            { value: '-', added: true },
+            { value: '8', removed: false, added: false },
+            { value: '5', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '-', added: true },
+            { value: '6', removed: false, added: false },
+            { value: '3', removed: false, added: false },
+            { value: '5', removed: false, added: false },
+            { value: '-', added: true },
+            { value: '2', removed: false, added: false },
+            { value: '4', removed: false, added: false },
+            { value: '4', removed: false, added: false },
+            { value: '0', removed: false, added: false },
+        ]
+        expect(result.suggestedDiff).toEqual(expectedSuggested)
+    });
+
     test('should not mark + as added when text is removed', () => {
         const original = 'Mobile: +44 7767 407 561';
         const suggested = '+44 7767 407561';

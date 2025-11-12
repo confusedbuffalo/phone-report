@@ -193,15 +193,22 @@ function diffPhoneNumbers(original, suggested) {
             && !onlyAddingPlus // doesn't need special handling
             && normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
         ) {
-            const prefix = suggested.split(' ')[0]
+            const isNanp = suggested.startsWith('+1-');
+            const prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
 
             for (let j = 0; j < prefix.length; j++) {
                 suggestedDiff.push({ value: prefix[j], added: true });
             }
-            suggestedDiff.push({ value: ' ', added: true });
-
-            if (suggested.indexOf(' ') !== -1){
-                i = suggested.indexOf(' ')
+            if (isNanp) {
+                suggestedDiff.push({ value: '-', added: true });
+                if (suggested.indexOf('-') !== -1){
+                    i = suggested.indexOf('-')
+                }
+            } else {
+                suggestedDiff.push({ value: ' ', added: true });
+                if (suggested.indexOf(' ') !== -1){
+                    i = suggested.indexOf(' ')
+                }
             }
 
             if (originalRemainderNew[0] === '0' && !actualNumberStartsWithZero) {
