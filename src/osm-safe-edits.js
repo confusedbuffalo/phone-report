@@ -35,6 +35,11 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
     await fsp.mkdir(safeCountryDir, { recursive: true });
 
+    if (!singleLevelDivision) {
+        const subdivisionDir = path.join(safeCountryDir, subdivisionStats.divisionSlug)
+        await fsp.mkdir(subdivisionDir, { recursive: true });
+    }
+
     const dataFilePath = path.join(safeCountryDir, `${subdivisionSlug}.json`);
 
     const stringerOptions = {};
