@@ -65,7 +65,7 @@ function replaceInvisibleChars(text) {
         "";
     }
     // The pattern targets the common zero-width, joiner, and directional marks.
-    const invisibleCharPattern = /[\t\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g;
+    const invisibleCharPattern = /[\t\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g;
     return text.replace(invisibleCharPattern, '␣');
 }
 
@@ -359,7 +359,6 @@ function mergeConsecutiveSeparators(inputArray) {
 
 function splitAndMergePhoneString(input) {
     const parts = input.split(UNIVERSAL_SPLIT_CAPTURE_REGEX).filter(Boolean);
-    console.log(parts)
     return mergeConsecutiveSeparators(parts);
 }
 
