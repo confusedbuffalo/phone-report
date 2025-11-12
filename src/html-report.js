@@ -52,7 +52,7 @@ function createClientItems(item, locale, botEnabled) {
     if (botEnabled && item.safeEdit){
         return null;
     }
-    
+
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
@@ -65,7 +65,6 @@ function createClientItems(item, locale, botEnabled) {
     }
 
     item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
-
 
     item.fixRows = Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
@@ -125,7 +124,6 @@ function createClientItems(item, locale, botEnabled) {
             };
         }
     }).filter(Boolean);
-
 
     item.josmFixUrl = createJosmFixUrl(item);
 
