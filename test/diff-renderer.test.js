@@ -687,7 +687,7 @@ describe('getDiffTagsHtml', () => {
 describe('splitAndMergePhoneString', () => {
     test('merges simple comma and slash', () => {
         const input = '0123456789, / 0987654321';
-        expect(splitAndMergePhoneString(input)).toEqual([
+        expect(splitAndMergePhoneString(input, false)).toEqual([
             '0123456789',
             ', / ',
             '0987654321',
@@ -696,7 +696,7 @@ describe('splitAndMergePhoneString', () => {
 
     test('merges double slash', () => {
         const input = '0123456789 // 0987654321';
-        expect(splitAndMergePhoneString(input)).toEqual([
+        expect(splitAndMergePhoneString(input, false)).toEqual([
             '0123456789',
             ' // ',
             '0987654321',
@@ -705,7 +705,7 @@ describe('splitAndMergePhoneString', () => {
 
     test('handles multiple phone numbers cleanly', () => {
         const input = '0123 456 789 or 0987 654 321 / 011 222 3333';
-        expect(splitAndMergePhoneString(input)).toEqual([
+        expect(splitAndMergePhoneString(input, false)).toEqual([
             '0123 456 789',
             ' or ',
             '0987 654 321',
@@ -716,10 +716,19 @@ describe('splitAndMergePhoneString', () => {
 
     test('handles extra whitespace', () => {
         const input = '0123 456 789 ,  /  0987 654 321';
-        expect(splitAndMergePhoneString(input)).toEqual([
+        expect(splitAndMergePhoneString(input, false)).toEqual([
             '0123 456 789',
             ' ,  /  ',
             '0987 654 321',
+        ]);
+    });
+
+    test('DE regex does not split or merge by slash', () => {
+        const input = '0123/456/789; 0987/654/321';
+        expect(splitAndMergePhoneString(input, true)).toEqual([
+            '0123/456/789',
+            '; ',
+            '0987/654/321',
         ]);
     });
 });

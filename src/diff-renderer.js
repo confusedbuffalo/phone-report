@@ -1,6 +1,6 @@
 const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE } = require('./constants.js');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DE } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
@@ -321,9 +321,22 @@ function getDiffTagsHtml(oldTag, newTag) {
     }
 }
 
-function mergeConsecutiveSeparators(inputArray) {
+/**
+ * Merges consecutive string tokens in an array if they are identified as separator characters.
+ *
+ * This function iterates through an array of tokens and, when it encounters a separator
+ * (as defined by the external constants SEPARATOR_NEED_SPACE and SEPARATOR_OPTIONAL_SPACE),
+ * it consumes and concatenates all subsequent consecutive separator tokens into a single token.
+ * It also skips any tokens that are empty strings.
+ *
+ * @param {Token[]} inputArray - The array of string tokens (parts) to process.
+ * @returns {Token[]} A new array where all sequences of consecutive separators have been merged.
+ */
+function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
 
     const mergedArray = [];
+
+    const ALL_SEPARATORS = useDeSeparators ? [ ...SEPARATOR_OPTIONAL_SPACE_DE, ...SEPARATOR_NEED_SPACE ] : [ ...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE ];
 
     for (let i = 0; i < inputArray.length; i++) {
         let currentElement = inputArray[i];
@@ -332,7 +345,7 @@ function mergeConsecutiveSeparators(inputArray) {
             continue;
         }
 
-        const isCurrentSeparator = SEPARATOR_NEED_SPACE.includes(currentElement.toLowerCase().trim()) || SEPARATOR_OPTIONAL_SPACE.includes(currentElement.toLowerCase().trim());
+        const isCurrentSeparator = ALL_SEPARATORS.includes(currentElement.toLowerCase().trim());
 
         if (isCurrentSeparator) {
             let j = i + 1;
@@ -340,8 +353,7 @@ function mergeConsecutiveSeparators(inputArray) {
             while (
                 j < inputArray.length
                 && inputArray[j].length > 0
-                && (SEPARATOR_NEED_SPACE.includes(inputArray[j].toLowerCase().trim())
-                    || SEPARATOR_OPTIONAL_SPACE.includes(inputArray[j].toLowerCase().trim()))
+                && (ALL_SEPARATORS.includes(inputArray[j].toLowerCase().trim()))
             ) {
                 currentElement += inputArray[j];
                 j++;
@@ -357,9 +369,23 @@ function mergeConsecutiveSeparators(inputArray) {
 }
 
 
-function splitAndMergePhoneString(input) {
-    const parts = input.split(UNIVERSAL_SPLIT_CAPTURE_REGEX).filter(Boolean);
-    return mergeConsecutiveSeparators(parts);
+/**
+ * Splits an input string into tokenized parts and merges consecutive separator tokens.
+ *
+ * This is a two-step process:
+ * 1. The input string is split using the globally defined UNIVERSAL_SPLIT_CAPTURE_REGEX,
+ * which captures the separators, resulting in an array of text and separator tokens.
+ * 2. Empty or false tokens are filtered out.
+ * 3. The resulting parts are passed to mergeConsecutiveSeparators to ensure no two
+ * separator characters appear as distinct, consecutive tokens.
+ *
+ * @param {string} input - The string (e.g., a phone number) to be tokenized and merged.
+ * @returns {Token[]} An array of processed tokens, ready for further parsing.
+ */
+function splitAndMergePhoneString(input, useDeSeparators) {
+    const captureRegex = useDeSeparators ? UNIVERSAL_SPLIT_CAPTURE_REGEX_DE : UNIVERSAL_SPLIT_CAPTURE_REGEX;
+    const parts = input.split(captureRegex).filter(Boolean);
+    return mergeConsecutiveSeparators(parts, useDeSeparators);
 }
 
 
@@ -382,12 +408,15 @@ function getDiffHtml(oldString, newString) {
     // Split and initial filter for both strings
     // DE doesn't consider '/' as separator
     const oldPartsUnfiltered = newString.startsWith('+49') ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE) : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
+    
+    const useDeSeparators = newString.startsWith('+49');
+    
     // Filter out falsey values (undefined from capturing groups) and empty strings
     // Remove consecutive separators, e.g. '//'
-    const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0));
+    const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
 
     const newPartsUnfiltered = newStringCleaned.split(NEW_SPLIT_CAPTURE_REGEX);
-    const newParts = mergeConsecutiveSeparators(newPartsUnfiltered.filter(s => s && s.trim().length > 0));
+    const newParts = mergeConsecutiveSeparators(newPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
 
     // Apply consolidation to both old and new parts
     const consolidatedOldParts = consolidatePlusSigns(oldParts);
