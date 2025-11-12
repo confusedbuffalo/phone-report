@@ -77,6 +77,9 @@ function createClientItems(item, locale, botEnabled) {
         const notMobileLabel = isMismatchKey ? `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>` : '';
         const problemLabel = duplicateLabel + notMobileLabel;
 
+        const tagToUse = item.phoneTagToUse;
+        const mobileMovingToEmptyTag = !(tagToUse in item.invalidNumbers) && (tagToUse in item.suggestedFixes);
+
         // Internal duplicate (in same tag)
         if (isDuplicateKey && item.duplicateNumbers[key] == key) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
@@ -105,15 +108,14 @@ function createClientItems(item, locale, botEnabled) {
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
-        } else if (isMismatchKey) {
+        } else if (isMismatchKey && !mobileMovingToEmptyTag) {
             const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
         } else {
-            const tagToUse = item.phoneTagToUse;
             // Mobile is being moved to standard key, which did not exist before
-            if (!(tagToUse in item.invalidNumbers) && (tagToUse in item.suggestedFixes)) {
+            if (mobileMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
                 const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
                 return {
