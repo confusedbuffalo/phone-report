@@ -243,9 +243,13 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
 
     // Confirm that the number is in the same country
-    const parsedNew = parsePhoneNumber(newNumberStr);
-    if (parsedNew.country === countryCode && parsedNew.isValid()) {
-        return true;
+    try {
+        const parsedNew = parsePhoneNumber(newNumberStr);
+        if (parsedNew.country === countryCode && parsedNew.isValid()) {
+            return true;
+        }
+    } catch (e) {
+        // Parsing failed due to an exception
     }
 
     return false;

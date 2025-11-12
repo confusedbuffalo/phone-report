@@ -227,7 +227,7 @@
 }
 
 @utility color-indicator {
-  @apply h-12 w-12 rounded-full flex-shrink-0;
+  @apply h-12 w-12 rounded-full shrink-0;
 }
 
 @utility country-name {
@@ -247,11 +247,11 @@
 }
 
 @utility list-item-header {
-  @apply flex-shrink-0 flex flex-wrap items-center gap-2;
+  @apply shrink-0 flex flex-wrap items-center gap-2;
 }
 
 @utility list-item-icon-circle-preview {
-  @apply w-10 h-10 inline-flex flex-shrink-0 items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-gray-200 transition-colors;
+  @apply w-10 h-10 inline-flex shrink-0 items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-gray-200 transition-colors;
 }
 
 @utility list-item-icon-container {
@@ -308,8 +308,8 @@
 }
 
 @utility summary-right-side {
-  @apply text-center sm:text-right flex-shrink-0;
-  @apply text-center sm:text-right flex-shrink-0 w-full sm:w-auto;
+  @apply text-center sm:text-right shrink-0;
+  @apply text-center sm:text-right shrink-0 w-full sm:w-auto;
 }
 
 @utility summary-percentage {
@@ -354,15 +354,15 @@
 }
 
 @utility sort-controls {
-  @apply flex flex-wrap items-center justify-end gap-2;
+  @apply sm:flex grid grid-cols-2 items-center justify-end gap-2 overflow-hidden whitespace-nowrap;
 }
 
 @utility sort-label {
-  @apply mr-2 text-sm font-medium text-gray-700 dark:text-gray-300;
+  @apply mr-2 text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0 text-right;
 }
 
 @utility sort-btn-style {
-  @apply px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer;
+  @apply px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer truncate;
 }
 
 @utility sort-btn-style-active {
@@ -378,7 +378,7 @@
 }
 
 @utility page-btns-container {
-  @apply flex items-center space-x-2 mb-4 sm:mb-0;
+  @apply flex items-center sm:space-x-2 mb-4 sm:mb-0 w-full sm:w-auto justify-between sm:justify-start;
 }
 
 @utility page-btn {
@@ -398,7 +398,7 @@
 }
 
 @utility page-numbers {
-  @apply text-sm text-gray-700 dark:text-gray-300;
+  @apply text-sm text-gray-700 dark:text-gray-300 text-center;
 }
 
 @utility page-container {
@@ -673,6 +673,13 @@
   @apply
     flex flex-col
     w-full;
+}
+
+@utility page-sort-controls {
+  @apply
+    flex flex-col sm:flex-row
+    items-center
+    justify-between;
 }
 
 @utility message-box-success {
