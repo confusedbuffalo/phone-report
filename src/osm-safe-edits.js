@@ -310,7 +310,6 @@ async function uploadSafeChanges(filePath) {
         const relativePagePath = getSubdivisionRelativeFilePath(subdivisionData.countryName, subdivisionData.divisionSlug, subdivisionData.subdivisionSlug)
         const pageLink = `${HOST_URL}/${relativePagePath}`
 
-        // Define changeset tags
         const changesetId = await OSM.uploadChangeset(
             {
                 ...AUTO_CHANGESET_TAGS,
@@ -340,6 +339,7 @@ async function uploadSafeChanges(filePath) {
  */
 async function processSafeEdits() {
     const filesToProcess = [];
+    const countryStats = {};
 
     /**
      * Recursively reads directories and collects file paths.
@@ -381,18 +381,43 @@ async function processSafeEdits() {
                     continue;
                 }
 
+                if (!countryStats[countryName]) {
+                    countryStats[countryName] = {
+                        totalOriginalItems: 0,
+                        totalSuggestedEdits: 0,
+                        totalSafeEdits: 0,
+                        uploaded: 0,
+                        skipped: 0
+                    };
+                }
+
+                const stats = countryStats[countryName];
+                stats.totalOriginalItems += (data.totalOriginalItems || 0);
+                stats.totalSuggestedEdits += (data.totalSuggestedEdits || 0);
+                stats.totalSafeEdits += (data.totalSafeEdits || 0);
+
                 const countryConfig = COUNTRIES[countryName];
 
                 if (!countryConfig) {
                     console.warn(`Skipping file ${filePath}: No config found for '${countryName}'.`);
+                    stats.skipped++;
                     continue;
                 }
 
                 if (countryConfig.safeAutoFixBotEnabled === true) {
                     console.log(`Uploading edits for ${countryName} subdivision: ${data.subdivisionName}`);
-                    const uploadPromise = uploadSafeChanges(filePath);
+                    const uploadPromise = uploadSafeChanges(filePath)
+                        .then(() => {
+                            stats.uploaded++;
+                        })
+                        .catch(err => {
+                            console.error(`Upload failed for ${filePath}:`, err.message);
+                        }); 
                     uploadPromises.push(uploadPromise);
+                } else {
+                    stats.skipped++;
                 }
+
             } catch (error) {
                 console.error(`Error processing file ${filePath}:`, error.message);
             }
@@ -400,8 +425,20 @@ async function processSafeEdits() {
 
         // Wait for all successful uploads to complete
         const results = await Promise.allSettled(uploadPromises);
-        
+
         const uploadedCount = results.filter(r => r.status === 'fulfilled').length;
+
+        console.log(`\n--- Country Processing Statistics ---`);
+        for (const country in countryStats) {
+            const stats = countryStats[country];
+            console.log(`\nCountry: ${country}`);
+            console.log(`  Invalid items: ${stats.totalOriginalItems}`);
+            console.log(`  Suggested Fixes: ${stats.totalSuggestedEdits}`);
+            console.log(`  Safe Edits: ${stats.totalSafeEdits}`);
+            console.log(`  Files Uploaded (Active Bot): ${stats.uploaded}`);
+            console.log(`  Files Skipped (No Config/Bot Disabled): ${stats.skipped}`);
+        }
+
         console.log(`\n--- Processing Complete ---`);
         console.log(`Total files processed: ${filesToProcess.length}`);
         console.log(`Successful uploads: ${uploadedCount}`);
