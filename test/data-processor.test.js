@@ -1919,6 +1919,26 @@ describe('isSafeEdit', () => {
     });
 
     // =======================================================
+    // Test: Other symbols check
+    // =======================================================
+
+    test('a phone tag containing any disallowed symbol is not a safe edit', () => {
+        const originalNumber = '020 7946 0000?';
+        const newNumber = '+44 20 7946 0000';
+        const countryCode = 'GB';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(false);
+    });
+
+    test('a phone tag containing other symbols is not a safe edit', () => {
+        const originalNumber = '020 7946 0000 "sales"';
+        const newNumber = '+44 20 7946 0000';
+        const countryCode = 'GB';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(false);
+    });
+
+    // =======================================================
     // Test: processSingleNumber Failures (Fixability/Match Check)
     // =======================================================
 
