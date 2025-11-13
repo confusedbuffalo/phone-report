@@ -221,10 +221,10 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     // DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX =
         countryCode === 'DE'
-            ? /[\d\s\(\)+\.\\\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g
-            : /[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g;
+            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g
+            : /^[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
 
-    const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX)
+    const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
     if (!hasOnlySafeChars) return false;
 
     processedOriginal = processSingleNumber(originalNumberStr, countryCode);
