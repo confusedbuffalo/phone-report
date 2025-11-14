@@ -621,6 +621,12 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+48 58 677 44 78');
     });
 
+    test('PL: leading 0 is invaid but too short is invalid', () => {
+        const result = processSingleNumber('+48 02787', SAMPLE_COUNTRY_CODE_PL);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
+
     test('PL: leading 0 is invaid but fixable with country code', () => {
         const result = processSingleNumber('+48 0586774478', SAMPLE_COUNTRY_CODE_PL);
         expect(result.isInvalid).toBe(true);

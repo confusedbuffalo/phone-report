@@ -416,7 +416,7 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
         countryCode === 'PL'
         && phoneNumber
         && !phoneNumber.isValid()
-        && phoneNumber.isPossible
+        && phoneNumber.isPossible()
         && phoneNumber.nationalNumber.startsWith('0')
     )
 }
@@ -943,5 +943,6 @@ module.exports = {
     checkExclusions,
     keyToRemove,
     isSafeEdit,
-    isSafeItemEdit
+    isSafeItemEdit,
+    isPolishPrefixedNumber
 };
