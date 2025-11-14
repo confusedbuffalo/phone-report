@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES, ACCEPTABLE_EXTENSION_FORMATS, DE_EXTENSION_REGEX } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES, ACCEPTABLE_EXTENSION_FORMATS, DE_EXTENSION_REGEX, TOLL_FREE_AS_NATIONAL_COUNTRIES } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -489,7 +489,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            const tollFreeAsInternational = numberStr.includes('+') || numberStr.startsWith('00') || NANP_COUNTRY_CODES.includes(countryCode);
+            const tollFreeAsInternational = (
+                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                || numberStr.includes('+')
+                || numberStr.startsWith('00')
+            );
             suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 

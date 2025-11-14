@@ -642,9 +642,11 @@ describe('processSingleNumber', () => {
         expect(result.typeMismatch).toBe(true);
     });
 
-    test('GB: toll free phone number without country code is valid', () => {
+    test('GB: toll free phone number without country code is invalid', () => {
         const result = processSingleNumber('0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
-        expect(result.isInvalid).toBe(false);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+44 800 001234');
     });
 
     test('GB: toll free phone number with country code is valid', () => {
@@ -652,11 +654,11 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
-    test('GB: toll free phone number with dashes is fixable to national format', () => {
+    test('GB: toll free phone number with dashes is fixable to international format', () => {
         const result = processSingleNumber('0800-00-1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('0800 001234');
+        expect(result.suggestedFix).toBe('+44 800 001234');
     });
 
     test('GB: toll free phone number with country code and invalid formatting is fixable to international format', () => {
@@ -824,6 +826,18 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('-49 521 557666', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(false);
+    });
+
+    test('DE: toll free number is fixable to national format', () => {
+        const result = processSingleNumber('(0800) 1234 567', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('0800 1234567');
+    });
+
+    test('DE: toll free number already in international format is valid', () => {
+        const result = processSingleNumber('+49 800 1234 567', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
     });
 });
 
