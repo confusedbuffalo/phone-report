@@ -920,20 +920,34 @@ function initLogin() {
  *
  * @param {object} feature - The feature object (node, way, or relation) containing the 'tags' object.
  * @param {object} elementEdits - The object of key-value edits to apply. A value of null indicates a deletion.
- * @returns {void}
+ * @returns {boolean}
  */
 function applyEditsToFeatureTags(feature, elementEdits) {
     let changed = false;
 
-    if (!feature.tags || typeof feature.tags !== 'object') {
-        feature.tags = {};
+    // visible is false for deleted objects and unset for normal objects
+    const isDeleted = (feature.visible ?? true) === false;
+
+    // If a feature does not have any tags, it has dramatically changed since it was originally fetched
+    if (isDeleted || !feature.tags || typeof feature.tags !== 'object') {
+        return false;
     }
+
+    const item = reportData.find(item => {
+        return item.id === feature.id && item.type === feature.type;
+    });
 
     const tags = feature.tags;
 
     for (const key in elementEdits) {
         if (Object.hasOwn(elementEdits, key)) {
             const value = elementEdits[key];
+
+            // If any of the target tags have changed, make no changes
+            const originalValue = item.invalidNumbers?.[key];
+            if (originalValue !== undefined && tags[key] !== originalValue) {
+                return false;
+            }
 
             if (value === null) {
                 if (Object.hasOwn(tags, key)) {
@@ -1015,11 +1029,9 @@ async function uploadChanges() {
                     const features = await OSM.getFeatures(type, chunk);
                     allFeatures.push(...features);
                 }
-                
-                for (const feature of allFeatures) {
-                    const originalTags = { ...feature.tags }
-                    changed = applyEditsToFeatureTags(feature, editsForType[feature.id])
 
+                for (const feature of allFeatures) {
+                    changed = applyEditsToFeatureTags(feature, editsForType[feature.id])
                     if (changed) {
                         modifications.push(feature);
                     }
