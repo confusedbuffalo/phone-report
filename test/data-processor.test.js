@@ -16,7 +16,8 @@ const {
     getStandardExtension,
     getNumberAndExtension,
     isSafeEdit,
-    isSafeItemEdit
+    isSafeItemEdit,
+    isStandardExtension
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -176,6 +177,79 @@ describe('getStandardExtension', () => {
     });
 });
 
+
+// =====================================================================
+// isStandardExtension Tests
+// =====================================================================
+
+describe('isStandardExtension', () => {
+
+    // --- Cases expected to be TRUE (Standard Formats) ---
+
+    test('should return true for "ext." with mandatory surrounding spaces', () => {
+        expect(isStandardExtension('555-123-4567 ext. 101')).toBe(true);
+        expect(isStandardExtension('1234 ext. 567')).toBe(true);
+    });
+
+    test('should return true for "x" with a leading space', () => {
+        expect(isStandardExtension('(555) 123-4567 x101')).toBe(true);
+        expect(isStandardExtension('1234 x567')).toBe(true);
+    });
+
+    test('should return true for "x" with no spaces', () => {
+        expect(isStandardExtension('1234x567')).toBe(true);
+    });
+
+
+    // --- Cases expected to be FALSE (Non-Standard Formats that match the regex) ---
+    
+    test('should return false for "x" with a trailing space', () => {
+        expect(isStandardExtension('1234 x 567')).toBe(false);
+    });
+
+    test('should return false for "ext." with missing trailing space', () => {
+        expect(isStandardExtension('1234 ext.567')).toBe(false);
+    });
+    
+    test('should return false for uppercase non-standard keywords (e.g., "EXTENSION")', () => {
+        expect(isStandardExtension('1234 EXTENSION 567')).toBe(false);
+    });
+
+    test('should return false for full "extension" keyword (lowercase)', () => {
+        expect(isStandardExtension('1234 extension 567')).toBe(false);
+    });
+
+    test('should return false for non-standard keyword (wewn)', () => {
+        expect(isStandardExtension('1234 wewn 567')).toBe(false);
+    });
+    
+    test('should return false for uppercase ext. or x in otherwise standard format', () => {
+        expect(isStandardExtension('1234 EXT. 999')).toBe(false);
+        expect(isStandardExtension('1234 X123')).toBe(false);
+    });
+
+    // --- Cases expected to be NULL (No valid extension found) ---
+
+    test('should return null when no separator is present', () => {
+        // No match for the full regex
+        expect(isStandardExtension('1234567')).toBeNull();
+    });
+    
+    test('should return null when the separator exists but no digits follow (ext.)', () => {
+        expect(isStandardExtension('1234 ext. ')).toBeNull();
+    });
+
+    test('should return null when the separator exists but no digits follow (x)', () => {
+        expect(isStandardExtension('1234x')).toBeNull();
+    });
+
+    test('should return null for an empty string or null input', () => {
+        expect(isStandardExtension('')).toBeNull();
+        expect(isStandardExtension(null)).toBeNull();
+    });
+});
+
+
 // =====================================================================
 // getNumberAndExtension Tests
 // =====================================================================
@@ -190,6 +264,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 123456-789', countryCode)).toEqual({
                 coreNumber: '+49 489 123456',
                 extension: '789',
+                hasStandardExtension: true,
             });
         });
 
@@ -197,6 +272,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 1234-4321', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
                 extension: '4321',
+                hasStandardExtension: true,
             });
         });
 
@@ -204,6 +280,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 1234–4321', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
                 extension: '4321',
+                hasStandardExtension: false,
             });
         });
 
@@ -211,6 +288,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 1234—4321', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
                 extension: '4321',
+                hasStandardExtension: false,
             });
         });
 
@@ -218,6 +296,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 1234 - 4321', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
                 extension: '4321',
+                hasStandardExtension: false,
             });
         });
 
@@ -225,6 +304,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 1234-43 21', countryCode)).toEqual({
                 coreNumber: '+49 489 1234',
                 extension: '4321',
+                hasStandardExtension: true,
             });
         });
 
@@ -232,6 +312,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 123456-789012', countryCode)).toEqual({
                 coreNumber: '+49 489 123456-789012',
                 extension: null,
+                hasStandardExtension: null,
             });
         });
 
@@ -239,6 +320,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 123456-789', countryCode)).toEqual({
                 coreNumber: '+49 123456-789',
                 extension: null,
+                hasStandardExtension: null,
             });
         });
 
@@ -246,26 +328,45 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 123456 ext. 789', countryCode)).toEqual({
                 coreNumber: '+49 489 123456',
                 extension: '789',
+                hasStandardExtension: true,
             });
         });
     });
 
     // --- Standard (Fallback) Tests (Any Country Code other than DE) ---
 
-    describe('Non-DE Country Code (Standard Format)', () => {
+    describe('Standard Format)', () => {
         const countryCode = 'US';
 
-        test('should handle "x" prefixed extension using standard logic', () => {
+        test('should handle "x" prefixed extension using standard logic (without space)', () => {
+            expect(getNumberAndExtension('1-800-555-1212x456', countryCode)).toEqual({
+                coreNumber: '1-800-555-1212',
+                extension: '456',
+                hasStandardExtension: true,
+            });
+        });
+
+        test('should handle "x" prefixed extension using standard logic (with space)', () => {
             expect(getNumberAndExtension('1-800-555-1212 x456', countryCode)).toEqual({
                 coreNumber: '1-800-555-1212',
                 extension: '456',
+                hasStandardExtension: true,
             });
         });
 
         test('should handle "ext." prefixed extension using standard logic', () => {
+            expect(getNumberAndExtension('800-123-4567 ext. 1234', countryCode)).toEqual({
+                coreNumber: '800-123-4567',
+                extension: '1234',
+                hasStandardExtension: true,
+            });
+        });
+
+        test('should handle "ext." prefixed extension, no space is not-standard', () => {
             expect(getNumberAndExtension('800-123-4567 ext.1234', countryCode)).toEqual({
                 coreNumber: '800-123-4567',
                 extension: '1234',
+                hasStandardExtension: false,
             });
         });
 
@@ -273,6 +374,7 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('(555) 123 4567 extension 99', countryCode)).toEqual({
                 coreNumber: '(555) 123 4567',
                 extension: '99',
+                hasStandardExtension: false,
             });
         });
 
@@ -280,6 +382,31 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('0800 123 4567', countryCode)).toEqual({
                 coreNumber: '0800 123 4567',
                 extension: null,
+                hasStandardExtension: null,
+            });
+        });
+
+        test('PL: detect wew. extension and mark as non standard', () => {
+            expect(getNumberAndExtension('+48 22 825 91 00 wew.106', countryCode)).toEqual({
+                coreNumber: '+48 22 825 91 00',
+                extension: '106',
+                hasStandardExtension: false,
+            });
+        });
+
+        test('PL: detect wewn. as extension and mark as non standard', () => {
+            expect(getNumberAndExtension('+48 22 825 91 00 wewn. 106', countryCode)).toEqual({
+                coreNumber: '+48 22 825 91 00',
+                extension: '106',
+                hasStandardExtension: false,
+            });
+        });
+
+        test('PL: detect wewn. as extension and mark as non standard when extension is in brackets', () => {
+            expect(getNumberAndExtension('+48 22 825 91 00 (wewn. 106)', countryCode)).toEqual({
+                coreNumber: '+48 22 825 91 00',
+                extension: '106',
+                hasStandardExtension: false,
             });
         });
     });
@@ -632,6 +759,20 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+48 58 677 44 78');
+    });
+
+    test('PL: extension as wew. is invalid and fixable', () => {
+        const result = processSingleNumber('+48 0586774478 wew. 123', SAMPLE_COUNTRY_CODE_PL);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+48 58 677 44 78 x123');
+    });
+
+    test('PL: extension as wewn in brackets is invalid and fixable', () => {
+        const result = processSingleNumber('+48 0586774478 (wewn 123)', SAMPLE_COUNTRY_CODE_PL);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+48 58 677 44 78 x123');
     });
 
     // --- DE Tests ---
