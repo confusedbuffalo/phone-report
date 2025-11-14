@@ -98,12 +98,23 @@ const EXCLUSIONS = {
     },
 };
 
-// Regex matches common extension prefixes: x, ext, extension, etc.
+// Regex matches common extension prefixes:
+// EN: x, ext, extension
+// PL: wew, wewn
 // It captures each of everything before the extension marker and everything after
-const EXTENSION_REGEX = /^(.*?)\s*(?:x|ext\.?|extension)\s*(\d*)$/;
+// strings are lowercased before checking against this
+const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|wewn?\.?)\s*)(\d*)\)?$/;
+const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x']
+
+// DIN format has hyphen then 1-5 digits for extensions
+const DE_EXTENSION_REGEX = /^(.*?)(\s*[-–—]\s*)([^-]+)$/;
 
 // Define the regex for separators that are definitively "bad" and should trigger a fix report.
 const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
+
+// FR: https://github.com/confusedbuffalo/phone-report/issues/18
+// DE: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
+const TOLL_FREE_AS_NATIONAL_COUNTRIES = ['FR', 'DE']
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 
@@ -284,9 +295,12 @@ module.exports = {
     SAFE_EDITS_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
+    DE_EXTENSION_REGEX,
+    ACCEPTABLE_EXTENSION_FORMATS,
     CHANGESET_TAGS,
     AUTO_CHANGESET_TAGS,
     GITHUB_LINK,
     HOST_URL,
-    NANP_COUNTRY_CODES
+    NANP_COUNTRY_CODES,
+    TOLL_FREE_AS_NATIONAL_COUNTRIES,
 };

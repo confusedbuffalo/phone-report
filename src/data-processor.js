@@ -1,7 +1,7 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES } = require('./constants');
+const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES, ACCEPTABLE_EXTENSION_FORMATS, DE_EXTENSION_REGEX, TOLL_FREE_AS_NATIONAL_COUNTRIES } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -266,8 +266,27 @@ function stripStandardExtension(numberStr) {
  */
 function getStandardExtension(numberStr) {
     const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
+    if (match && match[3]) {
+        return match[3].replace(/[^\d]/g, '');
+    }
+    return null;
+}
+
+/**
+ * Determines if the extension is in a standard format.
+ * @param {string} numberStr 
+ * @returns {boolean|null} If the extension is in a standard format or null if there is no extension
+ */
+function isStandardExtension(numberStr) {
+    if (!numberStr) return null;
+    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
+    const originalCaseMatch = numberStr.match(EXTENSION_REGEX);
+    if (!match || (match && !match[3])) return null
     if (match && match[2]) {
-        return match[2].replace(/[^\d]/g, '');
+        if (originalCaseMatch && originalCaseMatch[2]) {
+            return ACCEPTABLE_EXTENSION_FORMATS.includes(originalCaseMatch[2]);
+        }
+        return false;
     }
     return null;
 }
@@ -341,23 +360,28 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
  * formatting for extensions.
  * @param {PhoneNumber} numberStr - The original phone number string
  * @param {string} countryCode - The country code for formatting.
- * @returns {{coreNumber: string, extension: string}} An object containing the core number and the extension.
+ * @returns {{
+ * coreNumber: string,
+ * extension: string,
+ * hasStandardExtension: boolean
+ * }} An object containing the core number, the extension and whether the extension is in a standard format.
  */
 function getNumberAndExtension(numberStr, countryCode) {
-    // DIN format has hyphen then 1-4 digits for extensions
+    // DIN format has hyphen then 1-5 digits for extensions
     if (countryCode === 'DE') {
-        const DE_EXTENSION_REGEX = /^(.*?)[-–—]([^-]+)$/;
         const match = numberStr.match(DE_EXTENSION_REGEX);
-        if (match && match[1] && match[2]) {
+        if (match && match[1] && match[2] && match[3]) {
             try {
                 const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
-                const extensionDigits = match[2].replace(/[^\d]/, '');
+                const isHyphen = match[2] === '-';
+                const extensionDigits = match[3].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
                 if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 5) {
                     return {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,
+                        hasStandardExtension: isHyphen,
                     }
                 }
             } catch (e) {
@@ -367,7 +391,8 @@ function getNumberAndExtension(numberStr, countryCode) {
     }
     return {
         coreNumber: stripStandardExtension(numberStr),
-        extension: getStandardExtension(numberStr)
+        extension: getStandardExtension(numberStr),
+        hasStandardExtension: isStandardExtension(numberStr),
     }
 }
 
@@ -416,7 +441,7 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
         countryCode === 'PL'
         && phoneNumber
         && !phoneNumber.isValid()
-        && phoneNumber.isPossible
+        && phoneNumber.isPossible()
         && phoneNumber.nationalNumber.startsWith('0')
     )
 }
@@ -436,8 +461,6 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     let typeMismatch = false;
     let phoneNumber = null;
 
-    const NON_STANDARD_EXT_PREFIX_REGEX = /([eE][xX][tT])|(\s*\([eE][xX][tT]\)\s*)/;
-    const hasNonStandardExtension = NON_STANDARD_EXT_PREFIX_REGEX.test(numberStr);
     const spacingRegex = getSpacingRegex(countryCode);
 
     if (numberStr.startsWith('++')) {
@@ -448,7 +471,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    const { coreNumber, extension } = getNumberAndExtension(numberStr.replace(/\t/g, " "), countryCode);
+    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(/\t/g, " "), countryCode);
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
 
     try {
@@ -466,7 +489,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
         if (phoneNumber) {
-            const tollFreeAsInternational = numberStr.includes('+') || numberStr.startsWith('00') || NANP_COUNTRY_CODES.includes(countryCode);
+            const tollFreeAsInternational = (
+                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                || numberStr.includes('+')
+                || numberStr.startsWith('00')
+            );
             suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 
@@ -491,7 +518,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
             isInvalid = isInvalid || !numbersMatch || isPolishPrefixed;
 
-            if (phoneNumber.ext && hasNonStandardExtension) {
+            if (phoneNumber.ext && !hasStandardExtension) {
                 isInvalid = true;
             }
         } else {
@@ -937,11 +964,12 @@ module.exports = {
     phoneTagToUse,
     stripStandardExtension,
     getStandardExtension,
+    isStandardExtension,
     getNumberAndExtension,
     processSingleNumber,
     validateSingleTag,
     checkExclusions,
     keyToRemove,
     isSafeEdit,
-    isSafeItemEdit
+    isSafeItemEdit,
 };
