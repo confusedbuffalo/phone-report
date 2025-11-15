@@ -215,7 +215,9 @@ function applyEditorVisibility() {
             return;
         }
         if (editorId === 'fix-label') {
-            const isVisible = !currentActiveEditors.includes('JOSM');
+            // const isVisible = !currentActiveEditors.includes('JOSM');
+            // TODO: determine whether to keep this label or just always show the fix button
+            const isVisible = false;
             button.style.display = isVisible ? 'inline-flex' : 'none';
             return;
         }
@@ -379,11 +381,15 @@ function createListItem(item) {
             </div>
 
             <div class="list-item-actions-container">
-                ${websiteButton}
-                ${fixableLabel}
-                ${fixButton}
-                ${josmFixButton}
-                ${editorButtons}
+                <div class="flex flex-wrap gap-2 justify-end">
+                    ${websiteButton}
+                    ${fixableLabel}
+                    ${fixButton}
+                </div>
+                <div class="flex flex-wrap gap-2 justify-end">
+                    ${josmFixButton}
+                    ${editorButtons}
+                </div>
             </div>
         </li>
     `;
