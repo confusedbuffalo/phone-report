@@ -805,7 +805,11 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 tagShouldBeFlaggedForRemoval = true;
                 hasInternalDuplicate = true;
                 suggestedFix = uniqueFormattedSet.map((number) => {
-                    return getFormattedNumber(parsePhoneNumber(number, countryCode), countryCode);
+                    return getFormattedNumber(
+                        parsePhoneNumber(number, countryCode),
+                        countryCode,
+                        !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                    );
                 }).join('; ');
             }
 
