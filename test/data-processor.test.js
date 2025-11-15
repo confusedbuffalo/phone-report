@@ -1472,6 +1472,40 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('DE should remove duplicate number with extension in different tags', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': "+49 651 146262-0",
+                    'phone': "+49 651 146262-0",
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), "DE", tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': "+49 651 146262-0",
+            'phone': "+49 651 146262-0",
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null
+        });
+    });
+
     test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag', async () => {
         const elements = [
             {
