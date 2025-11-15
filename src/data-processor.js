@@ -805,7 +805,11 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 tagShouldBeFlaggedForRemoval = true;
                 hasInternalDuplicate = true;
                 suggestedFix = uniqueFormattedSet.map((number) => {
-                    return getFormattedNumber(parsePhoneNumber(number, countryCode), countryCode);
+                    return getFormattedNumber(
+                        parsePhoneNumber(number, countryCode),
+                        countryCode,
+                        !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                    );
                 }).join('; ');
             }
 
@@ -815,9 +819,10 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 if (validationResult.isInvalid && !validationResult.isAutoFixable) continue;
 
                 // Normalise including extension (so different extensions remain distinct)
-                const normalizedNumber = (
-                    phoneNumber.number + (phoneNumber.ext ? `x${phoneNumber.ext}` : '')
-                ).replace(getSpacingRegex(countryCode), '');
+                const numberWithExtension = countryCode === 'DE'
+                    ? phoneNumber.number + (phoneNumber.ext ? `-${phoneNumber.ext}` : '')
+                    : phoneNumber.number + (phoneNumber.ext ? `x${phoneNumber.ext}` : '');
+                const normalizedNumber = (numberWithExtension).replace(getSpacingRegex(countryCode), '');
 
                 // Correct the tag of a mismatch type number early
                 const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number =>
