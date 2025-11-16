@@ -577,7 +577,7 @@ function renderPaginatedSection(
                 <button id="redo-btn" class="btn-undo-redo gray-btn-disabled" onclick="redoChange()" disabled><svg class="icon-svg"><use href="#icon-redo"></use></svg></button>
             </span>
             <div id="save-btn-container">
-                <button id="save-btn" class="btn-squared gray-btn-disabled" onclick="openUploadModal()" disabled>Save</button>
+                <button id="save-btn" class="btn-squared gray-btn-disabled" onclick="openUploadModal()" disabled>${translate('save')}</button>
             </div>
         </div>` : '';
 

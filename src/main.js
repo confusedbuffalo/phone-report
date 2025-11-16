@@ -48,7 +48,8 @@ const CLIENT_KEYS = [
     "enterComment",
     "noChangesSubmitted",
     "changesetCreated",
-    "notLoggedIn"
+    "notLoggedIn",
+    "save"
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;

@@ -53,6 +53,7 @@ const MASTER_KEYS = {
     "enterComment": [],
     "noChangesSubmitted": [],
     "notLoggedIn": [],
+    "save": [],
 
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
