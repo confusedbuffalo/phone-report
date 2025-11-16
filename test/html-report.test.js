@@ -22,7 +22,7 @@ jest.mock('fs', () => {
             const writable = new Stream.Writable();
             writable._write = (chunk, encoding, callback) => {
                 // Simulate an asynchronous write successfully
-                setTimeout(() => callback(), 0);
+                callback();
             };
             writable.on('unpipe', () => {
                 writable.emit('finish');
@@ -208,5 +208,5 @@ describe('generateHtmlReport', () => {
         // Check for the escaped subdivision name in the subtitle
         const expectedSubtitle = `<h2 class="page-subtitle">O&#039;Fallon</h2>`;
         expect(writtenContent).toContain(expectedSubtitle);
-    }, 15000);
+    });
 });
