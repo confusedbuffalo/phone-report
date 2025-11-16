@@ -21,8 +21,16 @@ jest.mock('fs', () => {
         createWriteStream: jest.fn().mockImplementation(() => {
             const writable = new Stream.Writable();
             writable._write = (chunk, encoding, callback) => {
-                // Simulate async write
+                // Simulate an asynchronous write successfully
                 setTimeout(() => callback(), 0);
+            };
+            writable.on('unpipe', () => {
+                writable.emit('finish');
+            });
+            const originalEnd = writable.end;
+            writable.end = function(...args) {
+                originalEnd.apply(this, args);
+                process.nextTick(() => writable.emit('finish'));
             };
             return writable;
         }),
