@@ -209,6 +209,10 @@ function applyEditorVisibility() {
             button.style.display = 'inline-flex';
             return;
         }
+        if (editorId === 'note-btn') {
+            button.style.display = 'inline-flex';
+            return;
+        }
         if (editorId === 'josm-fix') {
             const isVisible = currentActiveEditors.includes('JOSM');
             button.style.display = isVisible ? 'inline-flex' : 'none';
@@ -294,6 +298,7 @@ function createDetailsGrid(item) {
  * josmFixButton: string,
  * fixButton: string,
  * editorButtons: string
+ * noteButton: string
  * }} An object containing the HTML strings for all generated buttons.
  */
 function createButtons(item, clickedClass) {
@@ -326,13 +331,19 @@ function createButtons(item, clickedClass) {
 
     const fixButton = item.autoFixable ?
         `<button onclick="applyFix('${item.type}', ${item.id})"
-        data-editor-id="apply-fix"
-        class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
-        ${translate('applyFix')}
-    </button>` :
+            data-editor-id="apply-fix"
+            class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
+            ${translate('applyFix')}
+        </button>` :
         '';
+    
+    const noteButton = item.autoFixable ? '' :
+        `<button onclick="addNote('${item.type}', ${item.id})"
+            data-editor-id="note-btn"
+            class="btn cursor-pointer btn-note">
+            ${translate('openNote')}
+        </button>`
 
-    // Generate JOSM Fix Button (special case)
     const josmFixButton = item.josmFixUrl ?
         `<a href="#" onclick="recordItemClick('${item.type}/${item.id}'); setButtonsAsClicked('${item.type}/${item.id}'); openInJosm('${item.josmFixUrl}', event)"
             data-editor-id="josm-fix"
@@ -348,7 +359,7 @@ function createButtons(item, clickedClass) {
         `<a href="${item.website}" class="btn btn-website" target="_blank">${translate('website')}</a>` :
         '';
 
-    return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons };
+    return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton };
 }
 
 /**
@@ -361,7 +372,7 @@ function createListItem(item) {
     const itemId = `${item.type}/${item.id}`;
     const clickedClass = isItemClicked(itemId) ? 'btn-clicked' : '';
 
-    const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons } = createButtons(item, clickedClass);
+    const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton } = createButtons(item, clickedClass);
 
     iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
@@ -385,6 +396,7 @@ function createListItem(item) {
                     ${websiteButton}
                     ${fixableLabel}
                     ${fixButton}
+                    ${noteButton}
                 </div>
                 <div class="flex flex-wrap gap-2 justify-end">
                     ${josmFixButton}
@@ -1071,6 +1083,13 @@ const editsKeepBtn = document.getElementById('edits-modal-keep-btn');
 const editsModal = document.getElementById('edits-modal-overlay');
 const editsModalTitle = document.getElementById('edits-modal-title');
 
+const noteCloseBtnTop = document.getElementById('note-close-modal-btn-top');
+const noteCancelBtn = document.getElementById('cancel-note-modal-btn');
+const noteCloseBtnBottom = document.getElementById('close-modal-btn-bottom');
+const addNoteBtn = document.getElementById('add-note-btn');
+const noteModal = document.getElementById('note-modal-overlay');
+const noteModalTitle = document.getElementById('note-modal-title');
+
 /**
  * Enables the 'Save' button by changing its styling and setting its disabled property to false.
  * @returns {void}
@@ -1312,6 +1331,66 @@ function transitionRemoveItem(osmType, osmId) {
 }
 
 /**
+ * Calculates a bounding box around a central point with a given buffer distance.
+ * @param {number} lat - The central latitude.
+ * @param {number} lon - The central longitude.
+ * @param {number} bufferMetres - The desired buffer distance in metres.
+ * @returns {number[]} - The bounding box array: [minLon, minLat, maxLon, maxLat]
+ */
+function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
+    // Earth's radius in metres.
+    const R = 6371000;
+
+    // Convert buffer distance in metres to degrees (approximate).
+    const latDelta = bufferMetres / R * (180 / Math.PI);
+    const lonDelta = bufferMetres / (R * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+
+    const minLat = lat - latDelta;
+    const maxLat = lat + latDelta;
+    const minLon = lon - lonDelta;
+    const maxLon = lon + lonDelta;
+
+    return [minLon, minLat, maxLon, maxLat];
+}
+
+/**
+ * Checks the area for any notes
+ *
+ * @param {string} lat - The centre latitude.
+ * @param {number} long - The centre longitude.
+ * @returns {void}
+ */
+async function checkForNotes(lat, lon) {
+    const bbox = calculateBufferedBBox(lat, lon, 20);    
+    const notesInArea = await OSM.getNotesForArea(bbox);
+    return notesInArea;
+}
+
+/**
+ * Starts the creation of a note for a given element
+ *
+ * @param {string} osmType - The OpenStreetMap element type.
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {void}
+ */
+function addNote(osmType, osmId) {
+    const item = reportData.find(item => {
+        return item.id === osmId && item.type === osmType;
+    });
+    openNoteModal(item);
+    checkForNotes(item.lat, item.lon)
+        .then((result) => {
+            if (result.length > 0) {
+                console.log(result)
+            }
+            console.log(result)
+        })
+        .catch((err) => {
+            console.error(err)
+        });
+}
+
+/**
  * Handles the application of an autofix. It records the item as clicked,
  * saves the change to local storage, and initiates the visual removal transition.
  *
@@ -1474,6 +1553,81 @@ function openUploadModal() {
 }
 
 /**
+ * Displays the modal window for creating a note and checks if the user is logged into OSM.
+ * @param {object} item - The item to create a note for.
+ * @returns {void}
+ */
+function openNoteModal(item) {
+    noteModalTitle.innerHTML = translate('createNote');
+
+    // Reset buttons etc.
+    addNoteBtn.classList.add('cursor-pointer');
+    addNoteBtn.classList.remove('cursor-progress');
+    addNoteBtn.classList.remove('cursor-not-allowed');
+    addNoteBtn.disabled = false;
+    addNoteBtn.classList.remove('hidden');
+
+    noteCancelBtn.classList.remove('hidden');
+    noteCloseBtnBottom.classList.add('hidden');
+
+    const noteCommentBox = document.getElementById('note-comment');
+
+    noteCommentBox.disabled = false;
+    noteCommentBox.classList.remove('cursor-not-allowed');
+    let noteComment = `${item.name} `;
+
+    const invalidWithoutFix = Object.entries(item.invalidNumbers)
+        .filter(([key]) => {
+            const fix = item.suggestedFixes?.[key];
+            return fix === null || fix === undefined;
+        })
+
+    noteComment += invalidWithoutFix.length > 1 ? 'has invalid phone numbers:\n\n': 'has an invalid phone number:\n\n';
+
+    const invalidNumbersList = invalidWithoutFix
+        .map(([key, number]) => {
+            return `${key} = ${number}`;
+        })
+        .join('\n');
+
+    noteComment += invalidNumbersList;
+    noteComment += `\n\nhttps://www.openstreetmap.org/${item.type}/${item.id}\n`;
+    noteComment += `Via ${CHANGESET_TAGS['created_by']}`;
+
+    noteCommentBox.value = noteComment;
+
+    if (!OSM.isLoggedIn()) {
+        addNoteBtn.disabled = true;
+        addNoteBtn.classList.add('cursor-not-allowed');
+        addNoteBtn.classList.remove('cursor-pointer');
+
+        const messageBox = document.getElementById('note-message-box');
+        messageBox.className = 'message-box-error';
+        messageBox.innerHTML = translate('notLoggedIn');
+        messageBox.classList.remove('hidden');
+    }
+
+    noteModal.classList.remove('hidden');
+    setTimeout(() => {
+        noteModal.classList.add('active');
+    }, 10);
+}
+
+/**
+ * Hides the note modal window with a brief transition and clears any displayed messages.
+ * @returns {void}
+ */
+function closeNoteModal() {
+    const messageBox = document.getElementById('note-message-box');
+    noteModal.classList.remove('active');
+    setTimeout(() => {
+        noteModal.classList.add('hidden');
+        messageBox.classList.add('hidden');
+    }, 300);
+}
+
+
+/**
  * Hides the upload modal window with a brief transition and clears any displayed messages.
  * @returns {void}
  */
@@ -1551,6 +1705,14 @@ const handleUploadModalClick = (event) => {
     }
 };
 
+
+// Close note modal when clicking the semi-transparent backdrop
+const handleNoteModalClick = (event) => {
+    if (event.target === noteModal) {
+        closeNoteModal();
+    }
+};
+
 const handleDocumentKeydown = (event) => {
     if (event.key === 'Escape') {
         if (!uploadModal.classList.contains('hidden')) {
@@ -1559,16 +1721,20 @@ const handleDocumentKeydown = (event) => {
         if (!editsModal.classList.contains('hidden')) {
             discardEdits();
         }
+        if (!noteModal.classList.contains('hidden')) {
+            closeNoteModal();
+        }
     }
 };
 
 /**
  * Adds event listeners to enable closing the modals by clicking outside the content
- * (for the upload modal) or pressing the 'Escape' key (for both modals).
+ * (for the upload and note modals) or pressing the 'Escape' key (for all modals).
  * @returns {void}
  */
 function enableModalCloseListeners() {
     uploadModal.addEventListener('click', handleUploadModalClick);
+    noteModal.addEventListener('click', handleNoteModalClick);
     document.addEventListener('keydown', handleDocumentKeydown);
 }
 
