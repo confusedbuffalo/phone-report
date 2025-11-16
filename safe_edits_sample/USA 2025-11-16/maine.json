@@ -1,0 +1,31 @@
+{
+  "countryName": "United States Of America",
+  "subdivisionName": "Maine",
+  "divisionSlug": "united-states-of-america",
+  "subdivisionSlug": "maine",
+  "totalOriginalItems": 18,
+  "totalSuggestedEdits": 9,
+  "totalSafeEdits": 2,
+  "edits": [
+    {
+      "type": "node",
+      "id": 13306885601,
+      "invalidNumbers": {
+        "phone": "(207) 536-7226"
+      },
+      "suggestedFixes": {
+        "phone": "+1-207-536-7226"
+      }
+    },
+    {
+      "type": "way",
+      "id": 142995923,
+      "invalidNumbers": {
+        "phone": "207-869-5680"
+      },
+      "suggestedFixes": {
+        "phone": "+1-207-869-5680"
+      }
+    }
+  ]
+}

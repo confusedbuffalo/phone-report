@@ -1,0 +1,101 @@
+{
+  "countryName": "United States Of America",
+  "subdivisionName": "Rhode Island",
+  "divisionSlug": "united-states-of-america",
+  "subdivisionSlug": "rhode-island",
+  "totalOriginalItems": 57,
+  "totalSuggestedEdits": 9,
+  "totalSafeEdits": 9,
+  "edits": [
+    {
+      "type": "node",
+      "id": 2349876230,
+      "invalidNumbers": {
+        "phone": "888-881-8984"
+      },
+      "suggestedFixes": {
+        "phone": "+1-888-881-8984"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8359845989,
+      "invalidNumbers": {
+        "phone": "800-635-5234"
+      },
+      "suggestedFixes": {
+        "phone": "+1-800-635-5234"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8769615799,
+      "invalidNumbers": {
+        "phone": "800-275-8777"
+      },
+      "suggestedFixes": {
+        "phone": "+1-800-275-8777"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12785280891,
+      "invalidNumbers": {
+        "phone": "888-860-2199"
+      },
+      "suggestedFixes": {
+        "phone": "+1-888-860-2199"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12993400756,
+      "invalidNumbers": {
+        "contact:phone": "855-697-4347"
+      },
+      "suggestedFixes": {
+        "contact:phone": "+1-855-697-4347"
+      }
+    },
+    {
+      "type": "way",
+      "id": 141874651,
+      "invalidNumbers": {
+        "phone": "8885345801"
+      },
+      "suggestedFixes": {
+        "phone": "+1-888-534-5801"
+      }
+    },
+    {
+      "type": "way",
+      "id": 827435868,
+      "invalidNumbers": {
+        "phone": "866-739-7692"
+      },
+      "suggestedFixes": {
+        "phone": "+1-866-739-7692"
+      }
+    },
+    {
+      "type": "way",
+      "id": 891693715,
+      "invalidNumbers": {
+        "phone": "866-980-2485"
+      },
+      "suggestedFixes": {
+        "phone": "+1-866-980-2485"
+      }
+    },
+    {
+      "type": "way",
+      "id": 891693716,
+      "invalidNumbers": {
+        "phone": "877-861-5607"
+      },
+      "suggestedFixes": {
+        "phone": "+1-877-861-5607"
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "countryName": "United States Of America",
+  "subdivisionName": "Kansas",
+  "divisionSlug": "united-states-of-america",
+  "subdivisionSlug": "kansas",
+  "totalOriginalItems": 25,
+  "totalSuggestedEdits": 12,
+  "totalSafeEdits": 7,
+  "edits": [
+    {
+      "type": "node",
+      "id": 13305361301,
+      "invalidNumbers": {
+        "phone": "(913) 232-8380"
+      },
+      "suggestedFixes": {
+        "phone": "+1-913-232-8380"
+      }
+    },
+    {
+      "type": "way",
+      "id": 218263384,
+      "invalidNumbers": {
+        "contact:phone": "866-704-1996"
+      },
+      "suggestedFixes": {
+        "contact:phone": "+1-866-704-1996"
+      }
+    },
+    {
+      "type": "way",
+      "id": 362165001,
+      "invalidNumbers": {
+        "phone": "800-432-1578"
+      },
+      "suggestedFixes": {
+        "phone": "+1-800-432-1578"
+      }
+    },
+    {
+      "type": "way",
+      "id": 611238161,
+      "invalidNumbers": {
+        "phone": "1-800-324-9696"
+      },
+      "suggestedFixes": {
+        "phone": "+1-800-324-9696"
+      }
+    },
+    {
+      "type": "way",
+      "id": 630749849,
+      "invalidNumbers": {
+        "phone": "800-488-0910"
+      },
+      "suggestedFixes": {
+        "phone": "+1-800-488-0910"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1069986166,
+      "invalidNumbers": {
+        "phone": "800-386-0711"
+      },
+      "suggestedFixes": {
+        "phone": "+1-800-386-0711"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1097595324,
+      "invalidNumbers": {
+        "phone": "1-855-749-4829"
+      },
+      "suggestedFixes": {
+        "phone": "+1-855-749-4829"
+      }
+    }
+  ]
+}
