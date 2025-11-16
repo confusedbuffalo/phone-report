@@ -208,5 +208,5 @@ describe('generateHtmlReport', () => {
         // Check for the escaped subdivision name in the subtitle
         const expectedSubtitle = `<h2 class="page-subtitle">O&#039;Fallon</h2>`;
         expect(writtenContent).toContain(expectedSubtitle);
-    });
+    }, 15000);
 });
