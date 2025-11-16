@@ -1,66 +1,34 @@
 const { createJosmFixUrl, generateHtmlReport } = require('../src/html-report.js');
 const fs = require('fs');
+const Stream = require('stream');
 
+// Mock fs module
 jest.mock('fs', () => {
-    const actualFs = jest.requireActual('fs');
-    
-    // Create a mock WriteStream that is recognized by stream-chain
-    const mockWriteStream = () => {
-        const Stream = require('stream');
-        const writable = new Stream.Writable();
-        
-        // --- CRUCIAL ADDITIONS ---
-        // 1. Mock pipe() to allow chaining
-        writable.pipe = jest.fn().mockReturnThis(); 
-        
-        // 2. Ensure 'finish' event is fired to complete the async test
-        writable.on = jest.fn((event, callback) => {
-            if (event === 'finish' && callback) {
-                // Resolve the asynchronous stream completion
-                process.nextTick(callback); 
-            }
-            return writable;
-        });
-
-        // Mock stream methods used by the pipeline
-        writable.end = jest.fn((chunk, encoding, callback) => {
-            if (callback) callback();
-            writable.emit('finish'); 
-        });
-        writable._write = jest.fn((chunk, encoding, callback) => {
-            callback();
-        });
-        // -------------------------
-        
-        return writable;
-    };
-
-    // Create a mock ReadStream (also needs pipe)
-    const mockReadStream = (path) => {
-        const Stream = require('stream');
-        const readable = new Stream.Readable();
-        readable.pipe = jest.fn().mockReturnThis(); // Also needs pipe!
-        
-        // Push content and end stream
-        readable.push(
-            path.includes('.json') ? '[]' : '<html><head></head><body>{reportContent}</body></html>'
-        );
-        readable.push(null); 
-        
-        return readable;
-    };
-
+    const originalFs = jest.requireActual('fs');
+    const Stream = require('stream');
     return {
-        ...actualFs,
+        ...originalFs,
         promises: {
-            ...actualFs.promises,
+            ...originalFs.promises,
             writeFile: jest.fn().mockResolvedValue(),
-            copyFile: jest.fn().mockResolvedValue(),
         },
-        createReadStream: jest.fn().mockImplementation(mockReadStream),
-        createWriteStream: jest.fn().mockImplementation(mockWriteStream),
+        createReadStream: jest.fn().mockImplementation(() => {
+            const readable = new Stream.Readable();
+            readable.push('[]');
+            readable.push(null);
+            return readable;
+        }),
+        createWriteStream: jest.fn().mockImplementation(() => {
+            const writable = new Stream.Writable();
+            writable._write = (chunk, encoding, callback) => {
+                // Simulate async write
+                setTimeout(() => callback(), 0);
+            };
+            return writable;
+        }),
     };
 });
+
 
 jest.mock('../src/i18n', () => ({
     translate: (key, locale, args) => {
@@ -77,9 +45,13 @@ jest.mock('../src/diff-renderer.js', () => ({
 }));
 
 jest.mock('../src/icon-manager.js', () => ({
-    getIconHtml: () => '<i>icon</i>',
-    generateSvgSprite: () => '<svg></svg>',
-    clearIconSprite: jest.fn(),
+    IconManager: jest.fn().mockImplementation(() => {
+        return {
+            getIconHtml: () => '<i>icon</i>',
+            generateSvgSprite: () => '<svg></svg>',
+            clearIconSprite: jest.fn(),
+        };
+    }),
 }));
 
 jest.mock('../src/data-processor.js', () => ({

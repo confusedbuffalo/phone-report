@@ -12,7 +12,7 @@ const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse }
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
-const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
+const { IconManager } = require('./icon-manager');
 
 
 /**
@@ -45,9 +45,10 @@ function createJosmFixUrl(item) {
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
+ * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {string}
  */
-function createClientItems(item, locale, botEnabled) {
+function createClientItems(item, locale, botEnabled, iconManager) {
     // Skip safe edit items if the bot is enabled here
     if (botEnabled && item.safeEdit){
         return null;
@@ -57,7 +58,7 @@ function createClientItems(item, locale, botEnabled) {
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
     const iconName = getFeatureIcon(item, locale);
-    const iconHtml = getIconHtml(iconName);
+    const iconHtml = iconManager.getIconHtml(iconName);
     if (iconHtml.includes(iconName)) {
         item.iconName = iconName;
     } else {
@@ -202,7 +203,7 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  */
 async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled) {
-    clearIconSprite();
+    const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
@@ -219,7 +220,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             fs.createReadStream(tmpFilePath),
             parser(),
             streamArray(),
-            new ItemTransformer(item => createClientItems(item, locale, botEnabled), {}),
+            new ItemTransformer(item => createClientItems(item, locale, botEnabled, iconManager), {}),
             disassembler(),
             stringer(stringerOptions),
             fs.createWriteStream(dataFilePath)
@@ -231,14 +232,14 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         });
         pipeline.on('finish', () => {
             console.log(`Output data written to ${dataFilePath}`);
-            resolve();
+            setImmediate(() => {
+                const svgSprite = iconManager.generateSvgSprite();
+                resolve(svgSprite);
+            });
         });
     });
 
-    await pipelinePromise;
-
-    // Generate the sprite after processing the items
-    const svgSprite = generateSvgSprite();
+    const svgSprite = await pipelinePromise;
 
     let confettiScripts = '';
     if (invalidCount === 0) {
