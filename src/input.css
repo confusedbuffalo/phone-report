@@ -434,7 +434,7 @@
 }
 
 @utility list-item-actions-container {
-  @apply flex flex-wrap gap-2 w-full sm:w-[40%] justify-end text-sm font-semibold;
+  @apply flex flex-col gap-2 w-full sm:w-[40%] justify-end text-sm font-semibold;
 }
 
 @utility section-header-container {

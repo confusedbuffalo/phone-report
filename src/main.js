@@ -3,7 +3,7 @@ const path = require('path');
 const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR } = require('./constants');
-const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-api');
+const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
@@ -48,7 +48,8 @@ const CLIENT_KEYS = [
     "enterComment",
     "noChangesSubmitted",
     "changesetCreated",
-    "notLoggedIn"
+    "notLoggedIn",
+    "save"
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;

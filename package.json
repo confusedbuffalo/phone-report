@@ -1,6 +1,6 @@
 {
   "name": "osm-phone-report",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "A GitHub Pages site that reports invalid phone numbers from OpenStreetMap data.",
   "main": "src/main.js",
   "dependencies": {
@@ -11,6 +11,7 @@
     "libphonenumber-js": "^1.12.26",
     "node-fetch": "^3.3.0",
     "osm-api": "^3.3.0",
+    "stream-chain": "^2.2.5",
     "stream-json": "^1.9.1",
     "string-similarity-js": "^2.1.4",
     "uuid": "^13.0.0"
