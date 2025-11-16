@@ -1,0 +1,41 @@
+{
+  "countryName": "United States Of America",
+  "subdivisionName": "Pennsylvania",
+  "divisionSlug": "united-states-of-america",
+  "subdivisionSlug": "pennsylvania",
+  "totalOriginalItems": 82,
+  "totalSuggestedEdits": 10,
+  "totalSafeEdits": 3,
+  "edits": [
+    {
+      "type": "node",
+      "id": 3641767779,
+      "invalidNumbers": {
+        "phone": "7249355220"
+      },
+      "suggestedFixes": {
+        "phone": "+1-724-935-5220"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13301076196,
+      "invalidNumbers": {
+        "phone": "412-833-4500"
+      },
+      "suggestedFixes": {
+        "phone": "+1-412-833-4500"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1450014762,
+      "invalidNumbers": {
+        "phone": "724-668-2256"
+      },
+      "suggestedFixes": {
+        "phone": "+1-724-668-2256"
+      }
+    }
+  ]
+}
