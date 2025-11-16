@@ -1,7 +1,24 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES, ACCEPTABLE_EXTENSION_FORMATS, DE_EXTENSION_REGEX, TOLL_FREE_AS_NATIONAL_COUNTRIES } = require('./constants');
+const {
+    FEATURE_TAGS,
+    HISTORIC_AND_DISUSED_PREFIXES,
+    EXCLUSIONS,
+    MOBILE_TAGS,
+    WEBSITE_TAGS,
+    BAD_SEPARATOR_REGEX,
+    UNIVERSAL_SPLIT_REGEX,
+    UNIVERSAL_SPLIT_REGEX_DE,
+    EXTENSION_REGEX,
+    DE_EXTENSION_REGEX,
+    PHONE_TAG_PREFERENCE_ORDER,
+    NANP_COUNTRY_CODES,
+    ACCEPTABLE_EXTENSION_FORMATS,
+    TOLL_FREE_AS_NATIONAL_COUNTRIES,
+    ALL_NUMBER_TAGS,
+    FAX_TAGS,
+} = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -688,7 +705,7 @@ function processMismatches(item, countryCode) {
  * @param {string} countryCode - The country code for validation.
  * @returns {boolean}
  */
-function isSafeItemEdit(item, countryCode){
+function isSafeItemEdit(item, countryCode) {
     // Not safe if there are any mismatch type numbers or duplicate numbers
     if (
         !item.autoFixable
@@ -712,14 +729,14 @@ function isSafeItemEdit(item, countryCode){
     }
 
     let isSafe = true;
-    
+
     for (const [key, invalidValue] of item.invalidNumbers.entries()) {
         const suggestedValue = item.suggestedFixes.get(key);
-        
+
         isSafe = isSafe && isSafeEdit(invalidValue, suggestedValue, countryCode);
 
         if (!isSafe) {
-            return false; 
+            return false;
         }
     }
 
@@ -748,7 +765,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         const tags = element.tags;
 
         let item = null;
-        const allNormalizedNumbers = new Map();
+        const allNormalizedPhoneNumbers = new Map();
+        const allNormalizedFaxNumbers = new Map();
 
         const getOrCreateItem = (autoFixable) => {
             if (item) return item;
@@ -783,7 +801,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             return item;
         };
 
-        for (const tag of PHONE_TAGS) {
+        for (const tag of ALL_NUMBER_TAGS) {
             if (!tags[tag]) continue;
 
             const phoneTagValue = tags[tag];
@@ -797,6 +815,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             let hasInternalDuplicate = false;
             let suggestedFix = null;
             let duplicateMismatchCount = 0;
+
+            const allNormalizedNumbers = FAX_TAGS.includes(tag) ? allNormalizedFaxNumbers : allNormalizedPhoneNumbers;
 
             // --- Detect internal duplicates within the same tag ---
             const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));

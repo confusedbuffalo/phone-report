@@ -181,7 +181,6 @@ describe('getStandardExtension', () => {
 // =====================================================================
 // isStandardExtension Tests
 // =====================================================================
-
 describe('isStandardExtension', () => {
 
     // --- Cases expected to be TRUE (Standard Formats) ---
@@ -492,7 +491,7 @@ describe('keyToRemove', () => {
 /**
  * A mock function to simulate the output of a successful phone number parse 
  * (from libphonenumber-js), primarily exposing the nationalNumber.
- * * @param {string} nationalNumber - The core national number of the phone number.
+ * @param {string} nationalNumber - The core national number of the phone number.
  * @param {string} countryCode - The country code (e.g., 'FR').
  * @returns {Object} A mock phone number object.
  */
@@ -1044,14 +1043,15 @@ describe('validateNumbers', () => {
     const VALID_MOBILE_2 = '+44 7712 900001';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
+    const VALID_TOLL_FREE = '+44 800 001234';
 
     // DE numbers
-    const SLASH_IN_NUMBER_DE = '+498131/275715'
-    const SLASH_IN_NUMBER_DE_FIX = '+49 8131 275715'
+    const SLASH_IN_NUMBER_DE = '+498131/275715';
+    const SLASH_IN_NUMBER_DE_FIX = '+49 8131 275715';
 
     // US numbers
-    const VALID_US_NUMBER = '+1-202-627-1951'
-    const FIXABLE_US_NUMBER = '+1 2026271951'
+    const VALID_US_NUMBER = '+1-202-627-1951';
+    const FIXABLE_US_NUMBER = '+1 2026271951';
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
         const elements = [
@@ -2056,6 +2056,160 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'phone': '+44 17687 79280; +44 7901 854574; +44 7554 806119',
+        });
+    });
+
+    test('should fix a fax number on a single element', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'fax': FIXABLE_LANDLINE_INPUT,
+                    name: 'Faxable',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'fax': FIXABLE_LANDLINE_INPUT,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'fax': FIXABLE_LANDLINE_SUGGESTED_FIX,
+        });
+    });
+
+    test('toll free fax number is valid', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'fax': VALID_TOLL_FREE,
+                    name: 'Toll Free Faxable',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(0);
+    });
+
+    test('mobile phone fax number is valid', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'fax': VALID_MOBILE,
+                    name: 'Toll Free Faxable',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(0);
+    });
+
+    test('should fix both phone and fax numbers on a single element', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'phone': FIXABLE_MOBILE_INPUT,
+                    'fax': FIXABLE_LANDLINE_INPUT,
+                    name: 'Faxable',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'fax': FIXABLE_LANDLINE_INPUT,
+            'phone': FIXABLE_MOBILE_INPUT,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'fax': FIXABLE_LANDLINE_SUGGESTED_FIX,
+            'phone': FIXABLE_MOBILE_SUGGESTED_FIX,
+        });
+    });
+
+    test('same number for phone and fax is not duplicate', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'phone': VALID_LANDLINE,
+                    'fax': VALID_LANDLINE,
+                    name: 'Faxable',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(0);
+    });
+
+    test('duplicate numbers in fax tags is invalid and fixable', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'contact:fax': FIXABLE_LANDLINE_INPUT,
+                    'fax': FIXABLE_LANDLINE_INPUT,
+                    name: 'Double Faxable',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:fax': FIXABLE_LANDLINE_INPUT,
+            'fax': FIXABLE_LANDLINE_INPUT,
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:fax': null,
+            'fax': FIXABLE_LANDLINE_SUGGESTED_FIX,
+        });
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:fax': 'fax',
         });
     });
 });
