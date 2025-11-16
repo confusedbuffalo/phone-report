@@ -6,11 +6,12 @@ const Stream = require('stream');
 jest.mock('fs', () => {
     const originalFs = jest.requireActual('fs');
     const Stream = require('stream');
+
     return {
         ...originalFs,
         promises: {
             ...originalFs.promises,
-            writeFile: jest.fn().mockResolvedValue(),
+            writeFile: jest.fn().mockResolvedValue(), 
         },
         createReadStream: jest.fn().mockImplementation(() => {
             const readable = new Stream.Readable();
@@ -19,19 +20,23 @@ jest.mock('fs', () => {
             return readable;
         }),
         createWriteStream: jest.fn().mockImplementation(() => {
-            const writable = new Stream.Writable();
+            const writable = new Stream.Writable({
+                highWaterMark: 16 
+            });
+
             writable._write = (chunk, encoding, callback) => {
-                // Simulate an asynchronous write successfully
                 callback();
             };
-            writable.on('unpipe', () => {
-                writable.emit('finish');
-            });
+
             const originalEnd = writable.end;
             writable.end = function(...args) {
                 originalEnd.apply(this, args);
-                process.nextTick(() => writable.emit('finish'));
+                
+                process.nextTick(() => {
+                    writable.emit('finish');
+                });
             };
+
             return writable;
         }),
     };
@@ -195,6 +200,8 @@ describe('generateHtmlReport', () => {
         const tmpFilePath = 'test.json';
 
         await generateHtmlReport(countryName, subdivisionStats, tmpFilePath, 'en-US', {});
+
+        await new Promise(resolve => setTimeout(resolve, 10));
 
         // Verify that fs.promises.writeFile was called
         expect(fs.promises.writeFile).toHaveBeenCalled();
