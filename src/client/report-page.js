@@ -584,6 +584,7 @@ function renderPaginatedSection(
     const pageAndSortControls = `
         ${pageControls}
         <div class="sort-controls">
+            ${isFixableSection ? '' : '<div></div>'}
             <span class="sort-label">${translate('sortBy')}</span>
             <button onclick="handleSort('${suffix}', 'name')"
                     class="sort-btn sort-btn-style ${getSortStyle('name')}">
