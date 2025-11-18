@@ -401,7 +401,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         const DATA_FILE_PATH = './${subdivisionStats.slug}.json';
         const DATA_LAST_UPDATED = '${subdivisionStats.lastUpdated}';
         const STORAGE_KEY = 'osm_report_editors';
-        const subdivisionName = '${subdivisionStats.name}';
+        const subdivisionName = ${JSON.stringify(subdivisionStats.name)};
         const CHANGESET_TAGS = ${JSON.stringify(CHANGESET_TAGS)};
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {
