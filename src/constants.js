@@ -123,6 +123,8 @@ const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 // DE: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
 const TOLL_FREE_AS_NATIONAL_COUNTRIES = ['FR', 'DE']
 
+const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
+
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 
 const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/'];
@@ -312,4 +314,5 @@ module.exports = {
     HOST_URL,
     NANP_COUNTRY_CODES,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
+    NON_STANDARD_COST_TYPES,
 };
