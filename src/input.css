@@ -617,7 +617,8 @@
     py-3
     font-semibold
     rounded-xl
-    shadow-md;
+    shadow-md
+    tabular-nums;
 }
 
 @utility gray-btn-enabled {
