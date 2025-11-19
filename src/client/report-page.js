@@ -524,7 +524,7 @@ function renderPaginatedSection(
     isFixableSection
 ) {
     const totalItems = items.length;
-    const totalPages = Math.ceil(totalItems / pageSize);
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
     // e.g. when uploading, there could be fewer pages than there were
     if (currentPage > totalPages) {
@@ -838,7 +838,7 @@ async function initReportPage() {
 
 const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
 let undoStack = JSON.parse(localStorage.getItem(`undoStack_${subdivisionName}`)) ?? [];
-let undoPosition = localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0;
+let undoPosition = +localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0;
 const uploadSpinner = document.getElementById('upload-spinner');
 
 /**
@@ -1260,7 +1260,6 @@ function transitionInsertItem(osmType, osmId) {
         applyEditorVisibility();
         animateInItem(newListItem);
     } else if (index >= 0) {
-        console.log(index)
         // Find which item to put it before
         const nextItem = sortedItems.at(index + 1);
         const nextListItem = document.querySelector(`li[data-item-id="${nextItem.type}/${nextItem.id}"]`);
