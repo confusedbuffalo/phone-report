@@ -18,6 +18,7 @@ const {
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     ALL_NUMBER_TAGS,
     FAX_TAGS,
+    NON_STANDARD_COST_TYPES,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -438,7 +439,7 @@ function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = 
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
-    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational) {
+    if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) && !tollFreeAsInternational) {
         const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
         return coreFormattedNational + extension;
     }
@@ -527,7 +528,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
 
             let numbersMatch = false;
-            if (phoneNumber.getType() === 'TOLL_FREE') {
+            if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())) {
                 const normalizedTollFree = suggestedFix.replace(spacingRegex, '');
                 numbersMatch = normalizedOriginal === normalizedTollFree;
             }

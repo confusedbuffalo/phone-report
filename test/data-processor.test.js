@@ -25,6 +25,7 @@ const SAMPLE_COUNTRY_CODE_DE = 'DE';
 const SAMPLE_COUNTRY_CODE_US = 'US';
 const SAMPLE_COUNTRY_CODE_ZA = 'ZA';
 const SAMPLE_COUNTRY_CODE_PL = 'PL';
+const SAMPLE_COUNTRY_CODE_FR = 'FR';
 
 // =====================================================================
 // safeName Tests
@@ -836,6 +837,17 @@ describe('processSingleNumber', () => {
 
     test('DE: toll free number already in international format is valid', () => {
         const result = processSingleNumber('+49 800 1234 567', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    // --- FR Tests ---
+    test('FR: shared cost number in national format is valid', () => {
+        const result = processSingleNumber('0820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('FR: shared cost number already in international format is valid', () => {
+        const result = processSingleNumber('+33 820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
         expect(result.isInvalid).toBe(false);
     });
 });
