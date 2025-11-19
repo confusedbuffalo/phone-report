@@ -426,7 +426,7 @@
 }
 
 @utility list-item-phone-value-container {
-  @apply col-span-1 text-gray-900 dark:text-gray-100 break-all;
+  @apply col-span-1 text-gray-900 dark:text-gray-100 break-all [font-variant-ligatures:no-contextual];
 }
 
 @utility phone-separator-line {
