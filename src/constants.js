@@ -272,6 +272,14 @@ const NANP_COUNTRY_CODES = [
     'VI', // U.S. Virgin Islands
 ];
 
+const usTerritoryCodes = new Map([
+    ['American Samoa', 'AS'],
+    ['Guam', 'GU'],
+    ['Puerto Rico', 'PR'],
+    ['Northern Mariana Islands', 'MP'],
+    ['United States Virgin Islands', 'VI'],
+]);
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
@@ -313,6 +321,7 @@ module.exports = {
     GITHUB_LINK,
     HOST_URL,
     NANP_COUNTRY_CODES,
+    usTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
 };
