@@ -10,7 +10,7 @@ The project fetches data from OSM, validates phone numbers, and generates a stat
 
 1.  **Fetch Data**: For each country and its subdivisions defined in `src/data/constants.js`, the project queries the Overpass API to fetch OSM elements with phone number tags.
 2.  **Validate Numbers**: The fetched phone numbers are validated using `libphonenumber-js`. Numbers are checked for correct formatting and validity for the specific country.
-3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers, providing direct links to edit the data in various OSM editors (iD, JOSM, etc.).
+3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers, providing an option to fix the item directly and upload the edits in a batch as well as direct links to edit the data in various OSM editors (iD, JOSM, etc.).
 
 ## How to add a new country
 
@@ -27,6 +27,11 @@ To add a new country to the report, you need to modify [countries.json](/src/dat
         *   Use `divisionMap` for a hardcoded list of divisions and subdivisions.
 
 2.  **Add translations** (optional): If the country uses a language not already present, add a new JSON file in the `locales/` directory (e.g., `de-DE.json` for German).
+
+## Bot edit
+Some of the fixes can be made without individual review if they are simply removing punctuation or adding the country code. There is an option of an ongoing automated edit which can be enabled on a country-level basis after discussion with the relevant community.
+
+This [wiki page](https://wiki.openstreetmap.org/wiki/Automated_edits/confusedbuffalo/Fix_basic_phone_number_issues) details the process of the bot edit and which elements it would apply to. If you think such an ongoing edit would be useful and accepted in your country then open an issue to suggest it.
 
 ## Contributing
 
