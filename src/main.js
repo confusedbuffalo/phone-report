@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes } = require('./constants');
 const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
@@ -124,6 +124,18 @@ async function getSubdivisions(countryData, divisionName) {
 }
 
 /**
+ * Returns the two-letter country code for US territories and possessions.
+ * * @param {string} divisionName The full name of the US territory (e.g., "Puerto Rico").
+ * @returns {string} The two-letter country code (e.g., "PR"), or 'US' as default.
+ */
+function getUsCountryCode(divisionName) {
+    if (!divisionName) {
+        return null;
+    }
+    return usTerritoryCodes.get(divisionName) || 'US';
+}
+
+/**
  * Processes a single subdivision: fetches OSM data, validates numbers, generates the HTML report,
  * and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
@@ -137,8 +149,9 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const countryName = countryData.name;
     const elementStream = await fetchOsmDataForDivision(subdivision);
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
+    const countryCode = countryData.countryCode === 'US' ? getUsCountryCode(subdivision.name) : countryData.countryCode;
 
-    const { totalNumbers, invalidCount, autoFixableCount } = await validateNumbers(elementStream, countryData.countryCode, tmpFilePath);
+    const { totalNumbers, invalidCount, autoFixableCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
 
     const stats = {
         name: subdivision.name,
