@@ -323,6 +323,11 @@ async function main() {
         path.join(PUBLIC_DIR, 'vendor', 'osm-api.min.js')
     );
 
+    fs.copyFileSync(
+        path.join(__dirname, '..', 'node_modules', 'chart.js', 'dist', 'chart.umd.js'),
+        path.join(PUBLIC_DIR, 'vendor', 'chart.js')
+    );
+
     console.log('Starting full build process...');
 
     const allCountryStats = [];

@@ -45,7 +45,7 @@ async function generateProgressPage(country = null, locale = 'en-GB') {
         ${favicon}
         <link href="${srcPrefix}styles.css" rel="stylesheet">
         <script src="${srcPrefix}theme.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="${srcPrefix}vendor/chart.js"></script>
         <script src="${srcPrefix}chart-generator.js"></script>
     </head>
     <body class="body-styles">

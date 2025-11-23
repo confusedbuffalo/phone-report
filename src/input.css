@@ -268,7 +268,7 @@
 }
 
 @utility list-item-details-grid {
-  @apply grid grid-cols-[max-content_1fr] gap-x-4 items-center;
+  @apply sm:grid sm:grid-cols-[max-content_1fr] gap-x-4 items-center;
 }
 
 @utility grid-col-span-1 {

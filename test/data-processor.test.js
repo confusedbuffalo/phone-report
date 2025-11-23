@@ -507,7 +507,7 @@ describe('checkExclusions', () => {
     const DE = 'DE'; // Non-excluded country
     const excludedNumber = '3631';
     const excludedNumberWithExtra = 'tel: 3631';
-    const otherNumber = '1234'; // Non-excluded number
+    const otherNumber = '4321'; // Non-excluded number
     const requiredTags = { amenity: 'post_office' };
     const irrelevantTags = { shop: 'bank', operator: 'La Banque Postale' };
     const emptyTags = {};
@@ -1512,6 +1512,40 @@ describe('validateNumbers', () => {
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': "+49 651 146262-0",
             'phone': "+49 651 146262-0",
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null
+        });
+    });
+
+    test('FR should remove duplicate valid national numbers in different tags', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': "0 890 64 97 13",
+                    'phone': "0 890 64 97 13",
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), "FR", tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': "0 890 64 97 13",
+            'phone': "0 890 64 97 13",
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null

@@ -114,7 +114,7 @@ function createClientItems(item, locale, botEnabled, iconManager) {
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
-        } else {
+        } else if (item.autoFixable) {
             // Mobile is being moved to standard key, which did not exist before
             if (mobileMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
@@ -124,6 +124,10 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                     [newTagDiff]: newDiff
                 }
             }
+            return {
+                [key]: `<span>${escapeHTML(originalNumber)}</span>`
+            };
+        } else {
             return {
                 [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };
