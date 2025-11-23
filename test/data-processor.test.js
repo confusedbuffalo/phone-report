@@ -1518,6 +1518,40 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('FR should remove duplicate valid national numbers in different tags', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:phone': "0 890 64 97 13",
+                    'phone': "0 890 64 97 13",
+                    name: 'Double phone',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), "FR", tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'contact:phone': "0 890 64 97 13",
+            'phone': "0 890 64 97 13",
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'contact:phone': null
+        });
+    });
+
     test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag', async () => {
         const elements = [
             {
