@@ -1,22 +1,9 @@
 version: 2
 updates:
-  # Configuration for your npm/Node.js dependencies
   - package-ecosystem: "npm"
-    # Location of the package.json and package-lock.json files
     directory: "/"
-    # Check for updates once a week (or choose "daily", "monthly")
     schedule:
       interval: "weekly"
-    # Set a maximum of 10 open pull requests for this ecosystem
     open-pull-requests-limit: 10
-    # Optional: Group minor/patch updates into a single PR
-    groups:
-      dev-dependencies:
-        patterns:
-          - "*"
-        update-types:
-          - "patch"
-          - "minor"
-    # Optional: Add labels to the pull requests Dependabot creates
     labels:
       - "dependencies"
