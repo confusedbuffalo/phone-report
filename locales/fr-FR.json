@@ -79,6 +79,12 @@
   "enterComment": "Veuillez saisir un commentaire avant de soumettre.",
   "noChangesSubmitted": "Aucune modification soumise, peut-être que quelqu&apos;un d&apos;autre a déjà effectué les mêmes modifications.",
   "changesetCreated": "Succès : Jeu de modifications %n créé",
-  "notLoggedIn": "Vous devez être connecté pour soumettre des modifications",
-  "save": "Enregistrer"
+  "notLoggedIn": "Vous devez être connecté pour soumettre des modifications ou ouvrir des notes",
+  "save": "Enregistrer",
+  "openNote": "Ouvrir la note",
+  "createNoteFor": "Créer une note pour %n ?",
+  "noteIsClose": "La note %n est à proximité",
+  "noteCreated": "Note %n ouverte",
+  "hasInvalidSingular": "%n a un numéro de téléphone invalide, quel devrait-il être ?",
+  "hasInvalidPlural": "%n a des numéros de téléphone invalides, quels devraient-ils être ?"
 }

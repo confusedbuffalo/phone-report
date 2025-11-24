@@ -336,7 +336,7 @@ function createButtons(item, clickedClass) {
             ${translate('applyFix')}
         </button>` :
         '';
-    
+
     const noteButton = item.autoFixable ? '' :
         `<button onclick="addNote('${item.type}', ${item.id})"
             data-editor-id="note-btn"
@@ -1067,7 +1067,7 @@ async function uploadChanges() {
         moveEditsToUploadedStorage();
         return changesetId;
     }
-    
+
     moveEditsToUploadedStorage();
 }
 
@@ -1361,7 +1361,7 @@ function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
  * @returns {void}
  */
 async function checkForNotes(lat, lon) {
-    const bbox = calculateBufferedBBox(lat, lon, 20);    
+    const bbox = calculateBufferedBBox(lat, lon, 5);
     const notesInArea = await OSM.getNotesForArea(bbox);
     return notesInArea;
 }
@@ -1380,14 +1380,79 @@ function addNote(osmType, osmId) {
     openNoteModal(item);
     checkForNotes(item.lat, item.lon)
         .then((result) => {
-            if (result.length > 0) {
-                console.log(result)
+            const openNotesMessage = result
+                .filter(note => note.status === 'open')
+                .map(note => note.id)
+                .map(id => translate('noteIsClose', { '%n': `<a href="https://www.openstreetmap.org/note/${id}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${id}</a>` }))
+                .join('\n');
+            if (openNotesMessage.length > 0) {
+                disableCreateNoteWithMessage(openNotesMessage);
+            } else {
+                addNoteBtn.addEventListener('click', function () {
+                    checkAndCreateNote(item.lat, item.lon);
+                });
             }
-            console.log(result)
         })
         .catch((err) => {
-            console.error(err)
+            disableCreateNoteWithMessage(`Error fetching notes: ${err}`);
         });
+}
+
+/**
+ * Validates the note comment, creates the note if valid,
+ * and handles the UI state (disabling/enabling buttons, showing messages/spinner)
+ * before, during, and after the creation or error.
+ * @returns {void}
+ */
+function checkAndCreateNote(lat, lon) {
+    const noteCommentBox = document.getElementById('note-comment');
+    const comment = noteCommentBox.value.trim();
+    const messageBox = document.getElementById('note-message-box');
+
+    if (comment.length > 0) {
+        messageBox.classList.add('hidden');
+
+        disableModalCloseListeners();
+
+        addNoteBtn.classList.remove('cursor-pointer');
+        addNoteBtn.classList.add('cursor-progress');
+        addNoteBtn.disabled = true;
+        noteCancelBtn.classList.add('hidden');
+
+        noteCommentBox.disabled = true;
+        noteCommentBox.classList.add('cursor-not-allowed');
+
+        OSM.createNote(lat, lon, noteCommentBox.value.trim())
+            .then((result) => {
+                const successMessage = translate(
+                    'noteCreated',
+                    { '%n': `<a href="https://www.openstreetmap.org/note/${result.id}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${result.id}</a>` }
+                );
+                messageBox.className = 'message-box-success';
+                messageBox.innerHTML = successMessage;
+                messageBox.classList.remove('hidden');
+                addNoteBtn.classList.add('hidden');
+                noteCloseBtnBottom.classList.remove('hidden');
+
+                enableModalCloseListeners();
+            })
+            .catch((err) => {
+                addNoteBtn.disabled = false;
+                addNoteBtn.classList.add('cursor-pointer');
+                addNoteBtn.classList.remove('cursor-progress');
+
+                messageBox.className = 'message-box-error';
+                messageBox.innerHTML = `There was an error: ${err}`;
+                messageBox.classList.remove('hidden');
+
+                noteCancelBtn.classList.remove('hidden');
+                enableModalCloseListeners();
+            });
+    } else {
+        messageBox.className = 'message-box-error';
+        messageBox.innerHTML = translate('enterComment');
+        messageBox.classList.remove('hidden');
+    }
 }
 
 /**
@@ -1553,12 +1618,39 @@ function openUploadModal() {
 }
 
 /**
+ * Disables the create note button and shows a message to the user
+ * @param {object} message - The text of the message.
+ * @returns {void}
+ */
+function disableCreateNoteWithMessage(message) {
+    addNoteBtn.disabled = true;
+    addNoteBtn.classList.add('cursor-not-allowed');
+    addNoteBtn.classList.remove('cursor-pointer');
+
+    const messageBox = document.getElementById('note-message-box');
+    messageBox.className = 'message-box-error';
+    messageBox.innerHTML = message;
+    messageBox.classList.remove('hidden');
+}
+
+/**
+ * Decodes HTML entities in a string.
+ * @param {string} encodedString - The string to be decoded.
+ * @returns {string}
+ */
+function decodeHtmlEntities(encodedString) {
+    const textArea = document.createElement('textarea');
+    textArea.innerHTML = encodedString;
+    return textArea.value;
+}
+
+/**
  * Displays the modal window for creating a note and checks if the user is logged into OSM.
  * @param {object} item - The item to create a note for.
  * @returns {void}
  */
 function openNoteModal(item) {
-    noteModalTitle.innerHTML = translate('createNote');
+    noteModalTitle.innerHTML = translate('createNoteFor', { '%n': item.featureTypeName });
 
     // Reset buttons etc.
     addNoteBtn.classList.add('cursor-pointer');
@@ -1574,7 +1666,6 @@ function openNoteModal(item) {
 
     noteCommentBox.disabled = false;
     noteCommentBox.classList.remove('cursor-not-allowed');
-    let noteComment = `${item.name} `;
 
     const invalidWithoutFix = Object.entries(item.invalidNumbers)
         .filter(([key]) => {
@@ -1582,29 +1673,25 @@ function openNoteModal(item) {
             return fix === null || fix === undefined;
         })
 
-    noteComment += invalidWithoutFix.length > 1 ? 'has invalid phone numbers:\n\n': 'has an invalid phone number:\n\n';
-
     const invalidNumbersList = invalidWithoutFix
         .map(([key, number]) => {
             return `${key} = ${number}`;
         })
         .join('\n');
 
-    noteComment += invalidNumbersList;
-    noteComment += `\n\nhttps://www.openstreetmap.org/${item.type}/${item.id}\n`;
-    noteComment += `Via ${CHANGESET_TAGS['created_by']}`;
+    let noteComment = invalidWithoutFix.length > 1
+        ? translate('hasInvalidPlural', { '%n': item.featureTypeName })
+        : translate('hasInvalidSingular', { '%n': item.featureTypeName });
 
-    noteCommentBox.value = noteComment;
+    noteComment += '\n\n';
+    noteComment += invalidNumbersList;
+    noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${item.type}/${item.id}\n`;
+    noteComment += `via ${CHANGESET_TAGS['created_by']}`;
+
+    noteCommentBox.value = decodeHtmlEntities(noteComment);
 
     if (!OSM.isLoggedIn()) {
-        addNoteBtn.disabled = true;
-        addNoteBtn.classList.add('cursor-not-allowed');
-        addNoteBtn.classList.remove('cursor-pointer');
-
-        const messageBox = document.getElementById('note-message-box');
-        messageBox.className = 'message-box-error';
-        messageBox.innerHTML = translate('notLoggedIn');
-        messageBox.classList.remove('hidden');
+        disableCreateNoteWithMessage(translate('notLoggedIn'));
     }
 
     noteModal.classList.remove('hidden');

@@ -422,7 +422,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                     <button id="cancel-note-modal-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="closeNoteModal()">
                         ${translate('cancel', locale)}
                     </button>
-                    <button id="add-note-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" onclick="checkAndCreateNote()">
+                    <button id="add-note-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer">
                         ${translate('openNote', locale)}
                     </button>
                 </div>
