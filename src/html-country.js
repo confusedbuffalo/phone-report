@@ -6,16 +6,15 @@ const {favicon, themeButton, createFooter, createStatsBox, escapeHTML} = require
 const { safeName } = require('./data-processor');
 
 /**
- * Creates the renderListScript for the country index page.
+ * Creates the client constants for the country index page.
  * @param {Object} countryData
  * @param {string} locale
  * @returns {string}
  */
 function createClientConstants(countryData, locale) {
 
-    // --- Server-side translation of dynamic client script strings ---
-    // These strings are translated on the server and embedded as literals in the page.
-    const T = {
+    // Server-side translation of dynamic client script strings
+    const clientTranslations = {
         invalidNumbersOutOf: translate('invalidNumbersOutOf', locale),
         invalid: translate('invalid', locale),
         noSubdivisionsFound: translate('noSubdivisionsFound', locale)
@@ -27,9 +26,9 @@ function createClientConstants(countryData, locale) {
         const safeCountryName = '${safeName(countryData.name)}';
         const locale = '${locale}'; 
         const T_CLIENT = {
-            invalidNumbersOutOf: \`${T.invalidNumbersOutOf}\`,
-            invalid: \`${T.invalid}\`,
-            noSubdivisionsFound: \`${T.noSubdivisionsFound}\`
+            invalidNumbersOutOf: \`${clientTranslations.invalidNumbersOutOf}\`,
+            invalid: \`${clientTranslations.invalid}\`,
+            noSubdivisionsFound: \`${clientTranslations.noSubdivisionsFound}\`
         };
     </script>
     `;

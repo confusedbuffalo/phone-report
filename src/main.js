@@ -150,15 +150,20 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const elementStream = await fetchOsmDataForDivision(subdivision);
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const countryCode = countryData.countryCode === 'US' ? getUsCountryCode(subdivision.name) : countryData.countryCode;
+    const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalNumbers, invalidCount, autoFixableCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
+    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
+
+    const siteInvalidCount = botEnabled ? invalidCount - safeEditCount : invalidCount;
+    const siteAutoFixableCount = botEnabled ? autoFixableCount - safeEditCount : autoFixableCount;
 
     const stats = {
         name: subdivision.name,
         divisionSlug: safeName(rawDivisionName),
         slug: safeName(subdivision.name),
-        invalidCount: invalidCount,
-        autoFixableCount: autoFixableCount,
+        invalidCount: siteInvalidCount,
+        autoFixableCount: siteAutoFixableCount,
+        safeEditCount: safeEditCount,
         totalNumbers: totalNumbers,
         lastUpdated: new Date().toISOString()
     };
@@ -202,6 +207,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     let divisionTotalNumbers = 0;
     let divisionInvalidCount = 0;
     let divisionAutofixableCount = 0;
+    let divisionSafeEditCount = 0;
 
     let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
@@ -210,6 +216,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionTotalNumbers += stats.totalNumbers;
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
+        divisionSafeEditCount += stats.safeEditCount;
 
         subdivisionCount++;
         if (testMode && subdivisionCount >= 1) {
@@ -217,7 +224,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         }
     }
 
-    return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount };
+    return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
 }
 
 /**
@@ -241,6 +248,7 @@ async function processCountry(countryData) {
 
     let totalInvalidCount = 0;
     let totalAutofixableCount = 0;
+    let totalSafeEditCount = 0;
     let totalTotalNumbers = 0;
     const groupedDivisionStats = {};
 
@@ -255,13 +263,15 @@ async function processCountry(countryData) {
             divisionStats,
             divisionTotalNumbers,
             divisionInvalidCount,
-            divisionAutofixableCount
+            divisionAutofixableCount,
+            divisionSafeEditCount
         } = await processDivision(rawDivisionName, countryData, locale, clientTranslations);
 
         const divisionName = rawDivisionName;
         groupedDivisionStats[divisionName] = divisionStats;
         totalInvalidCount += divisionInvalidCount;
         totalAutofixableCount += divisionAutofixableCount;
+        totalSafeEditCount += divisionSafeEditCount;
         totalTotalNumbers += divisionTotalNumbers;
 
         divisionCount++;
@@ -276,8 +286,10 @@ async function processCountry(countryData) {
         locale: locale,
         invalidCount: totalInvalidCount,
         autoFixableCount: totalAutofixableCount,
+        safeEditCount: totalSafeEditCount,
         totalNumbers: totalTotalNumbers,
-        groupedDivisionStats: groupedDivisionStats
+        groupedDivisionStats: groupedDivisionStats,
+        botEnabled: countryData.safeAutoFixBotEnabled
     };
 
     saveCountryHistory(countryStats);
