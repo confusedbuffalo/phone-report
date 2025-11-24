@@ -2,6 +2,7 @@ const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
 const OSM = require("osm-api");
+const { pipeline } = require('stream/promises');
 const { chain } = require('stream-chain');
 const { parser } = require('stream-json/Parser');
 const { streamArray } = require('stream-json/streamers/StreamArray');
@@ -155,33 +156,33 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
         }
     }
 
-    const pipelinePromise = new Promise((resolve, reject) => {
-        const pipeline = chain([
-            fs.createReadStream(tmpFilePath),
-            parser(),
-            streamArray(),
-            new SafeEditFilter(),
-            new SafeEditWrapper( // Wraps the edits array with metadata
-                countryName, 
-                subdivisionStats.name, 
-                subdivisionStats.divisionSlug, 
-                subdivisionStats.slug
-            ),
-            new StringifyTransform(),
-            fs.createWriteStream(dataFilePath)
-        ]);
+    const inputStream = fs.createReadStream(tmpFilePath);
+    const outputStream = fs.createWriteStream(dataFilePath);
+    
+    const chainedStream = chain([
+        parser(),
+        streamArray(),
+        new SafeEditFilter(),
+        new SafeEditWrapper(
+            countryName, 
+            subdivisionStats.name, 
+            subdivisionStats.divisionSlug, 
+            subdivisionStats.slug
+        ),
+        new StringifyTransform()
+    ]);
 
-        pipeline.on('error', (err) => {
-            console.error('An error occurred during streaming:', err);
-            reject(err);
-        });
-        pipeline.on('finish', () => {
-            console.log(`Safe edits output data written to ${dataFilePath}`);
-            resolve();
-        });
-    });
-
-    await pipelinePromise;
+    try {
+        await pipeline(
+            inputStream,
+            chainedStream,
+            outputStream
+        );
+        console.log(`Safe edits output data written to ${dataFilePath}`);
+    } catch (err) {
+        console.error('An error occurred during safe edits streaming:', err);
+        throw err;
+    }
 }
 
 /**
