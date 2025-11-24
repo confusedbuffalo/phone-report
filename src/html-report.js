@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { pipeline } = require('stream/promises');
 const { Transform } = require('stream');
 const { chain } = require('stream-chain');
 const { parser } = require('stream-json/Parser');
@@ -50,7 +51,7 @@ function createJosmFixUrl(item) {
  */
 function createClientItems(item, locale, botEnabled, iconManager) {
     // Skip safe edit items if the bot is enabled here
-    if (botEnabled && item.safeEdit){
+    if (botEnabled && item.safeEdit) {
         return null;
     }
 
@@ -181,7 +182,10 @@ class ItemTransformer extends Transform {
     _transform(chunk, encoding, callback) {
         try {
             const result = this.transformFn(chunk.value);
-            this.push(result);
+            // Only push if result is not null/undefined
+            if (result !== null && result !== undefined) {
+                this.push(result);
+            }
             callback();
         } catch (error) {
             callback(error);
@@ -219,31 +223,34 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
 
     const stringerOptions = { makeArray: true };
 
-    const pipelinePromise = new Promise((resolve, reject) => {
-        const pipeline = chain([
-            fs.createReadStream(tmpFilePath),
-            parser(),
-            streamArray(),
-            new ItemTransformer(item => createClientItems(item, locale, botEnabled, iconManager), {}),
-            disassembler(),
-            stringer(stringerOptions),
-            fs.createWriteStream(dataFilePath)
-        ]);
+    const inputStream = fs.createReadStream(tmpFilePath);
+    const outputStream = fs.createWriteStream(dataFilePath);
 
-        pipeline.on('error', (err) => {
-            console.error('An error occurred during streaming:', err);
-            reject(err);
-        });
-        pipeline.on('finish', () => {
-            console.log(`Output data written to ${dataFilePath}`);
-            setImmediate(() => {
-                const svgSprite = iconManager.generateSvgSprite();
-                resolve(svgSprite);
-            });
-        });
-    });
+    const chainedStream = chain([
+        parser(),
+        streamArray(),
+        new ItemTransformer(item => {
+            const clientItem = createClientItems(item, locale, botEnabled, iconManager);
+            return clientItem;
+        }),
+        disassembler(),
+        stringer(stringerOptions)
+    ]);
 
-    const svgSprite = await pipelinePromise;
+    try {
+        await pipeline(
+            inputStream,
+            chainedStream,
+            outputStream
+        );
+        console.log(`Output data written to ${dataFilePath}`);
+    } catch (err) {
+        console.error('An error occurred during streaming:', err);
+        throw err;
+    }
+
+    const svgSprite = iconManager.generateSvgSprite();
+
 
     let confettiScripts = '';
     if (invalidCount === 0) {
