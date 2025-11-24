@@ -395,6 +395,35 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         expect(result.suggestedDiff).toEqual(expectedSuggested)
     });
 
+    test('should mark prefix as new, even when it is the same as the first digits of the original', () => {
+        const original = '3912';
+        const suggested = '+39 3912';
+
+        const result = diffPhoneNumbers(original, suggested);
+
+        // Check Original Diff: 0 removed
+        const expectedOriginal = [
+            { value: '3', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '1', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+        ]
+        expect(result.originalDiff).toEqual(expectedOriginal)
+
+        // Check Suggested Diff: +32 added
+        const expectedSuggested = [
+            { value: '+', added: true },
+            { value: '3', added: true },
+            { value: '9', added: true },
+            { value: ' ', added: true },
+            { value: '3', removed: false, added: false },
+            { value: '9', removed: false, added: false },
+            { value: '1', removed: false, added: false },
+            { value: '2', removed: false, added: false },
+        ]
+        expect(result.suggestedDiff).toEqual(expectedSuggested)
+    });
+
     test('should mark prefix as new, even when its first digit is the same as the first digit in the original (no leading 0)', () => {
         const original = '327';
         const suggested = '+39 327';

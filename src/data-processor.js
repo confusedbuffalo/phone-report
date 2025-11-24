@@ -1,7 +1,25 @@
 const fs = require('fs');
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, EXCLUSIONS, MOBILE_TAGS, PHONE_TAGS, WEBSITE_TAGS, BAD_SEPARATOR_REGEX, UNIVERSAL_SPLIT_REGEX, UNIVERSAL_SPLIT_REGEX_DE, PHONE_TAG_PREFERENCE_ORDER, EXTENSION_REGEX, NANP_COUNTRY_CODES, ACCEPTABLE_EXTENSION_FORMATS, DE_EXTENSION_REGEX, TOLL_FREE_AS_NATIONAL_COUNTRIES } = require('./constants');
+const {
+    FEATURE_TAGS,
+    HISTORIC_AND_DISUSED_PREFIXES,
+    EXCLUSIONS,
+    MOBILE_TAGS,
+    WEBSITE_TAGS,
+    BAD_SEPARATOR_REGEX,
+    UNIVERSAL_SPLIT_REGEX,
+    UNIVERSAL_SPLIT_REGEX_DE,
+    EXTENSION_REGEX,
+    DE_EXTENSION_REGEX,
+    PHONE_TAG_PREFERENCE_ORDER,
+    NANP_COUNTRY_CODES,
+    ACCEPTABLE_EXTENSION_FORMATS,
+    TOLL_FREE_AS_NATIONAL_COUNTRIES,
+    ALL_NUMBER_TAGS,
+    FAX_TAGS,
+    NON_STANDARD_COST_TYPES,
+} = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
 const MobileStatus = {
@@ -320,16 +338,20 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
     const normalizedOriginal = numberStr.replace(getSpacingRegex(countryCode), '');
 
     // See https://github.com/confusedbuffalo/phone-report/issues/18
-    if (
-        countryCode === 'FR'
-        && coreNationalNumber.length === 4
-        && coreNationalNumber.at(0) === '3'
-    ) {
-        return {
-            isInvalid: !(normalizedOriginal === coreNationalNumber),
-            autoFixable: true,
-            suggestedFix: coreNationalNumber
-        };
+    if (countryCode === 'FR') {
+        // libphonenumbers-js doesn't support the short number check
+        // but that would catch emergency numbers which probably shouldn't be mapped anyway
+        const isValidShortNumberFr = (
+            (coreNationalNumber.length === 4 && coreNationalNumber.at(0) === '3')
+            || (coreNationalNumber.length === 4 && coreNationalNumber.at(0) === '1')
+        )
+        if (isValidShortNumberFr) {
+            return {
+                isInvalid: !(normalizedOriginal === coreNationalNumber),
+                autoFixable: true,
+                suggestedFix: coreNationalNumber
+            };
+        }
     }
 
     const countryExclusions = EXCLUSIONS[countryCode];
@@ -421,7 +443,7 @@ function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = 
         (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
-    if (phoneNumber.getType() === 'TOLL_FREE' && !tollFreeAsInternational) {
+    if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) && !tollFreeAsInternational) {
         const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
         return coreFormattedNational + extension;
     }
@@ -510,7 +532,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
 
             let numbersMatch = false;
-            if (phoneNumber.getType() === 'TOLL_FREE') {
+            if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())) {
                 const normalizedTollFree = suggestedFix.replace(spacingRegex, '');
                 numbersMatch = normalizedOriginal === normalizedTollFree;
             }
@@ -688,7 +710,7 @@ function processMismatches(item, countryCode) {
  * @param {string} countryCode - The country code for validation.
  * @returns {boolean}
  */
-function isSafeItemEdit(item, countryCode){
+function isSafeItemEdit(item, countryCode) {
     // Not safe if there are any mismatch type numbers or duplicate numbers
     if (
         !item.autoFixable
@@ -712,14 +734,14 @@ function isSafeItemEdit(item, countryCode){
     }
 
     let isSafe = true;
-    
+
     for (const [key, invalidValue] of item.invalidNumbers.entries()) {
         const suggestedValue = item.suggestedFixes.get(key);
-        
+
         isSafe = isSafe && isSafeEdit(invalidValue, suggestedValue, countryCode);
 
         if (!isSafe) {
-            return false; 
+            return false;
         }
     }
 
@@ -748,7 +770,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         const tags = element.tags;
 
         let item = null;
-        const allNormalizedNumbers = new Map();
+        const allNormalizedPhoneNumbers = new Map();
+        const allNormalizedFaxNumbers = new Map();
 
         const getOrCreateItem = (autoFixable) => {
             if (item) return item;
@@ -783,7 +806,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             return item;
         };
 
-        for (const tag of PHONE_TAGS) {
+        for (const tag of ALL_NUMBER_TAGS) {
             if (!tags[tag]) continue;
 
             const phoneTagValue = tags[tag];
@@ -797,6 +820,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             let hasInternalDuplicate = false;
             let suggestedFix = null;
             let duplicateMismatchCount = 0;
+
+            const allNormalizedNumbers = FAX_TAGS.includes(tag) ? allNormalizedFaxNumbers : allNormalizedPhoneNumbers;
 
             // --- Detect internal duplicates within the same tag ---
             const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));
@@ -818,11 +843,11 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 // Skip duplicate detection only if unfixable invalid
                 if (validationResult.isInvalid && !validationResult.isAutoFixable) continue;
 
-                // Normalise including extension (so different extensions remain distinct)
-                const numberWithExtension = countryCode === 'DE'
-                    ? phoneNumber.number + (phoneNumber.ext ? `-${phoneNumber.ext}` : '')
-                    : phoneNumber.number + (phoneNumber.ext ? `x${phoneNumber.ext}` : '');
-                const normalizedNumber = (numberWithExtension).replace(getSpacingRegex(countryCode), '');
+                const normalizedNumber = getFormattedNumber(
+                    phoneNumber,
+                    countryCode,
+                    !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                ).replace(getSpacingRegex(countryCode), '');
 
                 // Correct the tag of a mismatch type number early
                 const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number =>

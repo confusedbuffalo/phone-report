@@ -272,7 +272,7 @@
 }
 
 @utility list-item-details-grid {
-  @apply grid grid-cols-[max-content_1fr] gap-x-4 items-center;
+  @apply sm:grid sm:grid-cols-[max-content_1fr] gap-x-4 items-center;
 }
 
 @utility grid-col-span-1 {
@@ -430,7 +430,7 @@
 }
 
 @utility list-item-phone-value-container {
-  @apply col-span-1 text-gray-900 dark:text-gray-100 break-all;
+  @apply col-span-1 text-gray-900 dark:text-gray-100 break-all [font-variant-ligatures:no-contextual];
 }
 
 @utility phone-separator-line {
@@ -438,7 +438,7 @@
 }
 
 @utility list-item-actions-container {
-  @apply flex flex-wrap gap-2 w-full sm:w-[40%] justify-end text-sm font-semibold;
+  @apply flex flex-col gap-2 w-full sm:w-[40%] justify-end text-sm font-semibold;
 }
 
 @utility section-header-container {
@@ -621,7 +621,8 @@
     py-3
     font-semibold
     rounded-xl
-    shadow-md;
+    shadow-md
+    tabular-nums;
 }
 
 @utility gray-btn-enabled {

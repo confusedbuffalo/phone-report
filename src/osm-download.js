@@ -1,4 +1,4 @@
-const { OVERPASS_API_URL, PHONE_TAGS } = require('./constants');
+const { OVERPASS_API_URL, ALL_NUMBER_TAGS } = require('./constants');
 const { parser } = require('stream-json');
 const { pick } = require('stream-json/filters/Pick');
 const { streamArray } = require('stream-json/streamers/StreamArray');
@@ -77,7 +77,7 @@ async function fetchOsmDataForDivision(division, retries = 3) {
     const areaId = division.id + 3600000000;
     const queryTimeout = 600;
 
-    const tagQuery = PHONE_TAGS
+    const tagQuery = ALL_NUMBER_TAGS
         .map(tag => `nwr(area.division)["${tag}"];`)
         .join('\n');
 

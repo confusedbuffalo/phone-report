@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { pipeline } = require('stream/promises');
 const { Transform } = require('stream');
 const { chain } = require('stream-chain');
 const { parser } = require('stream-json/Parser');
@@ -12,7 +13,7 @@ const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse }
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
-const { generateSvgSprite, getIconHtml, clearIconSprite } = require('./icon-manager');
+const { IconManager } = require('./icon-manager');
 
 
 /**
@@ -45,11 +46,12 @@ function createJosmFixUrl(item) {
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
+ * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {string}
  */
-function createClientItems(item, locale, botEnabled) {
+function createClientItems(item, locale, botEnabled, iconManager) {
     // Skip safe edit items if the bot is enabled here
-    if (botEnabled && item.safeEdit){
+    if (botEnabled && item.safeEdit) {
         return null;
     }
 
@@ -57,7 +59,7 @@ function createClientItems(item, locale, botEnabled) {
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
     const iconName = getFeatureIcon(item, locale);
-    const iconHtml = getIconHtml(iconName);
+    const iconHtml = iconManager.getIconHtml(iconName);
     if (iconHtml.includes(iconName)) {
         item.iconName = iconName;
     } else {
@@ -113,7 +115,7 @@ function createClientItems(item, locale, botEnabled) {
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
-        } else {
+        } else if (item.autoFixable) {
             // Mobile is being moved to standard key, which did not exist before
             if (mobileMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
@@ -123,6 +125,10 @@ function createClientItems(item, locale, botEnabled) {
                     [newTagDiff]: newDiff
                 }
             }
+            return {
+                [key]: `<span>${escapeHTML(originalNumber)}</span>`
+            };
+        } else {
             return {
                 [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };
@@ -176,7 +182,10 @@ class ItemTransformer extends Transform {
     _transform(chunk, encoding, callback) {
         try {
             const result = this.transformFn(chunk.value);
-            this.push(result);
+            // Only push if result is not null/undefined
+            if (result !== null && result !== undefined) {
+                this.push(result);
+            }
             callback();
         } catch (error) {
             callback(error);
@@ -202,7 +211,7 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  */
 async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled) {
-    clearIconSprite();
+    const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
@@ -214,31 +223,34 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
 
     const stringerOptions = { makeArray: true };
 
-    const pipelinePromise = new Promise((resolve, reject) => {
-        const pipeline = chain([
-            fs.createReadStream(tmpFilePath),
-            parser(),
-            streamArray(),
-            new ItemTransformer(item => createClientItems(item, locale, botEnabled), {}),
-            disassembler(),
-            stringer(stringerOptions),
-            fs.createWriteStream(dataFilePath)
-        ]);
+    const inputStream = fs.createReadStream(tmpFilePath);
+    const outputStream = fs.createWriteStream(dataFilePath);
 
-        pipeline.on('error', (err) => {
-            console.error('An error occurred during streaming:', err);
-            reject(err);
-        });
-        pipeline.on('finish', () => {
-            console.log(`Output data written to ${dataFilePath}`);
-            resolve();
-        });
-    });
+    const chainedStream = chain([
+        parser(),
+        streamArray(),
+        new ItemTransformer(item => {
+            const clientItem = createClientItems(item, locale, botEnabled, iconManager);
+            return clientItem;
+        }),
+        disassembler(),
+        stringer(stringerOptions)
+    ]);
 
-    await pipelinePromise;
+    try {
+        await pipeline(
+            inputStream,
+            chainedStream,
+            outputStream
+        );
+        console.log(`Output data written to ${dataFilePath}`);
+    } catch (err) {
+        console.error('An error occurred during streaming:', err);
+        throw err;
+    }
 
-    // Generate the sprite after processing the items
-    const svgSprite = generateSvgSprite();
+    const svgSprite = iconManager.generateSvgSprite();
+
 
     let confettiScripts = '';
     if (invalidCount === 0) {
@@ -424,7 +436,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         const DATA_FILE_PATH = './${subdivisionStats.slug}.json';
         const DATA_LAST_UPDATED = '${subdivisionStats.lastUpdated}';
         const STORAGE_KEY = 'osm_report_editors';
-        const subdivisionName = '${subdivisionStats.name}';
+        const subdivisionName = ${JSON.stringify(subdivisionStats.name)};
         const CHANGESET_TAGS = ${JSON.stringify(CHANGESET_TAGS)};
         ${clientOsmEditorsScript}
         for (const editorId in OSM_EDITORS) {

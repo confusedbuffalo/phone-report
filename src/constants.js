@@ -8,24 +8,31 @@ const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
 const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
+const FAX_TAGS = ['fax', 'contact:fax']
+const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS]
 
 /**
  * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
  * A lower number indicates a higher preference (i.e., the key to KEEP).
  * Based on tag usage statistics, accurate as of 2025-11
+ * Fax numbers added on the end, they should never be compared to regular phone numbers
  * * Preference Order:
  * 1. phone (0)
  * 2. contact:phone (1)
  * 3. mobile (2)
  * 4. contact:mobile (3)
- * 5. phone:mobile (3)
+ * 5. phone:mobile (4)
+ * 6. fax (5)
+ * 7. contact:fax (6)
  */
 const PHONE_TAG_PREFERENCE_ORDER = {
     'phone': 0,
     'contact:phone': 1,
     'mobile': 2,
     'contact:mobile': 3,
-    'phone:mobile': 4
+    'phone:mobile': 4,
+    'fax': 5,
+    'contact:fax': 6,
 };
 
 const WEBSITE_TAGS = ['website', 'contact:website'];
@@ -115,6 +122,8 @@ const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
 // FR: https://github.com/confusedbuffalo/phone-report/issues/18
 // DE: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
 const TOLL_FREE_AS_NATIONAL_COUNTRIES = ['FR', 'DE']
+
+const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 
@@ -264,12 +273,22 @@ const NANP_COUNTRY_CODES = [
     'VI', // U.S. Virgin Islands
 ];
 
+const usTerritoryCodes = new Map([
+    ['American Samoa', 'AS'],
+    ['Guam', 'GU'],
+    ['Puerto Rico', 'PR'],
+    ['Northern Mariana Islands', 'MP'],
+    ['United States Virgin Islands', 'VI'],
+]);
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
     MOBILE_TAGS,
     NON_MOBILE_TAGS,
     PHONE_TAGS,
+    FAX_TAGS,
+    ALL_NUMBER_TAGS,
     WEBSITE_TAGS,
     COUNTRIES,
     FEATURE_TAGS,
@@ -303,5 +322,7 @@ module.exports = {
     GITHUB_LINK,
     HOST_URL,
     NANP_COUNTRY_CODES,
+    usTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
+    NON_STANDARD_COST_TYPES,
 };

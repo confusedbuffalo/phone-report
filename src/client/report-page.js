@@ -536,7 +536,7 @@ function renderPaginatedSection(
     isFixableSection
 ) {
     const totalItems = items.length;
-    const totalPages = Math.ceil(totalItems / pageSize);
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
     // e.g. when uploading, there could be fewer pages than there were
     if (currentPage > totalPages) {
@@ -589,13 +589,14 @@ function renderPaginatedSection(
                 <button id="redo-btn" class="btn-undo-redo gray-btn-disabled" onclick="redoChange()" disabled><svg class="icon-svg"><use href="#icon-redo"></use></svg></button>
             </span>
             <div id="save-btn-container">
-                <button id="save-btn" class="btn-squared gray-btn-disabled" onclick="openUploadModal()" disabled>Save</button>
+                <button id="save-btn" class="btn-squared gray-btn-disabled" onclick="openUploadModal()" disabled>${translate('save')}</button>
             </div>
         </div>` : '';
 
     const pageAndSortControls = `
         ${pageControls}
         <div class="sort-controls">
+            ${isFixableSection ? '' : '<div></div>'}
             <span class="sort-label">${translate('sortBy')}</span>
             <button onclick="handleSort('${suffix}', 'name')"
                     class="sort-btn sort-btn-style ${getSortStyle('name')}">
@@ -849,7 +850,7 @@ async function initReportPage() {
 
 const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
 let undoStack = JSON.parse(localStorage.getItem(`undoStack_${subdivisionName}`)) ?? [];
-let undoPosition = localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0;
+let undoPosition = +localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0;
 const uploadSpinner = document.getElementById('upload-spinner');
 
 /**
@@ -1278,7 +1279,6 @@ function transitionInsertItem(osmType, osmId) {
         applyEditorVisibility();
         animateInItem(newListItem);
     } else if (index >= 0) {
-        console.log(index)
         // Find which item to put it before
         const nextItem = sortedItems.at(index + 1);
         const nextListItem = document.querySelector(`li[data-item-id="${nextItem.type}/${nextItem.id}"]`);
