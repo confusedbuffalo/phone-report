@@ -20,6 +20,7 @@ permissions:
   id-token: write
   pull-requests: write # Needed to post comments
   actions: read # Needed to list artifacts
+  issues: write # Needed to make issues 
 
 jobs:
   run-tests:
@@ -142,9 +143,30 @@ jobs:
         run: npm install
 
       - name: Run the bot process
+        id: bot_process_run
         env:
           BOT_AUTH_TOKEN: ${{ secrets.BOT_AUTH_TOKEN }}
         run: npm run bot:autofix
+        continue-on-error: true
+
+      - name: Create/Update GitHub Issue on Bot Failure
+        uses: peter-evans/create-or-update-issue@v4
+        if: always() && steps.bot_process_run.outcome == 'failure'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          title: "🚨 Bot Edit Process Failed" 
+          body: |
+            ## Automated Edit Failure Notification
+            The step **'Run the bot process'** failed during the workflow run 
+            [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
+            The job was configured to **continue-on-error**, but this failure requires review as changes to OSM may not have been applied.
+
+            - **Commit**: `${{ github.sha }}`
+
+          labels: |
+            bot-failure
 
   push-history:
     needs: build-report
