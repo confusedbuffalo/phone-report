@@ -764,6 +764,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     let totalNumbers = 0;
     let invalidCount = 0;
     let autoFixableCount = 0;
+    let safeEditCount = 0;
 
     for await (const element of elementStream) {
         if (!element.tags) continue;
@@ -952,16 +953,16 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         }
 
         if (item) {
+            const safeEdit = isSafeItemEdit(item, countryCode);
             invalidCount++;
-            if (item.autoFixable) {
-                autoFixableCount++;
-            }
+            autoFixableCount += item.autoFixable;
+            safeEditCount += safeEdit;
 
             processMismatches(item, countryCode);
 
             const finalItem = {
                 ...item,
-                safeEdit: isSafeItemEdit(item, countryCode),
+                safeEdit: safeEdit,
                 invalidNumbers: Object.fromEntries(item.invalidNumbers),
                 suggestedFixes: Object.fromEntries(item.suggestedFixes),
                 mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
@@ -981,7 +982,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
     await new Promise(resolve => fileStream.on('finish', resolve));
 
-    return { totalNumbers, invalidCount, autoFixableCount };
+    return { totalNumbers, invalidCount, autoFixableCount, safeEditCount };
 }
 
 

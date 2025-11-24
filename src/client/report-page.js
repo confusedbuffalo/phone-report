@@ -927,7 +927,7 @@ function initLogin() {
  *
  * @param {object} feature - The feature object (node, way, or relation) containing the 'tags' object.
  * @param {object} elementEdits - The object of key-value edits to apply. A value of null indicates a deletion.
- * @returns {boolean}
+ * @returns {boolean} Whether any changes were made
  */
 function applyEditsToFeatureTags(feature, elementEdits) {
     let changed = false;
