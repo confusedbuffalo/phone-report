@@ -232,22 +232,6 @@
             "województwo zachodniopomorskie": 104401
         }
     },
-    "South Africa": {
-        "countryCode": "ZA",
-        "locale": "en-ZA",
-        "safeAutoFixBotEnabled": false,
-        "divisions": {
-            "Eastern Cape": 4782250,
-            "Free State": 92417,
-            "Gauteng": 349344,
-            "KwaZulu-Natal": 349390,
-            "Limpopo": 349547,
-            "Mpumalanga": 349556,
-            "North West": 349519,
-            "Northern Cape": 86720,
-            "Western Cape": 80501
-        }
-    },
     "Schweiz / Suisse / Svizzera / Svizra": {
         "countryCode": "CH",
         "locale": "en",
@@ -279,6 +263,34 @@
             "Vaud": 1702421,
             "Zug": 1686447,
             "Zürich": 1690227
+        }
+    },
+    "Singapore": {
+        "countryCode": "SG",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "divisions": {
+            "Central": 3831712,
+            "Northeast": 3831713,
+            "Northwest": 3831714,
+            "Southeast": 3831715,
+            "Southwest": 3831716
+        }
+    },
+    "South Africa": {
+        "countryCode": "ZA",
+        "locale": "en-ZA",
+        "safeAutoFixBotEnabled": false,
+        "divisions": {
+            "Eastern Cape": 4782250,
+            "Free State": 92417,
+            "Gauteng": 349344,
+            "KwaZulu-Natal": 349390,
+            "Limpopo": 349547,
+            "Mpumalanga": 349556,
+            "North West": 349519,
+            "Northern Cape": 86720,
+            "Western Cape": 80501
         }
     },
     "United Kingdom": {
