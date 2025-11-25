@@ -32,7 +32,7 @@ class StringifyTransform extends Transform {
     _transform(chunk, encoding, callback) {
         try {
             // Apply JSON.stringify with 2 spaces for pretty printing
-            const jsonString = JSON.stringify(chunk, null, 2); 
+            const jsonString = JSON.stringify(chunk, null, 2);
             this.push(jsonString); // Push the complete JSON string
             callback();
         } catch (error) {
@@ -84,7 +84,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
         _transform(chunk, encoding, callback) {
             this.totalOriginalItems++;
-            
+
             const item = chunk.value;
 
             if (item && item.autoFixable) {
@@ -104,10 +104,10 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
             // If false or undefined, do nothing (i.e., filter it out)
             callback();
         }
-        
+
         _flush(callback) {
-            this.push({ 
-                edits: this.edits, 
+            this.push({
+                edits: this.edits,
                 totalOriginalItems: this.totalOriginalItems,
                 totalSuggestedEdits: this.totalSuggestedEdits,
                 totalSafeEdits: this.totalSafeEdits
@@ -134,7 +134,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
         _transform(chunk, encoding, callback) {
             if (this.dataPushed) {
                 // Reject any subsequent chunks if already processed the array
-                return callback(); 
+                return callback();
             }
 
             const { edits, totalOriginalItems, totalSuggestedEdits, totalSafeEdits } = chunk;
@@ -158,15 +158,15 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
     const inputStream = fs.createReadStream(tmpFilePath);
     const outputStream = fs.createWriteStream(dataFilePath);
-    
+
     const chainedStream = chain([
         parser(),
         streamArray(),
         new SafeEditFilter(),
         new SafeEditWrapper(
-            countryName, 
-            subdivisionStats.name, 
-            subdivisionStats.divisionSlug, 
+            countryName,
+            subdivisionStats.name,
+            subdivisionStats.divisionSlug,
             subdivisionStats.slug
         ),
         new StringifyTransform()
@@ -185,6 +185,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
     }
 }
 
+
 /**
  * Applies a set of tag edits (key-value pairs) to an OSM feature's 'tags' object.
  * If an edit value is explicitly set to null, the corresponding tag key is deleted
@@ -192,13 +193,18 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
  *
  * @param {object} feature - The feature object (node, way, or relation) containing the 'tags' object.
  * @param {object} elementEdits - The object of key-value edits to apply. A value of null indicates a deletion.
+ * @param {object} originalValues - The object of key-value original tag values.
  * @returns {boolean} Whether any changes were made
  */
-function applyEditsToFeatureTags(feature, elementEdits) {
+function applyEditsToFeatureTags(feature, elementEdits, originalValues) {
     let changed = false;
 
-    if (!feature.tags || typeof feature.tags !== 'object') {
-        feature.tags = {};
+    // visible is false for deleted objects and unset for normal objects
+    const isDeleted = (feature.visible ?? true) === false;
+
+    // If a feature does not have any tags, it has dramatically changed since it was originally fetched
+    if (isDeleted || !feature.tags || typeof feature.tags !== 'object') {
+        return false;
     }
 
     const tags = feature.tags;
@@ -206,6 +212,12 @@ function applyEditsToFeatureTags(feature, elementEdits) {
     for (const key in elementEdits) {
         if (Object.hasOwn(elementEdits, key)) {
             const value = elementEdits[key];
+
+            // If any of the target tags have changed, make no changes
+            const originalValue = originalValues?.[key];
+            if (originalValue !== undefined && tags[key] !== originalValue) {
+                return false;
+            }
 
             if (value === null) {
                 if (Object.hasOwn(tags, key)) {
@@ -228,23 +240,24 @@ function applyEditsToFeatureTags(feature, elementEdits) {
  * @returns {Object} An object keyed by type (e.g., "node"), containing:
  * - featureIds: An array of IDs for that type.
  * - fixes: A Map<ID, suggestedFixes object>.
+ * - invalid: A Map<ID, invalidNumbers object>.
  */
 function groupData(data) {
     return data.reduce((acc, item) => {
         const { type, id, suggestedFixes } = item;
-        
-        // Initialize the structure for a new type if it doesn't exist
+
         if (!acc[type]) {
             acc[type] = {
                 featureIds: [],
-                fixes: new Map() // Using a Map for efficient ID-to-fix lookup
+                fixes: new Map(),
+                invalid: new Map(),
             };
         }
-        
-        // Add the ID to the array and the suggestedFixes to the map
+
         acc[type].featureIds.push(id);
         acc[type].fixes.set(id, suggestedFixes);
-        
+        acc[type].invalid.set(id, invalidNumbers);
+
         return acc;
     }, {});
 }
@@ -253,33 +266,43 @@ function groupData(data) {
  * Fetches features from the OSM API, applies the suggested edits to their tags,
  * and tracks features that resulted in actual modifications.
  *
- * @param {Object<string, GroupedFixes>} groupedData An object keyed by type, containing IDs and fixes.
+ * @param {Object<string, GroupedFixes>} groupedData An object keyed by type, containing IDs, fixes and original invalid values.
  * @returns {Promise<Array<object>>} A promise that resolves to an array of modified feature objects
  * ready for inclusion in an OSM changeset.
  */
 async function processFeatures(groupedData) {
     let modifications = [];
+    const MAX_FEATURES_PER_FETCH = 500;
     for (const type in groupedData) {
         if (groupedData.hasOwnProperty(type)) {
-            const { featureIds, fixes } = groupedData[type];
+            const { featureIds, fixes, invalid } = groupedData[type];
 
-            // Fetch the features from the OSM API
-            const features = await OSM.getFeatures(type, featureIds);
+            if (featureIds.length > 0) {
+                const featureIdChunks = [];
+                for (let i = 0; i < featureIds.length; i += MAX_FEATURES_PER_FETCH) {
+                    featureIdChunks.push(featureIds.slice(i, i + MAX_FEATURES_PER_FETCH));
+                }
 
-            for (const feature of features) {
-                const featureId = feature.id;
-                const suggestedFixes = fixes.get(featureId);
-                const originalTags = { ...feature.tags }
+                let allFeatures = [];
+                for (const chunk of featureIdChunks) {
+                    const features = await OSM.getFeatures(type, chunk);
+                    allFeatures.push(...features);
+                }
 
-                if (suggestedFixes) {
-                    changed = applyEditsToFeatureTags(feature, suggestedFixes);
-                    if (changed) {
-                        modifications.push(feature);
+                for (const feature of allFeatures) {
+                    const featureId = feature.id;
+                    const suggestedFixes = fixes.get(featureId);
+                    const invalidNumbers = invalid.get(featureId);
+                    if (suggestedFixes) {
+                        changed = applyEditsToFeatureTags(feature, suggestedFixes, invalidNumbers);
+                        if (changed) {
+                            modifications.push(feature);
+                        } else {
+                            console.warn(`No changes applied for ${type}/${featureId}`);
+                        }
                     } else {
-                        console.warn(`No changes applied for ${type}/${featureId}`);
+                        console.warn(`No suggested fixes found for ${type}/${featureId}`);
                     }
-                } else {
-                    console.warn(`No suggested fixes found for ${type}/${featureId}`);
                 }
             }
         }
@@ -363,6 +386,15 @@ async function processSafeEdits() {
     // Configure with the auth token
     OSM.configure({ authHeader: `Bearer ${BOT_AUTH_TOKEN}` });
 
+    OSM.getUser("me")
+        .then((result) => {
+            console.log(result.display_name);
+        })
+        .catch((error) => {
+            console.error('Could not identify with OSM API');
+            throw error;
+        });
+
     try {
         console.log(`Starting file collection in ${SAFE_EDITS_DIR}...`);
         await collectSafeEditFiles(SAFE_EDITS_DIR);
@@ -376,7 +408,7 @@ async function processSafeEdits() {
                 const data = JSON.parse(fileContent);
 
                 const countryName = data.countryName;
-                
+
                 if (!countryName) {
                     console.warn(`Skipping file ${filePath}: 'countryName' not found in file.`);
                     continue;
@@ -413,7 +445,7 @@ async function processSafeEdits() {
                         })
                         .catch(err => {
                             console.error(`Upload failed for ${filePath}:`, err.message);
-                        }); 
+                        });
                     uploadPromises.push(uploadPromise);
                 } else {
                     stats.skipped++;
@@ -421,6 +453,7 @@ async function processSafeEdits() {
 
             } catch (error) {
                 console.error(`Error processing file ${filePath}:`, error.message);
+                throw error;
             }
         }
 
@@ -445,8 +478,9 @@ async function processSafeEdits() {
         console.log(`Successful uploads: ${uploadedCount}`);
         console.log(`Failed uploads: ${results.length - uploadedCount}`);
 
-    } catch (err) {
-        console.error('An error occurred during directory traversal:', err);
+    } catch (error) {
+        console.error('An error occurred during directory traversal:', error);
+        throw error;
     }
 }
 
@@ -458,7 +492,7 @@ async function main() {
 }
 
 if (require.main === module) {
-    main(); 
+    main();
 }
 
 module.exports = {
