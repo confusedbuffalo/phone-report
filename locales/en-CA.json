@@ -44,14 +44,14 @@
   "invalidNumbersOutOf": "%i invalid numbers (%f potentially fixable) out of %t",
   "backToAllCountries": "Back to all countries",
   "reportSubtitleForCountry": "A report on invalid phone numbers in OpenStreetMap data for %c.",
-  "divisionalReports": "State Reports",
-  "showEmptyDivisions": "Show states with no issues",
+  "divisionalReports": "Province Reports",
+  "showEmptyDivisions": "Show provinces with no issues",
   "sortBy": "Sort by:",
   "invalidPercentage": "Invalid Percentage",
   "invalidCount": "Invalid Count",
   "name": "Name",
-  "noDivisionsFound": "No states with invalid numbers found.",
-  "noSubdivisionsFound": "No states found",
+  "noDivisionsFound": "No provinces with invalid numbers found.",
+  "noSubdivisionsFound": "No provinces found",
   
   "dataSourcedTemplate": "Data sourced on %d at %t %z (%a)",
 
@@ -79,6 +79,12 @@
   "enterComment": "Please enter a comment before submitting.",
   "noChangesSubmitted": "No changes submitted, maybe someone else has already made the same edits.",
   "changesetCreated": "Success: Changeset %n created",
-  "notLoggedIn": "You need to be logged in to submit edits",
-  "save": "Save"
+  "notLoggedIn": "You need to be logged in to submit edits or open notes",
+  "save": "Save",
+  "openNote": "Open Note",
+  "createNoteFor": "Create note for %n?",
+  "noteIsClose": "Note %n is close by",
+  "noteCreated": "Note %n opened",
+  "hasInvalidSingular": "%n has an invalid phone number, what should it be?",
+  "hasInvalidPlural": "%n has invalid phone numbers, what should they be?"
 }

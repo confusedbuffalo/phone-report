@@ -19,13 +19,12 @@ const masterKeys = Object.keys(MASTER_KEYS);
 const PLACEHOLDER_REGEX = /%[a-z]/g;
 
 // Regex to find common, disallowed HTML characters (e.g., <, >, &, ", ')
-// Note: This regex *allows* the permitted control sequence '&shy;' for the "phoneNumberReport" key.
 const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
 const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
 
 describe('Localization File Integrity Tests', () => {
 
-    // Test 1: Check for missing or extra keys in all locale files
+    // Check for missing or extra keys in all locale files
     translationFiles.forEach(({ locale, content }) => {
         const currentKeys = Object.keys(content);
 
@@ -40,7 +39,7 @@ describe('Localization File Integrity Tests', () => {
         });
     });
 
-    // Test 2: Check for correct placeholder usage in all locale files
+    // Check for correct placeholder usage in all locale files
     translationFiles.forEach(({ locale, content }) => {
 
         test(`[${locale}] must use correct placeholders for all keys`, () => {
@@ -89,7 +88,7 @@ describe('Localization File Integrity Tests', () => {
         });
     });
 
-    // Test 3: Check for disallowed HTML characters in all locale files
+    // Check for disallowed HTML characters in all locale files
     translationFiles.forEach(({ locale, content }) => {
 
         test(`[${locale}] must not contain disallowed HTML characters`, () => {

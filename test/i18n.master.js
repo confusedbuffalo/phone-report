@@ -54,6 +54,7 @@ const MASTER_KEYS = {
     "noChangesSubmitted": [],
     "notLoggedIn": [],
     "save": [],
+    "openNote": [],
 
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
@@ -76,6 +77,11 @@ const MASTER_KEYS = {
     "uploadChanges": ['%n'],
     "restoreChanges": ['%n'],
     "changesetCreated": ['%n'],
+    "createNoteFor": ['%n'],
+    "noteIsClose": ['%n'],
+    "noteCreated": ['%n'],
+    "hasInvalidSingular": ['%n'],
+    "hasInvalidPlural": ['%n'],
 
     // Time Ago (uses %n for number)
     'timeAgoMinute': ['%n'],

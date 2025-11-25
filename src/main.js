@@ -49,7 +49,13 @@ const CLIENT_KEYS = [
     "noChangesSubmitted",
     "changesetCreated",
     "notLoggedIn",
-    "save"
+    "save",
+    "openNote",
+    "createNoteFor",
+    "noteIsClose",
+    "noteCreated",
+    "hasInvalidSingular",
+    "hasInvalidPlural",
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;

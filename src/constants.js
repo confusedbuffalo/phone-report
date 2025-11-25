@@ -228,10 +228,11 @@ const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
 
 const PACKAGE_NAME = packageInfo.name;
 const PACKAGE_VERSION = packageInfo.version;
+const PACKAGE_STRING = `${PACKAGE_NAME}/${PACKAGE_VERSION}`;
 
 const CHANGESET_TAGS = {
     "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
-    "created_by": `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
+    "created_by": PACKAGE_STRING,
     "host": HOST_URL
 }
 

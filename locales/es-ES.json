@@ -79,6 +79,12 @@
   "enterComment": "Por favor, introduzca un comentario antes de enviar.",
   "noChangesSubmitted": "No se enviaron cambios, tal vez alguien más ya hizo las mismas ediciones.",
   "changesetCreated": "Éxito: Conjunto de cambios %n creado",
-  "notLoggedIn": "Necesitas iniciar sesión para enviar ediciones",
-  "save": "Guardar"
+  "notLoggedIn": "Necesitas iniciar sesión para enviar ediciones o abrir notas",
+  "save": "Guardar",
+  "openNote": "Abrir nota",
+  "createNoteFor": "¿Crear nota para %n?",
+  "noteIsClose": "La nota %n está cerca",
+  "noteCreated": "Nota %n abierta",
+  "hasInvalidSingular": "%n tiene un número de teléfono inválido, ¿cuál debería ser?",
+  "hasInvalidPlural": "%n tiene números de teléfono inválidos, ¿cuáles deberían ser?"
 }

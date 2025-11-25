@@ -369,7 +369,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
-                <textarea id="changesetComment" rows="3" class="changeset-comment-box"></textarea>
+                <textarea id="changesetComment" rows="4" class="comment-box"></textarea>
                 <div id="message-box" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-lg hidden" role="alert"></div>
                 <div class="modal-button-container">
                     <div id="upload-spinner" class="hidden spinner mr-4"></div>
@@ -400,6 +400,30 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                     </button>
                     <button id="edits-modal-keep-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" onclick="closeEditsModal()">
                         ${translate('keep', locale)}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="note-modal-overlay" class="save-modal-overlay modal-overlay hidden">
+            <div class="save-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+                <div class="save-modal-content">
+                    <h3 id="note-modal-title" class="save-modal-title"></h3>
+                    <button id="note-close-modal-btn-top" class="modal-close" onclick="closeNoteModal()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <textarea id="note-comment" rows="10" class="comment-box"></textarea>
+                <div id="note-message-box" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-lg hidden" role="alert"></div>
+                <div class="modal-button-container">
+                    <div id="note-spinner" class="hidden spinner mr-4"></div>
+                    <button id="close-note-modal-btn-bottom" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer hidden" onclick="closeNoteModal()">
+                        ${translate('close', locale)}
+                    </button>
+                    <button id="cancel-note-modal-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="closeNoteModal()">
+                        ${translate('cancel', locale)}
+                    </button>
+                    <button id="add-note-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer">
+                        ${translate('openNote', locale)}
                     </button>
                 </div>
             </div>
