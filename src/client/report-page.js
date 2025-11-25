@@ -12,6 +12,8 @@ let invalidSortDirection = 'asc'; // 'asc', 'desc'
  */
 let reportData = null;
 
+let noteButtonClickHandler = null;
+
 const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
 const UPLOADED_ITEMS_KEY = `uploaded_${DATA_LAST_UPDATED}`;
 
@@ -337,10 +339,12 @@ function createButtons(item, clickedClass) {
         </button>` :
         '';
 
+    const createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
+    const noteClickedClass = createdNotes.includes(`${item.type}/${item.id}`) ? 'btn-clicked' : 'btn-note';
     const noteButton = item.autoFixable ? '' :
         `<button onclick="addNote('${item.type}', ${item.id})"
             data-editor-id="note-btn"
-            class="btn cursor-pointer btn-note">
+            class="btn cursor-pointer ${noteClickedClass}">
             ${translate('openNote')}
         </button>`
 
@@ -821,6 +825,26 @@ function renderNumbers() {
 }
 
 /**
+ * Filters the createdNotes array to keep only the elements
+ * that have a corresponding type/id in the reportData array.
+ *
+ * @param {string[]} createdNotes An array of strings like 'node/1234'.
+ * @param {object[]} reportData An array of objects, where each object has a 'type' and an 'id' property.
+ * @returns {string[]} The filtered createdNotes array.
+ */
+function filterCreatedNotes(createdNotes, reportData) {
+    const reportDataIds = new Set(
+        reportData.map(item => `${item.type}/${item.id}`)
+    );
+
+    const filteredNotes = createdNotes.filter(id => {
+        return reportDataIds.has(id);
+    });
+
+    return filteredNotes;
+}
+
+/**
  * Initializes the report page by fetching the report data from the defined
  * path and then triggering the main rendering function. Displays an error
  * if data loading fails.
@@ -843,6 +867,12 @@ async function initReportPage() {
         }
         return;
     }
+
+    // Check stored ids of elements that have had notes created and clear any no longer in report data (presume fixed)
+    let createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
+    const updatedNotes = filterCreatedNotes(createdNotes, reportData);
+    localStorage.setItem(`createdNotes_${subdivisionName}`, JSON.stringify(updatedNotes));
+
     renderNumbers();
 }
 
@@ -1086,7 +1116,7 @@ const editsModalTitle = document.getElementById('edits-modal-title');
 
 const noteCloseBtnTop = document.getElementById('note-close-modal-btn-top');
 const noteCancelBtn = document.getElementById('cancel-note-modal-btn');
-const noteCloseBtnBottom = document.getElementById('close-modal-btn-bottom');
+const noteCloseBtnBottom = document.getElementById('close-note-modal-btn-bottom');
 const addNoteBtn = document.getElementById('add-note-btn');
 const noteModal = document.getElementById('note-modal-overlay');
 const noteModalTitle = document.getElementById('note-modal-title');
@@ -1388,9 +1418,16 @@ function addNote(osmType, osmId) {
             if (openNotesMessage.length > 0) {
                 disableCreateNoteWithMessage(openNotesMessage);
             } else {
-                addNoteBtn.addEventListener('click', function () {
-                    checkAndCreateNote(item.lat, item.lon);
-                });
+                const itemId = `${item.type}/${item.id}`;
+                if (noteButtonClickHandler) {
+                    addNoteBtn.removeEventListener('click', noteButtonClickHandler);
+                }
+                
+                noteButtonClickHandler = function () {
+                    checkAndCreateNote(itemId, item.lat, item.lon);
+                };
+
+                addNoteBtn.addEventListener('click', noteButtonClickHandler);
             }
         })
         .catch((err) => {
@@ -1404,7 +1441,7 @@ function addNote(osmType, osmId) {
  * before, during, and after the creation or error.
  * @returns {void}
  */
-function checkAndCreateNote(lat, lon) {
+function checkAndCreateNote(itemId, lat, lon) {
     const noteCommentBox = document.getElementById('note-comment');
     const comment = noteCommentBox.value.trim();
     const messageBox = document.getElementById('note-message-box');
@@ -1434,7 +1471,13 @@ function checkAndCreateNote(lat, lon) {
                 addNoteBtn.classList.add('hidden');
                 noteCloseBtnBottom.classList.remove('hidden');
 
+                let createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
+                createdNotes.push(itemId);
+                localStorage.setItem(`createdNotes_${subdivisionName}`, JSON.stringify(createdNotes));
+
                 enableModalCloseListeners();
+                // Re-render to make note button grey
+                renderNumbers();
             })
             .catch((err) => {
                 addNoteBtn.disabled = false;
@@ -1701,12 +1744,18 @@ function openNoteModal(item) {
 }
 
 /**
- * Hides the note modal window with a brief transition and clears any displayed messages.
+ * Hides the note modal window with a brief transition and clears any displayed messages and event listeners.
  * @returns {void}
  */
 function closeNoteModal() {
     const messageBox = document.getElementById('note-message-box');
     noteModal.classList.remove('active');
+
+    if (noteButtonClickHandler) {
+        addNoteBtn.removeEventListener('click', noteButtonClickHandler);
+        noteButtonClickHandler = null;
+    }
+
     setTimeout(() => {
         noteModal.classList.add('hidden');
         messageBox.classList.add('hidden');

@@ -416,7 +416,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                 <div id="note-message-box" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-lg hidden" role="alert"></div>
                 <div class="modal-button-container">
                     <div id="note-spinner" class="hidden spinner mr-4"></div>
-                    <button id="close-modal-btn-bottom" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer hidden" onclick="closeNoteModal()">
+                    <button id="close-note-modal-btn-bottom" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer hidden" onclick="closeNoteModal()">
                         ${translate('close', locale)}
                     </button>
                     <button id="cancel-note-modal-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" onclick="closeNoteModal()">
