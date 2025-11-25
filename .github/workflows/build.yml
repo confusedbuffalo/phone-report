@@ -150,11 +150,10 @@ jobs:
         continue-on-error: true
 
       - name: Create/Update GitHub Issue on Bot Failure
-        uses: peter-evans/create-or-update-issue@v4
+        uses: dacbd/create-issue-action@2
         if: always() && steps.bot_process_run.outcome == 'failure'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
           title: "🚨 Bot Edit Process Failed" 
           body: |
             ## Automated Edit Failure Notification
@@ -165,8 +164,8 @@ jobs:
 
             - **Commit**: `${{ github.sha }}`
 
-          labels: |
-            bot-failure
+          labels: bot-failure
+          assignees: confusedbuffalo
 
   push-history:
     needs: build-report
