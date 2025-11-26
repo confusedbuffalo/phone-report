@@ -8,8 +8,9 @@ const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
 const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
-const FAX_TAGS = ['fax', 'contact:fax']
-const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS]
+const FAX_TAGS = ['fax', 'contact:fax'];
+const OTHER_TAGS = ['contact:whatsapp'];
+const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
 
 /**
  * Defines the preference order for phone-related OpenStreetMap (OSM) keys.

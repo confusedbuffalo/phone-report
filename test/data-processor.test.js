@@ -17,7 +17,8 @@ const {
     getNumberAndExtension,
     isSafeEdit,
     isSafeItemEdit,
-    isStandardExtension
+    isStandardExtension,
+    getWhatsappNumber
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -581,6 +582,109 @@ describe('checkExclusions', () => {
 });
 
 // =====================================================================
+// getWhatsappNumber Tests
+// =====================================================================
+describe('getWhatsappNumber', () => {
+
+    test('Plain number returns plain number', () => {
+        const result = getWhatsappNumber('+442079460000');
+        expect(result.numberStr).toEqual('+442079460000');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Number is extracted from whatsapp protocol', () => {
+        const result = getWhatsappNumber('whatsapp://send?phone=+79268634179');
+        expect(result.numberStr).toEqual('+79268634179');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Number is extracted from whatsapp protocol with spacing', () => {
+        const result = getWhatsappNumber('whatsapp://send?phone=+79%2026%208634179');
+        expect(result.numberStr).toEqual('+79 26 8634179');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Number is extracted from whatsapp protocol with text option first', () => {
+        const result = getWhatsappNumber('whatsapp://send?text=&phone=+393296618182');
+        expect(result.numberStr).toEqual('+393296618182');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Number is extracted from whatsapp protocol with text option second', () => {
+        const result = getWhatsappNumber('whatsapp://send?phone=+393296618182&text=');
+        expect(result.numberStr).toEqual('+393296618182');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('wa.me link does not need special handling', () => {
+        const result = getWhatsappNumber('wa.me/79622801221');
+        expect(result.numberStr).toEqual('wa.me/79622801221');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Whatsapp channel link is not invalid', () => {
+        const result = getWhatsappNumber('https://www.whatsapp.com/channel/0029VaKSecf1HspwcdF1y82f');
+        expect(result.numberStr).toEqual('https://www.whatsapp.com/channel/0029VaKSecf1HspwcdF1y82f');
+        expect(result.validNonNumber).toBe(true);
+    });
+
+    test('Whatsapp catalog link is not invalid', () => {
+        const result = getWhatsappNumber('https://www.whatsapp.com/catalog/34686719341/?app_absent=0');
+        expect(result.numberStr).toEqual('https://www.whatsapp.com/catalog/34686719341/?app_absent=0');
+        expect(result.validNonNumber).toBe(true);
+    });
+
+    test('Number is extracted from web.whatsapp link', () => {
+        const result = getWhatsappNumber('https://web.whatsapp.com/send?phone=+39%20329%206565180');
+        expect(result.numberStr).toEqual('+39 329 6565180');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Number is extracted from web.whatsapp link with message', () => {
+        const result = getWhatsappNumber('https://web.whatsapp.com/send?phone=41789509077&text=Hallo+123');
+        expect(result.numberStr).toEqual('41789509077');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('wa.me qr link is valid', () => {
+        const result = getWhatsappNumber('https://wa.me/qr/TXXK3INJGQA6O1');
+        expect(result.numberStr).toEqual('https://wa.me/qr/TXXK3INJGQA6O1');
+        expect(result.validNonNumber).toBe(true);
+    });
+
+    test('wa.me message link is valid', () => {
+        const result = getWhatsappNumber('https://wa.me/message/JBVSQ7DEPBKSK1');
+        expect(result.numberStr).toEqual('https://wa.me/message/JBVSQ7DEPBKSK1');
+        expect(result.validNonNumber).toBe(true);
+    });
+
+    test('Number is extracted from wa.me link with other options', () => {
+        const result = getWhatsappNumber('https://wa.me/?phone=493416894769&abid=493416894769');
+        expect(result.numberStr).toEqual('493416894769');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('chat.whatsapp link is valid', () => {
+        const result = getWhatsappNumber('https://chat.whatsapp.com/K8SXtjFUpVdBgJGO8lXze0');
+        expect(result.numberStr).toEqual('https://chat.whatsapp.com/K8SXtjFUpVdBgJGO8lXze0');
+        expect(result.validNonNumber).toBe(true);
+    });
+
+    test('Number is extracted from api.whatsapp link', () => {
+        const result = getWhatsappNumber('https://api.whatsapp.com/send?phone=88332248686');
+        expect(result.numberStr).toEqual('88332248686');
+        expect(result.validNonNumber).toBe(false);
+    });
+
+    test('Other host is not valid', () => {
+        const result = getWhatsappNumber('https://www.instagram.com/friotekaoficial/?hl=es');
+        expect(result.numberStr).toEqual('https://www.instagram.com/friotekaoficial/?hl=es');
+        expect(result.validNonNumber).toBe(false);
+    });
+});
+
+
+// =====================================================================
 // processSingleNumber Tests
 // =====================================================================
 describe('processSingleNumber', () => {
@@ -849,6 +953,32 @@ describe('processSingleNumber', () => {
     test('FR: shared cost number already in international format is valid', () => {
         const result = processSingleNumber('+33 820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
         expect(result.isInvalid).toBe(false);
+    });
+
+    // --- WhatsApp Tests ---
+    test('Whatsapp number is fixable', () => {
+        const result = processSingleNumber('27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+27 12 345 6789');
+    });
+
+    test('Whatsapp number in link fixable', () => {
+        const result = processSingleNumber('wa.me/27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+27 12 345 6789');
+    });
+
+    test('Whatsapp channel link is valid in whatsapp key', () => {
+        const result = processSingleNumber('https://www.whatsapp.com/channel/ABCD1234', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Whatsapp channel link is invalid in other key', () => {
+        const result = processSingleNumber('https://www.whatsapp.com/channel/ABCD1234', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:mobile');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
     });
 });
 
@@ -2103,6 +2233,25 @@ describe('validateNumbers', () => {
         expect(invalidItem.suggestedFixes).toEqual({
             'phone': '+44 17687 79280; +44 7901 854574; +44 7554 806119',
         });
+    });
+
+    test('whatsapp number is not duplicate to phone tags', async () => {
+        const elements = [
+            {
+                type: 'way',
+                id: 1234,
+                tags: {
+                    'contact:whatsapp': `${VALID_MOBILE}`,
+                    'contact:mobile': `${VALID_MOBILE}`,
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(0);
     });
 
     test('should fix a fax number on a single element', async () => {

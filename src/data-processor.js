@@ -469,6 +469,66 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
 }
 
 /**
+ * Checks if a given URL host is an exact match or a subdomain of one of the valid hosts.
+ * @param {string} urlString The URL string to check.
+ * @returns {boolean} True if the host is valid.
+ */
+const isWhatsappUrl = (urlString) => {
+    const validWhatsappHosts = ['wa.me', 'whatsapp.com'];
+    try {
+        const url = new URL(urlString);
+
+        if (url.protocol === 'whatsapp:') {
+            return true
+        }
+
+        const host = url.host;
+
+        return validWhatsappHosts.some(validHost => {
+            if (host === validHost) {
+                return true;
+            }
+            if (host.endsWith(`.${validHost}`)) {
+                return true;
+            }
+            return false;
+        });
+
+    } catch (e) {
+        return false;
+    }
+};
+
+/**
+ * Extracts a phone number from a string that may be a URL and determines if it is a valid non-number
+ * (such as a channel or catalog link)
+ * @param {PhoneNumber} phoneNumber - The phone number object
+ * @param {string} countryCode - The country code being checked against
+ * @returns {boolean}
+ */
+function getWhatsappNumber(numberStr) {
+    let isValidWhatsappUrl = false;
+    let cleanNumberStr = numberStr;
+
+    const parsedUrl = URL.parse(numberStr);
+    if (parsedUrl) {
+        if (!isWhatsappUrl(numberStr)) {
+            isValidWhatsappUrl = false;
+        }
+        else if (parsedUrl.searchParams?.get('phone')) {
+            const query = decodeURIComponent(parsedUrl.search);
+            cleanNumberStr = query.split('phone=').at(-1).split('&').at(0);
+        } else {
+            isValidWhatsappUrl = true;
+        }
+    }
+    return {
+        numberStr: cleanNumberStr,
+        validNonNumber: isValidWhatsappUrl
+    }
+}
+
+/**
  * Validates a single phone number string using libphonenumber-js.
  * @param {string} numberStr - The phone number string to validate.
  * @param {string} countryCode - The country code for validation.
@@ -489,8 +549,19 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         numberStr = numberStr.slice(1);
         isInvalid = true;
     }
+
+    // Invalid if number string contains tabs
     if (numberStr.match(/\t/g)) {
         isInvalid = true;
+    }
+
+    if (tag === 'contact:whatsapp') {
+        ({ numberStr, validNonNumber } = getWhatsappNumber(numberStr));
+        if (validNonNumber) {
+            return {
+                isInvalid: false
+            };
+        }
     }
 
     const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(/\t/g, " "), countryCode);
@@ -843,6 +914,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             for (const phoneNumber of validatedNumbers) {
                 // Skip duplicate detection only if unfixable invalid
                 if (validationResult.isInvalid && !validationResult.isAutoFixable) continue;
+                // Skip duplicate detection for whatsapp numbers
+                if (tag === 'contact:whatsapp') continue;
 
                 const normalizedNumber = getFormattedNumber(
                     phoneNumber,
@@ -1003,4 +1076,5 @@ module.exports = {
     keyToRemove,
     isSafeEdit,
     isSafeItemEdit,
+    getWhatsappNumber,
 };
