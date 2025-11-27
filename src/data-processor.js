@@ -662,13 +662,13 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const originalTagValue = tagValue.trim();
 
     // Check if a bad separator was used
-    const hasBadSeparator = originalTagValue.match(BAD_SEPARATOR_REGEX);
+    const hasBadSeparator = tag === 'contact:whatsapp' ? false : originalTagValue.match(BAD_SEPARATOR_REGEX);
 
     splitRegex = countryCode === 'DE' ? UNIVERSAL_SPLIT_REGEX_DE : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
-    const numbers = originalTagValue
-        .split(splitRegex)
+    const numberList = tag === 'contact:whatsapp' ? originalTagValue.split(';') : originalTagValue.split(splitRegex);
+    const numbers = numberList
         .map(s => s.trim())
         .filter(s => s.length > 0);
 
