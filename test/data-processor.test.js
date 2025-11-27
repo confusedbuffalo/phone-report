@@ -616,10 +616,16 @@ describe('getWhatsappNumber', () => {
         expect(result.validNonNumber).toBe(false);
     });
 
-    test('wa.me link does not need special handling', () => {
+    test('wa.me plain link with number does not need special handling', () => {
         const result = getWhatsappNumber('wa.me/79622801221');
         expect(result.numberStr).toEqual('wa.me/79622801221');
         expect(result.validNonNumber).toBe(false);
+    });
+
+    test('wa.me message link is not invalid', () => {
+        const result = getWhatsappNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1');
+        expect(result.numberStr).toEqual('https://wa.me/message/ZQ4YRTMO7OUAJ1');
+        expect(result.validNonNumber).toBe(true);
     });
 
     test('Whatsapp channel link is not invalid', () => {
@@ -970,6 +976,11 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
     });
 
+    test('wa.me message link is valid in whatsapp key', () => {
+        const result = processSingleNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('Whatsapp channel link is valid in whatsapp key', () => {
         const result = processSingleNumber('https://www.whatsapp.com/channel/ABCD1234', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(false);
@@ -1104,6 +1115,16 @@ describe('validateSingleTag', () => {
         expect(result_two_spaces.isInvalid).toBe(true);
         expect(result_two_spaces.isAutoFixable).toBe(true);
         expect(result_two_spaces.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+    });
+
+    test('Valid WhatsApp link with slash is valid', () => {
+        const result = validateSingleTag(
+            'https://wa.me/message/ZQ4YRTMO7OUAJ1',
+            'GB',
+            {},
+            'contact:whatsapp'
+        );
+        expect(result.isInvalid).toBe(false);
     });
 
     test('fix one fixable number and keep existing valid number', () => {
@@ -2406,6 +2427,24 @@ describe('validateNumbers', () => {
         expect(invalidItem.duplicateNumbers).toEqual({
             'contact:fax': 'fax',
         });
+    });
+
+    test('WhatsApp wa.me message link in whatsapp key is valid', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'contact:whatsapp': 'https://wa.me/message/ZQ4YRTMO7OUAJ1',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(0);
     });
 });
 
