@@ -372,27 +372,6 @@ function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
     return mergedArray;
 }
 
-
-/**
- * Splits an input string into tokenized parts and merges consecutive separator tokens.
- *
- * This is a two-step process:
- * 1. The input string is split using the globally defined UNIVERSAL_SPLIT_CAPTURE_REGEX,
- * which captures the separators, resulting in an array of text and separator tokens.
- * 2. Empty or false tokens are filtered out.
- * 3. The resulting parts are passed to mergeConsecutiveSeparators to ensure no two
- * separator characters appear as distinct, consecutive tokens.
- *
- * @param {string} input - The string (e.g., a phone number) to be tokenized and merged.
- * @returns {Token[]} An array of processed tokens, ready for further parsing.
- */
-function splitAndMergePhoneString(input, useDeSeparators) {
-    const captureRegex = useDeSeparators ? UNIVERSAL_SPLIT_CAPTURE_REGEX_DE : UNIVERSAL_SPLIT_CAPTURE_REGEX;
-    const parts = input.split(captureRegex).filter(Boolean);
-    return mergeConsecutiveSeparators(parts, useDeSeparators);
-}
-
-
 /**
  * Creates an HTML string with diff highlighting for two phone number strings, 
  * handling multiple numbers separated by various delimiters.
@@ -527,4 +506,4 @@ function getDiffHtml(oldString, newString) {
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
 }
 
-module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml, splitAndMergePhoneString };
+module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml };
