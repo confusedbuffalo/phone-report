@@ -2,6 +2,7 @@ const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
 const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DE } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
+const { isWhatsappUrl } = require('./data-processor.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
 // being added or removed when, semantically, they are just being moved.
@@ -389,11 +390,16 @@ function getDiffHtml(oldString, newString) {
     const oldStringCleaned = replaceInvisibleChars(oldString)
     const newStringCleaned = replaceInvisibleChars(newString)
     // Split and initial filter for both strings
+
     // DE doesn't consider '/' as separator
-    const oldPartsUnfiltered = newString.startsWith('+49') ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE) : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
-    
     const useDeSeparators = newString.startsWith('+49');
-    
+
+    const oldPartsUnfiltered = isWhatsappUrl(oldString)
+        ? oldStringCleaned.split(';')
+        : useDeSeparators
+            ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE)
+            : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
+
     // Filter out falsey values (undefined from capturing groups) and empty strings
     // Remove consecutive separators, e.g. '//'
     const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);

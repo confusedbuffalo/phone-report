@@ -1085,4 +1085,5 @@ module.exports = {
     isSafeEdit,
     isSafeItemEdit,
     getWhatsappNumber,
+    isWhatsappUrl,
 };
