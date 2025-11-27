@@ -388,7 +388,7 @@ async function processSafeEdits() {
 
     OSM.getUser("me")
         .then((result) => {
-            console.log(result.display_name);
+            console.log(`Logged in as ${result.display_name}`);
         })
         .catch((error) => {
             console.error('Could not identify with OSM API');
