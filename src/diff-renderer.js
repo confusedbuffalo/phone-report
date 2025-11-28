@@ -2,6 +2,7 @@ const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
 const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DE } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
+const { isWhatsappUrl } = require('./data-processor.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
 // being added or removed when, semantically, they are just being moved.
@@ -372,27 +373,6 @@ function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
     return mergedArray;
 }
 
-
-/**
- * Splits an input string into tokenized parts and merges consecutive separator tokens.
- *
- * This is a two-step process:
- * 1. The input string is split using the globally defined UNIVERSAL_SPLIT_CAPTURE_REGEX,
- * which captures the separators, resulting in an array of text and separator tokens.
- * 2. Empty or false tokens are filtered out.
- * 3. The resulting parts are passed to mergeConsecutiveSeparators to ensure no two
- * separator characters appear as distinct, consecutive tokens.
- *
- * @param {string} input - The string (e.g., a phone number) to be tokenized and merged.
- * @returns {Token[]} An array of processed tokens, ready for further parsing.
- */
-function splitAndMergePhoneString(input, useDeSeparators) {
-    const captureRegex = useDeSeparators ? UNIVERSAL_SPLIT_CAPTURE_REGEX_DE : UNIVERSAL_SPLIT_CAPTURE_REGEX;
-    const parts = input.split(captureRegex).filter(Boolean);
-    return mergeConsecutiveSeparators(parts, useDeSeparators);
-}
-
-
 /**
  * Creates an HTML string with diff highlighting for two phone number strings, 
  * handling multiple numbers separated by various delimiters.
@@ -410,11 +390,16 @@ function getDiffHtml(oldString, newString) {
     const oldStringCleaned = replaceInvisibleChars(oldString)
     const newStringCleaned = replaceInvisibleChars(newString)
     // Split and initial filter for both strings
+
     // DE doesn't consider '/' as separator
-    const oldPartsUnfiltered = newString.startsWith('+49') ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE) : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
-    
     const useDeSeparators = newString.startsWith('+49');
-    
+
+    const oldPartsUnfiltered = isWhatsappUrl(oldString)
+        ? oldStringCleaned.split(';')
+        : useDeSeparators
+            ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE)
+            : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
+
     // Filter out falsey values (undefined from capturing groups) and empty strings
     // Remove consecutive separators, e.g. '//'
     const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
@@ -527,4 +512,4 @@ function getDiffHtml(oldString, newString) {
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
 }
 
-module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml, splitAndMergePhoneString };
+module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml };

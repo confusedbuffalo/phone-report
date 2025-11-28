@@ -588,103 +588,103 @@ describe('getWhatsappNumber', () => {
 
     test('Plain number returns plain number', () => {
         const result = getWhatsappNumber('+442079460000');
-        expect(result.numberStr).toEqual('+442079460000');
+        expect(result.cleanNumberStr).toEqual('+442079460000');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('Number is extracted from whatsapp protocol', () => {
         const result = getWhatsappNumber('whatsapp://send?phone=+79268634179');
-        expect(result.numberStr).toEqual('+79268634179');
+        expect(result.cleanNumberStr).toEqual('+79268634179');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('Number is extracted from whatsapp protocol with spacing', () => {
         const result = getWhatsappNumber('whatsapp://send?phone=+79%2026%208634179');
-        expect(result.numberStr).toEqual('+79 26 8634179');
+        expect(result.cleanNumberStr).toEqual('+79 26 8634179');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('Number is extracted from whatsapp protocol with text option first', () => {
         const result = getWhatsappNumber('whatsapp://send?text=&phone=+393296618182');
-        expect(result.numberStr).toEqual('+393296618182');
+        expect(result.cleanNumberStr).toEqual('+393296618182');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('Number is extracted from whatsapp protocol with text option second', () => {
         const result = getWhatsappNumber('whatsapp://send?phone=+393296618182&text=');
-        expect(result.numberStr).toEqual('+393296618182');
+        expect(result.cleanNumberStr).toEqual('+393296618182');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('wa.me plain link with number does not need special handling', () => {
         const result = getWhatsappNumber('wa.me/79622801221');
-        expect(result.numberStr).toEqual('wa.me/79622801221');
+        expect(result.cleanNumberStr).toEqual('wa.me/79622801221');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('wa.me message link is not invalid', () => {
         const result = getWhatsappNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1');
-        expect(result.numberStr).toEqual('https://wa.me/message/ZQ4YRTMO7OUAJ1');
+        expect(result.cleanNumberStr).toEqual('https://wa.me/message/ZQ4YRTMO7OUAJ1');
         expect(result.validNonNumber).toBe(true);
     });
 
     test('Whatsapp channel link is not invalid', () => {
         const result = getWhatsappNumber('https://www.whatsapp.com/channel/0029VaKSecf1HspwcdF1y82f');
-        expect(result.numberStr).toEqual('https://www.whatsapp.com/channel/0029VaKSecf1HspwcdF1y82f');
+        expect(result.cleanNumberStr).toEqual('https://www.whatsapp.com/channel/0029VaKSecf1HspwcdF1y82f');
         expect(result.validNonNumber).toBe(true);
     });
 
     test('Whatsapp catalog link is not invalid', () => {
         const result = getWhatsappNumber('https://www.whatsapp.com/catalog/34686719341/?app_absent=0');
-        expect(result.numberStr).toEqual('https://www.whatsapp.com/catalog/34686719341/?app_absent=0');
+        expect(result.cleanNumberStr).toEqual('https://www.whatsapp.com/catalog/34686719341/?app_absent=0');
         expect(result.validNonNumber).toBe(true);
     });
 
     test('Number is extracted from web.whatsapp link', () => {
         const result = getWhatsappNumber('https://web.whatsapp.com/send?phone=+39%20329%206565180');
-        expect(result.numberStr).toEqual('+39 329 6565180');
+        expect(result.cleanNumberStr).toEqual('+39 329 6565180');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('Number is extracted from web.whatsapp link with message', () => {
         const result = getWhatsappNumber('https://web.whatsapp.com/send?phone=41789509077&text=Hallo+123');
-        expect(result.numberStr).toEqual('41789509077');
+        expect(result.cleanNumberStr).toEqual('41789509077');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('wa.me qr link is valid', () => {
         const result = getWhatsappNumber('https://wa.me/qr/TXXK3INJGQA6O1');
-        expect(result.numberStr).toEqual('https://wa.me/qr/TXXK3INJGQA6O1');
+        expect(result.cleanNumberStr).toEqual('https://wa.me/qr/TXXK3INJGQA6O1');
         expect(result.validNonNumber).toBe(true);
     });
 
     test('wa.me message link is valid', () => {
         const result = getWhatsappNumber('https://wa.me/message/JBVSQ7DEPBKSK1');
-        expect(result.numberStr).toEqual('https://wa.me/message/JBVSQ7DEPBKSK1');
+        expect(result.cleanNumberStr).toEqual('https://wa.me/message/JBVSQ7DEPBKSK1');
         expect(result.validNonNumber).toBe(true);
     });
 
     test('Number is extracted from wa.me link with other options', () => {
         const result = getWhatsappNumber('https://wa.me/?phone=493416894769&abid=493416894769');
-        expect(result.numberStr).toEqual('493416894769');
+        expect(result.cleanNumberStr).toEqual('493416894769');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('chat.whatsapp link is valid', () => {
         const result = getWhatsappNumber('https://chat.whatsapp.com/K8SXtjFUpVdBgJGO8lXze0');
-        expect(result.numberStr).toEqual('https://chat.whatsapp.com/K8SXtjFUpVdBgJGO8lXze0');
+        expect(result.cleanNumberStr).toEqual('https://chat.whatsapp.com/K8SXtjFUpVdBgJGO8lXze0');
         expect(result.validNonNumber).toBe(true);
     });
 
     test('Number is extracted from api.whatsapp link', () => {
         const result = getWhatsappNumber('https://api.whatsapp.com/send?phone=88332248686');
-        expect(result.numberStr).toEqual('88332248686');
+        expect(result.cleanNumberStr).toEqual('88332248686');
         expect(result.validNonNumber).toBe(false);
     });
 
     test('Other host is not valid', () => {
         const result = getWhatsappNumber('https://www.instagram.com/friotekaoficial/?hl=es');
-        expect(result.numberStr).toEqual('https://www.instagram.com/friotekaoficial/?hl=es');
+        expect(result.cleanNumberStr).toEqual('https://www.instagram.com/friotekaoficial/?hl=es');
         expect(result.validNonNumber).toBe(false);
     });
 });
@@ -1115,6 +1115,18 @@ describe('validateSingleTag', () => {
         expect(result_two_spaces.isInvalid).toBe(true);
         expect(result_two_spaces.isAutoFixable).toBe(true);
         expect(result_two_spaces.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+    });
+
+    test('Valid WhatsApp link with phone number is invalid and fixable', () => {
+        const result = validateSingleTag(
+            'https://api.whatsapp.com/send?phone=%2B27793145853',
+            'ZA',
+            {},
+            'contact:whatsapp'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+27 79 314 5853']);
     });
 
     test('Valid WhatsApp link with slash is valid', () => {

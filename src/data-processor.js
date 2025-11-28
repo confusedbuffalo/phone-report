@@ -512,18 +512,23 @@ function getWhatsappNumber(numberStr) {
 
     const parsedUrl = URL.parse(numberStr);
     if (parsedUrl) {
-        if (!isWhatsappUrl(numberStr)) {
-            isValidWhatsappUrl = false;
+        isValidWhatsappUrl = isWhatsappUrl(numberStr)
+        if (!isValidWhatsappUrl) {
+            return {
+                cleanNumberStr: cleanNumberStr,
+                validNonNumber: isValidWhatsappUrl
+            }
         }
-        else if (parsedUrl.searchParams?.get('phone')) {
-            const query = decodeURIComponent(parsedUrl.search);
-            cleanNumberStr = query.split('phone=').at(-1).split('&').at(0);
-        } else {
-            isValidWhatsappUrl = true;
+        if (parsedUrl.searchParams?.get('phone')) {
+            cleanNumberStr = parsedUrl.searchParams.get('phone');
+            if (cleanNumberStr.startsWith(' ')) {
+                cleanNumberStr = '+' + cleanNumberStr.trimStart();
+            }
+            isValidWhatsappUrl = false;
         }
     }
     return {
-        numberStr: cleanNumberStr,
+        cleanNumberStr: cleanNumberStr,
         validNonNumber: isValidWhatsappUrl
     }
 }
@@ -556,11 +561,14 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     }
 
     if (tag === 'contact:whatsapp') {
-        ({ numberStr, validNonNumber } = getWhatsappNumber(numberStr));
+        ({ cleanNumberStr, validNonNumber } = getWhatsappNumber(numberStr));
         if (validNonNumber) {
             return {
                 isInvalid: false
             };
+        } else if (numberStr !== cleanNumberStr) {
+            numberStr = cleanNumberStr;
+            isInvalid = true;
         }
     }
 
@@ -1077,4 +1085,5 @@ module.exports = {
     isSafeEdit,
     isSafeItemEdit,
     getWhatsappNumber,
+    isWhatsappUrl,
 };

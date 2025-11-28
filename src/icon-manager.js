@@ -58,7 +58,9 @@ class IconManager {
         let svgContent = readFileSync(iconPath, 'utf8');
 
         const viewBoxMatch = svgContent.match(/viewBox=["']([^"']+)["']/i);
-        const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 24 24';
+
+        // Default viewBox, probably only needed for Roentgen icons
+        const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 14 14';
 
         svgContent = svgContent.replace(/<svg[^>]*>/i, '').replace(/<\/svg>\s*$/i, '');
         svgContent = svgContent.replace(/<\?xml[^>]*\?>/, '');
