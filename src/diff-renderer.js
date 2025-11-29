@@ -147,6 +147,9 @@ function diffPhoneNumbers(original, suggested) {
 
             const spacePosition = suggested.indexOf(' ')
             suggestedRemainder = suggestedRemainder.slice(spacePosition + 1) // Remove the prefix
+        } else if (suggestedRemainder[0] === '+' && original.slice(i, i+3) === '%2B') { // url encoded plus sign, "%2B", can match with digits in number
+            originalDiff.push({value: '%2B', removed: true});
+            i += 2;
         } else if (/\d/.test(char)) {
             // It's a digit. Determine if it was removed in the semantic diff.
             if (commonPointer < commonDigits.length && char === commonDigits[commonPointer]) {
@@ -194,6 +197,7 @@ function diffPhoneNumbers(original, suggested) {
             && !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
             && normalizedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
+            && !isWhatsappUrl(original) // encoded plus signs can affect things
             && (
                 normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
                 || numericallyOnlyAddingPrefix // needed because of clash with this case, see "should mark prefix as new, even when it is the same as the first digits of the original" test
@@ -419,7 +423,7 @@ function getDiffHtml(oldString, newString) {
 
     // Number is being removed
     if (
-        consolidatedOldParts.length === 3
+        consolidatedOldParts.length === 3 // num1, separator, num2
         && consolidatedNewParts.length === 1
         && /\d/.test(consolidatedOldParts[0])
         && /\d/.test(consolidatedOldParts[2])

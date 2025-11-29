@@ -891,6 +891,19 @@ describe('getDiffHtml', () => {
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
+    test('should show diff for phone number within whatsapp link with country code being added', () => {
+        const original = 'https://api.whatsapp.com/send?phone=0123456789';
+        const suggested = '+27 12 345 6789';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=0</span><span class="diff-unchanged">123456789</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+27 </span><span class="diff-unchanged">12</span><span class="diff-added"> </span><span class="diff-unchanged">345</span><span class="diff-added"> </span><span class="diff-unchanged">6789</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
     test('should show diff for phone number within whatsapp link', () => {
         const original = 'https://api.whatsapp.com/send?phone=+27123456789';
         const suggested = '+27 12 345 6789';
@@ -901,6 +914,19 @@ describe('getDiffHtml', () => {
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+27</span><span class="diff-added"> </span><span class="diff-unchanged">12</span><span class="diff-added"> </span><span class="diff-unchanged">345</span><span class="diff-added"> </span><span class="diff-unchanged">6789</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('should show diff for phone number within whatsapp link with encoded plus', () => {
+        const original = 'https://api.whatsapp.com/send?phone=%2B27123456789';
+        const suggested = '+27 12 345 6789';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2B</span><span class="diff-unchanged">27123456789</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added"> </span><span class="diff-unchanged">12</span><span class="diff-added"> </span><span class="diff-unchanged">345</span><span class="diff-added"> </span><span class="diff-unchanged">6789</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 });
