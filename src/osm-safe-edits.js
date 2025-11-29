@@ -402,6 +402,8 @@ async function processSafeEdits() {
 
         const uploadPromises = [];
 
+        const anyUploaded = false; // Testing a single subdivision
+
         for (const filePath of filesToProcess) {
             try {
                 const fileContent = await fsp.readFile(filePath, 'utf8');
@@ -437,7 +439,7 @@ async function processSafeEdits() {
                     continue;
                 }
 
-                if (countryConfig.safeAutoFixBotEnabled === true) {
+                if (countryConfig.safeAutoFixBotEnabled === true && totalSafeEdits > 0 && !anyUploaded) {
                     console.log(`Uploading edits for ${countryName} subdivision: ${data.subdivisionName}`);
                     const uploadPromise = uploadSafeChanges(filePath)
                         .then(() => {
@@ -447,6 +449,7 @@ async function processSafeEdits() {
                             console.error(`Upload failed for ${filePath}:`, err.message);
                         });
                     uploadPromises.push(uploadPromise);
+                    anyUploaded = true; // Testing a single subdivision
                 } else {
                     stats.skipped++;
                 }
