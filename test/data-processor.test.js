@@ -2268,6 +2268,41 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('should fix duplicates in a single tag where number is duplicated in another tag as well', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 5775129635,
+                tags: {
+                    'phone': '+44 17687 79280; +441768779280',
+                    'contact:phone': '+44 (17687) 79280',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(3);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.duplicateNumbers).toEqual({
+            'phone': 'phone',
+            'contact:phone': 'phone'
+        });
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone': '+44 17687 79280; +441768779280',
+            'contact:phone': '+44 (17687) 79280',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone': '+44 17687 79280',
+            'contact:phone': null,
+        });
+    });
+
     test('whatsapp number is not duplicate to phone tags', async () => {
         const elements = [
             {

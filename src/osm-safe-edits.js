@@ -402,7 +402,7 @@ async function processSafeEdits() {
 
         const uploadPromises = [];
 
-        const anyUploaded = false; // Testing a single subdivision
+        let anyUploaded = false; // Testing a single subdivision
 
         for (const filePath of filesToProcess) {
             try {
@@ -440,7 +440,7 @@ async function processSafeEdits() {
                 }
 
                 if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0 && !anyUploaded) {
-                    console.log(`Uploading edits for ${countryName} subdivision: ${data.subdivisionName}`);
+                    console.log(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
                     const uploadPromise = uploadSafeChanges(filePath)
                         .then(() => {
                             stats.uploaded++;
