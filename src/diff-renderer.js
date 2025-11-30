@@ -254,10 +254,7 @@ function diffPhoneNumbers(original, suggested) {
             originalRemainderNew = originalRemainderNew.slice(1);
         } else {
             // Non-digit, non-common character, happens when characters were removed from the old string
-            if (
-                originalRemainderNew.includes(char)
-                && !(/[-+ \d]/.test(originalRemainderNew[0])) // Check that character is acceptable
-            ) {
+            if (originalRemainderNew.includes(char)) {
                 while (originalRemainderNew[0] != char && originalRemainderNew[0] != commonDigits[commonPointerNew] && originalRemainderNew != '') {
                     originalRemainderNew = originalRemainderNew.slice(1);
                 }
