@@ -240,7 +240,7 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     const SAFE_CHARACTER_REGEX =
         countryCode === 'DE'
             ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g
-            : /^[\d\s\(\)+\.\-–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
+            : /^[\d\s\(\)+\.\-–—‒−‑\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
 
     const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
     if (!hasOnlySafeChars) return false;

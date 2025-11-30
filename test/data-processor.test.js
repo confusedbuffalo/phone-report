@@ -893,6 +893,13 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('DE: DIN format extension with figure dash is invalid and fixable', () => {
+        const result = processSingleNumber('+49 491 4567‒1234', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+49 491 4567-1234');
+    });
+
     test('DE: DIN format extension with 5 digit extension is valid', () => {
         const result = processSingleNumber('+49 491 4567-12345', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(false);

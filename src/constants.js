@@ -115,7 +115,7 @@ const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|wewn?\.?)\s*)(\d*)\)
 const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x']
 
 // DIN format has hyphen then 1-5 digits for extensions
-const DE_EXTENSION_REGEX = /^(.*?)(\s*[-–—]\s*)([^-]+)$/;
+const DE_EXTENSION_REGEX = /^(.*?)(\s*[-–—‒−‑]\s*)([^-]+)$/;
 
 // Define the regex for separators that are definitively "bad" and should trigger a fix report.
 const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;

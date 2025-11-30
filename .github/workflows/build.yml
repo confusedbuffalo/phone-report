@@ -149,7 +149,7 @@ jobs:
         run: npm run bot:autofix
         continue-on-error: true
 
-      - name: Create/Update GitHub Issue on Bot Failure
+      - name: Create GitHub Issue on Bot Failure
         uses: dacbd/create-issue-action@main
         if: always() && steps.bot_process_run.outcome == 'failure'
         with:

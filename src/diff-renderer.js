@@ -254,10 +254,7 @@ function diffPhoneNumbers(original, suggested) {
             originalRemainderNew = originalRemainderNew.slice(1);
         } else {
             // Non-digit, non-common character, happens when characters were removed from the old string
-            if (
-                originalRemainderNew.includes(char)
-                && !(/[-+ \d]/.test(originalRemainderNew[0])) // Check that character is acceptable
-            ) {
+            if (originalRemainderNew.includes(char)) {
                 while (originalRemainderNew[0] != char && originalRemainderNew[0] != commonDigits[commonPointerNew] && originalRemainderNew != '') {
                     originalRemainderNew = originalRemainderNew.slice(1);
                 }
@@ -386,10 +383,10 @@ function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
  */
 function getDiffHtml(oldString, newString) {
     if (!oldString) {
-        return { oldDiff: null, newDiff: `<span class="diff-added">${escapeHTML(newString)}</span>` };
+        return { oldDiff: null, newDiff: `<span class="diff-added">${escapeHTML(newString).replace(/ /g, '&nbsp;')}</span>` };
     }
     if (!newString) {
-        return { oldDiff: `<span class="diff-removed">${escapeHTML(oldString)}</span>`, newDiff: null };
+        return { oldDiff: `<span class="diff-removed">${escapeHTML(oldString).replace(/ /g, '&nbsp;')}</span>`, newDiff: null };
     }
     const oldStringCleaned = replaceInvisibleChars(oldString)
     const newStringCleaned = replaceInvisibleChars(newString)
@@ -399,7 +396,7 @@ function getDiffHtml(oldString, newString) {
     const useDeSeparators = newString.startsWith('+49');
 
     const oldPartsUnfiltered = isWhatsappUrl(oldString)
-        ? oldStringCleaned.split(';')
+        ? oldStringCleaned.split(/(;)/gi)
         : useDeSeparators
             ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE)
             : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
@@ -505,12 +502,13 @@ function getDiffHtml(oldString, newString) {
 
     mergedOriginalDiff.forEach((part) => {
         const colorClass = part.removed ? 'diff-removed' : 'diff-unchanged';
-        oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value)}</span>`;
+        oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
     });
 
     mergedSuggestedDiff.forEach((part) => {
         const colorClass = part.added ? 'diff-added' : 'diff-unchanged';
-        newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value)}</span>`;
+        // Use nbsp so that it always displays, even when there are multiple spaces or when a line would break
+        newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
     });
 
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
