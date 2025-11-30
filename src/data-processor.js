@@ -972,10 +972,19 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         }
                     }
 
-                    // Validate the kept tag in case of bad separator and also to fix formatting while here
+                    // Validate the kept tag in case of bad separator or duplicates and also to fix formatting while here
                     const validatedKept = validateSingleTag(tags[keptTag], countryCode, tags, keptTag);
                     if (validatedKept.suggestedNumbersList) {
-                        const validatedKeptValue = validatedKept.suggestedNumbersList.join('; ')
+                        const formattedKeptNumbers = validatedKept.validNumbersList.map(n => n.format('INTERNATIONAL'));
+                        const uniqueFormattedKeptSet = [...new Set(formattedKeptNumbers)];
+                        const validatedKeptValue = uniqueFormattedKeptSet.map((number) => {
+                            return getFormattedNumber(
+                                parsePhoneNumber(number, countryCode),
+                                countryCode,
+                                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                            );
+                        }).join('; ');
+
                         if (validatedKeptValue !== tags[keptTag]) {
                             currentItem.suggestedFixes.set(keptTag, validatedKeptValue);
                         }
