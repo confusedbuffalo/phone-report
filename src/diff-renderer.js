@@ -396,7 +396,7 @@ function getDiffHtml(oldString, newString) {
     const useDeSeparators = newString.startsWith('+49');
 
     const oldPartsUnfiltered = isWhatsappUrl(oldString)
-        ? oldStringCleaned.split(';')
+        ? oldStringCleaned.split(/(;)/gi)
         : useDeSeparators
             ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE)
             : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
