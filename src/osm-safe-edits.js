@@ -439,7 +439,7 @@ async function processSafeEdits() {
                     continue;
                 }
 
-                if (countryConfig.safeAutoFixBotEnabled === true && totalSafeEdits > 0 && !anyUploaded) {
+                if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0 && !anyUploaded) {
                     console.log(`Uploading edits for ${countryName} subdivision: ${data.subdivisionName}`);
                     const uploadPromise = uploadSafeChanges(filePath)
                         .then(() => {
