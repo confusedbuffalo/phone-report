@@ -244,7 +244,7 @@ function applyEditsToFeatureTags(feature, elementEdits, originalValues) {
  */
 function groupData(data) {
     return data.reduce((acc, item) => {
-        const { type, id, suggestedFixes } = item;
+        const { type, id, suggestedFixes, invalidNumbers } = item;
 
         if (!acc[type]) {
             acc[type] = {
