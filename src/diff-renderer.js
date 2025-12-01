@@ -436,7 +436,7 @@ function getDiffHtml(oldString, newString) {
         const num1Score = stringSimilarity(oldNum1.replace(/[^d]/, ''), newNum.replace(/[^d]/, ''));
         const num2Score = stringSimilarity(oldNum2.replace(/[^d]/, ''), newNum.replace(/[^d]/, ''));
 
-        if (num1Score > num2Score) {
+        if (num1Score >= num2Score) {
             const { originalDiff, suggestedDiff } = diffPhoneNumbers(oldNum1, newNum);
             allOriginalDiff = [...allOriginalDiff, ...originalDiff];
             allSuggestedDiff = [...allSuggestedDiff, ...suggestedDiff];
