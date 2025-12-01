@@ -671,11 +671,14 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
 
     // Check if a bad separator was used
     const hasBadSeparator = tag === 'contact:whatsapp' ? false : originalTagValue.match(BAD_SEPARATOR_REGEX);
+    const hasBadExtension = originalTagValue.match(/, ext|\\;ext=/gi);
 
     splitRegex = countryCode === 'DE' ? UNIVERSAL_SPLIT_REGEX_DE : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
-    const numberList = tag === 'contact:whatsapp' ? originalTagValue.split(';') : originalTagValue.split(splitRegex);
+    const numberList = tag === 'contact:whatsapp'
+        ? originalTagValue.split(';')
+        : originalTagValue.replace('\\;ext=', ' ext ').replace('\\;=ext=', ' ext ').split(splitRegex);
     const numbers = numberList
         .map(s => s.trim())
         .filter(s => s.length > 0);
@@ -721,7 +724,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     // Final check for invalidity due to bad separators or type mismatch
     if (hasIndividualInvalidNumber || hasBadSeparator || hasTypeMismatch) {
         tagValidationResult.isInvalid = true;
-        if (hasBadSeparator || hasTypeMismatch) {
+        if (hasBadSeparator || hasBadExtension || hasTypeMismatch) {
             tagValidationResult.isAutoFixable = tagValidationResult.isAutoFixable && true;
         }
     }

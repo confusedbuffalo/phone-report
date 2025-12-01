@@ -329,7 +329,7 @@ async function uploadSafeChanges(filePath) {
     const modifications = await processFeatures(groupedData);
 
     if (modifications.length > 0) {
-        console.log(`Uploading ${modifications.length} modifications for ${subdivisionData.name} (${subdivisionData.countryName})`);
+        console.log(`Uploading ${modifications.length} modifications for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`);
 
         const relativePagePath = getSubdivisionRelativeFilePath(subdivisionData.countryName, subdivisionData.divisionSlug, subdivisionData.subdivisionSlug)
         const pageLink = `${HOST_URL}/${relativePagePath}`
@@ -337,12 +337,12 @@ async function uploadSafeChanges(filePath) {
         const changesetId = await OSM.uploadChangeset(
             {
                 ...AUTO_CHANGESET_TAGS,
-                ...{ 'comment': `${subdivisionData.name} (${subdivisionData.countryName}): ` + AUTO_CHANGESET_TAGS.comment },
+                ...{ 'comment': `${subdivisionData.subdivisionName} (${subdivisionData.countryName}): ` + AUTO_CHANGESET_TAGS.comment },
                 ...{ 'manual_review_needed': pageLink }
             },
             { create: [], modify: modifications, delete: [] }
         );
-        console.log(`Changeset ${changesetId} created for ${subdivisionData.name} (${subdivisionData.countryName})`);
+        console.log(`Changeset ${changesetId} created for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`);
     }
 }
 

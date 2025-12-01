@@ -1068,6 +1068,27 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('GB: valid number with comma before extension is invalid but autoFixable', () => {
+        const result = validateSingleTag('+44 20 7946 0000, ext 123', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000 x123']);
+    });
+
+    test('GB: valid number with escaped extension is invalid but autoFixable', () => {
+        const result = validateSingleTag('+44 20 7946 0000\\;ext=123', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000 x123']);
+    });
+
+    test('GB: valid number with escaped extension in double wrong format is invalid but autoFixable', () => {
+        const result = validateSingleTag('+44 20 7946 0000\\;=ext=123', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000 x123']);
+    });
+
     test('using "or" as seperator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456 or +44 1389 123457',
