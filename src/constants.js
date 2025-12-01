@@ -138,6 +138,16 @@ const escapeRegex = (string) => {
 
 const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
     const escapedSep = escapeRegex(sep);
+
+    if (sep === ';') {
+        // Don't split on escaped semicolons, e.g. within "\;ext="
+        return `(\\s*(?<!\\\\)(?:${escapedSep})\\s*)`;
+    }
+    if (sep === ',') {
+        // Don't split on commas followed by ",ext" or ", ext"
+        return `(\\s*(?:${escapedSep})(?!\\s*ext)\\s*)`;
+    }
+
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
 
@@ -154,13 +164,21 @@ const needSpacesGroups = SEPARATOR_NEED_SPACE.map(sep => {
 const ALL_SEPARATOR_GROUPS = `${spaceOptionalGroups}|${needSpacesGroups}`;
 const allGroupsDe = `${spaceOptionalGroupsDe}|${needSpacesGroups}`;
 
+const CAPTURING_GROUP_TO_NON_CAPTURING_REGEX = /\((?!\?)(.*?)\)/g;
+
 // Includes capturing groups to get the separators back
 // When used in diff, the groups need to be capturing
 const UNIVERSAL_SPLIT_CAPTURE_REGEX = new RegExp(ALL_SEPARATOR_GROUPS, 'gi');
 const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = new RegExp(allGroupsDe, 'gi');
 
-const UNIVERSAL_SPLIT_REGEX = new RegExp(ALL_SEPARATOR_GROUPS.replace(/\((.*?)\)/g, '(?:$1)'), 'gi');
-const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(allGroupsDe.replace(/\((.*?)\)/g, '(?:$1)'), 'gi');
+const UNIVERSAL_SPLIT_REGEX = new RegExp(
+    ALL_SEPARATOR_GROUPS.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
+    'gi'
+);
+const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(
+    allGroupsDe.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
+    'gi'
+);
 
 const ICON_ATTRIBUTION = [
     {

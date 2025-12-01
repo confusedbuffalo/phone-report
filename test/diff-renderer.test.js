@@ -942,4 +942,43 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567&nbsp;x123</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('should correctly diff comma separated extension', () => {
+        const original = '+1-209-123-4567, ext 123';
+        const suggested = '+1-209-123-4567 x123';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">,</span><span class="diff-unchanged">&nbsp;</span><span class="diff-removed">e</span><span class="diff-unchanged">x</span><span class="diff-removed">t&nbsp;</span><span class="diff-unchanged">123</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567&nbsp;x123</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('should correctly diff escaped extension', () => {
+        const original = '+1-209-123-4567\\;ext=123';
+        const suggested = '+1-209-123-4567 x123';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">\\;e</span><span class="diff-unchanged">x</span><span class="diff-removed">t=</span><span class="diff-unchanged">123</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('should correctly diff escaped extension in double wrong format', () => {
+        const original = '+1-209-123-4567\\;=ext=123';
+        const suggested = '+1-209-123-4567 x123';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">\\;=e</span><span class="diff-unchanged">x</span><span class="diff-removed">t=</span><span class="diff-unchanged">123</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });

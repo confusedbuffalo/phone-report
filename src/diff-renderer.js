@@ -157,7 +157,7 @@ function diffPhoneNumbers(original, suggested) {
                 originalDiff.push({ value: char, added: false, removed: false });
 
                 // Cut down until we get to a matching character
-                while (originalRemainder[0] != suggestedRemainder[0] && suggestedRemainder[0] != commonDigits[commonPointer] && suggestedRemainder != '') {
+                while (originalRemainder[0] !== suggestedRemainder[0] && suggestedRemainder[0] !== commonDigits[commonPointer] && suggestedRemainder !== '') {
                     suggestedRemainder = suggestedRemainder.slice(1);
                 }
                 // Remove the current digit
@@ -173,6 +173,12 @@ function diffPhoneNumbers(original, suggested) {
             // Both have another character the same (plus, space or dash), UNCHANGED
             originalDiff.push({ value: char, removed: false, added: false });
             suggestedRemainder = suggestedRemainder.slice(1)
+        } else if (suggestedRemainder.includes(char) && char.match(/[extension\.]/)) {
+            // Extension letters
+            while (suggestedRemainder != '' && char !== suggestedRemainder[0]) {
+                suggestedRemainder = suggestedRemainder.slice(1);
+            }
+            originalDiff.push({ value: char, removed: false, added: false });
         } else {
             // Non-digit, non-common character, (formatting like ( ), etc.). Mark as removed.
             originalDiff.push({ value: char, removed: true });
@@ -390,6 +396,7 @@ function getDiffHtml(oldString, newString) {
     }
     const oldStringCleaned = replaceInvisibleChars(oldString)
     const newStringCleaned = replaceInvisibleChars(newString)
+
     // Split and initial filter for both strings
 
     // DE doesn't consider '/' as separator
