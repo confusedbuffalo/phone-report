@@ -279,9 +279,12 @@ async function processFeatures(groupedData) {
 
             if (featureIds.length > 0) {
                 const featureIdChunks = [];
-                for (let i = 0; i < featureIds.length; i += MAX_FEATURES_PER_FETCH) {
-                    featureIdChunks.push(featureIds.slice(i, i + MAX_FEATURES_PER_FETCH));
-                }
+                // for (let i = 0; i < featureIds.length; i += MAX_FEATURES_PER_FETCH) {
+                //     featureIdChunks.push(featureIds.slice(i, i + MAX_FEATURES_PER_FETCH));
+                // }
+
+                // TODO: revert to the above, although it is unlikely to be needed after the first run has completed
+                featureIdChunks.push(featureIds.slice(0, MAX_FEATURES_PER_FETCH));
 
                 let allFeatures = [];
                 for (const chunk of featureIdChunks) {
@@ -402,7 +405,7 @@ async function processSafeEdits() {
 
         const uploadPromises = [];
 
-        let anyUploaded = false; // Testing a single subdivision
+        let numUploaded = 0; // TODO: Testing a few subdivisions
 
         for (const filePath of filesToProcess) {
             try {
@@ -439,7 +442,7 @@ async function processSafeEdits() {
                     continue;
                 }
 
-                if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0 && !anyUploaded) {
+                if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0 && numUploaded < 4) {
                     console.log(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
                     const uploadPromise = uploadSafeChanges(filePath)
                         .then(() => {
@@ -449,7 +452,7 @@ async function processSafeEdits() {
                             console.error(`Upload failed for ${filePath}:`, err.message);
                         });
                     uploadPromises.push(uploadPromise);
-                    anyUploaded = true; // Testing a single subdivision
+                    numUploaded++; // TODO: Testing a few subdivisions
                 } else {
                     stats.skipped++;
                 }

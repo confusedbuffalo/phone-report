@@ -337,10 +337,9 @@ describe('getNumberAndExtension', () => {
     // --- Standard (Fallback) Tests (Any Country Code other than DE) ---
 
     describe('Standard Format)', () => {
-        const countryCode = 'US';
 
         test('should handle "x" prefixed extension using standard logic (without space)', () => {
-            expect(getNumberAndExtension('1-800-555-1212x456', countryCode)).toEqual({
+            expect(getNumberAndExtension('1-800-555-1212x456', 'US')).toEqual({
                 coreNumber: '1-800-555-1212',
                 extension: '456',
                 hasStandardExtension: true,
@@ -348,7 +347,7 @@ describe('getNumberAndExtension', () => {
         });
 
         test('should handle "x" prefixed extension using standard logic (with space)', () => {
-            expect(getNumberAndExtension('1-800-555-1212 x456', countryCode)).toEqual({
+            expect(getNumberAndExtension('1-800-555-1212 x456', 'US')).toEqual({
                 coreNumber: '1-800-555-1212',
                 extension: '456',
                 hasStandardExtension: true,
@@ -356,7 +355,7 @@ describe('getNumberAndExtension', () => {
         });
 
         test('should handle "ext." prefixed extension using standard logic', () => {
-            expect(getNumberAndExtension('800-123-4567 ext. 1234', countryCode)).toEqual({
+            expect(getNumberAndExtension('800-123-4567 ext. 1234', 'US')).toEqual({
                 coreNumber: '800-123-4567',
                 extension: '1234',
                 hasStandardExtension: true,
@@ -364,7 +363,7 @@ describe('getNumberAndExtension', () => {
         });
 
         test('should handle "ext." prefixed extension, no space is not-standard', () => {
-            expect(getNumberAndExtension('800-123-4567 ext.1234', countryCode)).toEqual({
+            expect(getNumberAndExtension('800-123-4567 ext.1234', 'US')).toEqual({
                 coreNumber: '800-123-4567',
                 extension: '1234',
                 hasStandardExtension: false,
@@ -372,7 +371,7 @@ describe('getNumberAndExtension', () => {
         });
 
         test('should handle "extension" prefixed extension using standard logic', () => {
-            expect(getNumberAndExtension('(555) 123 4567 extension 99', countryCode)).toEqual({
+            expect(getNumberAndExtension('(555) 123 4567 extension 99', 'US')).toEqual({
                 coreNumber: '(555) 123 4567',
                 extension: '99',
                 hasStandardExtension: false,
@@ -380,33 +379,41 @@ describe('getNumberAndExtension', () => {
         });
 
         test('should return null extension if no extension is present', () => {
-            expect(getNumberAndExtension('0800 123 4567', countryCode)).toEqual({
+            expect(getNumberAndExtension('0800 123 4567', 'US')).toEqual({
                 coreNumber: '0800 123 4567',
                 extension: null,
                 hasStandardExtension: null,
             });
         });
 
-        test('PL: detect wew. extension and mark as non standard', () => {
-            expect(getNumberAndExtension('+48 22 825 91 00 wew.106', countryCode)).toEqual({
+        test('PL: detect wew. extension and mark as non-standard', () => {
+            expect(getNumberAndExtension('+48 22 825 91 00 wew.106', 'PL')).toEqual({
                 coreNumber: '+48 22 825 91 00',
                 extension: '106',
                 hasStandardExtension: false,
             });
         });
 
-        test('PL: detect wewn. as extension and mark as non standard', () => {
-            expect(getNumberAndExtension('+48 22 825 91 00 wewn. 106', countryCode)).toEqual({
+        test('PL: detect wewn. as extension and mark as non-standard', () => {
+            expect(getNumberAndExtension('+48 22 825 91 00 wewn. 106', 'PL')).toEqual({
                 coreNumber: '+48 22 825 91 00',
                 extension: '106',
                 hasStandardExtension: false,
             });
         });
 
-        test('PL: detect wewn. as extension and mark as non standard when extension is in brackets', () => {
-            expect(getNumberAndExtension('+48 22 825 91 00 (wewn. 106)', countryCode)).toEqual({
+        test('PL: detect wewn. as extension and mark as non-standard when extension is in brackets', () => {
+            expect(getNumberAndExtension('+48 22 825 91 00 (wewn. 106)', 'PL')).toEqual({
                 coreNumber: '+48 22 825 91 00',
                 extension: '106',
+                hasStandardExtension: false,
+            });
+        });
+
+        test('CA: detect poste as extension and mark as non-standard', () => {
+            expect(getNumberAndExtension('+1-819-755-4833 poste 5421', 'CA')).toEqual({
+                coreNumber: '+1-819-755-4833',
+                extension: '5421',
                 hasStandardExtension: false,
             });
         });
@@ -787,6 +794,13 @@ describe('processSingleNumber', () => {
 
     test('GB: a number with tabs is invalid but fixable', () => {
         const result = processSingleNumber('+44 20\t7946\t0000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+    });
+
+    test('GB: a number with underscores is invalid but fixable', () => {
+        const result = processSingleNumber('+44 20_7946_0000', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+44 20 7946 0000');
