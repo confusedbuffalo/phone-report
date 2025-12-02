@@ -108,10 +108,11 @@ const EXCLUSIONS = {
 
 // Regex matches common extension prefixes:
 // EN: x, ext, extension
+// FR: poste
 // PL: wew, wewn
 // It captures each of everything before the extension marker and everything after
 // strings are lowercased before checking against this
-const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|wewn?\.?)\s*)(\d*)\)?$/;
+const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|poste|wewn?\.?)\s*)(\d*)\)?$/;
 const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x']
 
 // DIN format has hyphen then 1-5 digits for extensions
