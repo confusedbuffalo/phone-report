@@ -1,0 +1,61 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "East Midlands",
+  "divisionSlug": "england",
+  "subdivisionSlug": "east-midlands",
+  "totalOriginalItems": 25,
+  "totalSuggestedEdits": 6,
+  "totalSafeEdits": 5,
+  "edits": [
+    {
+      "type": "node",
+      "id": 1757648363,
+      "invalidNumbers": {
+        "contact:whatsapp": "447812757540"
+      },
+      "suggestedFixes": {
+        "contact:whatsapp": "+44 7812 757540"
+      }
+    },
+    {
+      "type": "node",
+      "id": 3723242355,
+      "invalidNumbers": {
+        "phone": "+44 (0)1530 454545"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1530 454545"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11160801371,
+      "invalidNumbers": {
+        "phone": "01775 724038"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1775 724038"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13331578614,
+      "invalidNumbers": {
+        "phone": "01909 542987"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1909 542987"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1455281778,
+      "invalidNumbers": {
+        "phone": "01246436006"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1246 436006"
+      }
+    }
+  ]
+}

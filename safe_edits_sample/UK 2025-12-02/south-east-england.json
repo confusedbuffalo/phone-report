@@ -1,0 +1,81 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "South East England",
+  "divisionSlug": "england",
+  "subdivisionSlug": "south-east-england",
+  "totalOriginalItems": 47,
+  "totalSuggestedEdits": 8,
+  "totalSafeEdits": 7,
+  "edits": [
+    {
+      "type": "node",
+      "id": 408467589,
+      "invalidNumbers": {
+        "phone": "01908 670655"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1908 670655"
+      }
+    },
+    {
+      "type": "node",
+      "id": 1070081528,
+      "invalidNumbers": {
+        "phone": "03301027242"
+      },
+      "suggestedFixes": {
+        "phone": "+44 330 102 7242"
+      }
+    },
+    {
+      "type": "node",
+      "id": 4032749308,
+      "invalidNumbers": {
+        "contact:whatsapp": "4407862319759"
+      },
+      "suggestedFixes": {
+        "contact:whatsapp": "+44 7862 319759"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11417844384,
+      "invalidNumbers": {
+        "phone": "01233-820110"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1233 820110"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12861676419,
+      "invalidNumbers": {
+        "phone": "+44 02036 216132"
+      },
+      "suggestedFixes": {
+        "phone": "+44 20 3621 6132"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13335865402,
+      "invalidNumbers": {
+        "phone": "+44 07495 174714"
+      },
+      "suggestedFixes": {
+        "phone": "+44 7495 174714"
+      }
+    },
+    {
+      "type": "way",
+      "id": 324577447,
+      "invalidNumbers": {
+        "phone": "0330 013 7969"
+      },
+      "suggestedFixes": {
+        "phone": "+44 330 013 7969"
+      }
+    }
+  ]
+}

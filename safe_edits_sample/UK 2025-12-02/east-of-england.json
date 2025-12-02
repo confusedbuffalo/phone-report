@@ -1,0 +1,61 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "East of England",
+  "divisionSlug": "england",
+  "subdivisionSlug": "east-of-england",
+  "totalOriginalItems": 39,
+  "totalSuggestedEdits": 11,
+  "totalSafeEdits": 5,
+  "edits": [
+    {
+      "type": "node",
+      "id": 7545702193,
+      "invalidNumbers": {
+        "phone": "01234 417475"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1234 417475"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13330581401,
+      "invalidNumbers": {
+        "phone": "+44 01923243429"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1923 243429"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13332008269,
+      "invalidNumbers": {
+        "phone": "+4408000093064"
+      },
+      "suggestedFixes": {
+        "phone": "+44 800 009 3064"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1454180112,
+      "invalidNumbers": {
+        "phone": "(0)1508 518863"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1508 518863"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1454182899,
+      "invalidNumbers": {
+        "phone": "(0)1508 518863"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1508 518863"
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "South West England",
+  "divisionSlug": "england",
+  "subdivisionSlug": "south-west-england",
+  "totalOriginalItems": 23,
+  "totalSuggestedEdits": 7,
+  "totalSafeEdits": 5,
+  "edits": [
+    {
+      "type": "node",
+      "id": 12773043490,
+      "invalidNumbers": {
+        "contact:whatsapp": "07845 218087"
+      },
+      "suggestedFixes": {
+        "contact:whatsapp": "+44 7845 218087"
+      }
+    },
+    {
+      "type": "way",
+      "id": 402537753,
+      "invalidNumbers": {
+        "phone": "07492583347"
+      },
+      "suggestedFixes": {
+        "phone": "+44 7492 583347"
+      }
+    },
+    {
+      "type": "way",
+      "id": 871659865,
+      "invalidNumbers": {
+        "phone": "01637 829298"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1637 829298"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1054427162,
+      "invalidNumbers": {
+        "contact:whatsapp": "07957020213"
+      },
+      "suggestedFixes": {
+        "contact:whatsapp": "+44 7957 020213"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1347066046,
+      "invalidNumbers": {
+        "contact:whatsapp": "07435 750297"
+      },
+      "suggestedFixes": {
+        "contact:whatsapp": "+44 7435 750297"
+      }
+    }
+  ]
+}
