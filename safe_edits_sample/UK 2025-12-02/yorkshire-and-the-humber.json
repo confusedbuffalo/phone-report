@@ -1,0 +1,41 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "Yorkshire and the Humber",
+  "divisionSlug": "england",
+  "subdivisionSlug": "yorkshire-and-the-humber",
+  "totalOriginalItems": 29,
+  "totalSuggestedEdits": 4,
+  "totalSafeEdits": 3,
+  "edits": [
+    {
+      "type": "node",
+      "id": 4838149373,
+      "invalidNumbers": {
+        "phone": "01904 404211"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1904 404211"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12320494622,
+      "invalidNumbers": {
+        "phone": "01484359657"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1484 359657"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13336008541,
+      "invalidNumbers": {
+        "phone": "01146989609"
+      },
+      "suggestedFixes": {
+        "phone": "+44 114 698 9609"
+      }
+    }
+  ]
+}

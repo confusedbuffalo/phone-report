@@ -1,0 +1,31 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "Northern Ireland",
+  "divisionSlug": "northern-ireland",
+  "subdivisionSlug": "northern-ireland",
+  "totalOriginalItems": 8,
+  "totalSuggestedEdits": 3,
+  "totalSafeEdits": 2,
+  "edits": [
+    {
+      "type": "node",
+      "id": 13330160401,
+      "invalidNumbers": {
+        "phone": "02890484673"
+      },
+      "suggestedFixes": {
+        "phone": "+44 28 9048 4673"
+      }
+    },
+    {
+      "type": "way",
+      "id": 611308546,
+      "invalidNumbers": {
+        "phone": "+4402890249264"
+      },
+      "suggestedFixes": {
+        "phone": "+44 28 9024 9264"
+      }
+    }
+  ]
+}

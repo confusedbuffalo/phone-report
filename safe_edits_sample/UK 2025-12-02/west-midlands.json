@@ -1,0 +1,43 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "West Midlands",
+  "divisionSlug": "england",
+  "subdivisionSlug": "west-midlands",
+  "totalOriginalItems": 22,
+  "totalSuggestedEdits": 3,
+  "totalSafeEdits": 3,
+  "edits": [
+    {
+      "type": "node",
+      "id": 13334828556,
+      "invalidNumbers": {
+        "phone": "+44 (0) 7444 584529"
+      },
+      "suggestedFixes": {
+        "phone": "+44 7444 584529"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13343515509,
+      "invalidNumbers": {
+        "phone": "+44 (0)121 226-1521"
+      },
+      "suggestedFixes": {
+        "phone": "+44 121 226 1521"
+      }
+    },
+    {
+      "type": "way",
+      "id": 86611743,
+      "invalidNumbers": {
+        "phone": "0044 - 07405158288",
+        "fax": "0121-212-2786"
+      },
+      "suggestedFixes": {
+        "phone": "+44 7405 158288",
+        "fax": "+44 121 212 2786"
+      }
+    }
+  ]
+}

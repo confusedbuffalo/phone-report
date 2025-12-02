@@ -1,0 +1,41 @@
+{
+  "countryName": "United Kingdom",
+  "subdivisionName": "Wales",
+  "divisionSlug": "wales",
+  "subdivisionSlug": "wales",
+  "totalOriginalItems": 37,
+  "totalSuggestedEdits": 4,
+  "totalSafeEdits": 3,
+  "edits": [
+    {
+      "type": "node",
+      "id": 11459776829,
+      "invalidNumbers": {
+        "phone": "01495 825565"
+      },
+      "suggestedFixes": {
+        "phone": "+44 1495 825565"
+      }
+    },
+    {
+      "type": "node",
+      "id": 12050770096,
+      "invalidNumbers": {
+        "phone": "0800 772 0981"
+      },
+      "suggestedFixes": {
+        "phone": "+44 800 772 0981"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13344249102,
+      "invalidNumbers": {
+        "phone": "02920911038"
+      },
+      "suggestedFixes": {
+        "phone": "+44 29 2091 1038"
+      }
+    }
+  ]
+}
