@@ -108,7 +108,7 @@ const EXCLUSIONS = {
 
 // Regex matches common extension prefixes:
 // EN: x, ext, extension
-// FR: poste
+// FR/CA: poste
 // PL: wew, wewn
 // It captures each of everything before the extension marker and everything after
 // strings are lowercased before checking against this
@@ -180,6 +180,9 @@ const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(
     allGroupsDe.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
     'gi'
 );
+
+// Characters that libphonenumbers does not parse but may be used instead of spaces
+const INVALID_SPACING_CHARACTERS_REGEX = /\t|_/g
 
 const ICON_ATTRIBUTION = [
     {
@@ -345,4 +348,5 @@ module.exports = {
     usTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
+    INVALID_SPACING_CHARACTERS_REGEX
 };

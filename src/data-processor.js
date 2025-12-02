@@ -19,6 +19,7 @@ const {
     ALL_NUMBER_TAGS,
     FAX_TAGS,
     NON_STANDARD_COST_TYPES,
+    INVALID_SPACING_CHARACTERS_REGEX,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -555,8 +556,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    // Invalid if number string contains tabs
-    if (numberStr.match(/\t/g)) {
+    if (numberStr.match(INVALID_SPACING_CHARACTERS_REGEX)) {
         isInvalid = true;
     }
 
@@ -572,7 +572,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
     }
 
-    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(/\t/g, " "), countryCode);
+    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(INVALID_SPACING_CHARACTERS_REGEX, " "), countryCode);
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
 
     try {
