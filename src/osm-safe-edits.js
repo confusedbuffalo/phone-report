@@ -283,8 +283,6 @@ async function processFeatures(groupedData) {
                     featureIdChunks.push(featureIds.slice(i, i + MAX_FEATURES_PER_FETCH));
                 }
 
-                featureIdChunks.push(featureIds.slice(0, MAX_FEATURES_PER_FETCH));
-
                 let allFeatures = [];
                 for (const chunk of featureIdChunks) {
                     const features = await OSM.getFeatures(type, chunk);
