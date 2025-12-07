@@ -1,0 +1,71 @@
+{
+  "countryName": "Canada",
+  "subdivisionName": "Ontario",
+  "divisionSlug": "canada",
+  "subdivisionSlug": "ontario",
+  "totalOriginalItems": 38,
+  "totalSuggestedEdits": 8,
+  "totalSafeEdits": 6,
+  "edits": [
+    {
+      "type": "way",
+      "id": 307248561,
+      "invalidNumbers": {
+        "phone": "+1 (613) 564-1062"
+      },
+      "suggestedFixes": {
+        "phone": "+1-613-564-1062"
+      }
+    },
+    {
+      "type": "way",
+      "id": 657979434,
+      "invalidNumbers": {
+        "phone": "(416) 640-2005"
+      },
+      "suggestedFixes": {
+        "phone": "+1-416-640-2005"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1330831498,
+      "invalidNumbers": {
+        "contact:phone": "416-691-1113"
+      },
+      "suggestedFixes": {
+        "contact:phone": "+1-416-691-1113"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1456556712,
+      "invalidNumbers": {
+        "phone": "5198435489"
+      },
+      "suggestedFixes": {
+        "phone": "+1-519-843-5489"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1456556713,
+      "invalidNumbers": {
+        "phone": "5198435489"
+      },
+      "suggestedFixes": {
+        "phone": "+1-519-843-5489"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1456556714,
+      "invalidNumbers": {
+        "phone": "5198435489"
+      },
+      "suggestedFixes": {
+        "phone": "+1-519-843-5489"
+      }
+    }
+  ]
+}
