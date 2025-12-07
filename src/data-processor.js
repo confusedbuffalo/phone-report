@@ -257,6 +257,16 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
         if (parsedNew.country === countryCode && parsedNew.isValid()) {
             return true;
         }
+        if (
+            // Toll free numbers in all of NANP are parsed as US
+            // It is not possible to tell the country from the phone number in this case
+            NANP_COUNTRY_CODES.includes(countryCode)
+            && parsedNew.isValid()
+            && NON_STANDARD_COST_TYPES.includes(parsedNew.getType())
+            && parsedNew.country === 'US'
+        ) {
+            return true
+        }
     } catch (e) {
         // Parsing failed due to an exception
     }

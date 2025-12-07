@@ -2587,6 +2587,15 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });
 
+    test('CA: should return true for a safe edit with toll free number', () => {
+        // Parsed as a US number by deafult, not possible to differentiate country for toll free numbers
+        const originalNumber = '18888651234';
+        const newNumber = '+1-888-865-1234';
+        const countryCode = 'CA';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
+    });
+
     // =======================================================
     // Test: Initial Input Checks
     // =======================================================
