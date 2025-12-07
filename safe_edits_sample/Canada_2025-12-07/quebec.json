@@ -1,0 +1,41 @@
+{
+  "countryName": "Canada",
+  "subdivisionName": "Quebec",
+  "divisionSlug": "canada",
+  "subdivisionSlug": "quebec",
+  "totalOriginalItems": 34,
+  "totalSuggestedEdits": 3,
+  "totalSafeEdits": 3,
+  "edits": [
+    {
+      "type": "node",
+      "id": 12128712526,
+      "invalidNumbers": {
+        "phone": "(450) 332-3931"
+      },
+      "suggestedFixes": {
+        "phone": "+1-450-332-3931"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13358191201,
+      "invalidNumbers": {
+        "phone": "(450) 982-9911"
+      },
+      "suggestedFixes": {
+        "phone": "+1-450-982-9911"
+      }
+    },
+    {
+      "type": "way",
+      "id": 717175488,
+      "invalidNumbers": {
+        "phone": "(450) 647-5701"
+      },
+      "suggestedFixes": {
+        "phone": "+1-450-647-5701"
+      }
+    }
+  ]
+}
