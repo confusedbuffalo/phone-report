@@ -18,7 +18,8 @@ const {
     isSafeEdit,
     isSafeItemEdit,
     isStandardExtension,
-    getWhatsappNumber
+    getWhatsappNumber,
+    isItalianMissingZeroNumber
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -980,6 +981,14 @@ describe('processSingleNumber', () => {
     test('FR: shared cost number already in international format is valid', () => {
         const result = processSingleNumber('+33 820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
         expect(result.isInvalid).toBe(false);
+    });
+
+    // --- IT Tests ---
+    test('IT: international number with missing leading zero is invalid and fixable', () => {
+        const result = processSingleNumber('+39712345678', 'IT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+39 071 234 5678');
     });
 
     // --- WhatsApp Tests ---
@@ -2574,6 +2583,15 @@ describe('isSafeEdit', () => {
         const originalNumber = '+49 7731 / 49225';
         const newNumber = '+49 7731 49225';
         const countryCode = 'DE';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
+    });
+
+    test('CA: should return true for a safe edit with toll free number', () => {
+        // Parsed as a US number by deafult, not possible to differentiate country for toll free numbers
+        const originalNumber = '18888651234';
+        const newNumber = '+1-888-865-1234';
+        const countryCode = 'CA';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });

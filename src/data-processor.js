@@ -241,7 +241,7 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     const SAFE_CHARACTER_REGEX =
         countryCode === 'DE'
             ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g
-            : /^[\d\s\(\)+\.\-‐–—‒−‑\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
+            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
 
     const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
     if (!hasOnlySafeChars) return false;
@@ -256,6 +256,16 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
         const parsedNew = parsePhoneNumber(newNumberStr);
         if (parsedNew.country === countryCode && parsedNew.isValid()) {
             return true;
+        }
+        if (
+            // Toll free numbers in all of NANP are parsed as US
+            // It is not possible to tell the country from the phone number in this case
+            NANP_COUNTRY_CODES.includes(countryCode)
+            && parsedNew.isValid()
+            && NON_STANDARD_COST_TYPES.includes(parsedNew.getType())
+            && parsedNew.country === 'US'
+        ) {
+            return true
         }
     } catch (e) {
         // Parsing failed due to an exception
@@ -469,6 +479,29 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
     )
 }
 
+function insertMissingItalianZero(numberStr) {
+    const missingZeroRegex = /^(\+39)([1-9].*)$/;
+    if (!numberStr.match(missingZeroRegex)) return numberStr;
+
+    const newNumberStr = numberStr.replace(missingZeroRegex, '$10$2');
+
+    try {
+        let phoneNumber = parsePhoneNumber(newNumberStr);
+        if (phoneNumber.isValid()) {
+            return newNumberStr;
+        }
+    }
+    catch (e) {
+        return numberStr;
+    }
+    return numberStr;
+}
+
+function isItalianMissingZeroNumber(phoneNumber, countryCode) {
+    if (countryCode !== 'IT' || phoneNumber.isValid()) return false;
+    return phoneNumber.number !== insertMissingItalianZero(phoneNumber.number);
+}
+
 /**
  * Checks if a given URL host is an exact match or a subdomain of one of the valid hosts.
  * @param {string} urlString The URL string to check.
@@ -588,6 +621,10 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         let normalizedParsed = '';
 
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
+        const isItalianMissingZero = isItalianMissingZeroNumber(phoneNumber, countryCode);
+        if (isItalianMissingZero) {
+            phoneNumber = parsePhoneNumber(insertMissingItalianZero(numberStr));
+        }
 
         if (phoneNumber) {
             const tollFreeAsInternational = (
@@ -598,7 +635,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 
-        if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {
+        if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed || isItalianMissingZero)) {
             normalizedParsed = phoneNumber.number.replace(spacingRegex, '');
 
             if (MOBILE_TAGS.includes(tag)) {
@@ -617,7 +654,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
             numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
 
-            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed;
+            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
 
             if (phoneNumber.ext && !hasStandardExtension) {
                 isInvalid = true;
@@ -1098,4 +1135,5 @@ module.exports = {
     isSafeItemEdit,
     getWhatsappNumber,
     isWhatsappUrl,
+    isItalianMissingZeroNumber,
 };
