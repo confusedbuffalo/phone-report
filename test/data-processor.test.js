@@ -18,7 +18,8 @@ const {
     isSafeEdit,
     isSafeItemEdit,
     isStandardExtension,
-    getWhatsappNumber
+    getWhatsappNumber,
+    isItalianMissingZeroNumber
 } = require('../src/data-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -980,6 +981,14 @@ describe('processSingleNumber', () => {
     test('FR: shared cost number already in international format is valid', () => {
         const result = processSingleNumber('+33 820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
         expect(result.isInvalid).toBe(false);
+    });
+
+    // --- IT Tests ---
+    test('IT: international number with missing leading zero is invalid and fixable', () => {
+        const result = processSingleNumber('+39712345678', 'IT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+39 071 234 5678');
     });
 
     // --- WhatsApp Tests ---

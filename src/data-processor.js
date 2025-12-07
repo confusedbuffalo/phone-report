@@ -469,6 +469,29 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
     )
 }
 
+function insertMissingItalianZero(numberStr) {
+    const missingZeroRegex = /^(\+39)([1-9].*)$/;
+    if (!numberStr.match(missingZeroRegex)) return numberStr;
+
+    const newNumberStr = numberStr.replace(missingZeroRegex, '$10$2');
+
+    try {
+        let phoneNumber = parsePhoneNumber(newNumberStr);
+        if (phoneNumber.isValid()) {
+            return newNumberStr;
+        }
+    }
+    catch (e) {
+        return numberStr;
+    }
+    return numberStr;
+}
+
+function isItalianMissingZeroNumber(phoneNumber, countryCode) {
+    if (countryCode !== 'IT' || phoneNumber.isValid()) return false;
+    return phoneNumber.number !== insertMissingItalianZero(phoneNumber.number);
+}
+
 /**
  * Checks if a given URL host is an exact match or a subdomain of one of the valid hosts.
  * @param {string} urlString The URL string to check.
@@ -588,6 +611,10 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         let normalizedParsed = '';
 
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
+        const isItalianMissingZero = isItalianMissingZeroNumber(phoneNumber, countryCode);
+        if (isItalianMissingZero) {
+            phoneNumber = parsePhoneNumber(insertMissingItalianZero(numberStr));
+        }
 
         if (phoneNumber) {
             const tollFreeAsInternational = (
@@ -598,7 +625,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
         }
 
-        if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed)) {
+        if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed || isItalianMissingZero)) {
             normalizedParsed = phoneNumber.number.replace(spacingRegex, '');
 
             if (MOBILE_TAGS.includes(tag)) {
@@ -617,7 +644,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
             numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
 
-            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed;
+            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
 
             if (phoneNumber.ext && !hasStandardExtension) {
                 isInvalid = true;
@@ -1098,4 +1125,5 @@ module.exports = {
     isSafeItemEdit,
     getWhatsappNumber,
     isWhatsappUrl,
+    isItalianMissingZeroNumber,
 };
