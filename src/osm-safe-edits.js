@@ -332,7 +332,7 @@ async function uploadSafeChanges(filePath) {
         console.log(`Uploading ${modifications.length} modifications for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`);
 
         const relativePagePath = getSubdivisionRelativeFilePath(subdivisionData.countryName, subdivisionData.divisionSlug, subdivisionData.subdivisionSlug)
-        const pageLink = `${HOST_URL}/${relativePagePath}`
+        const pageLink = `${HOST_URL}${relativePagePath}`
 
         const changesetId = await OSM.uploadChangeset(
             {
