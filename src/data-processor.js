@@ -480,7 +480,7 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
 }
 
 function insertMissingItalianZero(numberStr) {
-    const missingZeroRegex = /^(\+39)([1-9].*)$/;
+    const missingZeroRegex = /^(\+39)(\s*[1-9].*)$/;
     if (!numberStr.match(missingZeroRegex)) return numberStr;
 
     const newNumberStr = numberStr.replace(missingZeroRegex, '$10$2');

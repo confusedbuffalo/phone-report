@@ -991,6 +991,19 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+39 071 234 5678');
     });
 
+    test('IT: invalid number in international number with missing leading zero is invalid and unfixable', () => {
+        const result = processSingleNumber('+391234', 'IT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
+
+    test('IT: another number in international number with missing leading zero is invalid and fixable', () => {
+        const result = processSingleNumber('+39 90377129', 'IT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+39 090 377129');
+    });
+
     // --- WhatsApp Tests ---
     test('Whatsapp number is fixable', () => {
         const result = processSingleNumber('27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
