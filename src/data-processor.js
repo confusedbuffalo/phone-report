@@ -509,14 +509,21 @@ function isItalianMissingZeroNumber(phoneNumber, countryCode) {
  */
 const isWhatsappUrl = (urlString) => {
     const validWhatsappHosts = ['wa.me', 'whatsapp.com'];
+
+    let fullUrlString = urlString;
+
+    if (!urlString.includes(':')) {
+        fullUrlString = `https://${urlString}`;
+    }
+
     try {
-        const url = new URL(urlString);
+        const url = new URL(fullUrlString);
 
         if (url.protocol === 'whatsapp:') {
             return true
         }
 
-        const host = url.host;
+        const host = url.hostname;
 
         return validWhatsappHosts.some(validHost => {
             if (host === validHost) {
