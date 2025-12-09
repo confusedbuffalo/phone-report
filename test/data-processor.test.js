@@ -807,6 +807,20 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+44 20 7946 0000');
     });
 
+    test('GB: a number with middle dots is invalid but fixable', () => {
+        const result = processSingleNumber('+44 20·7946·0000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+    });
+
+    test('GB: a number with tildes as spaces is invalid but fixable', () => {
+        const result = processSingleNumber('+44~20~7946~0000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+    });
+
     // --- ZA Tests (Johannesburg number: 011 555 1234) ---
 
     test('ZA: correctly validate and format a simple valid local number', () => {
@@ -989,6 +1003,19 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+39 071 234 5678');
+    });
+
+    test('IT: invalid number in international number with missing leading zero is invalid and unfixable', () => {
+        const result = processSingleNumber('+391234', 'IT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+    });
+
+    test('IT: another number in international number with missing leading zero is invalid and fixable', () => {
+        const result = processSingleNumber('+39 90377129', 'IT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+39 090 377129');
     });
 
     // --- WhatsApp Tests ---
@@ -1231,6 +1258,20 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
+    });
+
+    test('GB: an incorrect leading plus is fixable', () => {
+        const result = validateSingleTag('+20 7946 0000', 'GB');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000']);
+    });
+
+    test('US: number starting 1+ is fixable', () => {
+        const result = validateSingleTag('1+951 736 4567', 'US');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+1-951-736-4567']);
     });
 });
 

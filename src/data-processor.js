@@ -480,7 +480,7 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
 }
 
 function insertMissingItalianZero(numberStr) {
-    const missingZeroRegex = /^(\+39)([1-9].*)$/;
+    const missingZeroRegex = /^(\+39)(\s*[1-9].*)$/;
     if (!numberStr.match(missingZeroRegex)) return numberStr;
 
     const newNumberStr = numberStr.replace(missingZeroRegex, '$10$2');
@@ -509,14 +509,21 @@ function isItalianMissingZeroNumber(phoneNumber, countryCode) {
  */
 const isWhatsappUrl = (urlString) => {
     const validWhatsappHosts = ['wa.me', 'whatsapp.com'];
+
+    let fullUrlString = urlString;
+
+    if (!urlString.includes(':')) {
+        fullUrlString = `https://${urlString}`;
+    }
+
     try {
-        const url = new URL(urlString);
+        const url = new URL(fullUrlString);
 
         if (url.protocol === 'whatsapp:') {
             return true
         }
 
-        const host = url.host;
+        const host = url.hostname;
 
         return validWhatsappHosts.some(validHost => {
             if (host === validHost) {
@@ -586,6 +593,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
     if (numberStr.startsWith('++')) {
         numberStr = numberStr.slice(1);
+        isInvalid = true;
+    }
+
+    if (numberStr.match(/^1\+\s?\d.*/)) {
+        numberStr = `+1${numberStr.slice(2)}`;
         isInvalid = true;
     }
 
@@ -736,7 +748,20 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     numbers.forEach(numberStr => {
         tagValidationResult.numberOfValues++;
 
-        const validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+        let validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+
+        // Some editors prompt an initial plus, but some mappers then just put the phone number in using national format, which is invalid
+        if (validationResult.isInvalid && !validationResult.autoFixable && numberStr.startsWith('+')) {
+            const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
+            if (
+                noPlusValidationResult.phoneNumber
+                && noPlusValidationResult.autoFixable
+                && noPlusValidationResult.phoneNumber.country === countryCode
+            ) {
+                validationResult = noPlusValidationResult;
+            }
+        }
+
         const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch } = validationResult;
 
         if (phoneNumber) {

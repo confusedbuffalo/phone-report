@@ -930,6 +930,19 @@ describe('getDiffHtml', () => {
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
+    test('should show diff for phone number within whatsapp wa.me', () => {
+        const original = 'wa.me/27123456789';
+        const suggested = '+27 12 345 6789';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">wa.me/</span><span class="diff-unchanged">27123456789</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
     test('should correctly diff converting double space to single space', () => {
         const original = '+1-209-123-4567  x123';
         const suggested = '+1-209-123-4567 x123';
