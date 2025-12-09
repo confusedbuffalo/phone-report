@@ -596,6 +596,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
+    if (numberStr.match(/^1\+\s?\d.*/)) {
+        numberStr = `+1${numberStr.slice(2)}`;
+        isInvalid = true;
+    }
+
     if (numberStr.match(INVALID_SPACING_CHARACTERS_REGEX)) {
         isInvalid = true;
     }
@@ -743,7 +748,20 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     numbers.forEach(numberStr => {
         tagValidationResult.numberOfValues++;
 
-        const validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+        let validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+
+        // Some editors prompt an initial plus, but some mappers then just put the phone number in using national format, which is invalid
+        if (validationResult.isInvalid && !validationResult.autoFixable && numberStr.startsWith('+')) {
+            const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
+            if (
+                noPlusValidationResult.phoneNumber
+                && noPlusValidationResult.autoFixable
+                && noPlusValidationResult.phoneNumber.country === countryCode
+            ) {
+                validationResult = noPlusValidationResult;
+            }
+        }
+
         const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch } = validationResult;
 
         if (phoneNumber) {
