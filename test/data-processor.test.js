@@ -1267,6 +1267,12 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000']);
     });
 
+    test('FR: a leading plus on a number that is too short but would be valid with an extra country code is not incorrectly fixed', () => {
+        const result = validateSingleTag('+33 5 633611', 'FR');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+    });
+
     test('DE: an ambiguous leading plus is invalid and unfixable', () => {
         const result = validateSingleTag('+40 9104 15566', 'DE');
         expect(result.isInvalid).toBe(true);

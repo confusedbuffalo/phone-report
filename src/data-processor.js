@@ -759,10 +759,12 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
             && CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS.includes(countryCode)
         ) {
             const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
+            const countryCodePrefix = noPlusValidationResult.phoneNumber?.format('INTERNATIONAL').split(' ')[0];
             if (
                 noPlusValidationResult.phoneNumber
                 && noPlusValidationResult.autoFixable
                 && noPlusValidationResult.phoneNumber.country === countryCode
+                && !numberStr.startsWith(countryCodePrefix)
             ) {
                 validationResult = noPlusValidationResult;
             }
