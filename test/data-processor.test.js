@@ -1267,6 +1267,12 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000']);
     });
 
+    test('DE: an ambiguous leading plus is invalid and unfixable', () => {
+        const result = validateSingleTag('+40 9104 15566', 'DE');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+    });
+
     test('US: number starting 1+ is fixable', () => {
         const result = validateSingleTag('1+951 736 4567', 'US');
         expect(result.isInvalid).toBe(true);

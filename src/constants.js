@@ -304,6 +304,8 @@ const usTerritoryCodes = new Map([
     ['United States Virgin Islands', 'VI'],
 ]);
 
+const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'GB', 'ZA']
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
@@ -348,5 +350,6 @@ module.exports = {
     usTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
-    INVALID_SPACING_CHARACTERS_REGEX
+    INVALID_SPACING_CHARACTERS_REGEX,
+    CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS
 };
