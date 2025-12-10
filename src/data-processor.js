@@ -20,6 +20,7 @@ const {
     FAX_TAGS,
     NON_STANDARD_COST_TYPES,
     INVALID_SPACING_CHARACTERS_REGEX,
+    CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -751,12 +752,19 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
         let validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
 
         // Some editors prompt an initial plus, but some mappers then just put the phone number in using national format, which is invalid
-        if (validationResult.isInvalid && !validationResult.autoFixable && numberStr.startsWith('+')) {
+        if (
+            validationResult.isInvalid
+            && !validationResult.autoFixable
+            && numberStr.startsWith('+')
+            && CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS.includes(countryCode)
+        ) {
             const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
+            const countryCodePrefix = noPlusValidationResult.phoneNumber?.format('INTERNATIONAL').split(' ')[0];
             if (
                 noPlusValidationResult.phoneNumber
                 && noPlusValidationResult.autoFixable
                 && noPlusValidationResult.phoneNumber.country === countryCode
+                && !numberStr.startsWith(countryCodePrefix)
             ) {
                 validationResult = noPlusValidationResult;
             }

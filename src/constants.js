@@ -129,8 +129,8 @@ const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 
-const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/'];
-const SEPARATOR_OPTIONAL_SPACE_DE = [';', ','];
+const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/', '|'];
+const SEPARATOR_OPTIONAL_SPACE_DE = [';', ',', '|'];
 const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y'];
 
 const escapeRegex = (string) => {
@@ -304,6 +304,8 @@ const usTerritoryCodes = new Map([
     ['United States Virgin Islands', 'VI'],
 ]);
 
+const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'GB', 'ZA']
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
@@ -348,5 +350,6 @@ module.exports = {
     usTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
-    INVALID_SPACING_CHARACTERS_REGEX
+    INVALID_SPACING_CHARACTERS_REGEX,
+    CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS
 };
