@@ -1309,8 +1309,9 @@ describe('validateNumbers', () => {
     const FIXABLE_LANDLINE_SUGGESTED_FIX = '+44 20 7946 0000';
     const VALID_LANDLINE_2 = '+44 20 7946 1111';
     const UNFIXABLE_INPUT = '020 794'; // Too short
-    const BAD_SEPARATOR_INPUT = '020 7946 0000, 07712 900000';
-    const BAD_SEPARATOR_INPUT_2 = '020 7946 0000/ 07712 900000';
+    const BAD_SEPARATOR_INPUT_COMMA = '020 7946 0000, 07712 900000';
+    const BAD_SEPARATOR_INPUT_SLASH = '020 7946 0000/ 07712 900000';
+    const BAD_SEPARATOR_INPUT_PIPE = '020 7946 0000 | 07712 900000';
     const BAD_SEPARATOR_FIX = '+44 20 7946 0000; +44 7712 900000';
     const VALID_MOBILE = '+44 7712 900000';
     const VALID_MOBILE_2 = '+44 7712 900001';
@@ -1400,7 +1401,7 @@ describe('validateNumbers', () => {
             {
                 type: 'node',
                 id: 4004,
-                tags: { phone: BAD_SEPARATOR_INPUT, name: 'Multiple Contacts' },
+                tags: { phone: BAD_SEPARATOR_INPUT_COMMA, name: 'Multiple Contacts' },
                 lat: 54.0,
                 lon: 3.0,
             },
@@ -1414,7 +1415,30 @@ describe('validateNumbers', () => {
         const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
-        expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT);
+        expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT_COMMA);
+        expect(invalidItem.suggestedFixes.phone).toBe(BAD_SEPARATOR_FIX);
+    });
+
+    test('should handle multiple numbers in a single tag using a bad separator (pipe)', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 4004,
+                tags: { phone: BAD_SEPARATOR_INPUT_PIPE, name: 'Multiple Contacts' },
+                lat: 54.0,
+                lon: 3.0,
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT_PIPE);
         expect(invalidItem.suggestedFixes.phone).toBe(BAD_SEPARATOR_FIX);
     });
 
@@ -1423,7 +1447,7 @@ describe('validateNumbers', () => {
             {
                 type: 'node',
                 id: 4004,
-                tags: { phone: BAD_SEPARATOR_INPUT_2, name: 'Multiple Contacts' },
+                tags: { phone: BAD_SEPARATOR_INPUT_SLASH, name: 'Multiple Contacts' },
                 lat: 54.0,
                 lon: 3.0,
             },
@@ -1437,7 +1461,7 @@ describe('validateNumbers', () => {
         const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
-        expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT_2);
+        expect(invalidItem.invalidNumbers.phone).toBe(BAD_SEPARATOR_INPUT_SLASH);
         expect(invalidItem.suggestedFixes.phone).toBe(BAD_SEPARATOR_FIX);
     });
 
@@ -1558,7 +1582,7 @@ describe('validateNumbers', () => {
             {
                 type: 'relation',
                 id: 7003,
-                tags: { mobile: BAD_SEPARATOR_INPUT }, // 2 numbers, invalid
+                tags: { mobile: BAD_SEPARATOR_INPUT_COMMA }, // 2 numbers, invalid
                 center: { lat: 57.2, lon: 6.2 },
             },
             {

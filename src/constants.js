@@ -129,8 +129,8 @@ const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 
-const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/'];
-const SEPARATOR_OPTIONAL_SPACE_DE = [';', ','];
+const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/', '|'];
+const SEPARATOR_OPTIONAL_SPACE_DE = [';', ',', '|'];
 const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y'];
 
 const escapeRegex = (string) => {
