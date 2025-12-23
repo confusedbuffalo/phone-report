@@ -109,6 +109,13 @@ describe('replaceInvisibleChars', () => {
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
+    test('should replace thin space character with ␣', () => {
+        // "MNO(SFT)PQR"
+        const input = "MNO PQR";
+        const expected = "MNO␣PQR";
+        expect(replaceInvisibleChars(input)).toBe(expected);
+    });
+
     test('should replace pop directional isolate (U+2069) character with ␣', () => {
         // "MNO(PDI)PQR"
         const input = "MNO\u2069PQR";

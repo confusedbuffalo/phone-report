@@ -182,7 +182,8 @@ const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(
 );
 
 // Characters that libphonenumbers does not parse but may be used instead of spaces
-const INVALID_SPACING_CHARACTERS_REGEX = /\t|_|·|~|•/g
+// Includes all other spacing characters, such as thin space
+const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|(?![ ])\s/g
 
 const ICON_ATTRIBUTION = [
     {
