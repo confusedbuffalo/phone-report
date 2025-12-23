@@ -466,7 +466,7 @@
 }
 
 @utility no-subdivisions-item {
-  @apply p-6 text-center text-gray-500 rounded-xl;
+  @apply p-6 text-center text-gray-500 rounded-xl list-none;
 }
 
 @utility diff-added {
