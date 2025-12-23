@@ -56,6 +56,8 @@ const CLIENT_KEYS = [
     "noteCreated",
     "hasInvalidSingular",
     "hasInvalidPlural",
+    "allTime",
+    "timeDays",
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
