@@ -43,6 +43,8 @@ function translate(key, locale, args = []) {
         output = output.replace('%e', args[0]);
     } else if ((key === 'numberDetailsNamesDataFrom') && args.length === 1) {
         output = output.replace('%o', args[0]);
+    } else if ((key === 'timeDays') && args.length === 1) {
+        output = output.replace('%n', args[0]);
     }
 
     // Handle Time Ago templates (using %n)
