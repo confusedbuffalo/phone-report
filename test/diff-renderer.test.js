@@ -1001,4 +1001,17 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('should correctly diff brackets around the start of the number', () => {
+        const original = '(0222) 226 2002';
+        const suggested = '+90 222 226 20 02';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">(0</span><span class="diff-unchanged">222</span><span class="diff-removed">)</span><span class="diff-unchanged">&nbsp;226&nbsp;2002</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">222&nbsp;226&nbsp;20</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">02</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });
