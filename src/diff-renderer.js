@@ -65,7 +65,7 @@ function replaceInvisibleChars(text) {
     if (!text) {
         "";
     }
-    // The pattern targets the common zero-width, joiner, and directional marks.
+    // The pattern targets the common zero-width, joiner, and directional marks and spacing characters other than space itself.
     const invisibleCharPattern = /(?![ ])\s|[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g;
     return text.replace(invisibleCharPattern, '␣');
 }
@@ -135,7 +135,7 @@ function diffPhoneNumbers(original, suggested) {
         const char = original[i];
 
         if ( // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
-            suggestedRemainder[i] === '+'
+            suggestedRemainder[0] === '+'
             && char === '0'
             && !actualNumberStartsWithZero
         ) {
@@ -227,8 +227,14 @@ function diffPhoneNumbers(original, suggested) {
                 }
             }
 
+            if (commonDigits[commonPointerNew] === '0' && originalRemainderNew.match(/[^d]+0.*/) && !actualNumberStartsWithZero) {
+                while (originalRemainderNew && originalRemainderNew[0] !== '0') {
+                    originalRemainderNew = originalRemainderNew.slice(1); // remove any leading non-digits
+                }
+            }
+
             if (originalRemainderNew[0] === '0' && !actualNumberStartsWithZero) {
-                originalRemainderNew = originalRemainderNew.slice(1) // Remove the 0
+                originalRemainderNew = originalRemainderNew.slice(1); // Remove the 0
                 if (commonDigits[commonPointerNew] === '0') {
                     // 0 in original matched with 0 in added prefix
                     commonPointerNew++;
