@@ -55,7 +55,6 @@ const MASTER_KEYS = {
     "notLoggedIn": [],
     "save": [],
     "openNote": [],
-    "allTime": [],
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
 
@@ -88,7 +87,6 @@ const MASTER_KEYS = {
     'timeAgoMinutesPlural': ['%n'],
     'timeAgoHour': ['%n'],
     'timeAgoHoursPlural': ['%n'],
-    "timeDays": ['%n'],
 
     // Page Titles (uses %s for country name)
     'mainIndexTitle': [], // Static title

@@ -67,9 +67,9 @@ async function generateProgressPage(country = null, locale = 'en-GB') {
                 <div class="controls-container p-4">
                     <input id="timeRange" type="range" min="7" max="365" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
                     <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        <span id="rangeMin">${translate('timeDays', locale, ['7'])}</span>
-                        <span id="rangeValue" class="text-gray-800 dark:text-gray-200">${translate('timeDays', locale, ['30'])}</span>
-                        <span id="rangeMax">${translate('timeDays', locale, ['365'])}</span>
+                        <span id="rangeMin"></span>
+                        <span id="rangeValue" class="text-gray-800 dark:text-gray-200"></span>
+                        <span id="rangeMax"></span>
                     </div>
                 </div>
             </div>
