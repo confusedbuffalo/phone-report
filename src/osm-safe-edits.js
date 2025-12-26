@@ -178,7 +178,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
             chainedStream,
             outputStream
         );
-        console.log(`Safe edits output data written to ${dataFilePath}`);
+        console.debug(`Safe edits output data written to ${dataFilePath}`);
     } catch (err) {
         console.error('An error occurred during safe edits streaming:', err);
         throw err;

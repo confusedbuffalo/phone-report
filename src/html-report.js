@@ -243,7 +243,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
             chainedStream,
             outputStream
         );
-        console.log(`Output data written to ${dataFilePath}`);
+        console.debug(`Output data written to ${dataFilePath}`);
     } catch (err) {
         console.error('An error occurred during streaming:', err);
         throw err;
