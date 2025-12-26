@@ -555,6 +555,8 @@ function getWhatsappNumber(numberStr) {
     const parsedUrl = URL.parse(numberStr);
     if (parsedUrl) {
         isValidWhatsappUrl = isWhatsappUrl(numberStr)
+        const pathname = parsedUrl.pathname;
+
         if (!isValidWhatsappUrl) {
             return {
                 cleanNumberStr: cleanNumberStr,
@@ -566,6 +568,15 @@ function getWhatsappNumber(numberStr) {
             if (cleanNumberStr.startsWith(' ')) {
                 cleanNumberStr = '+' + cleanNumberStr.trimStart();
             }
+            isValidWhatsappUrl = false;
+        }
+        else if (
+            parsedUrl.hostname.endsWith('wa.me')
+            && !pathname.startsWith('/qr')
+            && !pathname.startsWith('/message')
+            && !pathname.startsWith('/c')
+        ) {
+            cleanNumberStr = pathname.startsWith('/') ? pathname.slice(1) : pathname;
             isValidWhatsappUrl = false;
         }
     }

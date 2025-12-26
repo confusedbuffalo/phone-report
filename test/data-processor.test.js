@@ -1033,8 +1033,15 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
     });
 
-    test('Whatsapp number in link fixable', () => {
+    test('Whatsapp number in partal link is fixable', () => {
         const result = processSingleNumber('wa.me/27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+27 12 345 6789');
+    });
+
+    test('Whatsapp number in full link fixable', () => {
+        const result = processSingleNumber('https://wa.me/27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
@@ -1042,6 +1049,16 @@ describe('processSingleNumber', () => {
 
     test('wa.me message link is valid in whatsapp key', () => {
         const result = processSingleNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('wa.me qr link is valid in whatsapp key', () => {
+        const result = processSingleNumber('https://wa.me/qr/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('wa.me catalogue link is valid in whatsapp key', () => {
+        const result = processSingleNumber('https://wa.me/c/123456798', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(false);
     });
 
