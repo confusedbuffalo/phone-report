@@ -2694,6 +2694,7 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
+            'phone:mnemonic': null,
             'phone': "1-870-KAKESNY",
         });
         expect(invalidItem.suggestedFixes).toEqual({
