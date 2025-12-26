@@ -850,6 +850,14 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe(null);
     });
 
+    test('ZA: possible phonewords in a country where this is not common is invalid and unfixable', () => {
+        const result = processSingleNumber('+27 51 435 GPJA', SAMPLE_COUNTRY_CODE_ZA);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
+        expect(result.suggestedFix).toBe(null);
+        expect(result.validPhonewords).toBe(false);
+    });
+
     // --- USA Tests (+1 213 373 4253) ---
 
     test('US: correctly validate and format a simple valid local number', () => {
@@ -885,6 +893,28 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toBe('+1-304-845-9810 x403');
+    });
+
+    test('US: fix a phonewords number', () => {
+        const result = processSingleNumber('1-870-KAKESNY', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        expect(result.suggestedFix).toBe('+1-870-525-3769');
+    });
+
+    test('US: fix a phonewords number in lowercase', () => {
+        const result = processSingleNumber('1-870-kakesny', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        expect(result.suggestedFix).toBe('+1-870-525-3769');
+    });
+
+    test('US: letters in the middle of a number is not valid phonewords', () => {
+        const result = processSingleNumber('1-870-kak-3769', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(false);
     });
 
     // --- PL Tests ---
@@ -1033,8 +1063,15 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
     });
 
-    test('Whatsapp number in link fixable', () => {
+    test('Whatsapp number in partal link is fixable', () => {
         const result = processSingleNumber('wa.me/27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+27 12 345 6789');
+    });
+
+    test('Whatsapp number in full link fixable', () => {
+        const result = processSingleNumber('https://wa.me/27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
@@ -1042,6 +1079,16 @@ describe('processSingleNumber', () => {
 
     test('wa.me message link is valid in whatsapp key', () => {
         const result = processSingleNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('wa.me qr link is valid in whatsapp key', () => {
+        const result = processSingleNumber('https://wa.me/qr/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('wa.me catalogue link is valid in whatsapp key', () => {
+        const result = processSingleNumber('https://wa.me/c/123456798', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(false);
     });
 
@@ -1291,6 +1338,21 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.suggestedNumbersList).toEqual(['+1-951-736-4567']);
+    });
+
+    test('US: phonewords is fixable', () => {
+        const result = validateSingleTag('1-870-KAKESNY', 'US');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(["+1-870-525-3769"]);
+    });
+
+    test('US: give up with multiple phonewords in a single tag', () => {
+        const result = validateSingleTag('1-870-KAKESNY; 1-870-KAKESNJ', 'US');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.validPhonewords).toBe(false);
     });
 });
 
@@ -2608,6 +2670,36 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.duplicateNumbers).toEqual({
             'contact:fax': 'fax',
+        });
+    });
+
+    test('phonewords is invalid and fixable and adds phone:mnemonic', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 123456,
+                tags: {
+                    'phone': "1-870-KAKESNY",
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone:mnemonic': null,
+            'phone': "1-870-KAKESNY",
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone:mnemonic': "1-870-KAKESNY",
+            'phone': "+1-870-525-3769",
         });
     });
 

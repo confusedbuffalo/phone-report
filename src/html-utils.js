@@ -176,7 +176,7 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
 
             const dataTimestampMs = parseInt(container.getAttribute('data-timestamp'), 10);
             if (isNaN(dataTimestampMs)) {
-                container.textContent = translations['timeAgoError'] || 'error in time calculation';
+                container.textContent = 'error in time calculation';
                 return;
             }
 
@@ -186,16 +186,12 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
             const totalMinutes = Math.floor(millisecondsAgo / (1000 * 60));
             
             let timeAgoText;
-            if (totalMinutes < 1) {
-                timeAgoText = translate('timeAgoJustNow');
-            } else if (totalMinutes < 60) {
-                const minutes = totalMinutes;
-                const key = minutes > 1 ? 'timeAgoMinutesPlural' : 'timeAgoMinute';
-                timeAgoText = translate(key, { '%n': minutes }); 
+            const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
+            if (totalMinutes < 60) {
+                timeAgoText = timeFormatter.format(-1 * totalMinutes, 'minute')
             } else {
                 const hours = Math.floor(totalMinutes / 60);
-                const key = hours > 1 ? 'timeAgoHoursPlural' : 'timeAgoHour';
-                timeAgoText = translate(key, { '%n': hours }); 
+                timeAgoText = timeFormatter.format(-1 * hours, 'hour')
             }
 
             const dataSourcedTemplate = translations['dataSourcedTemplate'] || 'Data sourced on %d at %t %z (%a)';

@@ -43,15 +43,10 @@ function translate(key, locale, args = []) {
         output = output.replace('%e', args[0]);
     } else if ((key === 'numberDetailsNamesDataFrom') && args.length === 1) {
         output = output.replace('%o', args[0]);
-    } else if ((key === 'timeDays') && args.length === 1) {
-        output = output.replace('%n', args[0]);
     }
 
     // Handle Time Ago templates (using %n)
-    if ((key.startsWith('timeAgo') && key !== 'timeAgoJustNow' && key !== 'timeAgoError') && args.length === 1) {
-        // args[0] is the number
-        output = output.replace('%n', args[0]);
-    } else if (key === 'dataSourcedTemplate' && args.length === 4) {
+    if (key === 'dataSourcedTemplate' && args.length === 4) {
         // Positional replacement: %d=Date, %t=Time, %z=Timezone, %a=TimeAgo (the <span> element)
         output = output.replace('%d', args[0])
             .replace('%t', args[1])

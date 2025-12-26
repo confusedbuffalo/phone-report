@@ -12,12 +12,6 @@ const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
 
 const CLIENT_KEYS = [
-    'timeAgoJustNow',
-    'timeAgoMinute',
-    'timeAgoMinutesPlural',
-    'timeAgoHour',
-    'timeAgoHoursPlural',
-    'timeAgoError',
     'dataSourcedTemplate',
     'fixInJOSM',
     'fixable',
@@ -56,8 +50,6 @@ const CLIENT_KEYS = [
     "noteCreated",
     "hasInvalidSingular",
     "hasInvalidPlural",
-    "allTime",
-    "timeDays",
 ];
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
