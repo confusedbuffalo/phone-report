@@ -97,8 +97,14 @@ function createClientItems(item, locale, botEnabled, iconManager) {
             let originalRowValue;
             if (problemLabel) {
                 originalRowValue = `<span class="list-item-old-value">${oldDiff}${problemLabel}</span>`;
-            } else {
+            } else if (originalNumber) {
                 originalRowValue = oldDiff;
+            } else {
+                // e.g. phone:mnemonic being added as new tag
+                const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
+                return {
+                    [newTagDiff]: newDiff
+                };
             }
 
             return {
