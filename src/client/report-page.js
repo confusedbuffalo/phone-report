@@ -993,8 +993,9 @@ function applyEditsToFeatureTags(feature, elementEdits) {
             const value = elementEdits[key];
 
             // If any of the target tags have changed, make no changes
+            // originalValue could be undefined or null when a new tag is being added (moving from mobile or adding mnemonic)
             const originalValue = item.invalidNumbers?.[key];
-            if (originalValue !== undefined && tags[key] !== originalValue) {
+            if (originalValue !== undefined && originalValue !== null && tags[key] !== originalValue) {
                 return false;
             }
 
