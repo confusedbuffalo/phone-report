@@ -65,7 +65,7 @@ async function generateCountryIndexHtml(countryData, translations) {
                     ${themeButton}
                 </div>
                 <h1 class="page-title">${translate('osmPhoneNumberValidation', locale)}</h1>
-                <p class="report-subtitle">${translate('reportSubtitle', locale, [escapeHTML(countryData.name)])}</p>
+                <p class="report-subtitle">${translate('reportSubtitleForCountry', locale, [escapeHTML(countryData.name)])}</p>
             </header>
             ${createStatsBox(countryData.totalNumbers, countryData.invalidCount, countryData.autoFixableCount, locale, true)}
             <div class="card">

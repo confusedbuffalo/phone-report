@@ -187,17 +187,6 @@ describe('i18n Module Functionality', () => {
             expect(master).toContain('%a');
             expect(translate('dataSourcedTemplate', 'en', ['Date', 'Time', 'UTC', 'Now'])).toBe(expected);
         });
-
-        test('should handle numeric substitution for timeAgo keys', () => {
-            const expectedPlural = '5&nbsp;hours ago';
-            const expectedSingular = '1&nbsp;hour ago';
-            const masterPlural = require('../locales/en.json').timeAgoHoursPlural;
-            const masterSingular = require('../locales/en.json').timeAgoHour;
-            expect(masterPlural).toContain('%n');
-            expect(masterSingular).toContain('%n');
-            expect(translate('timeAgoHoursPlural', 'en', ['5'])).toBe(expectedPlural);
-            expect(translate('timeAgoHour', 'en', ['1'])).toBe(expectedSingular);
-        });
     });
 
     describe('getTranslations', () => {

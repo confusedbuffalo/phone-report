@@ -12,12 +12,6 @@ const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
 
 const CLIENT_KEYS = [
-    'timeAgoJustNow',
-    'timeAgoMinute',
-    'timeAgoMinutesPlural',
-    'timeAgoHour',
-    'timeAgoHoursPlural',
-    'timeAgoError',
     'dataSourcedTemplate',
     'fixInJOSM',
     'fixable',

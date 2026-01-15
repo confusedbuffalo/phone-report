@@ -7,8 +7,5 @@ assignees: ''
 
 ---
 
-### Country name
-
-
 ### Additional context
 <!-- Are there any special ways that phone numbers are formatted or used in OSM in this country? -->
