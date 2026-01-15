@@ -178,7 +178,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
             chainedStream,
             outputStream
         );
-        console.log(`Safe edits output data written to ${dataFilePath}`);
+        console.debug(`Safe edits output data written to ${dataFilePath}`);
     } catch (err) {
         console.error('An error occurred during safe edits streaming:', err);
         throw err;
@@ -388,7 +388,7 @@ async function processSafeEdits() {
 
     OSM.getUser("me")
         .then((result) => {
-            console.log(`Logged in as ${result.display_name}`);
+            console.debug(`Logged in as ${result.display_name}`);
         })
         .catch((error) => {
             console.error('Could not identify with OSM API');
@@ -396,9 +396,9 @@ async function processSafeEdits() {
         });
 
     try {
-        console.log(`Starting file collection in ${SAFE_EDITS_DIR}...`);
+        console.debug(`Starting file collection in ${SAFE_EDITS_DIR}...`);
         await collectSafeEditFiles(SAFE_EDITS_DIR);
-        console.log(`Found ${filesToProcess.length} safe edit files.`);
+        console.debug(`Found ${filesToProcess.length} safe edit files.`);
 
         const uploadPromises = [];
 
@@ -438,7 +438,7 @@ async function processSafeEdits() {
                 }
 
                 if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0) {
-                    console.log(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
+                    console.debug(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
                     const uploadPromise = uploadSafeChanges(filePath)
                         .then(() => {
                             stats.uploaded++;

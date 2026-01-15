@@ -19,6 +19,22 @@
             "Western Australia": 2316598
         }
     },
+    "Austria": {
+        "countryCode": "AT",
+        "locale": "de-DE",
+        "safeAutoFixBotEnabled": false,
+        "divisions": {
+            "Burgenland": 76909,
+            "Kärnten": 52345,
+            "Niederösterreich": 77189,
+            "Oberösterreich": 102303,
+            "Salzburg": 86539,
+            "Steiermark": 35183,
+            "Tirol": 52343,
+            "Vorarlberg": 74942,
+            "Wien": 109166
+        }
+    },
     "België / Belgique / Belgien": {
         "countryCode": "BE",
         "locale": "en",
@@ -274,7 +290,7 @@
     "Schweiz / Suisse / Svizzera / Svizra": {
         "countryCode": "CH",
         "locale": "en",
-        "safeAutoFixBotEnabled": false,
+        "safeAutoFixBotEnabled": true,
         "divisions": {
             "Aargau": 1686359,
             "Appenzell Ausserrhoden": 1686649,

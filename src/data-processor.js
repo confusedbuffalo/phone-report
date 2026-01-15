@@ -21,6 +21,7 @@ const {
     NON_STANDARD_COST_TYPES,
     INVALID_SPACING_CHARACTERS_REGEX,
     CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
+    COUNTRIES_WITH_PHONEWORDS,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -555,6 +556,8 @@ function getWhatsappNumber(numberStr) {
     const parsedUrl = URL.parse(numberStr);
     if (parsedUrl) {
         isValidWhatsappUrl = isWhatsappUrl(numberStr)
+        const pathname = parsedUrl.pathname;
+
         if (!isValidWhatsappUrl) {
             return {
                 cleanNumberStr: cleanNumberStr,
@@ -568,6 +571,15 @@ function getWhatsappNumber(numberStr) {
             }
             isValidWhatsappUrl = false;
         }
+        else if (
+            parsedUrl.hostname.endsWith('wa.me')
+            && !pathname.startsWith('/qr')
+            && !pathname.startsWith('/message')
+            && !pathname.startsWith('/c')
+        ) {
+            cleanNumberStr = pathname.startsWith('/') ? pathname.slice(1) : pathname;
+            isValidWhatsappUrl = false;
+        }
     }
     return {
         cleanNumberStr: cleanNumberStr,
@@ -576,19 +588,39 @@ function getWhatsappNumber(numberStr) {
 }
 
 /**
+ * Converts a phoneword string into a numeric string.
+ * @param {string} phoneword - The input string (e.g., "1-800-FLOWERS")
+ * @returns {string} - The converted numeric string (e.g., "1-800-3569377")
+ */
+function convertPhonewordToDigits(phoneword) {
+    const mapping = {
+      'A': '2', 'B': '2', 'C': '2',
+      'D': '3', 'E': '3', 'F': '3',
+      'G': '4', 'H': '4', 'I': '4',
+      'J': '5', 'K': '5', 'L': '5',
+      'M': '6', 'N': '6', 'O': '6',
+      'P': '7', 'Q': '7', 'R': '7', 'S': '7',
+      'T': '8', 'U': '8', 'V': '8',
+      'W': '9', 'X': '9', 'Y': '9', 'Z': '9'
+    };
+  
+    return phoneword.toUpperCase().replace(/[A-Z]/g, (char) => {
+      return mapping[char] || char;
+    });
+  }
+
+/**
  * Validates a single phone number string using libphonenumber-js.
  * @param {string} numberStr - The phone number string to validate.
  * @param {string} countryCode - The country code for validation.
  * @param {map} osmTags - All the OSM tags of the object, to check against exclusions
  * @param {string} tag - The OSM phone tag being used for this number
- * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean}}
+ * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean, validPhonewords: boolean}}
  */
 function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
-    let suggestedFix = null;
+    let suggestedFix = null, phoneNumber = null;
     let autoFixable = true;
-    let isInvalid = false;
-    let typeMismatch = false;
-    let phoneNumber = null;
+    let isInvalid = false, typeMismatch = false, validPhonewords = false;
 
     const spacingRegex = getSpacingRegex(countryCode);
 
@@ -597,6 +629,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
+    // Fix number starting 1+ instead of +1 (somewhat common error)
     if (numberStr.match(/^1\+\s?\d.*/)) {
         numberStr = `+1${numberStr.slice(2)}`;
         isInvalid = true;
@@ -605,6 +638,8 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     if (numberStr.match(INVALID_SPACING_CHARACTERS_REGEX)) {
         isInvalid = true;
     }
+
+    couldBePhonewords = COUNTRIES_WITH_PHONEWORDS.includes(countryCode) && numberStr.match(/.*[a-z]$/i);
 
     if (tag === 'contact:whatsapp') {
         ({ cleanNumberStr, validNonNumber } = getWhatsappNumber(numberStr));
@@ -616,6 +651,9 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             numberStr = cleanNumberStr;
             isInvalid = true;
         }
+    } else if (couldBePhonewords) {
+        numberStr = convertPhonewordToDigits(numberStr);
+        isInvalid = true;
     }
 
     const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(INVALID_SPACING_CHARACTERS_REGEX, " "), countryCode);
@@ -650,6 +688,10 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed || isItalianMissingZero)) {
             normalizedParsed = phoneNumber.number.replace(spacingRegex, '');
+
+            if (couldBePhonewords) {
+                validPhonewords = true;
+            }
 
             if (MOBILE_TAGS.includes(tag)) {
                 const mobileStatus = checkMobileStatus(phoneNumber);
@@ -700,7 +742,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         suggestedFix = null;
     }
 
-    return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch };
+    return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords };
 }
 
 /**
@@ -738,10 +780,11 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const tagValidationResult = {
         isInvalid: false,
         isAutoFixable: true,
+        validPhonewords: false,
         suggestedNumbersList: [],
         mismatchTypeNumbers: [],
         numberOfValues: 0,
-        validNumbersList: []
+        validNumbersList: [],
     };
 
     let hasTypeMismatch = false;
@@ -770,7 +813,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
             }
         }
 
-        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch } = validationResult;
+        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords } = validationResult;
 
         if (phoneNumber) {
             tagValidationResult.validNumbersList.push(phoneNumber);
@@ -788,6 +831,16 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
         if (typeMismatch) {
             tagValidationResult.mismatchTypeNumbers.push(validationResult.suggestedFix);
             hasTypeMismatch = true;
+        }
+
+        if (validPhonewords) {
+            // Multiple phonewords in one tag gets complicated and is likely very rare
+            if (tagValidationResult.numberOfValues == 1 && !tagValidationResult.validPhonewords) {
+                tagValidationResult.validPhonewords = true;
+            } else {
+                tagValidationResult.validPhonewords = false;
+                tagValidationResult.isAutoFixable = false;
+            }
         }
     });
 
@@ -1109,6 +1162,14 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         currentItem.hasTypeMismatch = true;
                         currentItem.mismatchTypeNumbers.set(tag, validationResult.mismatchTypeNumbers.join('; '));
                     }
+                }
+
+                if (
+                    validationResult.validPhonewords
+                    && autoFixable && !tagShouldBeFlaggedForRemoval && validationResult.suggestedNumbersList.length > 0
+                ) {
+                    currentItem.invalidNumbers.set('phone:mnemonic', null)
+                    currentItem.suggestedFixes.set('phone:mnemonic', phoneTagValue)
                 }
 
                 currentItem.autoFixable = currentItem.autoFixable && autoFixable;

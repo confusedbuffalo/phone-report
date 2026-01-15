@@ -182,7 +182,8 @@ const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(
 );
 
 // Characters that libphonenumbers does not parse but may be used instead of spaces
-const INVALID_SPACING_CHARACTERS_REGEX = /\t|_|·|~|•/g
+// Includes all other spacing characters, such as thin space
+const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|(?![ ])\s/g
 
 const ICON_ATTRIBUTION = [
     {
@@ -306,6 +307,8 @@ const usTerritoryCodes = new Map([
 
 const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'GB', 'ZA']
 
+const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
+
 module.exports = {
     PUBLIC_DIR,
     OVERPASS_API_URL,
@@ -351,5 +354,6 @@ module.exports = {
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
     INVALID_SPACING_CHARACTERS_REGEX,
-    CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS
+    CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
+    COUNTRIES_WITH_PHONEWORDS,
 };

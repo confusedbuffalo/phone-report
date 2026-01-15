@@ -1,0 +1,44 @@
+{
+  "name": "België / Belgique / Belgien",
+  "slug": "belgië-belgique-belgien",
+  "locale": "en",
+  "invalidCount": 140,
+  "autoFixableCount": 7,
+  "safeEditCount": 3,
+  "totalNumbers": 53061,
+  "groupedDivisionStats": {
+    "België / Belgique / Belgien": [
+      {
+        "name": "Vlaanderen",
+        "divisionSlug": "belgië-belgique-belgien",
+        "slug": "vlaanderen",
+        "invalidCount": 73,
+        "autoFixableCount": 5,
+        "safeEditCount": 2,
+        "totalNumbers": 30095,
+        "lastUpdated": "2026-01-01T02:20:21.632Z"
+      },
+      {
+        "name": "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest",
+        "divisionSlug": "belgië-belgique-belgien",
+        "slug": "région-de-bruxelles-capitale-brussels-hoofdstedelijk-gewest",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 6664,
+        "lastUpdated": "2026-01-01T02:20:32.141Z"
+      },
+      {
+        "name": "Wallonie",
+        "divisionSlug": "belgië-belgique-belgien",
+        "slug": "wallonie",
+        "invalidCount": 67,
+        "autoFixableCount": 2,
+        "safeEditCount": 1,
+        "totalNumbers": 16302,
+        "lastUpdated": "2026-01-01T02:21:05.527Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}

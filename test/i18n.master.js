@@ -29,8 +29,6 @@ const MASTER_KEYS = {
     'noDivisionsFound': [],
     'noAutoFixable': [],
     'noInvalidNumbers': [],
-    'timeAgoJustNow': [],
-    'timeAgoError': [],
     'settings': [],
     'disused': [],
     'noSubdivisionsFound': [],
@@ -55,7 +53,6 @@ const MASTER_KEYS = {
     "notLoggedIn": [],
     "save": [],
     "openNote": [],
-
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
 
@@ -82,12 +79,6 @@ const MASTER_KEYS = {
     "noteCreated": ['%n'],
     "hasInvalidSingular": ['%n'],
     "hasInvalidPlural": ['%n'],
-
-    // Time Ago (uses %n for number)
-    'timeAgoMinute': ['%n'],
-    'timeAgoMinutesPlural': ['%n'],
-    'timeAgoHour': ['%n'],
-    'timeAgoHoursPlural': ['%n'],
 
     // Page Titles (uses %s for country name)
     'mainIndexTitle': [], // Static title
