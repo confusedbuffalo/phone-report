@@ -66,7 +66,7 @@ function replaceInvisibleChars(text) {
         "";
     }
     // The pattern targets the common zero-width, joiner, and directional marks and spacing characters other than space itself.
-    const invisibleCharPattern = /(?![ ])\s|[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]/g;
+    const invisibleCharPattern = /(?![ ])\s|[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]/g;
     return text.replace(invisibleCharPattern, '␣');
 }
 

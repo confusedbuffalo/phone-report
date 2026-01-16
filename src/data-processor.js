@@ -243,8 +243,8 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX =
         DIN_FORMAT_COUNTRIES.includes(countryCode)
-            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g
-            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
+            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/g
+            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/g;
 
     const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
     if (!hasOnlySafeChars) return false;

@@ -116,6 +116,13 @@ describe('replaceInvisibleChars', () => {
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
+    test('should replace first strong isolate (U+2068) character with ␣', () => {
+        // "MNO(PDI)PQR"
+        const input = "MNO\u2068PQR";
+        const expected = "MNO␣PQR";
+        expect(replaceInvisibleChars(input)).toBe(expected);
+    });
+
     test('should replace pop directional isolate (U+2069) character with ␣', () => {
         // "MNO(PDI)PQR"
         const input = "MNO\u2069PQR";
