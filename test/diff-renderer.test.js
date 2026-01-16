@@ -1,4 +1,4 @@
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE } = require('../src/constants');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN } = require('../src/constants');
 const {
     normalize,
     consolidatePlusSigns,
@@ -112,6 +112,13 @@ describe('replaceInvisibleChars', () => {
     test('should replace thin space character with ␣', () => {
         // "MNO(SFT)PQR"
         const input = "MNO PQR";
+        const expected = "MNO␣PQR";
+        expect(replaceInvisibleChars(input)).toBe(expected);
+    });
+
+    test('should replace first strong isolate (U+2068) character with ␣', () => {
+        // "MNO(PDI)PQR"
+        const input = "MNO\u2068PQR";
         const expected = "MNO␣PQR";
         expect(replaceInvisibleChars(input)).toBe(expected);
     });

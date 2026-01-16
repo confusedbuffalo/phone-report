@@ -115,8 +115,10 @@ const EXCLUSIONS = {
 const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|poste|wewn?\.?)\s*)(\d*)\)?$/;
 const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x']
 
-// DIN format has hyphen then 1-5 digits for extensions
-const DE_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
+const DIN_FORMAT_COUNTRIES = ['AT', 'DE']
+
+// DIN format has hyphen then extension
+const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 
 // Define the regex for separators that are definitively "bad" and should trigger a fix report.
 const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
@@ -130,7 +132,7 @@ const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 
 const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/', '|'];
-const SEPARATOR_OPTIONAL_SPACE_DE = [';', ',', '|'];
+const SEPARATOR_OPTIONAL_SPACE_DIN = [';', ',', '|'];
 const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y'];
 
 const escapeRegex = (string) => {
@@ -152,7 +154,7 @@ const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
 
-const spaceOptionalGroupsDe = SEPARATOR_OPTIONAL_SPACE_DE.map(sep => {
+const spaceOptionalGroupsDin = SEPARATOR_OPTIONAL_SPACE_DIN.map(sep => {
     const escapedSep = escapeRegex(sep);
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
@@ -163,20 +165,20 @@ const needSpacesGroups = SEPARATOR_NEED_SPACE.map(sep => {
 }).join('|');
 
 const ALL_SEPARATOR_GROUPS = `${spaceOptionalGroups}|${needSpacesGroups}`;
-const allGroupsDe = `${spaceOptionalGroupsDe}|${needSpacesGroups}`;
+const allGroupsDe = `${spaceOptionalGroupsDin}|${needSpacesGroups}`;
 
 const CAPTURING_GROUP_TO_NON_CAPTURING_REGEX = /\((?!\?)(.*?)\)/g;
 
 // Includes capturing groups to get the separators back
 // When used in diff, the groups need to be capturing
 const UNIVERSAL_SPLIT_CAPTURE_REGEX = new RegExp(ALL_SEPARATOR_GROUPS, 'gi');
-const UNIVERSAL_SPLIT_CAPTURE_REGEX_DE = new RegExp(allGroupsDe, 'gi');
+const UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN = new RegExp(allGroupsDe, 'gi');
 
 const UNIVERSAL_SPLIT_REGEX = new RegExp(
     ALL_SEPARATOR_GROUPS.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
     'gi'
 );
-const UNIVERSAL_SPLIT_REGEX_DE = new RegExp(
+const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
     allGroupsDe.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
     'gi'
 );
@@ -328,13 +330,13 @@ module.exports = {
     EXCLUSIONS,
     BAD_SEPARATOR_REGEX,
     UNIVERSAL_SPLIT_REGEX,
-    UNIVERSAL_SPLIT_REGEX_DE,
+    UNIVERSAL_SPLIT_REGEX_DIN,
     UNIVERSAL_SPLIT_CAPTURE_REGEX,
-    UNIVERSAL_SPLIT_CAPTURE_REGEX_DE,
+    UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN,
     ALL_SEPARATOR_GROUPS,
     SEPARATOR_NEED_SPACE,
     SEPARATOR_OPTIONAL_SPACE,
-    SEPARATOR_OPTIONAL_SPACE_DE,
+    SEPARATOR_OPTIONAL_SPACE_DIN,
     ICONS_DIR,
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
@@ -343,7 +345,7 @@ module.exports = {
     SAFE_EDITS_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
-    DE_EXTENSION_REGEX,
+    DIN_EXTENSION_REGEX,
     ACCEPTABLE_EXTENSION_FORMATS,
     CHANGESET_TAGS,
     AUTO_CHANGESET_TAGS,
@@ -356,4 +358,5 @@ module.exports = {
     INVALID_SPACING_CHARACTERS_REGEX,
     CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
     COUNTRIES_WITH_PHONEWORDS,
+    DIN_FORMAT_COUNTRIES,
 };
