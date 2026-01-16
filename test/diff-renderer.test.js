@@ -1,4 +1,4 @@
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE } = require('../src/constants');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN } = require('../src/constants');
 const {
     normalize,
     consolidatePlusSigns,

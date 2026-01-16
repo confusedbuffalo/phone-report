@@ -9,9 +9,9 @@ const {
     WEBSITE_TAGS,
     BAD_SEPARATOR_REGEX,
     UNIVERSAL_SPLIT_REGEX,
-    UNIVERSAL_SPLIT_REGEX_DE,
+    UNIVERSAL_SPLIT_REGEX_DIN,
     EXTENSION_REGEX,
-    DE_EXTENSION_REGEX,
+    DIN_EXTENSION_REGEX,
     PHONE_TAG_PREFERENCE_ORDER,
     NANP_COUNTRY_CODES,
     ACCEPTABLE_EXTENSION_FORMATS,
@@ -22,6 +22,7 @@ const {
     INVALID_SPACING_CHARACTERS_REGEX,
     CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
     COUNTRIES_WITH_PHONEWORDS,
+    DIN_FORMAT_COUNTRIES,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -239,9 +240,9 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     if (!originalNumberStr || !newNumberStr) return false;
 
     // Digits, spaces, plus, dash and hyphens and invisible spacing characters
-    // DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
+    // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX =
-        countryCode === 'DE'
+        DIN_FORMAT_COUNTRIES.includes(countryCode)
             ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g
             : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2069]+$/g;
 
@@ -403,8 +404,8 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
  */
 function getNumberAndExtension(numberStr, countryCode) {
     // DIN format has hyphen then 1-5 digits for extensions
-    if (countryCode === 'DE') {
-        const match = numberStr.match(DE_EXTENSION_REGEX);
+    if (DIN_FORMAT_COUNTRIES.includes(countryCode)) {
+        const match = numberStr.match(DIN_EXTENSION_REGEX);
         if (match && match[1] && match[2] && match[3]) {
             try {
                 const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
@@ -412,7 +413,8 @@ function getNumberAndExtension(numberStr, countryCode) {
                 const extensionDigits = match[3].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
-                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 5) {
+                // extensions can be up to 6 digits: https://community.openstreetmap.org/t/telefonnummern-report-fur-osterreich/140237/13
+                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 6) {
                     return {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,
@@ -451,9 +453,9 @@ function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = 
         ? internationalNumber.replace(/\s/g, '-').replace('-ext.-', ' x')
         : internationalNumber;
 
-    // Append the extension in the standard format (' x{ext}' or DIN format for DE)
+    // Append the extension in the standard format (' x{ext}' or DIN format)
     const extension = phoneNumber.ext ?
-        (countryCode === 'DE' ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
+        (DIN_FORMAT_COUNTRIES.includes(countryCode) ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
         : '';
 
     if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) && !tollFreeAsInternational) {
@@ -765,7 +767,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const hasBadSeparator = tag === 'contact:whatsapp' ? false : originalTagValue.match(BAD_SEPARATOR_REGEX);
     const hasBadExtension = originalTagValue.match(/, ext|\\;ext=/gi);
 
-    splitRegex = countryCode === 'DE' ? UNIVERSAL_SPLIT_REGEX_DE : UNIVERSAL_SPLIT_REGEX;
+    splitRegex = DIN_FORMAT_COUNTRIES.includes(countryCode) ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
     const numberList = tag === 'contact:whatsapp'

@@ -310,9 +310,9 @@ describe('getNumberAndExtension', () => {
             });
         });
 
-        test('should fall back to standard logic if DIN-style extension has more than 5 digits (and thus matches standard)', () => {
-            expect(getNumberAndExtension('+49 489 123456-789012', countryCode)).toEqual({
-                coreNumber: '+49 489 123456-789012',
+        test('should fall back to standard logic if DIN-style extension has more than 6 digits (and thus matches standard)', () => {
+            expect(getNumberAndExtension('+49 489 123456-7890123', countryCode)).toEqual({
+                coreNumber: '+49 489 123456-7890123',
                 extension: null,
                 hasStandardExtension: null,
             });

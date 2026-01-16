@@ -1,6 +1,6 @@
 const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DE, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DE } = require('./constants.js');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
 const { isWhatsappUrl } = require('./data-processor.js');
 
@@ -354,7 +354,7 @@ function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
 
     const mergedArray = [];
 
-    const ALL_SEPARATORS = useDeSeparators ? [ ...SEPARATOR_OPTIONAL_SPACE_DE, ...SEPARATOR_NEED_SPACE ] : [ ...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE ];
+    const ALL_SEPARATORS = useDeSeparators ? [ ...SEPARATOR_OPTIONAL_SPACE_DIN, ...SEPARATOR_NEED_SPACE ] : [ ...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE ];
 
     for (let i = 0; i < inputArray.length; i++) {
         let currentElement = inputArray[i];
@@ -405,21 +405,21 @@ function getDiffHtml(oldString, newString) {
 
     // Split and initial filter for both strings
 
-    // DE doesn't consider '/' as separator
-    const useDeSeparators = newString.startsWith('+49');
+    // DE and AT do not consider '/' as separator
+    const useDinSeparators = newString.startsWith('+49') || newString.startsWith('+43');
 
     const oldPartsUnfiltered = isWhatsappUrl(oldString)
         ? oldStringCleaned.split(/(;)/gi)
-        : useDeSeparators
-            ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DE)
+        : useDinSeparators
+            ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN)
             : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
 
     // Filter out falsey values (undefined from capturing groups) and empty strings
     // Remove consecutive separators, e.g. '//'
-    const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
+    const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDinSeparators);
 
     const newPartsUnfiltered = newStringCleaned.split(NEW_SPLIT_CAPTURE_REGEX);
-    const newParts = mergeConsecutiveSeparators(newPartsUnfiltered.filter(s => s && s.trim().length > 0), useDeSeparators);
+    const newParts = mergeConsecutiveSeparators(newPartsUnfiltered.filter(s => s && s.trim().length > 0), useDinSeparators);
 
     // Apply consolidation to both old and new parts
     const consolidatedOldParts = consolidatePlusSigns(oldParts);
