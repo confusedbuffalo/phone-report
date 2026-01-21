@@ -403,9 +403,13 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
  * }} An object containing the core number, the extension and whether the extension is in a standard format.
  */
 function getNumberAndExtension(numberStr, countryCode) {
-    // DIN format has hyphen then 1-5 digits for extensions
+    // DIN format has hyphen extension
     if (DIN_FORMAT_COUNTRIES.includes(countryCode)) {
         const match = numberStr.match(DIN_EXTENSION_REGEX);
+        // DE extensions can be up to 5 digits: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/20
+        // AT extensions can be up to 7 digits: https://community.openstreetmap.org/t/telefonnummern-report-fur-osterreich/140237/30
+        const maxExtensionLength = countryCode === 'AT' ? 7 : 5;
+
         if (match && match[1] && match[2] && match[3]) {
             try {
                 const preHyphenNumber = parsePhoneNumber(match[1], countryCode);
@@ -413,8 +417,7 @@ function getNumberAndExtension(numberStr, countryCode) {
                 const extensionDigits = match[3].replace(/[^\d]/, '');
                 // Only consider this as an extension if the number before it is valid as a number
                 // (since hyphens may have been used as separators in a non-extension number)
-                // extensions can be up to 6 digits: https://community.openstreetmap.org/t/telefonnummern-report-fur-osterreich/140237/13
-                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= 6) {
+                if (preHyphenNumber.isValid() && extensionDigits && extensionDigits.length <= maxExtensionLength) {
                     return {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,

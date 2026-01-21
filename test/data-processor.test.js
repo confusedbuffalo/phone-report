@@ -310,9 +310,9 @@ describe('getNumberAndExtension', () => {
             });
         });
 
-        test('should fall back to standard logic if DIN-style extension has more than 6 digits (and thus matches standard)', () => {
-            expect(getNumberAndExtension('+49 489 123456-7890123', countryCode)).toEqual({
-                coreNumber: '+49 489 123456-7890123',
+        test('should fall back to standard logic if DIN-style extension has more than 5 digits (and thus matches standard)', () => {
+            expect(getNumberAndExtension('+49 489 123456-789012', countryCode)).toEqual({
+                coreNumber: '+49 489 123456-789012',
                 extension: null,
                 hasStandardExtension: null,
             });
@@ -330,6 +330,14 @@ describe('getNumberAndExtension', () => {
             expect(getNumberAndExtension('+49 489 123456 ext. 789', countryCode)).toEqual({
                 coreNumber: '+49 489 123456',
                 extension: '789',
+                hasStandardExtension: true,
+            });
+        });
+
+        test('should allow a 7 digit extension in AT', () => {
+            expect(getNumberAndExtension('+43 1 71123-1234567', 'AT')).toEqual({
+                coreNumber: '+43 1 71123',
+                extension: '1234567',
                 hasStandardExtension: true,
             });
         });
