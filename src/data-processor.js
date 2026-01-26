@@ -407,8 +407,8 @@ function getNumberAndExtension(numberStr, countryCode) {
     if (DIN_FORMAT_COUNTRIES.includes(countryCode)) {
         const match = numberStr.match(DIN_EXTENSION_REGEX);
         // DE extensions can be up to 5 digits: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/20
-        // AT extensions can be up to 7 digits: https://community.openstreetmap.org/t/telefonnummern-report-fur-osterreich/140237/30
-        const maxExtensionLength = countryCode === 'AT' ? 7 : 5;
+        // AT extensions can be up to 8 digits: https://community.openstreetmap.org/t/telefonnummern-report-fur-osterreich/140237/32
+        const maxExtensionLength = countryCode === 'AT' ? 8 : 5;
 
         if (match && match[1] && match[2] && match[3]) {
             try {
