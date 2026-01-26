@@ -334,11 +334,19 @@ describe('getNumberAndExtension', () => {
             });
         });
 
-        test('should allow a 7 digit extension in AT', () => {
-            expect(getNumberAndExtension('+43 1 71123-1234567', 'AT')).toEqual({
+        test('should allow a 8 digit extension in AT', () => {
+            expect(getNumberAndExtension('+43 1 71123-12345678', 'AT')).toEqual({
                 coreNumber: '+43 1 71123',
-                extension: '1234567',
+                extension: '12345678',
                 hasStandardExtension: true,
+            });
+        });
+
+        test('should not allow a 9 digit extension in AT', () => {
+            expect(getNumberAndExtension('+43 1 71123-123456789', 'AT')).toEqual({
+                coreNumber: '+43 1 71123-123456789',
+                extension: null,
+                hasStandardExtension: null,
             });
         });
     });
