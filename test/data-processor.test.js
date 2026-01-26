@@ -844,6 +844,20 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+44 20 7946 0000');
     });
 
+    test('GB: a number with pop directional isolate is invalid but fixable', () => {
+        const result = processSingleNumber('+44 \u206920 7946 0000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+    });
+
+    test('GB: a number with first strong isolate is invalid but fixable', () => {
+        const result = processSingleNumber('+44 \u206820 7946 0000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+    });
+
     // --- ZA Tests (Johannesburg number: 011 555 1234) ---
 
     test('ZA: correctly validate and format a simple valid local number', () => {
