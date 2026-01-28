@@ -1,0 +1,104 @@
+{
+  "name": "Austria",
+  "slug": "austria",
+  "locale": "de-DE",
+  "invalidCount": 198,
+  "autoFixableCount": 2,
+  "safeEditCount": 1,
+  "totalNumbers": 85824,
+  "groupedDivisionStats": {
+    "Austria": [
+      {
+        "name": "Burgenland",
+        "divisionSlug": "austria",
+        "slug": "burgenland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 1959,
+        "lastUpdated": "2026-01-28T02:12:19.682Z"
+      },
+      {
+        "name": "Kärnten",
+        "divisionSlug": "austria",
+        "slug": "kärnten",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 4113,
+        "lastUpdated": "2026-01-28T02:12:29.404Z"
+      },
+      {
+        "name": "Niederösterreich",
+        "divisionSlug": "austria",
+        "slug": "niederösterreich",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 15980,
+        "lastUpdated": "2026-01-28T02:14:09.270Z"
+      },
+      {
+        "name": "Oberösterreich",
+        "divisionSlug": "austria",
+        "slug": "oberösterreich",
+        "invalidCount": 49,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 13131,
+        "lastUpdated": "2026-01-28T02:15:39.843Z"
+      },
+      {
+        "name": "Salzburg",
+        "divisionSlug": "austria",
+        "slug": "salzburg",
+        "invalidCount": 38,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 6165,
+        "lastUpdated": "2026-01-28T02:15:51.842Z"
+      },
+      {
+        "name": "Steiermark",
+        "divisionSlug": "austria",
+        "slug": "steiermark",
+        "invalidCount": 109,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 16300,
+        "lastUpdated": "2026-01-28T02:16:16.771Z"
+      },
+      {
+        "name": "Tirol",
+        "divisionSlug": "austria",
+        "slug": "tirol",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 12554,
+        "lastUpdated": "2026-01-28T02:16:38.153Z"
+      },
+      {
+        "name": "Vorarlberg",
+        "divisionSlug": "austria",
+        "slug": "vorarlberg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 5121,
+        "lastUpdated": "2026-01-28T02:16:47.339Z"
+      },
+      {
+        "name": "Wien",
+        "divisionSlug": "austria",
+        "slug": "wien",
+        "invalidCount": 2,
+        "autoFixableCount": 2,
+        "safeEditCount": 1,
+        "totalNumbers": 10501,
+        "lastUpdated": "2026-01-28T02:17:00.673Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
