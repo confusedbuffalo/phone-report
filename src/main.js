@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes } = require('./constants');
 const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
@@ -124,15 +124,22 @@ async function getSubdivisions(countryData, divisionName) {
 }
 
 /**
- * Returns the two-letter country code for US territories and possessions.
- * * @param {string} divisionName The full name of the US territory (e.g., "Puerto Rico").
- * @returns {string} The two-letter country code (e.g., "PR"), or 'US' as default.
+ * Returns the two-letter country code, taking into account territories and possessions of FR and US.
+ * * @param {string} divisionName The full name of the territory (e.g., "Puerto Rico").
+ * * @param {string} countryCode The two-letter country code (e.g. "US")
+ * @returns {string} The two-letter country code (e.g., "PR"), or the provided countryCode as default.
  */
-function getUsCountryCode(divisionName) {
+function getCountryCode(divisionName, countryCode) {
     if (!divisionName) {
         return null;
     }
-    return usTerritoryCodes.get(divisionName) || 'US';
+    if (countryCode === 'US') {
+        return usTerritoryCodes.get(divisionName) || 'US';
+    }
+    if (countryCode === 'FR') {
+        return frTerritoryCodes.get(divisionName) || 'FR';
+    }
+    return countryCode;
 }
 
 /**
@@ -149,7 +156,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const countryName = countryData.name;
     const elementStream = await fetchOsmDataForDivision(subdivision);
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
-    const countryCode = countryData.countryCode === 'US' ? getUsCountryCode(subdivision.name) : countryData.countryCode;
+    const countryCode = getCountryCode(subdivision.name, countryData.countryCode);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
     const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
