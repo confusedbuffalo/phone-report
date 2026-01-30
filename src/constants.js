@@ -308,6 +308,20 @@ const usTerritoryCodes = new Map([
     ['United States Virgin Islands', 'VI'],
 ]);
 
+const frTerritoryCodes = new Map([
+    ['Guadeloupe', 'GP'],
+    ['Guyane', 'GF'],
+    ['La Réunion', 'RE'],
+    ['Martinique','MQ'],
+    ['Mayotte', 'YT'],
+    ['Nouvelle-Calédonie', 'NC'],
+    ['Polynésie française', 'PF'],
+    ['Saint-Barthélemy', 'BL'],
+    ['Saint-Martin', 'MF'],
+    ['Saint-Pierre-et-Miquelon', 'PM'],
+    ['Wallis-et-Futuna', 'WF'],
+]);
+
 const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'GB', 'ZA']
 
 const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
@@ -354,6 +368,7 @@ module.exports = {
     HOST_URL,
     NANP_COUNTRY_CODES,
     usTerritoryCodes,
+    frTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
     INVALID_SPACING_CHARACTERS_REGEX,
