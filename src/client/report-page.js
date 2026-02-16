@@ -1091,12 +1091,12 @@ async function uploadChanges() {
     }
 
     if (modifications.length > 0) {
-        const changesetId = await OSM.uploadChangeset(
+        const result = await OSM.uploadChangeset(
             { ...CHANGESET_TAGS, ...{ 'comment': commentBox.value.trim() } },
             { create: [], modify: modifications, delete: [] }
         );
         moveEditsToUploadedStorage();
-        return changesetId;
+        return result;
     }
 
     moveEditsToUploadedStorage();
@@ -1423,7 +1423,7 @@ function addNote(osmType, osmId) {
                 if (noteButtonClickHandler) {
                     addNoteBtn.removeEventListener('click', noteButtonClickHandler);
                 }
-                
+
                 noteButtonClickHandler = function () {
                     checkAndCreateNote(itemId, item.lat, item.lon);
                 };
@@ -1939,10 +1939,15 @@ function checkAndSubmit() {
         uploadChanges()
             .then((result) => {
                 if (result) {
+                    const changesetIds = Object.keys(result || {});
+                    const links = changesetIds.map(id =>
+                        `<a href="https://www.openstreetmap.org/changeset/${id}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${id}</a>`
+                    ).join(', ');
                     const successMessage = translate(
                         'changesetCreated',
-                        { '%n': `<a href="https://www.openstreetmap.org/changeset/${result}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${result}</a>` }
+                        { '%n': links }
                     );
+
                     messageBox.className = 'message-box-success';
                     messageBox.innerHTML = successMessage;
                 } else {
