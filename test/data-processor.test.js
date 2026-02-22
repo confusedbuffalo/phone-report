@@ -1223,7 +1223,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000 x123']);
     });
 
-    test('using "or" as seperator is fixable', () => {
+    test('using "or" as separator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456 or +44 1389 123457',
             'GB'
@@ -1233,7 +1233,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
-    test('using "and" as seperator is fixable', () => {
+    test('using "and" as separator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456 and +44 1389 123457',
             'GB'
@@ -1243,7 +1243,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
-    test('using comma as seperator is fixable', () => {
+    test('using comma as separator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456, +44 1389 123457',
             'GB'
@@ -1253,7 +1253,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
-    test('using forward slash as seperator is fixable', () => {
+    test('using forward slash as separator is fixable', () => {
         const result_no_space = validateSingleTag(
             '+44 1389 123456/+44 1389 123457',
             'GB'
