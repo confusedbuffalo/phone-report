@@ -770,7 +770,11 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const hasBadSeparator = tag === 'contact:whatsapp' ? false : originalTagValue.match(BAD_SEPARATOR_REGEX);
     const hasBadExtension = originalTagValue.match(/, ext|\\;ext=/gi);
 
-    splitRegex = DIN_FORMAT_COUNTRIES.includes(countryCode) ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
+    const numberStr = tagValue.replace('/', '');
+    let validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+    const slashAsSpace = (!validationResult.isInvalid || validationResult.autoFixable)
+
+    splitRegex = DIN_FORMAT_COUNTRIES.includes(countryCode) || slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
     const numberList = tag === 'contact:whatsapp'
