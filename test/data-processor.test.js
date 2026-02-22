@@ -1223,7 +1223,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000 x123']);
     });
 
-    test('using "or" as seperator is fixable', () => {
+    test('using "or" as separator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456 or +44 1389 123457',
             'GB'
@@ -1233,7 +1233,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
-    test('using "and" as seperator is fixable', () => {
+    test('using "and" as separator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456 and +44 1389 123457',
             'GB'
@@ -1243,7 +1243,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
-    test('using comma as seperator is fixable', () => {
+    test('using comma as separator is fixable', () => {
         const result = validateSingleTag(
             '+44 1389 123456, +44 1389 123457',
             'GB'
@@ -1253,7 +1253,7 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
-    test('using forward slash as seperator is fixable', () => {
+    test('using forward slash as separator is fixable', () => {
         const result_no_space = validateSingleTag(
             '+44 1389 123456/+44 1389 123457',
             'GB'
@@ -1591,6 +1591,29 @@ describe('validateNumbers', () => {
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers.phone).toBe(SLASH_IN_NUMBER_DE);
         expect(invalidItem.suggestedFixes.phone).toBe(SLASH_IN_NUMBER_DE_FIX);
+    });
+
+    test('should consider a slash as a space if removing it makes a valid number', async () => {
+        const elements = [
+            {
+                type: 'node',
+                id: 4004,
+                tags: { phone: "010/420.420" },
+                lat: 54.0,
+                lon: 3.0,
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), 'BE', tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers.phone).toBe('010/420.420');
+        expect(invalidItem.suggestedFixes.phone).toBe('+32 10 42 04 20');
     });
 
     test('should aggregate results from multiple phone tags on a single element', async () => {

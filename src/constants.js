@@ -56,7 +56,7 @@ const OSM_EDITORS = {
     "JOSM": {
         getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
-            return `${baseUrl}?objects=${item.type[0]}${item.id}`;
+            return `${baseUrl}?objects=${item.type[0]}${item.id}&relation_members=true`;
         },
         editInString: (locale) => translate('editIn', locale, ["JOSM"]),
         onClick: function (editorId) {
@@ -120,9 +120,6 @@ const DIN_FORMAT_COUNTRIES = ['AT', 'DE']
 // DIN format has hyphen then extension
 const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 
-// Define the regex for separators that are definitively "bad" and should trigger a fix report.
-const BAD_SEPARATOR_REGEX = /(\s*,\s*)|(\s*\/\s*)|(\s+or\s+)|(\s+and\s+)/gi;
-
 // FR: https://github.com/confusedbuffalo/phone-report/issues/18
 // DE: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
 const TOLL_FREE_AS_NATIONAL_COUNTRIES = ['FR', 'DE']
@@ -130,8 +127,10 @@ const TOLL_FREE_AS_NATIONAL_COUNTRIES = ['FR', 'DE']
 const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
+const goodSeparator = [';'];
+const badSeparatorOptionalSpace = [',', '/', '|'];
 
-const SEPARATOR_OPTIONAL_SPACE = [';', ',', '/', '|'];
+const SEPARATOR_OPTIONAL_SPACE = [...goodSeparator, ...badSeparatorOptionalSpace];
 const SEPARATOR_OPTIONAL_SPACE_DIN = [';', ',', '|'];
 const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y'];
 
@@ -156,6 +155,16 @@ const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
 
 const spaceOptionalGroupsDin = SEPARATOR_OPTIONAL_SPACE_DIN.map(sep => {
     const escapedSep = escapeRegex(sep);
+
+    if (sep === ';') {
+        // Don't split on escaped semicolons, e.g. within "\;ext="
+        return `(\\s*(?<!\\\\)(?:${escapedSep})\\s*)`;
+    }
+    if (sep === ',') {
+        // Don't split on commas followed by ",ext" or ", ext"
+        return `(\\s*(?:${escapedSep})(?!\\s*ext)\\s*)`;
+    }
+
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
 
@@ -163,6 +172,13 @@ const needSpacesGroups = SEPARATOR_NEED_SPACE.map(sep => {
     const escapedSep = escapeRegex(sep);
     return `(\\s+${escapedSep}\\s+)`;
 }).join('|');
+
+const badSeparatorOptionalSpaceGroups = badSeparatorOptionalSpace.map(sep => {
+    const escapedSep = escapeRegex(sep);
+    return `(\\s*${escapedSep}\\s*)`;
+}).join('|');
+
+const BAD_SEPARATOR_REGEX = new RegExp(`${badSeparatorOptionalSpaceGroups}|${needSpacesGroups}`, 'gi');
 
 const ALL_SEPARATOR_GROUPS = `${spaceOptionalGroups}|${needSpacesGroups}`;
 const allGroupsDe = `${spaceOptionalGroupsDin}|${needSpacesGroups}`;
