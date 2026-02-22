@@ -167,17 +167,17 @@ describe('createJosmFixUrl', () => {
 
     test('should return fix URL', () => {
         const addTags = encodeURIComponent('contact:phone') + '=' + encodeURIComponent('+44 141 956 6323');
-        expect(createJosmFixUrl(FIXABLE_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&addtags=${addTags}`,);
+        expect(createJosmFixUrl(FIXABLE_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`,);
     });
 
     test('should remove old tag and add new tag for tag mismatch', () => {
         const addTags = encodeURIComponent('contact:mobile') + '=' + encodeURIComponent('|phone') + '=' + encodeURIComponent('+44 141 955 0411');
-        expect(createJosmFixUrl(MISMATCH_MOVE_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&addtags=${addTags}`,);
+        expect(createJosmFixUrl(MISMATCH_MOVE_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`,);
     });
 
     test('should remove old tag and append to existing tag for tag mismatch', () => {
         const addTags = encodeURIComponent('contact:mobile') + '=' + encodeURIComponent('|contact:phone') + '=' + encodeURIComponent('+44 141 956 6323; +44 141 955 0411');
-        expect(createJosmFixUrl(MISTMATCH_ADD_TO_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&addtags=${addTags}`,);
+        expect(createJosmFixUrl(MISTMATCH_ADD_TO_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`,);
     });
 });
 

@@ -56,7 +56,7 @@ const OSM_EDITORS = {
     "JOSM": {
         getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
-            return `${baseUrl}?objects=${item.type[0]}${item.id}`;
+            return `${baseUrl}?objects=${item.type[0]}${item.id}&relation_members=true`;
         },
         editInString: (locale) => translate('editIn', locale, ["JOSM"]),
         onClick: function (editorId) {

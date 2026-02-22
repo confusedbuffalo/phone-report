@@ -27,7 +27,7 @@ function createJosmFixUrl(item) {
     }
 
     const josmFixBaseUrl = 'http://127.0.0.1:8111/load_object';
-    const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}`;
+    const josmEditUrl = `${josmFixBaseUrl}?objects=${item.type[0]}${item.id}&relation_members=true`;
 
     const encodedTags = Object.entries(item.suggestedFixes).map(([key, value]) => {
         const encodedKey = encodeURIComponent(key);
