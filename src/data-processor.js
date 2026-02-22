@@ -750,6 +750,21 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords };
 }
 
+
+/**
+ * Validates a whole phone number tag using libphonenumber-js.
+ * @param {string} tagValue - The phone number value string to validate (possibly containing multiple numbers).
+ * @param {string} countryCode - The country code for validation.
+ * @param {map} osmTags - All the OSM tags of the object, to check against exclusions
+ * @param {string} tag - The OSM phone tag being used for this number
+ * @returns {boolean} - Whether forward slash should be treated as a space character.
+ */
+function isSlashSpace(tagValue, countryCode, osmTags, tag) {
+    let validationResult = processSingleNumber(tagValue, countryCode, osmTags = {}, tag = 'phone');
+    return (!validationResult.isInvalid || validationResult.autoFixable);
+}
+
+
 /**
  * Validates a whole phone number tag using libphonenumber-js.
  * @param {string} tagValue - The phone number value string to validate (possibly containing multiple numbers).
@@ -770,9 +785,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const hasBadSeparator = tag === 'contact:whatsapp' ? false : originalTagValue.match(BAD_SEPARATOR_REGEX);
     const hasBadExtension = originalTagValue.match(/, ext|\\;ext=/gi);
 
-    const numberStr = tagValue.replace('/', '');
-    let validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
-    const slashAsSpace = (!validationResult.isInvalid || validationResult.autoFixable)
+    const slashAsSpace = isSlashSpace(tagValue, countryCode, osmTags, tag);
 
     splitRegex = DIN_FORMAT_COUNTRIES.includes(countryCode) || slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
@@ -1239,4 +1252,5 @@ module.exports = {
     getWhatsappNumber,
     isWhatsappUrl,
     isItalianMissingZeroNumber,
+    isSlashSpace,
 };

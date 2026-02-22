@@ -1,8 +1,9 @@
+const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATORS, ALL_SEPARATOR_GROUPS, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } = require('./constants.js');
+const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
-const { isWhatsappUrl } = require('./data-processor.js');
+const { isWhatsappUrl, isSlashSpace } = require('./data-processor.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
 // being added or removed when, semantically, they are just being moved.
@@ -405,14 +406,26 @@ function getDiffHtml(oldString, newString) {
 
     // Split and initial filter for both strings
 
-    // DE and AT do not consider '/' as separator
-    const useDinSeparators = newString.startsWith('+49') || newString.startsWith('+43');
+    let useDinSeparators = false;
+    let splitRegex = UNIVERSAL_SPLIT_CAPTURE_REGEX;
+    if (oldString.includes('/')) {
+        try {
+            phoneNumber = parsePhoneNumber(newString);
+            countryCode = phoneNumber.country;
+            if (isSlashSpace(oldString, countryCode)) {
+                splitRegex = UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN;
+                useDinSeparators = true;
+                // DIN does not consider '/' as separator
+            }
+        }
+        catch {
+            // Error parsing number, stick with default split regex
+        }
+    }
 
     const oldPartsUnfiltered = isWhatsappUrl(oldString)
         ? oldStringCleaned.split(/(;)/gi)
-        : useDinSeparators
-            ? oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN)
-            : oldStringCleaned.split(UNIVERSAL_SPLIT_CAPTURE_REGEX);
+        : oldStringCleaned.split(splitRegex);
 
     // Filter out falsey values (undefined from capturing groups) and empty strings
     // Remove consecutive separators, e.g. '//'
