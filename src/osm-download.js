@@ -36,7 +36,7 @@ async function fetchAdminLevels(divisionId, divisionName, admin_level, retries =
 
         if (response.status === 429 || response.status === 504) {
             if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 60;
+                const retryAfter = response.headers.get('Retry-After') || 30;
                 console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
                 await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
                 return fetchAdminLevels(divisionId, divisionName, admin_level, retries - 1);
@@ -99,7 +99,7 @@ async function fetchOsmDataForDivision(division, retries = 3) {
 
         if (response.status === 429 || response.status === 504) {
             if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 60;
+                const retryAfter = response.headers.get('Retry-After') || 30;
                 console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
                 await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
                 return await fetchOsmDataForDivision(division, retries - 1);
@@ -114,7 +114,7 @@ async function fetchOsmDataForDivision(division, retries = 3) {
         const elementStream = jsonStream.pipe(pick({ filter: 'elements' })).pipe(streamArray());
         return Readable.from(elementStream.map(item => item.value));
     } catch (error) {
-        const retryAfter = 60;
+        const retryAfter = 30;
         if (error.code === 'ECONNRESET' || error.message.includes('socket hang up')) {
             if (retries > 0) {
                 console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
