@@ -1,0 +1,64 @@
+{
+  "name": "Singapore",
+  "slug": "singapore",
+  "locale": "en",
+  "invalidCount": 19,
+  "autoFixableCount": 5,
+  "safeEditCount": 2,
+  "totalNumbers": 3557,
+  "groupedDivisionStats": {
+    "Singapore": [
+      {
+        "name": "Central",
+        "divisionSlug": "singapore",
+        "slug": "central",
+        "invalidCount": 14,
+        "autoFixableCount": 3,
+        "safeEditCount": 1,
+        "totalNumbers": 2302,
+        "lastUpdated": "2026-03-06T05:36:46.800Z"
+      },
+      {
+        "name": "Northeast",
+        "divisionSlug": "singapore",
+        "slug": "northeast",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 503,
+        "lastUpdated": "2026-03-06T05:38:09.229Z"
+      },
+      {
+        "name": "Northwest",
+        "divisionSlug": "singapore",
+        "slug": "northwest",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 330,
+        "lastUpdated": "2026-03-06T05:38:56.167Z"
+      },
+      {
+        "name": "Southeast",
+        "divisionSlug": "singapore",
+        "slug": "southeast",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 0,
+        "lastUpdated": "2026-03-06T05:40:50.590Z"
+      },
+      {
+        "name": "Southwest",
+        "divisionSlug": "singapore",
+        "slug": "southwest",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "safeEditCount": 0,
+        "totalNumbers": 422,
+        "lastUpdated": "2026-03-06T05:40:56.903Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
