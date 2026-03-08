@@ -202,7 +202,7 @@ const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
 // Characters that libphonenumbers does not parse but may be used instead of spaces
 // Includes all other spacing characters, such as thin space
 // also directional isolates
-const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|\u2068|\u2069|(?![ ])\s/g
+const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g
 
 const ICON_ATTRIBUTION = [
     {
