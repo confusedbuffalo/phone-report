@@ -1,0 +1,222 @@
+{
+  "name": "Italia",
+  "slug": "italia",
+  "locale": "it-IT",
+  "invalidCount": 4557,
+  "autoFixableCount": 3790,
+  "safeEditCount": 2968,
+  "totalNumbers": 184321,
+  "groupedDivisionStats": {
+    "Centro": [
+      {
+        "name": "Lazio",
+        "divisionSlug": "centro",
+        "slug": "lazio",
+        "invalidCount": 347,
+        "autoFixableCount": 267,
+        "safeEditCount": 249,
+        "totalNumbers": 14828,
+        "lastUpdated": "2026-03-09T04:04:35.235Z"
+      },
+      {
+        "name": "Toscana",
+        "divisionSlug": "centro",
+        "slug": "toscana",
+        "invalidCount": 462,
+        "autoFixableCount": 423,
+        "safeEditCount": 343,
+        "totalNumbers": 12656,
+        "lastUpdated": "2026-03-09T04:04:59.455Z"
+      },
+      {
+        "name": "Umbria",
+        "divisionSlug": "centro",
+        "slug": "umbria",
+        "invalidCount": 34,
+        "autoFixableCount": 20,
+        "safeEditCount": 0,
+        "totalNumbers": 2528,
+        "lastUpdated": "2026-03-09T04:05:46.380Z"
+      },
+      {
+        "name": "Marche",
+        "divisionSlug": "centro",
+        "slug": "marche",
+        "invalidCount": 31,
+        "autoFixableCount": 31,
+        "safeEditCount": 30,
+        "totalNumbers": 6346,
+        "lastUpdated": "2026-03-09T04:05:56.121Z"
+      }
+    ],
+    "Isole": [
+      {
+        "name": "Sicilia",
+        "divisionSlug": "isole",
+        "slug": "sicilia",
+        "invalidCount": 39,
+        "autoFixableCount": 7,
+        "safeEditCount": 5,
+        "totalNumbers": 8503,
+        "lastUpdated": "2026-03-09T04:06:49.815Z"
+      },
+      {
+        "name": "Sardigna/Sardegna",
+        "divisionSlug": "isole",
+        "slug": "sardigna-sardegna",
+        "invalidCount": 35,
+        "autoFixableCount": 11,
+        "safeEditCount": 4,
+        "totalNumbers": 4179,
+        "lastUpdated": "2026-03-09T04:07:02.388Z"
+      }
+    ],
+    "Nord-Est": [
+      {
+        "name": "Emilia-Romagna",
+        "divisionSlug": "nord-est",
+        "slug": "emilia-romagna",
+        "invalidCount": 77,
+        "autoFixableCount": 33,
+        "safeEditCount": 20,
+        "totalNumbers": 11196,
+        "lastUpdated": "2026-03-09T04:08:05.463Z"
+      },
+      {
+        "name": "Veneto",
+        "divisionSlug": "nord-est",
+        "slug": "veneto",
+        "invalidCount": 705,
+        "autoFixableCount": 640,
+        "safeEditCount": 546,
+        "totalNumbers": 15528,
+        "lastUpdated": "2026-03-09T04:08:37.797Z"
+      },
+      {
+        "name": "Trentino-Alto Adige/Südtirol",
+        "divisionSlug": "nord-est",
+        "slug": "trentino-alto-adige-südtirol",
+        "invalidCount": 39,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 15285,
+        "lastUpdated": "2026-03-09T04:09:34.974Z"
+      },
+      {
+        "name": "Friuli-Venezia Giulia",
+        "divisionSlug": "nord-est",
+        "slug": "friuli-venezia-giulia",
+        "invalidCount": 99,
+        "autoFixableCount": 69,
+        "safeEditCount": 51,
+        "totalNumbers": 7044,
+        "lastUpdated": "2026-03-09T04:09:52.260Z"
+      }
+    ],
+    "Nord-Ovest": [
+      {
+        "name": "Piemonte",
+        "divisionSlug": "nord-ovest",
+        "slug": "piemonte",
+        "invalidCount": 333,
+        "autoFixableCount": 252,
+        "safeEditCount": 152,
+        "totalNumbers": 16268,
+        "lastUpdated": "2026-03-09T04:11:02.781Z"
+      },
+      {
+        "name": "Lombardia",
+        "divisionSlug": "nord-ovest",
+        "slug": "lombardia",
+        "invalidCount": 1831,
+        "autoFixableCount": 1651,
+        "safeEditCount": 1312,
+        "totalNumbers": 36274,
+        "lastUpdated": "2026-03-09T04:11:46.017Z"
+      },
+      {
+        "name": "Valle d'Aosta / Vallée d'Aoste",
+        "divisionSlug": "nord-ovest",
+        "slug": "valle-d-aosta-vallée-d-aoste",
+        "invalidCount": 18,
+        "autoFixableCount": 6,
+        "safeEditCount": 2,
+        "totalNumbers": 847,
+        "lastUpdated": "2026-03-09T04:12:33.793Z"
+      },
+      {
+        "name": "Liguria",
+        "divisionSlug": "nord-ovest",
+        "slug": "liguria",
+        "invalidCount": 39,
+        "autoFixableCount": 20,
+        "safeEditCount": 15,
+        "totalNumbers": 6341,
+        "lastUpdated": "2026-03-09T04:12:51.272Z"
+      }
+    ],
+    "Sud": [
+      {
+        "name": "Puglia",
+        "divisionSlug": "sud",
+        "slug": "puglia",
+        "invalidCount": 78,
+        "autoFixableCount": 30,
+        "safeEditCount": 18,
+        "totalNumbers": 7533,
+        "lastUpdated": "2026-03-09T04:13:15.156Z"
+      },
+      {
+        "name": "Basilicata",
+        "divisionSlug": "sud",
+        "slug": "basilicata",
+        "invalidCount": 30,
+        "autoFixableCount": 24,
+        "safeEditCount": 18,
+        "totalNumbers": 1346,
+        "lastUpdated": "2026-03-09T04:13:23.022Z"
+      },
+      {
+        "name": "Campania",
+        "divisionSlug": "sud",
+        "slug": "campania",
+        "invalidCount": 263,
+        "autoFixableCount": 227,
+        "safeEditCount": 154,
+        "totalNumbers": 6630,
+        "lastUpdated": "2026-03-09T04:15:00.404Z"
+      },
+      {
+        "name": "Molise",
+        "divisionSlug": "sud",
+        "slug": "molise",
+        "invalidCount": 17,
+        "autoFixableCount": 16,
+        "safeEditCount": 16,
+        "totalNumbers": 699,
+        "lastUpdated": "2026-03-09T04:15:05.062Z"
+      },
+      {
+        "name": "Abruzzo",
+        "divisionSlug": "sud",
+        "slug": "abruzzo",
+        "invalidCount": 19,
+        "autoFixableCount": 10,
+        "safeEditCount": 4,
+        "totalNumbers": 8332,
+        "lastUpdated": "2026-03-09T04:16:12.161Z"
+      },
+      {
+        "name": "Calabria",
+        "divisionSlug": "sud",
+        "slug": "calabria",
+        "invalidCount": 61,
+        "autoFixableCount": 52,
+        "safeEditCount": 28,
+        "totalNumbers": 1958,
+        "lastUpdated": "2026-03-09T04:16:24.574Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
