@@ -1286,6 +1286,16 @@ describe('validateSingleTag', () => {
         expect(result_two_spaces.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
     });
 
+    test('using forward slash as separator is fixable in AT where slash is usually a spacing character', () => {
+        const result = validateSingleTag(
+            '+43 664 1234567 / +43 3332 12345',
+            'AT'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+43 664 1234567', '+43 3332 12345'])
+    });
+
     test('Valid WhatsApp link with phone number is invalid and fixable', () => {
         const result = validateSingleTag(
             'https://api.whatsapp.com/send?phone=%2B27793145853',

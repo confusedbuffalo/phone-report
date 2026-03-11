@@ -787,7 +787,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
 
     const slashAsSpace = isSlashSpace(tagValue, countryCode, osmTags, tag);
 
-    splitRegex = DIN_FORMAT_COUNTRIES.includes(countryCode) || slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
+    splitRegex = slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
     const numberList = tag === 'contact:whatsapp'
