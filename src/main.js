@@ -76,16 +76,73 @@ function filterClientTranslations(fullTranslations) {
 
 /**
  * Saves the full history for the country to a JSON file to be backed up and used for
- * history analysis.
- * @param {Object} countryStats - The statistics for the country, included groupedDivisionStats.
+ * history analysis, falling back to previous history for any divisions that failed to fetch.
+ * @param {Object} originalCountryStats - The statistics for the country, included groupedDivisionStats.
  */
-function saveCountryHistory(countryStats) {
+function saveCountryHistory(originalCountryStats) {
+    const countryStats = structuredClone(originalCountryStats);
+
     const historyCountryDir = path.join(HISTORY_DIR, countryStats.slug);
     if (!fs.existsSync(historyCountryDir)) {
         fs.mkdirSync(historyCountryDir, { recursive: true });
     }
+
     const today = new Date().toISOString().split('T')[0];
     const historyFilePath = path.join(historyCountryDir, `${today}.json`);
+
+    const allDivisions = Object.values(countryStats.groupedDivisionStats).flat();
+    const needsFallback = allDivisions.some(div => div.totalNumbers === 0);
+
+    if (needsFallback) {
+        const files = fs.readdirSync(historyCountryDir)
+            .filter(f => f.endsWith('.json') && f !== `${today}.json`)
+            .sort((a, b) => b.localeCompare(a));
+
+        if (files.length > 0) {
+            try {
+                const lastHistoryPath = path.join(historyCountryDir, files[0]);
+                const lastHistory = JSON.parse(fs.readFileSync(lastHistoryPath, 'utf8'));
+
+                const historyMap = new Map();
+                Object.values(lastHistory.groupedDivisionStats).flat().forEach(div => {
+                    const compositeKey = `${div.divisionSlug}|${div.slug}`;
+                    historyMap.set(compositeKey, div);
+                });
+
+                for (const groupName in countryStats.groupedDivisionStats) {
+                    countryStats.groupedDivisionStats[groupName] = countryStats.groupedDivisionStats[groupName].map(div => {
+                        const compositeKey = `${div.divisionSlug}|${div.slug}`;
+                        if (div.totalNumbers === 0 && historyMap.has(compositeKey)) {
+                            console.log(`Falling back to previous history for ${div.name}`);
+                            return { ...historyMap.get(compositeKey) };
+                        }
+                        return div;
+                    });
+                }
+            } catch (err) {
+                console.error(`Failed to read history file for fallback: ${err.message}`);
+            }
+        }
+    }
+
+    // Recalculate top-Level totals in case of fallback being used
+    let totalInvalid = 0;
+    let totalAutoFixable = 0;
+    let totalSafeEdit = 0;
+    let totalNumbers = 0;
+
+    Object.values(countryStats.groupedDivisionStats).flat().forEach(div => {
+        totalInvalid += (div.invalidCount || 0);
+        totalAutoFixable += (div.autoFixableCount || 0);
+        totalSafeEdit += (div.safeEditCount || 0);
+        totalNumbers += (div.totalNumbers || 0);
+    });
+
+    countryStats.invalidCount = totalInvalid;
+    countryStats.autoFixableCount = totalAutoFixable;
+    countryStats.safeEditCount = totalSafeEdit;
+    countryStats.totalNumbers = totalNumbers;
+
     fs.writeFileSync(historyFilePath, JSON.stringify(countryStats, null, 2));
 }
 
