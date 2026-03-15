@@ -1,0 +1,354 @@
+{
+  "name": "Deutschland",
+  "slug": "deutschland",
+  "locale": "de-DE",
+  "invalidCount": 515,
+  "autoFixableCount": 147,
+  "safeEditCount": 96,
+  "totalNumbers": 697472,
+  "groupedDivisionStats": {
+    "Baden-Württemberg": [
+      {
+        "name": "Regierungsbezirk Freiburg",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-freiburg",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 20124,
+        "lastUpdated": "2026-03-15T03:18:01.729Z"
+      },
+      {
+        "name": "Regierungsbezirk Karlsruhe",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-karlsruhe",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "safeEditCount": 0,
+        "totalNumbers": 28994,
+        "lastUpdated": "2026-03-15T03:18:30.901Z"
+      },
+      {
+        "name": "Regierungsbezirk Stuttgart",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-stuttgart",
+        "invalidCount": 7,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 27271,
+        "lastUpdated": "2026-03-15T03:19:36.806Z"
+      },
+      {
+        "name": "Regierungsbezirk Tübingen",
+        "divisionSlug": "baden-württemberg",
+        "slug": "regierungsbezirk-tübingen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 17439,
+        "lastUpdated": "2026-03-15T03:20:03.715Z"
+      }
+    ],
+    "Bayern": [
+      {
+        "name": "Mittelfranken",
+        "divisionSlug": "bayern",
+        "slug": "mittelfranken",
+        "invalidCount": 5,
+        "autoFixableCount": 4,
+        "safeEditCount": 3,
+        "totalNumbers": 14483,
+        "lastUpdated": "2026-03-15T03:21:02.056Z"
+      },
+      {
+        "name": "Niederbayern",
+        "divisionSlug": "bayern",
+        "slug": "niederbayern",
+        "invalidCount": 3,
+        "autoFixableCount": 2,
+        "safeEditCount": 1,
+        "totalNumbers": 9869,
+        "lastUpdated": "2026-03-15T03:21:19.248Z"
+      },
+      {
+        "name": "Oberbayern",
+        "divisionSlug": "bayern",
+        "slug": "oberbayern",
+        "invalidCount": 18,
+        "autoFixableCount": 13,
+        "safeEditCount": 5,
+        "totalNumbers": 43128,
+        "lastUpdated": "2026-03-15T03:22:35.804Z"
+      },
+      {
+        "name": "Oberfranken",
+        "divisionSlug": "bayern",
+        "slug": "oberfranken",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 9259,
+        "lastUpdated": "2026-03-15T03:22:50.189Z"
+      },
+      {
+        "name": "Oberpfalz",
+        "divisionSlug": "bayern",
+        "slug": "oberpfalz",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 9473,
+        "lastUpdated": "2026-03-15T03:23:02.468Z"
+      },
+      {
+        "name": "Schwaben",
+        "divisionSlug": "bayern",
+        "slug": "schwaben",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 15405,
+        "lastUpdated": "2026-03-15T03:23:59.098Z"
+      },
+      {
+        "name": "Unterfranken",
+        "divisionSlug": "bayern",
+        "slug": "unterfranken",
+        "invalidCount": 10,
+        "autoFixableCount": 7,
+        "safeEditCount": 7,
+        "totalNumbers": 12236,
+        "lastUpdated": "2026-03-15T03:24:15.351Z"
+      }
+    ],
+    "Berlin": [
+      {
+        "name": "Berlin",
+        "divisionSlug": "berlin",
+        "slug": "berlin",
+        "invalidCount": 10,
+        "autoFixableCount": 6,
+        "safeEditCount": 3,
+        "totalNumbers": 25253,
+        "lastUpdated": "2026-03-15T03:24:47.268Z"
+      }
+    ],
+    "Brandenburg": [
+      {
+        "name": "Brandenburg",
+        "divisionSlug": "brandenburg",
+        "slug": "brandenburg",
+        "invalidCount": 31,
+        "autoFixableCount": 5,
+        "safeEditCount": 2,
+        "totalNumbers": 21920,
+        "lastUpdated": "2026-03-15T03:26:00.853Z"
+      }
+    ],
+    "Bremen": [
+      {
+        "name": "Bremen",
+        "divisionSlug": "bremen",
+        "slug": "bremen",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 5396,
+        "lastUpdated": "2026-03-15T03:26:06.287Z"
+      }
+    ],
+    "Hamburg": [
+      {
+        "name": "Hamburg",
+        "divisionSlug": "hamburg",
+        "slug": "hamburg",
+        "invalidCount": 7,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 12859,
+        "lastUpdated": "2026-03-15T03:26:58.861Z"
+      }
+    ],
+    "Hessen": [
+      {
+        "name": "Regierungsbezirk Darmstadt",
+        "divisionSlug": "hessen",
+        "slug": "regierungsbezirk-darmstadt",
+        "invalidCount": 17,
+        "autoFixableCount": 11,
+        "safeEditCount": 6,
+        "totalNumbers": 29143,
+        "lastUpdated": "2026-03-15T03:27:25.336Z"
+      },
+      {
+        "name": "Regierungsbezirk Gießen",
+        "divisionSlug": "hessen",
+        "slug": "regierungsbezirk-gießen",
+        "invalidCount": 4,
+        "autoFixableCount": 1,
+        "safeEditCount": 0,
+        "totalNumbers": 8858,
+        "lastUpdated": "2026-03-15T03:27:37.641Z"
+      },
+      {
+        "name": "Regierungsbezirk Kassel",
+        "divisionSlug": "hessen",
+        "slug": "regierungsbezirk-kassel",
+        "invalidCount": 8,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 12110,
+        "lastUpdated": "2026-03-15T03:28:38.435Z"
+      }
+    ],
+    "Mecklenburg-Vorpommern": [
+      {
+        "name": "Mecklenburg-Vorpommern",
+        "divisionSlug": "mecklenburg-vorpommern",
+        "slug": "mecklenburg-vorpommern",
+        "invalidCount": 20,
+        "autoFixableCount": 3,
+        "safeEditCount": 2,
+        "totalNumbers": 16563,
+        "lastUpdated": "2026-03-15T03:28:54.043Z"
+      }
+    ],
+    "Niedersachsen": [
+      {
+        "name": "Niedersachsen",
+        "divisionSlug": "niedersachsen",
+        "slug": "niedersachsen",
+        "invalidCount": 89,
+        "autoFixableCount": 21,
+        "safeEditCount": 17,
+        "totalNumbers": 70363,
+        "lastUpdated": "2026-03-15T03:30:38.010Z"
+      }
+    ],
+    "Nordrhein-Westfalen": [
+      {
+        "name": "Regierungsbezirk Arnsberg",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-arnsberg",
+        "invalidCount": 59,
+        "autoFixableCount": 16,
+        "safeEditCount": 12,
+        "totalNumbers": 26927,
+        "lastUpdated": "2026-03-15T03:31:03.118Z"
+      },
+      {
+        "name": "Regierungsbezirk Detmold",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-detmold",
+        "invalidCount": 8,
+        "autoFixableCount": 3,
+        "safeEditCount": 2,
+        "totalNumbers": 14605,
+        "lastUpdated": "2026-03-15T03:31:21.744Z"
+      },
+      {
+        "name": "Regierungsbezirk Düsseldorf",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-düsseldorf",
+        "invalidCount": 26,
+        "autoFixableCount": 6,
+        "safeEditCount": 3,
+        "totalNumbers": 29796,
+        "lastUpdated": "2026-03-15T03:32:33.636Z"
+      },
+      {
+        "name": "Regierungsbezirk Köln",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-köln",
+        "invalidCount": 53,
+        "autoFixableCount": 5,
+        "safeEditCount": 2,
+        "totalNumbers": 36777,
+        "lastUpdated": "2026-03-15T03:33:07.121Z"
+      },
+      {
+        "name": "Regierungsbezirk Münster",
+        "divisionSlug": "nordrhein-westfalen",
+        "slug": "regierungsbezirk-münster",
+        "invalidCount": 11,
+        "autoFixableCount": 4,
+        "safeEditCount": 4,
+        "totalNumbers": 14151,
+        "lastUpdated": "2026-03-15T03:34:14.123Z"
+      }
+    ],
+    "Rheinland-Pfalz": [
+      {
+        "name": "Rheinland-Pfalz",
+        "divisionSlug": "rheinland-pfalz",
+        "slug": "rheinland-pfalz",
+        "invalidCount": 18,
+        "autoFixableCount": 5,
+        "safeEditCount": 2,
+        "totalNumbers": 35581,
+        "lastUpdated": "2026-03-15T03:34:51.704Z"
+      }
+    ],
+    "Saarland": [
+      {
+        "name": "Saarland",
+        "divisionSlug": "saarland",
+        "slug": "saarland",
+        "invalidCount": 3,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 5586,
+        "lastUpdated": "2026-03-15T03:35:42.027Z"
+      }
+    ],
+    "Sachsen": [
+      {
+        "name": "Sachsen",
+        "divisionSlug": "sachsen",
+        "slug": "sachsen",
+        "invalidCount": 44,
+        "autoFixableCount": 11,
+        "safeEditCount": 9,
+        "totalNumbers": 53233,
+        "lastUpdated": "2026-03-15T03:36:23.696Z"
+      }
+    ],
+    "Sachsen-Anhalt": [
+      {
+        "name": "Sachsen-Anhalt",
+        "divisionSlug": "sachsen-anhalt",
+        "slug": "sachsen-anhalt",
+        "invalidCount": 28,
+        "autoFixableCount": 9,
+        "safeEditCount": 6,
+        "totalNumbers": 23180,
+        "lastUpdated": "2026-03-15T03:36:50.211Z"
+      }
+    ],
+    "Schleswig-Holstein": [
+      {
+        "name": "Schleswig-Holstein",
+        "divisionSlug": "schleswig-holstein",
+        "slug": "schleswig-holstein",
+        "invalidCount": 16,
+        "autoFixableCount": 8,
+        "safeEditCount": 5,
+        "totalNumbers": 21559,
+        "lastUpdated": "2026-03-15T03:37:53.063Z"
+      }
+    ],
+    "Thüringen": [
+      {
+        "name": "Thüringen",
+        "divisionSlug": "thüringen",
+        "slug": "thüringen",
+        "invalidCount": 11,
+        "autoFixableCount": 2,
+        "safeEditCount": 1,
+        "totalNumbers": 25931,
+        "lastUpdated": "2026-03-15T03:38:18.734Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
