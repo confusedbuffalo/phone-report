@@ -132,7 +132,7 @@ const badSeparatorOptionalSpace = [',', '/', '|'];
 
 const SEPARATOR_OPTIONAL_SPACE = [...goodSeparator, ...badSeparatorOptionalSpace];
 const SEPARATOR_OPTIONAL_SPACE_DIN = [';', ',', '|'];
-const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y'];
+const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y', 'ou'];
 
 const escapeRegex = (string) => {
     return string.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&');
