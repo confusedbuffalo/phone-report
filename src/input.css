@@ -67,7 +67,7 @@
     rounded-xl shadow-md
     p-6
     mb-4
-    flex flex-col sm:flex-row
+    grid grid-cols-1 sm:grid-cols-10
     justify-between sm:items-center
     space-y-4 sm:space-y-0 sm:space-x-4
     transition-[max-height,opacity,margin,padding] 
@@ -422,11 +422,25 @@
 }
 
 @utility list-item-content-wrapper {
-  @apply flex flex-grow items-center sm:w-2/3;
+  @apply flex flex-grow items-center sm:col-span-6;
 }
 
 @utility list-item-details-wrapper {
   @apply ml-4;
+}
+
+
+@utility list-item-meta {
+  @apply
+    flex
+    items-center
+    gap-3
+    sm:col-span-10
+    text-xs
+    mt-2 -mb-4
+    ml-0 sm:ml-8
+    text-gray-600
+    dark:text-gray-500;
 }
 
 @utility list-item-phone-value-container {
@@ -438,7 +452,7 @@
 }
 
 @utility list-item-actions-container {
-  @apply flex flex-col gap-2 w-full sm:w-[40%] justify-end text-sm font-semibold;
+  @apply flex flex-col gap-2 w-full sm:col-span-4 justify-end text-sm font-semibold;
 }
 
 @utility section-header-container {

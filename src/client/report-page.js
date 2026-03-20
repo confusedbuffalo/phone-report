@@ -367,6 +367,34 @@ function createButtons(item, clickedClass) {
 }
 
 /**
+ * Formats a timestamp into a localized relative time string.
+ * @param {string} timestamp - ISO 8601 string.
+ * @returns {string} Localized string (e.g., "2 hours ago", "3 weeks ago").
+ */
+function getRelativeTime(timestamp) {
+    const lang = document.documentElement.lang || 'en';
+    const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'always' });
+    
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffInSeconds = Math.floor((past - now) / 1000);
+
+    const units = [
+        { unit: 'hour',  seconds: 3600,            threshold: 86400 },       // < 24 hours
+        { unit: 'day',   seconds: 86400,           threshold: 1209600 },     // < 14 days
+        { unit: 'week',  seconds: 604800,          threshold: 5184000 },     // < 60 days
+        { unit: 'month', seconds: 2592000,         threshold: 31536000 },    // < 365 days
+        { unit: 'year',  seconds: 31536000,        threshold: Infinity }
+    ];
+
+    for (const { unit, seconds, threshold } of units) {
+        if (Math.abs(diffInSeconds) < threshold) {
+            return rtf.format(Math.round(diffInSeconds / seconds), unit);
+        }
+    }
+}
+
+/**
  * Creates the HTML content for a single invalid number item.
  * @param {Object} item - The invalid number data item.
  * @returns {string} The full HTML string for the list item element.
@@ -375,6 +403,8 @@ function createListItem(item) {
 
     const itemId = `${item.type}/${item.id}`;
     const clickedClass = isItemClicked(itemId) ? 'btn-clicked' : '';
+
+    const relativeTime = getRelativeTime(item.timestamp);
 
     const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton } = createButtons(item, clickedClass);
 
@@ -406,6 +436,11 @@ function createListItem(item) {
                     ${josmFixButton}
                     ${editorButtons}
                 </div>
+            </div>
+            <div class="list-item-meta">
+                <svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
+                <a href="https://www.openstreetmap.org/user/${item.user}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${item.user}</a>
             </div>
         </li>
     `;

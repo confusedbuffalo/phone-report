@@ -87,7 +87,7 @@ async function fetchOsmDataForDivision(division, retries = 3) {
         (
           ${tagQuery}
         );
-        out center;
+        out meta center;
     `;
 
     try {
