@@ -1018,6 +1018,9 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             const baseItem = {
                 type: element.type,
                 id: element.id,
+                user: element.user,
+                timestamp: element.timestamp,
+                changeset: element.changeset,
                 website,
                 lat,
                 lon,
