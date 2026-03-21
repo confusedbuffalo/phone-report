@@ -529,6 +529,7 @@ const mockPhoneNumber = (nationalNumber, countryCode) => ({
 describe('checkExclusions', () => {
     
     const FR = 'FR';
+    const GP = 'GP';
     const DE = 'DE'; // Non-excluded country
     const excludedNumber = '3631';
     const excludedNumberWithExtra = 'tel: 3631';
@@ -539,7 +540,7 @@ describe('checkExclusions', () => {
 
     // --- SUCCESS CASES: Should return the exclusion object ---
 
-    test('should return exclusion result when country, number and tags match', () => {
+    test('should return exclusion result when country, number and tags match: FR', () => {
         const phoneNumber = mockPhoneNumber(excludedNumber, FR);
         const expected = {
             isInvalid: false,
@@ -547,6 +548,16 @@ describe('checkExclusions', () => {
             suggestedFix: excludedNumber
         };
         expect(checkExclusions(phoneNumber, excludedNumber, FR, requiredTags)).toEqual(expected);
+    });
+
+    test('should return exclusion result when country, number and tags match: GP', () => {
+        const phoneNumber = mockPhoneNumber(excludedNumber, GP);
+        const expected = {
+            isInvalid: false,
+            autoFixable: true,
+            suggestedFix: excludedNumber
+        };
+        expect(checkExclusions(phoneNumber, excludedNumber, GP, requiredTags)).toEqual(expected);
     });
 
     test('should return fix result when country and tags match but extras on the number', () => {
@@ -1376,6 +1387,13 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000']);
+    });
+
+    test('GP: an incorrect leading plus is fixable', () => {
+        const result = validateSingleTag('+590 82 00 00', 'GP');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+590 590 82 00 00']);
     });
 
     test('FR: a leading plus on a number that is too short but would be valid with an extra country code is not incorrectly fixed', () => {
