@@ -1378,6 +1378,13 @@ describe('validateSingleTag', () => {
         expect(result.suggestedNumbersList).toEqual(['+44 20 7946 0000']);
     });
 
+    test('GP: an incorrect leading plus is fixable', () => {
+        const result = validateSingleTag('+590 82 00 00', 'GP');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+590 590 82 00 00']);
+    });
+
     test('FR: a leading plus on a number that is too short but would be valid with an extra country code is not incorrectly fixed', () => {
         const result = validateSingleTag('+33 5 633611', 'FR');
         expect(result.isInvalid).toBe(true);

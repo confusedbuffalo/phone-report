@@ -23,6 +23,7 @@ const {
     CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
+    INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -829,7 +830,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
                 noPlusValidationResult.phoneNumber
                 && noPlusValidationResult.autoFixable
                 && noPlusValidationResult.phoneNumber.country === countryCode
-                && !numberStr.startsWith(countryCodePrefix)
+                && (INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE.includes(countryCode)) || !numberStr.startsWith(countryCodePrefix)
             ) {
                 validationResult = noPlusValidationResult;
             }
