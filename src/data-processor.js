@@ -353,7 +353,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
     const normalizedOriginal = numberStr.replace(getSpacingRegex(countryCode), '');
 
     // See https://github.com/confusedbuffalo/phone-report/issues/18
-    if (['FR', 'GP'].includes(countryCode)) {
+    if (['FR', 'GF', 'GP', 'YT'].includes(countryCode)) {
         // libphonenumbers-js doesn't support the short number check
         // but that would catch emergency numbers which probably shouldn't be mapped anyway
         const isValidShortNumberFr = (
