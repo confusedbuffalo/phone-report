@@ -1021,4 +1021,17 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">222&nbsp;226&nbsp;20</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">02</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('should show prefix as added when actual number starts with the same prefix and incorrect plus', () => {
+        const original = '+590 12 34';
+        const suggested = '+590 590 12 34';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+590&nbsp;12&nbsp;34</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">+</span><span class="diff-added">590&nbsp;</span><span class="diff-unchanged">590&nbsp;12&nbsp;34</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });
