@@ -201,7 +201,10 @@ function diffPhoneNumbers(original, suggested) {
         // even if it contains the same digit as the first digit of the actual phone number
         if (
             char === '+'
-            && !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
+            && (
+                !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
+                || (originalRemainderNew.includes('+') && numericallyOnlyAddingPrefix) // in case of incorrect leading plus and first digits the same as prefix, see "should show prefix as added when actual number starts with the same prefix and incorrect plus"
+            )
             && normalizedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
             && !isWhatsappUrl(original) // encoded plus signs can affect things
@@ -213,7 +216,12 @@ function diffPhoneNumbers(original, suggested) {
             const isNanp = suggested.startsWith('+1-');
             const prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
 
-            for (let j = 0; j < prefix.length; j++) {
+            if (originalRemainderNew.slice(0,1) === '+') {
+                suggestedDiff.push({ value: '+', added: false, removed: false });
+            } else {
+                suggestedDiff.push({ value: '+', added: true });
+            }
+            for (let j = 1; j < prefix.length; j++) {
                 suggestedDiff.push({ value: prefix[j], added: true });
             }
             if (isNanp) {
