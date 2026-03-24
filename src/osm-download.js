@@ -1,7 +1,7 @@
 const { OVERPASS_API_URL, ALL_NUMBER_TAGS } = require('./constants');
 const { parser } = require('stream-json');
-const { pick } = require('stream-json/filters/Pick');
-const { streamArray } = require('stream-json/streamers/StreamArray');
+const { pick } = require('stream-json/filters/pick.js');
+const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { Readable } = require('stream');
 
 /**
