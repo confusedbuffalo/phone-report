@@ -338,8 +338,8 @@ const frTerritoryCodes = new Map([
     ['Wallis-et-Futuna', 'WF'],
 ]);
 
-const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'BL', 'GB', 'GP', 'MF', 'MQ', 'RE', 'YT', 'ZA'];
-const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GP', 'MF', 'MQ', 'RE', 'YT'];
+const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'BL', 'GB', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT', 'ZA'];
+const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT'];
 
 const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
 

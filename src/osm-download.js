@@ -1,7 +1,8 @@
 const { OVERPASS_API_URL, ALL_NUMBER_TAGS } = require('./constants');
 const { parser } = require('stream-json');
-const { pick } = require('stream-json/filters/Pick');
-const { streamArray } = require('stream-json/streamers/StreamArray');
+const { chain } = require('stream-chain');
+const { pick } = require('stream-json/filters/pick.js');
+const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { Readable } = require('stream');
 
 /**
@@ -110,9 +111,14 @@ async function fetchOsmDataForDivision(division, retries = 3) {
             throw new Error(`Overpass API response error: ${response.statusText}`);
         }
 
-        const jsonStream = response.body.pipe(parser({ jsonStreaming: true }));
-        const elementStream = jsonStream.pipe(pick({ filter: 'elements' })).pipe(streamArray());
-        return Readable.from(elementStream.map(item => item.value));
+        const pipeline = chain([
+            response.body,
+            parser(),
+            pick({ filter: 'elements' }),
+            streamArray()
+        ]);
+
+        return Readable.from(pipeline.map(item => item.value));
     } catch (error) {
         const retryAfter = 30;
         if (error.code === 'ECONNRESET' || error.message.includes('socket hang up')) {
