@@ -44,7 +44,7 @@ To run the project locally and generate the reports, follow these steps:
 1.  **Clone the repository:**
     ```bash
     git clone https://confusedbuffalo.github.io/phone-report/
-    cd osm-phones
+    cd phone-report
     ```
 
 2.  **Install dependencies:**
