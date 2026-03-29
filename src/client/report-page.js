@@ -467,18 +467,19 @@ function getFirstNonNullValue(obj) {
 
     return '';
 }
-
 /**
  * Sorts an array of report items based on a specified key and direction.
  * Sorting by 'invalid' or 'fixable' uses the value of the first key within
  * the corresponding nested object (e.g., item.invalidNumbers.phone).
  *
  * @param {Array<Object>} items - The list of report items to be sorted. Each item must contain
- * 'featureTypeName', 'invalidNumbers' ({[key: string]: string}), and 'suggestedFixes' ({[key: string]: string}).
- * @param {('none'|'name'|'invalid'|'fixable')} key - The column key to sort by.
+ * 'featureTypeName', 'invalidNumbers' ({[key: string]: string}), 'suggestedFixes' ({[key: string]: string}),
+ * and 'timestamp' (string|number|Date).
+ * @param {('none'|'name'|'invalid'|'fixable'|'date')} key - The column key to sort by.
  * - 'name': Sorts by the item's 'featureTypeName'.
  * - 'invalid': Sorts by the first value in 'invalidNumbers'.
  * - 'fixable': Sorts by the first value in 'suggestedFixes'.
+ * - 'date': Sorts by the item's 'timestamp'.
  * - 'none': Returns the original array unsorted.
  * @param {('asc'|'desc')} direction - The sort order: 'asc' for ascending, 'desc' for descending.
  * @returns {Array<Object>} A new, sorted array of items. Returns the original array copy if key is 'none'.
@@ -496,6 +497,10 @@ function sortItems(items, key, direction) {
                 valA = a.featureTypeName ? a.featureTypeName.toUpperCase() : null;
                 valB = b.featureTypeName ? b.featureTypeName.toUpperCase() : null;
                 break;
+            case 'date':
+                valA = a.timestamp ? new Date(a.timestamp).getTime() : null;
+                valB = b.timestamp ? new Date(b.timestamp).getTime() : null;
+                break;
             case 'invalid':
                 // Get the value of the first key in invalidNumbers
                 valA = getFirstNonNullValue(a.invalidNumbers);
@@ -508,12 +513,12 @@ function sortItems(items, key, direction) {
 
                 let firstA = getFirstNonNullValue(a.suggestedFixes);
                 if (!firstA) {
-                    firstA = getFirstNonNullValue(a.invalidNumbers)
+                    firstA = getFirstNonNullValue(a.invalidNumbers);
                 }
 
                 let firstB = getFirstNonNullValue(b.suggestedFixes);
                 if (!firstB) {
-                    firstB = getFirstNonNullValue(b.invalidNumbers)
+                    firstB = getFirstNonNullValue(b.invalidNumbers);
                 }
 
                 valA = firstA;
@@ -524,8 +529,8 @@ function sortItems(items, key, direction) {
         }
 
         // null values go to the start for ascending sort.
-        const aIsNull = valA === null || valA === undefined;
-        const bIsNull = valB === null || valB === undefined;
+        const aIsNull = valA === null || valA === undefined || isNaN(valA);
+        const bIsNull = valB === null || valB === undefined || isNaN(valB);
 
         // Null comparison
         if (aIsNull && bIsNull) {
@@ -542,7 +547,15 @@ function sortItems(items, key, direction) {
             return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
 
-        // Regular comparison
+        if (key === 'date') {
+            if (valA === valB) return 0;
+            // For first click ('asc'), we want higher (newer) numbers to come first
+            return direction === 'asc' 
+                ? (valB - valA)  // Newest to Oldest
+                : (valA - valB); // Oldest to Newest
+        }
+
+        // Regular comparison (works for numbers/timestamps and strings)
         if (valA < valB) {
             return direction === 'asc' ? -1 : 1;
         }
@@ -635,7 +648,6 @@ function renderPaginatedSection(
     const pageAndSortControls = `
         ${pageControls}
         <div class="sort-controls">
-            ${isFixableSection ? '' : '<div></div>'}
             <span class="sort-label">${translate('sortBy')}</span>
             <button onclick="handleSort('${suffix}', 'name')"
                     class="sort-btn sort-btn-style ${getSortStyle('name')}">
@@ -645,7 +657,12 @@ function renderPaginatedSection(
             <button onclick="handleSort('${suffix}', 'fixable')"
                     class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
                 ${translate('suggestedFix')}
-            </button>` : ''}
+            </button>` :
+            `<button onclick="handleSort('${suffix}', 'date')"
+                    class="sort-btn sort-btn-style ${getSortStyle('date')}">
+                ${translate('date')}
+            </button>`
+            }
             <button onclick="handleSort('${suffix}', 'invalid')"
                     class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
                     ${translate('invalidNumber')}

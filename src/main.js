@@ -23,6 +23,7 @@ const CLIENT_KEYS = [
     'noInvalidNumbers',
     'pageOf',
     'name',
+    'date',
     'suggestedFix',
     'invalidNumber',
     'next',
