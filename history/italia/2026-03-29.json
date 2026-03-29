@@ -1,0 +1,222 @@
+{
+  "name": "Italia",
+  "slug": "italia",
+  "locale": "it-IT",
+  "invalidCount": 2000,
+  "autoFixableCount": 1232,
+  "safeEditCount": 882,
+  "totalNumbers": 185077,
+  "groupedDivisionStats": {
+    "Centro": [
+      {
+        "name": "Lazio",
+        "divisionSlug": "centro",
+        "slug": "lazio",
+        "invalidCount": 356,
+        "autoFixableCount": 271,
+        "safeEditCount": 253,
+        "totalNumbers": 14885,
+        "lastUpdated": "2026-03-29T04:29:56.426Z"
+      },
+      {
+        "name": "Toscana",
+        "divisionSlug": "centro",
+        "slug": "toscana",
+        "invalidCount": 78,
+        "autoFixableCount": 40,
+        "safeEditCount": 35,
+        "totalNumbers": 12663,
+        "lastUpdated": "2026-03-29T04:31:05.892Z"
+      },
+      {
+        "name": "Umbria",
+        "divisionSlug": "centro",
+        "slug": "umbria",
+        "invalidCount": 35,
+        "autoFixableCount": 21,
+        "safeEditCount": 1,
+        "totalNumbers": 2535,
+        "lastUpdated": "2026-03-29T04:31:19.026Z"
+      },
+      {
+        "name": "Marche",
+        "divisionSlug": "centro",
+        "slug": "marche",
+        "invalidCount": 28,
+        "autoFixableCount": 28,
+        "safeEditCount": 26,
+        "totalNumbers": 6400,
+        "lastUpdated": "2026-03-29T04:32:43.083Z"
+      }
+    ],
+    "Isole": [
+      {
+        "name": "Sicilia",
+        "divisionSlug": "isole",
+        "slug": "sicilia",
+        "invalidCount": 33,
+        "autoFixableCount": 2,
+        "safeEditCount": 2,
+        "totalNumbers": 8657,
+        "lastUpdated": "2026-03-29T04:33:15.233Z"
+      },
+      {
+        "name": "Sardigna/Sardegna",
+        "divisionSlug": "isole",
+        "slug": "sardigna-sardegna",
+        "invalidCount": 26,
+        "autoFixableCount": 2,
+        "safeEditCount": 2,
+        "totalNumbers": 4201,
+        "lastUpdated": "2026-03-29T04:34:06.394Z"
+      }
+    ],
+    "Nord-Est": [
+      {
+        "name": "Emilia-Romagna",
+        "divisionSlug": "nord-est",
+        "slug": "emilia-romagna",
+        "invalidCount": 96,
+        "autoFixableCount": 51,
+        "safeEditCount": 33,
+        "totalNumbers": 11268,
+        "lastUpdated": "2026-03-29T04:35:08.260Z"
+      },
+      {
+        "name": "Veneto",
+        "divisionSlug": "nord-est",
+        "slug": "veneto",
+        "invalidCount": 490,
+        "autoFixableCount": 424,
+        "safeEditCount": 413,
+        "totalNumbers": 15551,
+        "lastUpdated": "2026-03-29T04:37:05.696Z"
+      },
+      {
+        "name": "Trentino-Alto Adige/Südtirol",
+        "divisionSlug": "nord-est",
+        "slug": "trentino-alto-adige-südtirol",
+        "invalidCount": 41,
+        "autoFixableCount": 3,
+        "safeEditCount": 3,
+        "totalNumbers": 15321,
+        "lastUpdated": "2026-03-29T04:37:30.581Z"
+      },
+      {
+        "name": "Friuli-Venezia Giulia",
+        "divisionSlug": "nord-est",
+        "slug": "friuli-venezia-giulia",
+        "invalidCount": 87,
+        "autoFixableCount": 57,
+        "safeEditCount": 41,
+        "totalNumbers": 7074,
+        "lastUpdated": "2026-03-29T04:38:27.801Z"
+      }
+    ],
+    "Nord-Ovest": [
+      {
+        "name": "Piemonte",
+        "divisionSlug": "nord-ovest",
+        "slug": "piemonte",
+        "invalidCount": 132,
+        "autoFixableCount": 50,
+        "safeEditCount": 17,
+        "totalNumbers": 16310,
+        "lastUpdated": "2026-03-29T04:39:08.844Z"
+      },
+      {
+        "name": "Lombardia",
+        "divisionSlug": "nord-ovest",
+        "slug": "lombardia",
+        "invalidCount": 395,
+        "autoFixableCount": 214,
+        "safeEditCount": 45,
+        "totalNumbers": 36426,
+        "lastUpdated": "2026-03-29T04:40:39.347Z"
+      },
+      {
+        "name": "Valle d'Aosta / Vallée d'Aoste",
+        "divisionSlug": "nord-ovest",
+        "slug": "valle-d-aosta-vallée-d-aoste",
+        "invalidCount": 12,
+        "autoFixableCount": 0,
+        "safeEditCount": 0,
+        "totalNumbers": 856,
+        "lastUpdated": "2026-03-29T04:40:46.581Z"
+      },
+      {
+        "name": "Liguria",
+        "divisionSlug": "nord-ovest",
+        "slug": "liguria",
+        "invalidCount": 17,
+        "autoFixableCount": 2,
+        "safeEditCount": 0,
+        "totalNumbers": 6359,
+        "lastUpdated": "2026-03-29T04:42:23.090Z"
+      }
+    ],
+    "Sud": [
+      {
+        "name": "Puglia",
+        "divisionSlug": "sud",
+        "slug": "puglia",
+        "invalidCount": 47,
+        "autoFixableCount": 1,
+        "safeEditCount": 1,
+        "totalNumbers": 7591,
+        "lastUpdated": "2026-03-29T04:42:50.205Z"
+      },
+      {
+        "name": "Basilicata",
+        "divisionSlug": "sud",
+        "slug": "basilicata",
+        "invalidCount": 7,
+        "autoFixableCount": 2,
+        "safeEditCount": 0,
+        "totalNumbers": 1344,
+        "lastUpdated": "2026-03-29T04:43:34.226Z"
+      },
+      {
+        "name": "Campania",
+        "divisionSlug": "sud",
+        "slug": "campania",
+        "invalidCount": 79,
+        "autoFixableCount": 42,
+        "safeEditCount": 4,
+        "totalNumbers": 6638,
+        "lastUpdated": "2026-03-29T04:43:46.765Z"
+      },
+      {
+        "name": "Molise",
+        "divisionSlug": "sud",
+        "slug": "molise",
+        "invalidCount": 5,
+        "autoFixableCount": 4,
+        "safeEditCount": 4,
+        "totalNumbers": 702,
+        "lastUpdated": "2026-03-29T04:45:06.104Z"
+      },
+      {
+        "name": "Abruzzo",
+        "divisionSlug": "sud",
+        "slug": "abruzzo",
+        "invalidCount": 15,
+        "autoFixableCount": 6,
+        "safeEditCount": 1,
+        "totalNumbers": 8339,
+        "lastUpdated": "2026-03-29T04:45:29.319Z"
+      },
+      {
+        "name": "Calabria",
+        "divisionSlug": "sud",
+        "slug": "calabria",
+        "invalidCount": 21,
+        "autoFixableCount": 12,
+        "safeEditCount": 1,
+        "totalNumbers": 1957,
+        "lastUpdated": "2026-03-29T04:46:16.680Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
