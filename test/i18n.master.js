@@ -26,6 +26,7 @@ const MASTER_KEYS = {
     'invalidPercentage': [],
     'invalidCount': [],
     'name': [],
+    'date': [],
     'noDivisionsFound': [],
     'noAutoFixable': [],
     'noInvalidNumbers': [],
