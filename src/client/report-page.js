@@ -467,6 +467,7 @@ function getFirstNonNullValue(obj) {
 
     return '';
 }
+
 /**
  * Sorts an array of report items based on a specified key and direction.
  * Sorting by 'invalid' or 'fixable' uses the value of the first key within
@@ -529,8 +530,8 @@ function sortItems(items, key, direction) {
         }
 
         // null values go to the start for ascending sort.
-        const aIsNull = valA === null || valA === undefined || isNaN(valA);
-        const bIsNull = valB === null || valB === undefined || isNaN(valB);
+        const aIsNull = valA === null || valA === undefined;
+        const bIsNull = valB === null || valB === undefined;
 
         // Null comparison
         if (aIsNull && bIsNull) {
