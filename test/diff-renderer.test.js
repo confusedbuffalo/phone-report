@@ -918,6 +918,19 @@ describe('getDiffHtml', () => {
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
+    test('should show diff for phone number within whatsapp link with country code being added and country code starts the same as original number', () => {
+        const original = 'https://wa.me/3881234567';
+        const suggested = '+39 388 123 4567';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">https://wa.me/</span><span class="diff-unchanged">3881234567</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+39&nbsp;</span><span class="diff-unchanged">388</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">123</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">4567</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
     test('should show diff for phone number within whatsapp link', () => {
         const original = 'https://api.whatsapp.com/send?phone=+27123456789';
         const suggested = '+27 12 345 6789';
@@ -938,6 +951,19 @@ describe('getDiffHtml', () => {
         const result = getDiffHtml(original, suggested);
 
         const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2B</span><span class="diff-unchanged">27123456789</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('should show diff for phone number within whatsapp link with encoded plus (lower case)', () => {
+        const original = 'https://api.whatsapp.com/send?phone=%2b27123456789';
+        const suggested = '+27 12 345 6789';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2b</span><span class="diff-unchanged">27123456789</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';

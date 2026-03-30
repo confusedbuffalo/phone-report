@@ -134,6 +134,7 @@ function diffPhoneNumbers(original, suggested) {
 
     for (let i = 0; i < original.length; i++) {
         const char = original[i];
+        const slice = original.slice(i, i + 3); // to check for encoded plus
 
         if ( // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
             suggestedRemainder[0] === '+'
@@ -148,8 +149,8 @@ function diffPhoneNumbers(original, suggested) {
 
             const spacePosition = suggested.indexOf(' ')
             suggestedRemainder = suggestedRemainder.slice(spacePosition + 1) // Remove the prefix
-        } else if (suggestedRemainder[0] === '+' && original.slice(i, i+3) === '%2B') { // url encoded plus sign, "%2B", can match with digits in number
-            originalDiff.push({value: '%2B', removed: true});
+        } else if (suggestedRemainder[0] === '+' && slice.toLowerCase() === '%2b') { // url encoded plus sign, "%2B", can match with digits in number
+            originalDiff.push({ value: slice, removed: true });
             i += 2;
         } else if (/\d/.test(char)) {
             // It's a digit. Determine if it was removed in the semantic diff.
@@ -207,7 +208,7 @@ function diffPhoneNumbers(original, suggested) {
             )
             && normalizedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
-            && !isWhatsappUrl(original) // encoded plus signs can affect things
+            // && !isWhatsappUrl(original) // encoded plus signs can affect things
             && (
                 normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
                 || numericallyOnlyAddingPrefix // needed because of clash with this case, see "should mark prefix as new, even when it is the same as the first digits of the original" test
@@ -216,14 +217,30 @@ function diffPhoneNumbers(original, suggested) {
             const isNanp = suggested.startsWith('+1-');
             const prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
 
-            if (originalRemainderNew.slice(0,1) === '+') {
+            if (originalRemainderNew.slice(0, 1) === '+') {
                 suggestedDiff.push({ value: '+', added: false, removed: false });
             } else {
                 suggestedDiff.push({ value: '+', added: true });
             }
-            for (let j = 1; j < prefix.length; j++) {
-                suggestedDiff.push({ value: prefix[j], added: true });
+
+            if (originalRemainderNew.toUpperCase().includes('%2B')) {
+                const encodedPlusPos = originalRemainderNew.toUpperCase().indexOf('%2B');
+                originalRemainderNew = originalRemainderNew.slice(encodedPlusPos + 3); // Remove encoded plus and everything before it
+
+                const numericPrefixLength = prefix.length - 1;
+                originalRemainderNew = originalRemainderNew.slice(numericPrefixLength);
+                commonPointerNew += numericPrefixLength;
+
+                for (let j = 1; j < prefix.length; j++) {
+                    suggestedDiff.push({ value: prefix[j], added: false, removed: false });
+                }
+            } else {
+                for (let j = 1; j < prefix.length; j++) {
+                    suggestedDiff.push({ value: prefix[j], added: true });
+                }
             }
+
+            // Get position of end of prefix, to slice to
             if (isNanp) {
                 suggestedDiff.push({ value: '-', added: true });
                 if (suggested.indexOf('-') !== -1) {
@@ -359,11 +376,11 @@ function getDiffTagsHtml(oldTag, newTag) {
  * @param {Token[]} inputArray - The array of string tokens (parts) to process.
  * @returns {Token[]} A new array where all sequences of consecutive separators have been merged.
  */
-function mergeConsecutiveSeparators(inputArray , useDeSeparators) {
+function mergeConsecutiveSeparators(inputArray, useDeSeparators) {
 
     const mergedArray = [];
 
-    const ALL_SEPARATORS = useDeSeparators ? [ ...SEPARATOR_OPTIONAL_SPACE_DIN, ...SEPARATOR_NEED_SPACE ] : [ ...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE ];
+    const ALL_SEPARATORS = useDeSeparators ? [...SEPARATOR_OPTIONAL_SPACE_DIN, ...SEPARATOR_NEED_SPACE] : [...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE];
 
     for (let i = 0; i < inputArray.length; i++) {
         let currentElement = inputArray[i];
