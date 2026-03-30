@@ -120,9 +120,11 @@ const DIN_FORMAT_COUNTRIES = ['AT', 'DE']
 // DIN format has hyphen then extension
 const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 
-// FR: https://github.com/confusedbuffalo/phone-report/issues/18
-// DE: https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
-const TOLL_FREE_AS_NATIONAL_COUNTRIES = ['FR', 'DE']
+const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
+    'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
+    'ES', // https://github.com/confusedbuffalo/phone-report/issues/217
+    'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
+]
 
 const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 
