@@ -122,8 +122,8 @@ const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 
 const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
-    'ES', // https://github.com/confusedbuffalo/phone-report/issues/217
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
+    'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
 ]
 
 const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
