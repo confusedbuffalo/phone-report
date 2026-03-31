@@ -100,7 +100,7 @@ async function fetchOsmDataForDivision(division, retries = 3) {
 
         if (response.status === 429 || response.status === 504) {
             if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 30;
+                const retryAfter = response.headers.get('Retry-After') || 30 * (4 - retries);
                 console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
                 await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
                 return await fetchOsmDataForDivision(division, retries - 1);
@@ -120,13 +120,12 @@ async function fetchOsmDataForDivision(division, retries = 3) {
 
         return Readable.from(pipeline.map(item => item.value));
     } catch (error) {
-        const retryAfter = 30;
-        if (error.code === 'ECONNRESET' || error.message.includes('socket hang up')) {
-            if (retries > 0) {
-                console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-                return await fetchOsmDataForDivision(division, retries - 1);
-            }
+        const isNetworkError = ['ECONNRESET', 'ERR_STREAM_PREMATURE_CLOSE', 'ETIMEDOUT'].includes(error.code);
+        if (isNetworkError && retries > 0) {
+            const retryAfter = 30;
+            console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+            return await fetchOsmDataForDivision(division, retries - 1);
         }
         console.error(`Error fetching OSM data for ${division.name}:`, error);
         return Readable.from([]);
