@@ -208,7 +208,6 @@ function diffPhoneNumbers(original, suggested) {
             )
             && normalizedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
-            // && !isWhatsappUrl(original) // encoded plus signs can affect things
             && (
                 normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
                 || numericallyOnlyAddingPrefix // needed because of clash with this case, see "should mark prefix as new, even when it is the same as the first digits of the original" test
