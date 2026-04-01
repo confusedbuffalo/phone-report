@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: '24.x'
 
@@ -57,7 +57,7 @@ jobs:
       - name: Generate GitHub App Token
         if: env.BUILD_TYPE == 'full'
         id: app-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
@@ -65,16 +65,16 @@ jobs:
 
       - name: Checkout repository (using App Token)
         if: env.BUILD_TYPE == 'full'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Checkout repository (without App token)
         if: env.BUILD_TYPE == 'simplified'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v6
         with:
           node-version: '24.x'
 
@@ -86,14 +86,14 @@ jobs:
 
       - name: Upload History Data Artifact
         if: env.BUILD_TYPE == 'full'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: new-history-data
           path: history/
 
       - name: Upload Safe Edits Artifact
         if: env.BUILD_TYPE == 'full'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: safe-edits-data
           path: safe_edits/
@@ -122,7 +122,7 @@ jobs:
       - name: Deploy to GitHub Pages
         if: env.BUILD_TYPE == 'full'
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   bot-edit:
     needs: build-report
@@ -131,10 +131,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download safe edits artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: safe-edits-data
           path: safe_edits
@@ -174,21 +174,21 @@ jobs:
 
     steps:
       - name: Download history artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: new-history-data
           path: /tmp/new_history
 
       - name: Generate GitHub App Token for Push
         id: app-token-push
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           permission-contents: 'write'
 
       - name: Checkout Main Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token-push.outputs.token }}
           ref: main
