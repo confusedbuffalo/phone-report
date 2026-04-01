@@ -1804,6 +1804,24 @@ describe('validateNumbers', () => {
         });
     });
 
+    test('phone=no is valid as marking object as having no phone number', async () => {
+        const elements = [
+            {
+                type: 'relation',
+                id: 5005,
+                tags: {
+                    'phone': 'no',
+                },
+                center: { lat: 55.0, lon: 4.0 },
+            },
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(0);
+        expect(result.invalidCount).toBe(0);
+    });
+
     test('should fix and move landline number out of mobile tag', async () => {
         const elements = [
             {

@@ -1043,6 +1043,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             const phoneTagValue = tags[tag];
             if (tag === 'mobile' && phoneTagValue === 'yes') continue;
+            if (tag === 'phone' && phoneTagValue === 'no') continue;
 
             const validationResult = validateSingleTag(phoneTagValue, countryCode, tags, tag);
             totalNumbers += validationResult.numberOfValues;
