@@ -22,9 +22,7 @@ To add a new country to the report, you need to modify [countries.json](/src/dat
     *   `locale`: The locale for formatting and language of the generated pages.
     *   `divisions` or `divisionMap`:
         *   Use `divisions` to specify a map of division names to their OSM relation IDs
-            *  If there is another depth of division, provide `subdivisionAdminLevel` to fetch subdivisions automatically (like France).
-            *  If not then omit that key (like Belgium)
-        *   Use `divisionMap` for a hardcoded list of divisions and subdivisions.
+        *   Use `divisionMap` for a list of divisions and subdivisions (like Germany).
 
 2.  **Add translations** (optional): If the country uses a language not already present, add a new JSON file in the `locales/` directory (e.g., `de-DE.json` for German).
 
