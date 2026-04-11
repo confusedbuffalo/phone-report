@@ -23,7 +23,7 @@ jobs:
         run: npm install axios
 
       - name: Run Extraction Script
-        run: node test-osm-filter.js
+        run: node src/test-osm-filter.js
 
       - name: Upload Results
         uses: actions/upload-artifact@v6
