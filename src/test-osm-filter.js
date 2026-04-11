@@ -41,7 +41,8 @@ async function processStream(url) {
         '-F', 'pbf', '-', 
         'phone', 
         '-o', outputName, 
-        '--overwrite'
+        '--overwrite',
+        '--omit-referenced'
       ]);
 
       // Pipe download to osmium's input
