@@ -5,8 +5,7 @@ const { PUBLIC_DIR, COUNTRIES } = require('./constants');
 const { favicon, themeButton, createFooter, escapeHTML } = require('./html-utils');
 const { getTranslations } = require('./i18n');
 const { safeName } = require('./data-processor');
-const BUILD_TYPE = process.env.BUILD_TYPE;
-const testMode = BUILD_TYPE === 'simplified';
+
 
 /**
  * Generates the progress.html page, which displays charts visualizing the
@@ -119,9 +118,6 @@ if (require.main === module) {
             const locale = countryData.locale;
 
             await generateProgressPage(safeName(countryName), locale)
-            if (testMode) {
-                break;
-            }
         }
     })();
 }   

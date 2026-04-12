@@ -1,138 +1,86 @@
-const { OVERPASS_API_URL, ALL_NUMBER_TAGS } = require('./constants');
-const { parser } = require('stream-json');
-const { chain } = require('stream-chain');
-const { pick } = require('stream-json/filters/pick.js');
-const { streamArray } = require('stream-json/streamers/stream-array.js');
-const { Readable } = require('stream');
+const axios = require('axios');
+const fs = require('fs');
+const { spawn } = require('child_process');
+const path = require('path');
+const { COUNTRIES, POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
 
-/**
- * Fetches administrative subdivisions for a given parent area from the Overpass API.
- * This function is recursive and will retry on certain API errors (429, 504).
- * @param {number} divisionId - The OSM relation ID of the parent division.
- * @param {string} divisionName - The name of the division (for logging).
- * @param {number} admin_level - The administrative level of the subdivisions to fetch.
- * @param {number} [retries=3] - Number of retries left.
- * @returns {Promise<Array<{name: string, id: number}>>} A promise that resolves to an array of subdivision objects.
- */
-async function fetchAdminLevels(divisionId, divisionName, admin_level, retries = 3) {
-    console.log(`Fetching all subdivisions for ${divisionName} (ID: ${divisionId})...`);
-    const { default: fetch } = await import('node-fetch');
+const PLANET_URL = 'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf';
 
-    const queryTimeout = 180;
-    const areaId = divisionId + 3600000000;
-
-    const query = `
-        [out:json][timeout:${queryTimeout}];
-        area(${areaId})->.division;
-        rel(area.division)["admin_level"="${admin_level}"]["boundary"="administrative"]["name"];
-        out body;
-    `;
-
-    try {
-        const response = await fetch(OVERPASS_API_URL, {
-            method: 'POST',
-            body: `data=${encodeURIComponent(query)}`,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        });
-
-        if (response.status === 429 || response.status === 504) {
-            if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 30;
-                console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-                return fetchAdminLevels(divisionId, divisionName, admin_level, retries - 1);
-            } else {
-                throw new Error(`Overpass API response error: ${response.statusText}`);
-            }
-        }
-
-        if (!response.ok) {
-            throw new Error(`Overpass API response error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const subdivisions = data.elements.map(el => ({
-            name: el.tags.name,
-            id: el.id
-        }));
-
-        const uniqueSubdivisions = [...new Map(subdivisions.map(item => [item.name, item])).values()];
-        return uniqueSubdivisions;
-    } catch (error) {
-        console.error(`Error fetching subdivisions for ${divisionName}:`, error);
-        return [];
-    }
+// Ensure output directory exists
+if (!fs.existsSync(OSM_DIR)) {
+    fs.mkdirSync(OSM_DIR, { recursive: true });
 }
 
-/**
- * Fetches all OSM elements that have one of the specified phone tags within a given division's area.
- * This function is recursive and will retry on certain API errors (429, 504).
- * @param {{name: string, id: number}} division - The division object, containing its name and OSM relation ID.
- * @param {number} [retries=3] - Number of retries left.
- * @returns {Promise<Array<Object>>} A promise that resolves to an array of OSM element objects.
- */
-async function fetchOsmDataForDivision(division, retries = 3) {
-    console.log(`Fetching data for division: ${division.name} (ID: ${division.id})...`);
-    const { default: fetch } = await import('node-fetch');
-
-    const areaId = division.id + 3600000000;
-    const queryTimeout = 600;
-
-    const tagQuery = ALL_NUMBER_TAGS
-        .map(tag => `nwr(area.division)["${tag}"];`)
-        .join('\n');
-
-    const overpassQuery = `
-        [out:json][timeout:${queryTimeout}];
-        area(${areaId})->.division;
-        (
-          ${tagQuery}
-        );
-        out meta center;
-    `;
-
-    try {
-        const response = await fetch(OVERPASS_API_URL, {
-            method: 'POST',
-            body: `data=${encodeURIComponent(overpassQuery)}`,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+function generateOsmiumConfig() {
+    const extracts = [];
+    const processDivisions = (divisions) => {
+        Object.values(divisions).forEach(id => {
+            extracts.push({
+                output: path.join(OSM_DIR, `${id}.jsonseq`),
+                polygon: {
+                    file_name: path.join(POLY_DIR, `${id}.poly`),
+                    file_type: 'poly'
+                }
+            });
         });
+    };
 
-        if (response.status === 429 || response.status === 504) {
-            if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 30 * (4 - retries);
-                console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-                return await fetchOsmDataForDivision(division, retries - 1);
-            }
+    Object.values(COUNTRIES).forEach(country => {
+        if (country.divisions) processDivisions(country.divisions);
+        if (country.divisionMap) {
+            Object.values(country.divisionMap).forEach(subRegion => processDivisions(subRegion));
         }
+    });
+    return { extracts };
+}
 
-        if (!response.ok) {
-            throw new Error(`Overpass API response error: ${response.statusText}`);
-        }
+async function downloadAndFilterPlanet() {
+    const configPath = './osmium-config.json';
+    fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfig()));
 
-        const pipeline = chain([
-            response.body,
-            parser(),
-            pick({ filter: 'elements' }),
-            streamArray()
-        ]);
+    // Convert ['phone', 'contact:phone'] to "phone,contact:phone" for Osmium
+    const filterExpression = ALL_NUMBER_TAGS.join(',');
 
-        return Readable.from(pipeline.map(item => item.value));
-    } catch (error) {
-        const isNetworkError = ['ECONNRESET', 'ERR_STREAM_PREMATURE_CLOSE', 'ETIMEDOUT'].includes(error.code);
-        if (isNetworkError && retries > 0) {
-            const retryAfter = 30;
-            console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-            await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-            return await fetchOsmDataForDivision(division, retries - 1);
-        }
-        console.error(`Error fetching OSM data for ${division.name}:`, error);
-        return Readable.from([]);
-    }
+    console.log(`Starting pipeline: Download -> Filter (${filterExpression}) -> Extract/Clip`);
+
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await axios({ method: 'get', url: PLANET_URL, responseType: 'stream' });
+
+            // Step 1: Filter Stream
+            const filterProc = spawn('osmium', [
+                'tags-filter', '-F', 'pbf', '-',
+                filterExpression,
+                '-f', 'pbf', '-' // Output as PBF to the next pipe for speed
+            ]);
+
+            // Step 2: Extract/Clip Stream
+            const extractProc = spawn('osmium', [
+                'extract',
+                '-F', 'pbf', '-',
+                '-c', configPath,
+                '-f', 'jsonseq',
+                '--overwrite',
+                '--omit-referenced'
+            ]);
+
+            // Connect the chain: Response -> Filter -> Extract
+            response.data.pipe(filterProc.stdin);
+            filterProc.stdout.pipe(extractProc.stdin);
+
+            // Error handling & Logging
+            filterProc.stderr.on('data', (d) => console.error(`Filter Log: ${d}`));
+            extractProc.stderr.on('data', (d) => console.error(`Extract Log: ${d}`));
+
+            extractProc.on('close', (code) => {
+                fs.unlinkSync(configPath);
+                code === 0 ? resolve() : reject(new Error(`Extract failed: ${code}`));
+            });
+
+        } catch (err) { reject(err); }
+    });
 }
 
 module.exports = {
-    fetchAdminLevels,
-    fetchOsmDataForDivision,
+    downloadAndFilterPlanet,
 };

@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes } = require('./constants');
-const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-download');
+const { downloadAndFilterPlanet } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
@@ -53,11 +54,6 @@ const CLIENT_KEYS = [
     "hasInvalidPlural",
 ];
 
-const BUILD_TYPE = process.env.BUILD_TYPE;
-
-// A test build will only fetch and process numbers for one subdivision of one division of one country
-// (the first found of each, using the countries data file)
-const testMode = BUILD_TYPE === 'simplified';
 
 /**
  * Filters the full translations object to include only keys needed by the client.
@@ -148,25 +144,21 @@ function saveCountryHistory(originalCountryStats) {
 }
 
 /**
- * Fetches the list of subdivisions for a given administrative division, handling both
- * dynamic fetching via Overpass API and static lists from the configuration.
+ * Fetches the list of subdivisions for a given administrative division from the configuration.
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} divisionName - The name of the division.
  * @returns {Promise<Array<Object>>} A promise that resolves to a list of subdivision objects.
  */
 async function getSubdivisions(countryData, divisionName) {
-    if (countryData.divisions && countryData.subdivisionAdminLevel) {
-        const divisionId = countryData.divisions[divisionName];
-        return await fetchAdminLevels(divisionId, divisionName, countryData.subdivisionAdminLevel);
-    } else if (countryData.divisions) {
+    if (countryData.divisions) {
         // Single depth divisions, return the divisions (this is the only call to getSubdivisions for such a country)
-        console.log(`Using single level of hardcoded divisions for ${countryData.name}...`);
+        console.debug(`Using single level of hardcoded divisions for ${countryData.name}...`);
         return Object.entries(countryData.divisions).map(([name, id]) => ({
             name: name,
             id: id
         }));
     } else if (countryData.divisionMap) {
-        console.log(`Using hardcoded subdivisions for ${divisionName}...`);
+        console.debug(`Using hardcoded subdivisions for ${divisionName}...`);
         const divisionMap = countryData.divisionMap[divisionName];
         if (divisionMap) {
             return Object.entries(divisionMap).map(([name, id]) => ({
@@ -201,7 +193,7 @@ function getCountryCode(divisionName, countryCode) {
 }
 
 /**
- * Processes a single subdivision: fetches OSM data, validates numbers, generates the HTML report,
+ * Processes a single subdivision: processes OSM data, validates numbers, generates the HTML report,
  * and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
  * @param {Object} countryData - The configuration object for the country.
@@ -212,7 +204,39 @@ function getCountryCode(divisionName, countryCode) {
  */
 async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
-    const elementStream = await fetchOsmDataForDivision(subdivision);
+
+    const osmFilePath = path.join(OSM_DIR, `${subdivision.id}.jsonseq`);
+    try {
+        await access(osmFilePath);
+    } catch (error) {
+        console.error(`Error: File not found at ${filePath}`);
+    }
+
+    const fileStream = fs.createReadStream(osmFilePath);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+
+    const elementStream = (async function* () {
+        for await (const line of rl) {
+            if (!line.trim()) continue;
+            const element = JSON.parse(line);
+
+            // Map Osmium's GeoJSON-like structure to expected structure
+            yield {
+                type: element.type,
+                id: element.id,
+                tags: element.properties,
+                lat: element.geometry?.coordinates[1],
+                lon: element.geometry?.coordinates[0],
+                user: element.user,
+                timestamp: element.timestamp,
+                changeset: element.changeset
+            };
+        }
+    })();
+
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const countryCode = getCountryCode(subdivision.name, countryData.countryCode);
     const botEnabled = countryData.safeAutoFixBotEnabled;
@@ -274,7 +298,6 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     let divisionAutofixableCount = 0;
     let divisionSafeEditCount = 0;
 
-    let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
         const stats = await processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations);
         divisionStats.push(stats);
@@ -282,11 +305,6 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
         divisionSafeEditCount += stats.safeEditCount;
-
-        subdivisionCount++;
-        if (testMode && subdivisionCount >= 1) {
-            break;
-        }
     }
 
     return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
@@ -304,8 +322,6 @@ async function processCountry(countryData) {
     const fullTranslations = getTranslations(locale);
     const clientTranslations = filterClientTranslations(fullTranslations);
 
-    console.log(`Starting fetching divisions for ${countryName}...`);
-
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
     if (!fs.existsSync(countryDir)) {
         fs.mkdirSync(countryDir, { recursive: true });
@@ -317,12 +333,10 @@ async function processCountry(countryData) {
     let totalTotalNumbers = 0;
     const groupedDivisionStats = {};
 
-    // If no subdivision admin level then use the list of divisions as is, one level deep
-    const divisions = (countryData.divisions && !countryData.subdivisionAdminLevel)
+    const divisions = countryData.divisions
         ? { [countryData.name]: countryData.divisions }
-        : (countryData.divisions ?? countryData.divisionMap);
+        : countryData.divisionMap;
 
-    let divisionCount = 0;
     for (const rawDivisionName in divisions) {
         const {
             divisionStats,
@@ -338,11 +352,6 @@ async function processCountry(countryData) {
         totalAutofixableCount += divisionAutofixableCount;
         totalSafeEditCount += divisionSafeEditCount;
         totalTotalNumbers += divisionTotalNumbers;
-
-        divisionCount++;
-        if (testMode && divisionCount >= 1) {
-            break;
-        }
     }
 
     const countryStats = {
@@ -413,15 +422,19 @@ async function main() {
     const fullDefaultTranslations = getTranslations(defaultLocale);
     const clientDefaultTranslations = filterClientTranslations(fullDefaultTranslations);
 
+    try {
+        await downloadAndFilterPlanet();
+    } catch (error) {
+        console.error("FATAL ERROR in pipeline:", error.message);
+
+        process.exit(1);
+    }
+
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
         countryData.name = countryKey;
         const stats = await processCountry(countryData);
         allCountryStats.push(stats);
-
-        if (testMode) {
-            break;
-        }
     }
 
     await generateMainIndexHtml(allCountryStats, defaultLocale, clientDefaultTranslations);
