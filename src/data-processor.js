@@ -979,7 +979,7 @@ function isSafeItemEdit(item, countryCode) {
 /**
  * Validates phone numbers using libphonenumber-js, marking tags as invalid if
  * they contain bad separators (comma, slash, 'or') or invalid numbers.
- * @param {Array<Object>} elements - OSM elements with phone tags.
+ * @param {Array<Object>} elementStream - OSM elements with phone tags.
  * @param {string} countryCode - The country code for validation.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
  * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}

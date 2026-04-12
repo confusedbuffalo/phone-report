@@ -8,7 +8,7 @@ The generated site is available at https://confusedbuffalo.github.io/phone-repor
 
 The project fetches data from OSM, validates phone numbers, and generates a static HTML report. The process is as follows:
 
-1.  **Fetch Data**: For each country and its subdivisions defined in `src/data/constants.js`, the project queries the Overpass API to fetch OSM elements with phone number tags.
+1.  **Fetch Data**: The latest planet file is fetched and filtered to objects with phone number tags and split into files based on each country and its subdivisions defined in `src/data/constants.js`.
 2.  **Validate Numbers**: The fetched phone numbers are validated using `libphonenumber-js`. Numbers are checked for correct formatting and validity for the specific country.
 3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers, providing an option to fix the item directly and upload the edits in a batch as well as direct links to edit the data in various OSM editors (iD, JOSM, etc.).
 
@@ -54,15 +54,12 @@ To run the project locally and generate the reports, follow these steps:
     ```bash
     npm start
     ```
-    This will generate the static site in the `public/` directory.
-
-4.  **Run in test mode:**
-    To do a quicker, simplified build for testing purposes, run:
-    ```bash
-    BUILD_TYPE=simplified npm start
-    ```
-    This will only process one subdivision for one division for one country, which is much faster than a full build.
+    This will generate the static site in the `public/` directory. Note that this includes downloading and processing the full planet file, which will use a lot of data, CPU and RAM.
 
 ## License
 
 This project is licensed under the GNU GPL v3.0. See the [LICENSE](LICENSE) file for details.
+
+Files in the `icons/` directory have different licenses, see the [README](/icons/README.md) there for more details.
+
+Files in the `poly/` directory are sourced from OpenStreetMap data via [https://polygons.openstreetmap.fr/](https://polygons.openstreetmap.fr/) and are licensed under the [ODbl](https://opendatacommons.org/licenses/odbl/)
