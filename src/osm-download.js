@@ -4,7 +4,8 @@ const { spawn } = require('child_process');
 const path = require('path');
 const { COUNTRIES, POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
 
-const PLANET_URL = 'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf';
+// const PLANET_URL = 'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf';
+const PLANET_URL = 'https://download3.bbbike.org/osm/pbf/region/africa/lesotho.osm.pbf';
 
 // Ensure output directory exists
 if (!fs.existsSync(OSM_DIR)) {
