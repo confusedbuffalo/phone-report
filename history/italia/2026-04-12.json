@@ -1,0 +1,64 @@
+{
+  "name": "Italia",
+  "slug": "italia",
+  "locale": "it-IT",
+  "invalidCount": 1752,
+  "autoFixableCount": 1022,
+  "safeEditCount": 824,
+  "totalNumbers": 185670,
+  "groupedDivisionStats": {
+    "Italia": [
+      {
+        "name": "Centro",
+        "divisionSlug": "italia",
+        "slug": "centro",
+        "invalidCount": 481,
+        "autoFixableCount": 344,
+        "safeEditCount": 298,
+        "totalNumbers": 36552,
+        "lastUpdated": "2026-04-12T05:21:41.644Z"
+      },
+      {
+        "name": "Isole",
+        "divisionSlug": "italia",
+        "slug": "isole",
+        "invalidCount": 27,
+        "autoFixableCount": 7,
+        "safeEditCount": 4,
+        "totalNumbers": 12903,
+        "lastUpdated": "2026-04-12T05:22:47.705Z"
+      },
+      {
+        "name": "Nord-Est",
+        "divisionSlug": "italia",
+        "slug": "nord-est",
+        "invalidCount": 676,
+        "autoFixableCount": 495,
+        "safeEditCount": 450,
+        "totalNumbers": 49342,
+        "lastUpdated": "2026-04-12T05:24:23.446Z"
+      },
+      {
+        "name": "Nord-Ovest",
+        "divisionSlug": "italia",
+        "slug": "nord-ovest",
+        "invalidCount": 389,
+        "autoFixableCount": 103,
+        "safeEditCount": 55,
+        "totalNumbers": 60234,
+        "lastUpdated": "2026-04-12T05:25:47.972Z"
+      },
+      {
+        "name": "Sud",
+        "divisionSlug": "italia",
+        "slug": "sud",
+        "invalidCount": 179,
+        "autoFixableCount": 73,
+        "safeEditCount": 17,
+        "totalNumbers": 26639,
+        "lastUpdated": "2026-04-12T05:26:48.560Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
