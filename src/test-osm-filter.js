@@ -18,10 +18,10 @@ const filesToDownload = [
 //   'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america-east.osm.pbf',
 //   'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america-west.osm.pbf',
 //   'https://download3.bbbike.org/osm/planet/sub-planet-daily/south-america.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america.osm.pbf',
-//   'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america.osm.pbf',
+  'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf',
 ];
 
 async function processStream(url) {
