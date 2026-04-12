@@ -4,20 +4,24 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 const filesToDownload = [
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/africa.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-austronesia.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-south-china.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-south-india.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-south.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-east.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-germany.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-northwest.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-south.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-southeast.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-southwest.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america-east.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america-west.osm.pbf',
-  'https://download3.bbbike.org/osm/planet/sub-planet-daily/south-america.osm.pbf'
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/africa.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-austronesia.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-south-china.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-south-india.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia-south.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-east.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-germany.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-northwest.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-south.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-southeast.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe-southwest.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america-east.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america-west.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/sub-planet-daily/south-america.osm.pbf',
+  'https://download3.bbbike.org/osm/planet/sub-planet-daily/asia.osm.pbf',
+  'https://download3.bbbike.org/osm/planet/sub-planet-daily/europe.osm.pbf',
+  'https://download3.bbbike.org/osm/planet/sub-planet-daily/north-america.osm.pbf',
+//   'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf',
 ];
 
 async function processStream(url) {
