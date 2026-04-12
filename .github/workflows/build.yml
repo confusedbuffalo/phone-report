@@ -1,6 +1,9 @@
 name: Build and Deploy OSM Report
 
 on:
+  pull_request:
+    branches:
+      - main
   schedule:
     # Run at midnight (00:00) UTC every day
     - cron: '0 0 * * *'
