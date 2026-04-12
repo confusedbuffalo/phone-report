@@ -211,11 +211,11 @@ async function* createOsmElementStream(filePath) {
             tags: item.tags || {},
             lat: item.lat,
             lon: item.lon,
-            timestamp: item.timestamp,
-            version: item.version,
-            changeset: item.changeset,
-            user: item.user,
-            uid: item.uid
+            timestamp: item.info.timestamp,
+            version: item.info.version,
+            changeset: item.info.changeset,
+            user: item.info.user,
+            uid: item.info.uid
         };
     }
 }
