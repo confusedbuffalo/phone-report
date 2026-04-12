@@ -38,16 +38,19 @@ async function downloadAndFilterPlanet() {
     const configPath = './osmium-config.json';
     fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfig()));
 
-    // Convert ['phone', 'contact:phone'] to "nwr/phone,contact:phone" for Osmium
+    // Ensure the filter expression is correctly formatted for Osmium
     const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
-    console.log(`Starting pipeline: Download -> Filter (${filterExpression}) -> Extract/Clip`);
+    console.log(`Starting pipeline: Download -> Filter -> Extract/Clip`);
 
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await axios({ method: 'get', url: PLANET_URL, responseType: 'stream' });
+            const response = await axios({ 
+                method: 'get', 
+                url: PLANET_URL, 
+                responseType: 'stream' 
+            });
 
-            // Step 1: Filter Stream
             const filterProc = spawn('osmium', [
                 'tags-filter',
                 '--input-format=pbf', '-',
@@ -55,51 +58,61 @@ async function downloadAndFilterPlanet() {
                 '--output-format=pbf', '-'
             ]);
 
-            // Step 2: Extract/Clip Stream
             const extractProc = spawn('osmium', [
                 'extract',
                 '--input-format=pbf', '-',
-                '-c', configPath,
-                '-s', 'simple',
-                '--overwrite',
+                '--config', configPath,
+                '--strategy', 'simple',
+                '--overwrite'
             ]);
 
             // Error Handling
-            const handleSpawnError = (proc, name) => {
-                proc.on('error', (err) => {
-                    console.error(`Failed to start ${name}:`, err);
-                    response.data.destroy(); // Stop downloading if a process fails
-                });
-                proc.on('exit', (code) => {
-                    if (code !== 0) console.error(`${name} exited with code ${code}`);
-                });
-            };
 
-            handleSpawnError(filterProc, 'Filter');
-            handleSpawnError(extractProc, 'Extract');
+            // Handle the EPIPE at the source
+            filterProc.stdin.on('error', (err) => {
+                if (err.code === 'EPIPE') {
+                    console.error("Filter process closed stdin prematurely. Check filter expression syntax.");
+                } else {
+                    console.error("Filter STDIN Error:", err);
+                }
+                // Stop the download stream immediately to prevent further EPIPEs
+                response.data.destroy(); 
+            });
 
-            // Log Osmium's internal errors
-            filterProc.stderr.on('data', (d) => console.error(`Filter Error: ${d}`));
-            extractProc.stderr.on('data', (d) => console.error(`Extract Error: ${d}`));
+            // Capture stderr to see WHY Osmium is dying
+            filterProc.stderr.on('data', (data) => console.error(`Osmium Filter: ${data}`));
+            extractProc.stderr.on('data', (data) => console.error(`Osmium Extract: ${data}`));
 
             // --- THE PIPE CHAIN ---
-            // Direct pipe from download to filter
-            response.data.pipe(filterProc.stdin);
             
-            // Pipe filter output to extract input
+            // Step 1: Download -> Filter
+            response.data.pipe(filterProc.stdin);
+
+            // Step 2: Filter -> Extract
             filterProc.stdout.pipe(extractProc.stdin);
 
+            // Termination Logic
             extractProc.on('close', (code) => {
                 if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
                 if (code === 0) {
-                    console.log("Processing complete.");
+                    console.log("Pipeline finished successfully.");
                     resolve();
                 } else {
-                    reject(new Error(`Pipeline failed at Extract stage (Code ${code})`));
+                    reject(new Error(`Extract process exited with code ${code}`));
                 }
             });
 
-        } catch (err) { reject(err); }
+            filterProc.on('exit', (code) => {
+                if (code !== 0 && code !== null) {
+                    console.error(`Filter process failed with code ${code}`);
+                    // If filter fails, extract will never finish, so we reject
+                    reject(new Error(`Filter process failed (Code ${code})`));
+                }
+            });
+
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 
