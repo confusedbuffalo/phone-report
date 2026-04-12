@@ -1,0 +1,46 @@
+name: Sync OSM Polygons
+
+on:
+  push:
+    paths:
+      - 'src/data/countries.json'
+  schedule:
+    - cron: '0 0 1 * *' # Once per month (1st day)
+  workflow_dispatch:
+    inputs:
+      refresh_all:
+        description: 'Force refresh all files?'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install Dependencies
+        run: npm install axios
+
+      - name: Run Fetch Script
+        run: |
+          # Determine if we should refresh based on trigger
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.refresh_all }}" == "true" ]]; then
+            node src/fetch_polys.js --refresh
+          else
+            node src/fetch_polys.js
+          fi
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add poly/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: sync osm poly files" && git push)
