@@ -267,6 +267,7 @@ const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
+const POLY_DIR = path.join(__dirname, '..', 'poly');
 
 const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
 const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
@@ -377,6 +378,7 @@ module.exports = {
     ICON_ATTRIBUTION,
     HISTORY_DIR,
     SAFE_EDITS_DIR,
+    POLY_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
     DIN_EXTENSION_REGEX,
