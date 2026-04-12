@@ -59,9 +59,9 @@ async function downloadAndFilterPlanet() {
                 'extract',
                 '-F', 'pbf', '-',
                 '-c', configPath,
+                '-s', 'simple',
                 '-f', 'jsonseq',
                 '--overwrite',
-                '--omit-referenced'
             ]);
 
             const handleSpawnError = (proc, name) => {
