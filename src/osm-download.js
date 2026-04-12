@@ -16,7 +16,7 @@ function generateOsmiumConfig() {
     const processDivisions = (divisions) => {
         Object.values(divisions).forEach(id => {
             extracts.push({
-                output: path.join(OSM_DIR, `${id}.jsonseq`),
+                output: path.join(OSM_DIR, `${id}.osm.pbf`),
                 polygon: {
                     file_name: path.join(POLY_DIR, `${id}.poly`),
                     file_type: 'poly'
@@ -60,7 +60,6 @@ async function downloadAndFilterPlanet() {
                 '-F', 'pbf', '-',
                 '-c', configPath,
                 '-s', 'simple',
-                '-f', 'jsonseq',
                 '--overwrite',
             ]);
 

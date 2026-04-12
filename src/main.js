@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { createFixer } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes } = require('./constants');
@@ -193,6 +194,32 @@ function getCountryCode(divisionName, countryCode) {
 }
 
 /**
+ * Creates an async generator that yields OSM elements from a PBF file.
+ * @param {string} filePath - Path to the .osm.pbf file
+ */
+async function* createOsmElementStream(filePath) {
+    const stream = fs.createReadStream(filePath).pipe(createFixer());
+
+    for await (const item of stream) {
+        // If the item is a node, it has lat/lon.
+        // If it's a way/relation and 'osmium add-locations-to-ways' hasn't been run,
+        // lat/lon will be missing
+        yield {
+            type: item.type,
+            id: item.id,
+            tags: item.tags || {},
+            lat: item.lat,
+            lon: item.lon,
+            timestamp: item.timestamp,
+            version: item.version,
+            changeset: item.changeset,
+            user: item.user,
+            uid: item.uid
+        };
+    }
+}
+
+/**
  * Processes a single subdivision: processes OSM data, validates numbers, generates the HTML report,
  * and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
@@ -205,37 +232,14 @@ function getCountryCode(divisionName, countryCode) {
 async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
 
-    const osmFilePath = path.join(OSM_DIR, `${subdivision.id}.jsonseq`);
+    const pbfPath = path.join(OSM_DIR, `${subdivision.id}.osm.pbf`);
     try {
-        await access(osmFilePath);
+        await access(pbfPath);
     } catch (error) {
-        console.error(`Error: File not found at ${filePath}`);
+        console.error(`Error: File not found at ${pbfPath}`);
     }
 
-    const fileStream = fs.createReadStream(osmFilePath);
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    const elementStream = (async function* () {
-        for await (const line of rl) {
-            if (!line.trim()) continue;
-            const element = JSON.parse(line);
-
-            // Map Osmium's GeoJSON-like structure to expected structure
-            yield {
-                type: element.type,
-                id: element.id,
-                tags: element.properties,
-                lat: element.geometry?.coordinates[1],
-                lon: element.geometry?.coordinates[0],
-                user: element.user,
-                timestamp: element.timestamp,
-                changeset: element.changeset
-            };
-        }
-    })();
+    const elementStream = createOsmElementStream(pbfPath);
 
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const countryCode = getCountryCode(subdivision.name, countryData.countryCode);
