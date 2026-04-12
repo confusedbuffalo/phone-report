@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { createFixer } = require('osm-pbf-parser-node');
+const { createOSMStream  } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
@@ -198,9 +198,10 @@ function getCountryCode(divisionName, countryCode) {
  * @param {string} filePath - Path to the .osm.pbf file
  */
 async function* createOsmElementStream(filePath) {
-    const stream = fs.createReadStream(filePath).pipe(createFixer());
+    const stream = createOSMStream(filePath, {withInfo: true});
 
     for await (const item of stream) {
+        console.log(item)
         // If the item is a node, it has lat/lon.
         // If it's a way/relation and 'osmium add-locations-to-ways' hasn't been run,
         // lat/lon will be missing
