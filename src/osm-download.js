@@ -55,7 +55,8 @@ async function downloadAndFilterPlanet() {
                 'tags-filter',
                 '--input-format=pbf', '-',
                 filterExpression,
-                '--output-format=pbf', '-'
+                '--output-format=pbf', '-',
+                '--omit-referenced'
             ]);
 
             const extractProc = spawn('osmium', [
