@@ -64,17 +64,31 @@ async function downloadAndFilterPlanet() {
                 '--omit-referenced'
             ]);
 
-            // Connect the chain: Response -> Filter -> Extract
-            response.data.pipe(filterProc.stdin);
+            const handleSpawnError = (proc, name) => {
+                proc.on('error', (err) => {
+                    console.error(`Failed to start ${name}:`, err);
+                    response.data.destroy(); // Stop downloading if a process fails
+                });
+                proc.on('exit', (code) => {
+                    if (code !== 0) console.error(`${name} exited with code ${code}`);
+                });
+            };
+
+            handleSpawnError(filterProc, 'Filter');
+            handleSpawnError(extractProc, 'Extract');
+
+            // --- THE PIPE CHAIN ---
+            // If a pipe fails, prevent EPIPE by handling the error on the destination
+            filterProc.stdin.on('error', (err) => {
+                console.error("Filter STDIN Error (Broken Pipe):", err.message);
+            }); response.data.pipe(filterProc.stdin);
             filterProc.stdout.pipe(extractProc.stdin);
 
-            // Error handling & Logging
-            filterProc.stderr.on('data', (d) => console.error(`Filter Log: ${d}`));
-            extractProc.stderr.on('data', (d) => console.error(`Extract Log: ${d}`));
+            extractProc.stderr.on('data', (d) => console.error(`Osmium Error: ${d}`));
 
             extractProc.on('close', (code) => {
-                fs.unlinkSync(configPath);
-                code === 0 ? resolve() : reject(new Error(`Extract failed: ${code}`));
+                if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
+                code === 0 ? resolve() : reject(new Error(`Pipeline failed at Extract stage (Code ${code})`));
             });
 
         } catch (err) { reject(err); }
