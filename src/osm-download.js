@@ -38,8 +38,8 @@ async function downloadAndFilterPlanet() {
     const configPath = './osmium-config.json';
     fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfig()));
 
-    // Convert ['phone', 'contact:phone'] to "phone,contact:phone" for Osmium
-    const filterExpression = ALL_NUMBER_TAGS.join(',');
+    // Convert ['phone', 'contact:phone'] to "nwr/phone,contact:phone" for Osmium
+    const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
     console.log(`Starting pipeline: Download -> Filter (${filterExpression}) -> Extract/Clip`);
 
@@ -49,20 +49,22 @@ async function downloadAndFilterPlanet() {
 
             // Step 1: Filter Stream
             const filterProc = spawn('osmium', [
-                'tags-filter', '-F', 'pbf', '-',
+                'tags-filter',
+                '--input-format=pbf', '-',
                 filterExpression,
-                '-f', 'pbf', '-' // Output as PBF to the next pipe for speed
+                '--output-format=pbf', '-'
             ]);
 
             // Step 2: Extract/Clip Stream
             const extractProc = spawn('osmium', [
                 'extract',
-                '-F', 'pbf', '-',
+                '--input-format=pbf', '-',
                 '-c', configPath,
                 '-s', 'simple',
                 '--overwrite',
             ]);
 
+            // Error Handling
             const handleSpawnError = (proc, name) => {
                 proc.on('error', (err) => {
                     console.error(`Failed to start ${name}:`, err);
@@ -76,18 +78,25 @@ async function downloadAndFilterPlanet() {
             handleSpawnError(filterProc, 'Filter');
             handleSpawnError(extractProc, 'Extract');
 
-            // --- THE PIPE CHAIN ---
-            // If a pipe fails, prevent EPIPE by handling the error on the destination
-            filterProc.stdin.on('error', (err) => {
-                console.error("Filter STDIN Error (Broken Pipe):", err.message);
-            }); response.data.pipe(filterProc.stdin);
-            filterProc.stdout.pipe(extractProc.stdin);
+            // Log Osmium's internal errors
+            filterProc.stderr.on('data', (d) => console.error(`Filter Error: ${d}`));
+            extractProc.stderr.on('data', (d) => console.error(`Extract Error: ${d}`));
 
-            extractProc.stderr.on('data', (d) => console.error(`Osmium Error: ${d}`));
+            // --- THE PIPE CHAIN ---
+            // Direct pipe from download to filter
+            response.data.pipe(filterProc.stdin);
+            
+            // Pipe filter output to extract input
+            filterProc.stdout.pipe(extractProc.stdin);
 
             extractProc.on('close', (code) => {
                 if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
-                code === 0 ? resolve() : reject(new Error(`Pipeline failed at Extract stage (Code ${code})`));
+                if (code === 0) {
+                    console.log("Processing complete.");
+                    resolve();
+                } else {
+                    reject(new Error(`Pipeline failed at Extract stage (Code ${code})`));
+                }
             });
 
         } catch (err) { reject(err); }
