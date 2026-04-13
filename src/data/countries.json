@@ -1,19 +1,15 @@
 {
-    "Austria": {
-        "countryCode": "AT",
-        "locale": "de-DE",
-        "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/austria.osm.pbf",
-        "divisions": {
-            "Burgenland": 76909,
-            "Kärnten": 52345,
-            "Niederösterreich": 77189,
-            "Oberösterreich": 102303,
-            "Salzburg": 86539,
-            "Steiermark": 35183,
-            "Tirol": 52343,
-            "Vorarlberg": 74942,
-            "Wien": 109166
-        }
+    "Danmark": {
+      "countryCode": "DK",
+      "locale": "da-DK",
+      "safeAutoFixBotEnabled": false,
+      "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/denmark.osm.pbf",
+      "divisions": {
+        "Region Nordjylland": 1319936,
+        "Region Midtjylland": 1319935,
+        "Region Syddanmark": 1319978,
+        "Region Sjælland": 1320370,
+        "Region Hovedstaden": 1320608
+      }
     }
 }
