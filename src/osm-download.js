@@ -44,17 +44,13 @@ async function processPbf(url, outputPath) {
         const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
         const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --overwrite`;
-
-        console.log('Running Osmium filter...');
         await execPromise(command);
-        console.log(`Filtered file saved to: ${outputPath}`);
     } catch (error) {
         console.error('Error processing OSM data:', error.message);
     } finally {
         // 4. Cleanup the original large file
         if (fs.existsSync(tempInput)) {
             fs.unlinkSync(tempInput);
-            console.log('Temporary file deleted.');
         }
     }
 }
