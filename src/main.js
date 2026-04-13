@@ -5,7 +5,7 @@ const { createOSMStream  } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
-const { downloadAndFilterPlanet } = require('./osm-download');
+const { downloadAndFilterPlanet, processPbf, splitPbf } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
@@ -145,12 +145,12 @@ function saveCountryHistory(originalCountryStats) {
 }
 
 /**
- * Fetches the list of subdivisions for a given administrative division from the configuration.
+ * Returns the list of subdivisions for a given administrative division from the configuration.
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} divisionName - The name of the division.
  * @returns {Promise<Array<Object>>} A promise that resolves to a list of subdivision objects.
  */
-async function getSubdivisions(countryData, divisionName) {
+function getSubdivisions(countryData, divisionName) {
     if (countryData.divisions) {
         // Single depth divisions, return the divisions (this is the only call to getSubdivisions for such a country)
         console.debug(`Using single level of hardcoded divisions for ${countryData.name}...`);
@@ -248,6 +248,8 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
 
     const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
 
+    fs.unlinkSync(pbfPath);
+
     const siteInvalidCount = botEnabled ? invalidCount - safeEditCount : invalidCount;
     const siteAutoFixableCount = botEnabled ? autoFixableCount - safeEditCount : autoFixableCount;
 
@@ -288,7 +290,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     const divisionName = rawDivisionName;
     console.log(`Processing subdivisions for ${divisionName}...`);
 
-    const subdivisions = await getSubdivisions(countryData, rawDivisionName);
+    const subdivisions = getSubdivisions(countryData, rawDivisionName);
 
     if (!subdivisions || subdivisions.length === 0) {
         console.error(`No subdivisions to process for ${divisionName}.`);
@@ -326,6 +328,13 @@ async function processCountry(countryData) {
 
     const fullTranslations = getTranslations(locale);
     const clientTranslations = filterClientTranslations(fullTranslations);
+
+    const tmpPbfFilePath = path.join(os.tmpdir(), `filtered-${uuidv4()}.osm.pbf`);
+    // TODO: deal with US, multiple URLs
+    processPbf(countryData.pbfUrl, tmpPbfFilePath);
+    splitPbf(tmpPbfFilePath, countryData);
+
+    os.unlinkSync(tmpPbfFilePath);
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
     if (!fs.existsSync(countryDir)) {
