@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { createOSMStream  } = require('osm-pbf-parser-node');
+const { createOSMStream } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
@@ -148,30 +148,41 @@ function saveCountryHistory(originalCountryStats) {
  * Returns the list of subdivisions for a given administrative division from the configuration.
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} divisionName - The name of the division.
- * @returns {Promise<Array<Object>>} A promise that resolves to a list of subdivision objects.
+ * @returns {Array<Object>} A list of subdivision objects.
  */
 function getSubdivisions(countryData, divisionName) {
-    if (countryData.divisions) {
-        // Single depth divisions, return the divisions (this is the only call to getSubdivisions for such a country)
-        console.debug(`Using single level of hardcoded divisions for ${countryData.name}...`);
-        return Object.entries(countryData.divisions).map(([name, id]) => ({
-            name: name,
-            id: id
-        }));
-    } else if (countryData.divisionMap) {
-        console.debug(`Using hardcoded subdivisions for ${divisionName}...`);
-        const divisionMap = countryData.divisionMap[divisionName];
-        if (divisionMap) {
-            return Object.entries(divisionMap).map(([name, id]) => ({
+    // Helper to normalize the entry into a standard object
+    const formatSubdivision = ([name, value]) => {
+        if (typeof value === 'object' && value !== null) {
+            return {
                 name: name,
-                id: id
-            }));
+                id: value.relationId,
+                ...(value.pbfUrl && { pbfUrl: value.pbfUrl })
+            };
+        }
+        // Fallback for standard number-only format
+        return {
+            name: name,
+            id: value
+        };
+    };
+
+    if (countryData.divisions) {
+        console.debug(`Using single level of hardcoded divisions for ${countryData.name}...`);
+        return Object.entries(countryData.divisions).map(formatSubdivision);
+    }
+
+    if (countryData.divisionMap) {
+        console.debug(`Using hardcoded subdivisions for ${divisionName}...`);
+        const subRegions = countryData.divisionMap[divisionName];
+        if (subRegions) {
+            return Object.entries(subRegions).map(formatSubdivision);
         }
         return [];
-    } else {
-        console.error(`Data for ${countryData.name} set up incorrectly, no divisions or divisionMap found`);
-        return [];
     }
+
+    console.error(`Data for ${countryData.name} set up incorrectly, no divisions or divisionMap found`);
+    return [];
 }
 
 /**
@@ -198,7 +209,7 @@ function getCountryCode(divisionName, countryCode) {
  * @param {string} filePath - Path to the .osm.pbf file
  */
 async function* createOsmElementStream(filePath) {
-    const stream = createOSMStream(filePath, {withInfo: true});
+    const stream = createOSMStream(filePath, { withInfo: true });
 
     for await (const item of stream) {
         // If the item is a node, it has lat/lon.
@@ -328,14 +339,39 @@ async function processCountry(countryData) {
     const fullTranslations = getTranslations(locale);
     const clientTranslations = filterClientTranslations(fullTranslations);
 
-    const tmpPbfFilePath = path.join(process.cwd(), `filtered-${uuidv4()}.osm.pbf`);
-    // TODO: deal with US, multiple URLs
-    await processPbf(countryData.pbfUrl, tmpPbfFilePath);
-    await splitPbf(tmpPbfFilePath, countryData);
+    const divisions = countryData.divisions
+        ? { [countryData.name]: countryData.divisions }
+        : countryData.divisionMap;
 
-    if (fs.existsSync(tmpPbfFilePath)) {
-        fs.unlinkSync(tmpPbfFilePath);
-        console.log('Temporary filtered file deleted.');
+    if (countryData.pbfUrl) {
+        const tmpPbfFilePath = path.join(process.cwd(), `filtered-${uuidv4()}.osm.pbf`);
+
+        await processPbf(countryData.pbfUrl, tmpPbfFilePath);
+        await splitPbf(tmpPbfFilePath, countryData);
+
+        if (fs.existsSync(tmpPbfFilePath)) {
+            fs.unlinkSync(tmpPbfFilePath);
+            console.debug('Temporary filtered file deleted.');
+        }
+    } else {
+        for (const [groupName, groupDivisions] of Object.entries(divisions)) {
+            for (const [subName, subData] of Object.entries(groupDivisions)) {
+                const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
+                if (!pbfUrl) {
+                    console.error(`No pbf found for ${subName} (${groupName})`)
+                }
+
+                const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+
+                await processPbf(pbfUrl, subPbfPath);
+                await splitPbf(subPbfPath, countryData, subData);
+
+                if (fs.existsSync(subPbfPath)) {
+                    fs.unlinkSync(subPbfPath);
+                    console.debug('Temporary filtered file deleted.');
+                }
+            }
+        }
     }
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
@@ -348,10 +384,6 @@ async function processCountry(countryData) {
     let totalSafeEditCount = 0;
     let totalTotalNumbers = 0;
     const groupedDivisionStats = {};
-
-    const divisions = countryData.divisions
-        ? { [countryData.name]: countryData.divisions }
-        : countryData.divisionMap;
 
     for (const rawDivisionName in divisions) {
         const {

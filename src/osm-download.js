@@ -5,6 +5,7 @@ const { spawn, exec } = require('child_process');
 const path = require('path');
 const { promisify } = require('util');
 const { COUNTRIES, POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
+const { getSubdivisionIds } = require('./fetch-polys');
 
 const execPromise = promisify(exec);
 
@@ -16,39 +17,19 @@ if (!fs.existsSync(OSM_DIR)) {
     fs.mkdirSync(OSM_DIR, { recursive: true });
 }
 
+// TODO: remove
 function logSystemStats() {
     const freeMem = (os.freemem() / 1024 / 1024 / 1024).toFixed(2);
     const usedMem = (process.memoryUsage().rss / 1024 / 1024 / 1024).toFixed(2);
-    
+
     // Check disk for the current directory
     let diskInfo = "Unknown";
     try {
         diskInfo = require('child_process').execSync('df -h . --output=avail').toString().split('\n')[1].trim();
-    } catch (e) {}
+    } catch (e) { }
 
     console.log(`[MONITOR] RAM Used: ${usedMem}GB | RAM Free: ${freeMem}GB | Disk Avail: ${diskInfo}`);
 }
-
-/**
- * Extracts all unique subdivision IDs from a country object.
- * Handles both flat 'divisions' and nested 'divisionMap' structures.
- */
-function getSubdivisionIds(country) {
-    // If divisions exists, take its values; 
-    // otherwise, flatten the values within divisionMap.
-    if (country.divisions) {
-        return Object.values(country.divisions);
-    }
-
-    if (country.divisionMap) {
-        return Object.values(country.divisionMap).flatMap(subRegion =>
-            Object.values(subRegion)
-        );
-    }
-
-    return [];
-}
-
 
 /**
  * Generates an Osmium extraction configuration for a specific country.
@@ -239,8 +220,9 @@ async function processPbf(url, outputPath) {
     }
 }
 
-async function splitPbf(filteredFilePath, country) {
-    const ids = getSubdivisionIds(country);
+async function splitPbf(filteredFilePath, country = null, division = null) {
+    const ids = division ? [division.relationId] : getSubdivisionIds(country);
+
     console.log(`Starting sequential extraction for ${ids.length} divisions...`);
 
     for (const id of ids) {
@@ -264,7 +246,7 @@ async function splitPbf(filteredFilePath, country) {
             continue;
         }
     }
-    
+
     console.log(`Finished all extractions for ${country.name || 'country'}.`);
 }
 
