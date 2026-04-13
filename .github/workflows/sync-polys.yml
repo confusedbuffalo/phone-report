@@ -2,6 +2,8 @@ name: Sync OSM Polygons
 
 on:
   push:
+    branches:
+      - master
     paths:
       - 'src/data/countries.json'
   schedule:
