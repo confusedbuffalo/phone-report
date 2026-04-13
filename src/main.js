@@ -439,13 +439,14 @@ async function main() {
     const fullDefaultTranslations = getTranslations(defaultLocale);
     const clientDefaultTranslations = filterClientTranslations(fullDefaultTranslations);
 
-    try {
-        await downloadAndFilterPlanet();
-    } catch (error) {
-        console.error("FATAL ERROR in pipeline:", error.message);
+    // TODO: remove
+    // try {
+    //     await downloadAndFilterPlanet();
+    // } catch (error) {
+    //     console.error("FATAL ERROR in pipeline:", error.message);
 
-        process.exit(1);
-    }
+    //     process.exit(1);
+    // }
 
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
