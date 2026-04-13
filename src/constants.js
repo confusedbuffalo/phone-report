@@ -3,6 +3,7 @@ const { translate } = require('./i18n');
 const packageInfo = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 
 const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
@@ -267,7 +268,6 @@ const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
 const POLY_DIR = path.join(__dirname, '..', 'poly');
-const OSM_DIR = path.join(__dirname, '..', 'osm');
 
 const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
 const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
@@ -348,6 +348,7 @@ const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
 
 module.exports = {
     PUBLIC_DIR,
+    OVERPASS_API_URL,
     MOBILE_TAGS,
     NON_MOBILE_TAGS,
     PHONE_TAGS,
@@ -378,7 +379,6 @@ module.exports = {
     HISTORY_DIR,
     SAFE_EDITS_DIR,
     POLY_DIR,
-    OSM_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
     DIN_EXTENSION_REGEX,
