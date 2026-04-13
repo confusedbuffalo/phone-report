@@ -5,7 +5,7 @@ const { createOSMStream } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
-const { downloadAndFilterPlanet, processPbf, splitPbf } = require('./osm-download');
+const { processPbf, splitPbf } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
@@ -469,15 +469,6 @@ async function main() {
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
     const clientDefaultTranslations = filterClientTranslations(fullDefaultTranslations);
-
-    // TODO: remove
-    // try {
-    //     await downloadAndFilterPlanet();
-    // } catch (error) {
-    //     console.error("FATAL ERROR in pipeline:", error.message);
-
-    //     process.exit(1);
-    // }
 
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
