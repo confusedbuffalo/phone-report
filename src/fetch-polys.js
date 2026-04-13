@@ -5,11 +5,6 @@ const { COUNTRIES, POLY_DIR } = require('./constants');
 
 const BASE_URL = 'https://polygons.openstreetmap.fr/get_poly.py?id=';
 
-// Ensure output directory exists
-if (!fs.existsSync(POLY_DIR)) {
-    fs.mkdirSync(POLY_DIR, { recursive: true });
-}
-
 const isRefresh = process.argv.includes('--refresh');
 
 /**
@@ -93,6 +88,10 @@ async function fetchPoly(relationId) {
 }
 
 async function run() {
+    if (!fs.existsSync(POLY_DIR)) {
+        fs.mkdirSync(POLY_DIR, { recursive: true });
+    }
+
     const validIds = getAllRelationIds(COUNTRIES);
     console.log(`Found ${validIds.size} unique relations in JSON.`);
 
