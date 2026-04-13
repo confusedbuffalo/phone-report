@@ -25,13 +25,14 @@ if (!fs.existsSync(OSM_DIR)) {
  */
 async function hasOsmData(filePath) {
     try {
+        console.log(`[FILE CHECK] ${filePath}`);
+
         // We use --v to ensure we get a clean output we can parse
-        const { bbox } = await execPromise(`osmium fileinfo -e -g data.bbox "${filePath}"`);
-        const { nodes } = await execPromise(`osmium fileinfo -e -g data.count.nodes "${filePath}"`);
-        
-        console.log(`[FILE CHECK] BBOX:\n${bbox}`)
-        console.log(`[FILE CHECK] Nodes:\n${nodes}`)
-        return nodeCount > 0;
+        const { stdout } = await execPromise(`osmium fileinfo -e -g data.bbox -g data.count.nodes "${filePath}"`); 
+       
+        console.log(`[FILE CHECK] ${stdout}`);
+
+        return true;
     } catch (error) {
         console.error(`[FILE CHECK ERROR] Could not read file info: ${error.message}`);
         return false;
@@ -104,9 +105,9 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
 
             const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${outputPath}" --strategy simple --overwrite`;
 
-            await hasOsmData(outputPath);
-
             await execPromise(command);
+
+            await hasOsmData(outputPath);
         } catch (error) {
             console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
             continue;
