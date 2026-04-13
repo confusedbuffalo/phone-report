@@ -17,29 +17,6 @@ if (!fs.existsSync(OSM_DIR)) {
     fs.mkdirSync(OSM_DIR, { recursive: true });
 }
 
-// TODO: remove
-/**
- * Checks if a PBF file has actual data.
- * @param {string} filePath - Path to the .pbf file
- * @returns {Promise<boolean>} - True if the file has nodes, false otherwise
- */
-async function hasOsmData(filePath) {
-    try {
-        console.log(`[FILE CHECK] ${filePath}`);
-
-        const { stdout: bbox } = await execPromise(`osmium fileinfo -e -g data.bbox "${filePath}"`);
-        console.log(`[FILE CHECK] BBOX: ${bbox.trim()}`);
-
-        const { stdout: nodes } = await execPromise(`osmium fileinfo -e -g data.count.nodes "${filePath}"`);
-        console.log(`[FILE CHECK] Nodes: ${nodes.trim()}`);
-
-        return true;
-    } catch (error) {
-        console.error(`[FILE CHECK ERROR] Could not read file info: ${error.message}`);
-        return false;
-    }
-}
-
 /**
  * Downloads, filters, and cleans up OSM PBF files.
  * @param {string} url - The URL of the .osm.pbf file.
@@ -64,8 +41,6 @@ async function processPbf(url, outputPath) {
             writer.on('error', reject);
         });
 
-        await hasOsmData(tempInput);
-
         const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
         const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --overwrite`;
@@ -73,9 +48,6 @@ async function processPbf(url, outputPath) {
         console.log('Running Osmium filter...');
         await execPromise(command);
         console.log(`Filtered file saved to: ${outputPath}`);
-
-        await hasOsmData(outputPath);
-
     } catch (error) {
         console.error('Error processing OSM data:', error.message);
     } finally {
@@ -107,8 +79,6 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
             const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${outputPath}" --strategy simple --overwrite`;
 
             await execPromise(command);
-
-            await hasOsmData(outputPath);
         } catch (error) {
             console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
             continue;
