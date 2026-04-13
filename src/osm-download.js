@@ -208,7 +208,7 @@ async function processPbf(url, outputPath) {
 
         const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
-        const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --add-until-complete --overwrite`;
+        const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --overwrite`;
 
         console.log('Running Osmium filter...');
         await execPromise(command);
