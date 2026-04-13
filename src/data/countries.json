@@ -1,4 +1,55 @@
 {
+    "France d'outre-mer": {
+        "countryCode": "FR",
+        "locale": "fr-FR",
+        "safeAutoFixBotEnabled": false,
+        "divisions": {
+            "Guadeloupe": {
+                "relationId": 1401835,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/guadeloupe-latest.osm.pbf"
+            },
+            "Guyane": {
+                "relationId": 2502058,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/guyane-latest.osm.pbf"
+            },
+            "La Réunion": {
+                "relationId": 1785276,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/reunion-latest.osm.pbf"
+            },
+            "Martinique": {
+                "relationId": 1891495,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/martinique-latest.osm.pbf"
+            },
+            "Mayotte": {
+                "relationId": 1259885,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/mayotte-latest.osm.pbf"
+            },
+            "Nouvelle-Calédonie": {
+                "relationId": 3407643,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf"
+            },
+            "Polynésie française": {
+                "relationId": 3412620,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf"
+            },
+            "Saint-Barthélemy": {
+                "relationId": 537967,
+                "pbfUrl": "https://geo2day.com/central_america/saint_barthelemy.pbf"
+            },
+            "Saint-Martin": {
+                "relationId": 1891583,
+                "pbfUrl": "https://geo2day.com/central_america/saint_martin.pbf"
+            },
+            "Saint-Pierre-et-Miquelon": {
+                "relationId": 3406826,
+                "pbfUrl": "https://geo2day.com/north_america/saint_pierre_et_miquelon.pbf"
+            },
+            "Wallis-et-Futuna": {
+                "relationId": 3412448,
+                "pbfUrl": "https://download.geofabrik.de/australia-oceania/wallis-et-futuna-latest.osm.pbf"
+            }
+        }
+    },
     "Lesotho": {
         "countryCode": "LS",
         "locale": "en-ZA",
