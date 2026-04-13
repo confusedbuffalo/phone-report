@@ -45,9 +45,9 @@ jobs:
         run: |
           # Determine if we should refresh based on trigger
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.refresh_all }}" == "true" ]]; then
-            node src/fetch-polys.js --refresh
+            node src/fetch_polys.js --refresh
           else
-            node src/fetch-polys.js
+            node src/fetch_polys.js
           fi
 
       - name: Commit and Push Changes
