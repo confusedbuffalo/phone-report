@@ -17,6 +17,34 @@ if (!fs.existsSync(OSM_DIR)) {
     fs.mkdirSync(OSM_DIR, { recursive: true });
 }
 
+// TODO: remove
+/**
+ * Checks if a PBF file has actual data.
+ * @param {string} filePath - Path to the .pbf file
+ * @returns {Promise<boolean>} - True if the file has nodes, false otherwise
+ */
+async function hasOsmData(filePath) {
+    try {
+        // -g data_summary gives us counts of nodes, ways, and relations
+        // We use --v to ensure we get a clean output we can parse
+        const { stdout } = await execPromise(`osmium fileinfo -g data_summary "${filePath}"`);
+        
+        // The output looks like:
+        // nodes: 12345
+        // ways: 678
+        // relations: 90
+        
+        const nodeMatch = stdout.match(/nodes:\s+(\d+)/);
+        const nodeCount = nodeMatch ? parseInt(nodeMatch[1], 10) : 0;
+
+        console.log(`[FILE CHECK] ${filePath} contains ${nodeCount} nodes.`);
+        return nodeCount > 0;
+    } catch (error) {
+        console.error(`[FILE CHECK ERROR] Could not read file info: ${error.message}`);
+        return false;
+    }
+}
+
 /**
  * Downloads, filters, and cleans up OSM PBF files.
  * @param {string} url - The URL of the .osm.pbf file.
@@ -41,6 +69,8 @@ async function processPbf(url, outputPath) {
             writer.on('error', reject);
         });
 
+        await hasOsmData(tempInput);
+
         const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
         const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --overwrite`;
@@ -48,6 +78,8 @@ async function processPbf(url, outputPath) {
         console.log('Running Osmium filter...');
         await execPromise(command);
         console.log(`Filtered file saved to: ${outputPath}`);
+
+        await hasOsmData(outputPath);
 
     } catch (error) {
         console.error('Error processing OSM data:', error.message);
@@ -78,6 +110,8 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
             console.log(`[EXTRACTING] ID: ${id}`);
 
             const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${outputPath}" --strategy simple --overwrite`;
+
+            await hasOsmData(outputPath);
 
             await execPromise(command);
         } catch (error) {
