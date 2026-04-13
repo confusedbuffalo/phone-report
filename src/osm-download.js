@@ -62,8 +62,6 @@ async function processPbf(url, outputPath) {
 async function splitPbf(filteredFilePath, country = null, division = null) {
     const ids = division ? [division.relationId] : getSubdivisionIds(country);
 
-    console.log(`Starting sequential extraction for ${ids.length} divisions...`);
-
     for (const id of ids) {
         const polyPath = path.join(POLY_DIR, `${id}.poly`);
         const outputPath = path.join(OSM_DIR, `${id}.osm.pbf`);
@@ -74,18 +72,13 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
         }
 
         try {
-            console.log(`[EXTRACTING] ID: ${id}`);
-
             const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${outputPath}" --strategy simple --overwrite`;
-
             await execPromise(command);
         } catch (error) {
             console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
             continue;
         }
     }
-
-    console.log(`Finished all extractions for ${country?.name || 'division'}.`);
 }
 
 /**
