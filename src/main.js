@@ -331,8 +331,8 @@ async function processCountry(countryData) {
 
     const tmpPbfFilePath = path.join(os.tmpdir(), `filtered-${uuidv4()}.osm.pbf`);
     // TODO: deal with US, multiple URLs
-    processPbf(countryData.pbfUrl, tmpPbfFilePath);
-    splitPbf(tmpPbfFilePath, countryData);
+    await processPbf(countryData.pbfUrl, tmpPbfFilePath);
+    await splitPbf(tmpPbfFilePath, countryData);
 
     if (fs.existsSync(tmpPbfFilePath)) {
         fs.unlinkSync(tmpPbfFilePath);
