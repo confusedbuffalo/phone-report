@@ -27,10 +27,11 @@ async function hasOsmData(filePath) {
     try {
         console.log(`[FILE CHECK] ${filePath}`);
 
-        // We use --v to ensure we get a clean output we can parse
-        const { stdout } = await execPromise(`osmium fileinfo -e -g data.bbox -g data.count.nodes "${filePath}"`); 
-       
-        console.log(`[FILE CHECK] ${stdout}`);
+        const { stdout: bbox } = await execPromise(`osmium fileinfo -e -g data.bbox "${filePath}"`);
+        console.log(`[FILE CHECK] BBOX: ${bbox.trim()}`);
+
+        const { stdout: nodes } = await execPromise(`osmium fileinfo -e -g data.count.nodes "${filePath}"`);
+        console.log(`[FILE CHECK] Nodes: ${nodes.trim()}`);
 
         return true;
     } catch (error) {
