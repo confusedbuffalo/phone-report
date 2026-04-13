@@ -1,3 +1,4 @@
+const os = require('os');
 const axios = require('axios');
 const fs = require('fs');
 const { spawn, exec } = require('child_process');
@@ -13,6 +14,19 @@ const PLANET_URL = 'https://download3.bbbike.org/osm/pbf/region/africa/south-afr
 // Ensure output directory exists
 if (!fs.existsSync(OSM_DIR)) {
     fs.mkdirSync(OSM_DIR, { recursive: true });
+}
+
+function logSystemStats() {
+    const freeMem = (os.freemem() / 1024 / 1024 / 1024).toFixed(2);
+    const usedMem = (process.memoryUsage().rss / 1024 / 1024 / 1024).toFixed(2);
+    
+    // Check disk for the current directory
+    let diskInfo = "Unknown";
+    try {
+        diskInfo = require('child_process').execSync('df -h . --output=avail').toString().split('\n')[1].trim();
+    } catch (e) {}
+
+    console.log(`[MONITOR] RAM Used: ${usedMem}GB | RAM Free: ${freeMem}GB | Disk Avail: ${diskInfo}`);
 }
 
 /**
@@ -230,14 +244,20 @@ async function splitPbf(filteredFilePath, country) {
     const configPath = './osmium-config.json';
     fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfigForCountry(country)));
 
+    const monitor = setInterval(logSystemStats, 10000);
+    logSystemStats();
+
     try {
         const command = `osmium extract --config ${configPath} --overwrite ${filteredFilePath} --strategy simple`;
 
         console.log('Running Osmium extract...');
         await execPromise(command);
-        console.log(`Extracted files saved`);
+        console.log(`Extracted files saved successfully`);
     } catch (error) {
         console.error('Error extracting OSM data:', error.message);
+    } finally {
+        clearInterval(monitor);
+        if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
     }
 }
 
