@@ -434,7 +434,8 @@ async function processCountry(countryData) {
         safeEditCount: totalSafeEditCount,
         totalNumbers: totalTotalNumbers,
         groupedDivisionStats: groupedDivisionStats,
-        botEnabled: countryData.safeAutoFixBotEnabled
+        botEnabled: countryData.safeAutoFixBotEnabled,
+        timestamp: countryData.timestamp
     };
 
     saveCountryHistory(countryStats);
