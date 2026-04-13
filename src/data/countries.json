@@ -1,13 +1,11 @@
 {
-    "United States Of America": {
-        "countryCode": "US",
-        "locale": "en-US",
-        "safeAutoFixBotEnabled": true,
+    "Lesotho": {
+        "countryCode": "LS",
+        "locale": "en-ZA",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/lesotho.osm.pbf",
         "divisions": {
-            "Georgia": {
-                "relationId": 161957,
-                "pbfUrl": "https://download.openstreetmap.fr/extracts/north-america/us-south/georgia.osm.pbf"
-            }
+            "Lesotho": 2093234
         }
     }
 }
