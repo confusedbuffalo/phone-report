@@ -392,7 +392,10 @@ async function processCountry(countryData) {
                 }
 
                 // TODO: store this per subdivision
-                countryData.timestamp = await getOsmTimestamp(pbfUrl);
+                const dataTimestamp = await getOsmTimestamp(pbfUrl);
+                countryData.timestamp = dataTimestamp;
+                console.log(`Fetched timestamp for ${subName}: ${dataTimestamp}`);
+                console.log(countryData);
             }
         }
     }
