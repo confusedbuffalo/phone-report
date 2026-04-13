@@ -215,8 +215,9 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {string} locale
  * @param {Object} translations
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
+ * @param {string} timestamp - The timestamp of the data
  */
-async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled) {
+async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled, timestamp) {
     const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);
@@ -364,7 +365,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                 <section id="noInvalidSection"></section>
             </div>
             <div class="footer-container">
-                ${createFooter(locale, translations, true)}
+                ${createFooter(locale, translations, true, timestamp)}
             </div>
         </div>
         <div id="upload-modal-overlay" class="save-modal-overlay modal-overlay hidden">

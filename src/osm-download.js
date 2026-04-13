@@ -88,8 +88,50 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
     console.log(`Finished all extractions for ${country?.name || 'division'}.`);
 }
 
+/**
+ * Fetches and extracts a timestamp from OSM metadata files.
+ * Supports download3.bbbike.org (.timestamp) and download.openstreetmap.fr (.state.txt)
+ * * @param {string} pbfUrl - The URL to the .osm.pbf file
+ * @returns {Promise<string|null>} The ISO timestamp or null if not found
+ */
+async function getOsmTimestamp(pbfUrl) {
+    try {
+        let metadataUrl;
+        let type;
+
+        if (pbfUrl.includes('bbbike.org')) {
+            metadataUrl = pbfUrl + '.timestamp';
+            type = 'bbbike';
+        } else if (pbfUrl.includes('openstreetmap.fr')) {
+            metadataUrl = pbfUrl.replace('.osm.pbf', '.state.txt');
+            type = 'osmfr';
+        } else {
+            throw new Error('Unsupported provider URL');
+        }
+
+        const response = await fetch(metadataUrl);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const text = (await response.text()).trim();
+
+        if (type === 'bbbike') {
+            // Format: 2026-04-13T00:00:00Z
+            return text;
+        } else if (type === 'osmfr') {
+            // Format: timestamp=2026-04-13T00\:00\:30Z
+            // Note: We remove backslashes often found in .state.txt files
+            const match = text.match(/timestamp=(.+)/);
+            return match ? match[1].replace(/\\/g, '') : null;
+        }
+
+    } catch (error) {
+        console.error('Error fetching timestamp:', error);
+        return null;
+    }
+}
 
 module.exports = {
     processPbf,
     splitPbf,
+    getOsmTimestamp,
 };

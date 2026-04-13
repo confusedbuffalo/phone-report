@@ -5,7 +5,7 @@ const { createOSMStream } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
-const { processPbf, splitPbf } = require('./osm-download');
+const { processPbf, splitPbf, getOsmTimestamp } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
@@ -231,6 +231,20 @@ async function* createOsmElementStream(filePath) {
 }
 
 /**
+ * Converts a timestamp string to a JavaScript Date object.
+ * @param {string} timestampStr - The raw timestamp from the metadata file.
+ * @returns {Date|null} - A valid Date object or null if parsing fails.
+ */
+function parseOsmTimestamp(timestampStr) {
+    if (!timestampStr) return null;
+
+    const date = new Date(timestampStr);
+
+    // Check if the date is valid
+    return isNaN(date.getTime()) ? null : date;
+}
+
+/**
  * Processes a single subdivision: processes OSM data, validates numbers, generates the HTML report,
  * and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
@@ -263,6 +277,9 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const siteInvalidCount = botEnabled ? invalidCount - safeEditCount : invalidCount;
     const siteAutoFixableCount = botEnabled ? autoFixableCount - safeEditCount : autoFixableCount;
 
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
+
     const stats = {
         name: subdivision.name,
         divisionSlug: safeName(rawDivisionName),
@@ -271,7 +288,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         autoFixableCount: siteAutoFixableCount,
         safeEditCount: safeEditCount,
         totalNumbers: totalNumbers,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: dataTimestamp.toISOString()
     };
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
@@ -281,7 +298,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     }
 
     await generateSafeEditFile(countryName, stats, tmpFilePath)
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled);
+    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, countryData.timestamp);
 
     fs.unlinkSync(tmpFilePath); // Clean up the temporary file
 
@@ -351,8 +368,9 @@ async function processCountry(countryData) {
 
         if (fs.existsSync(tmpPbfFilePath)) {
             fs.unlinkSync(tmpPbfFilePath);
-            console.debug('Temporary filtered file deleted.');
         }
+
+        countryData.timestamp = getOsmTimestamp(countryData.pbfUrl);
     } else {
         for (const [groupName, groupDivisions] of Object.entries(divisions)) {
             for (const [subName, subData] of Object.entries(groupDivisions)) {
@@ -368,8 +386,10 @@ async function processCountry(countryData) {
 
                 if (fs.existsSync(subPbfPath)) {
                     fs.unlinkSync(subPbfPath);
-                    console.debug('Temporary filtered file deleted.');
                 }
+
+                // TODO: store this per subdivision
+                countryData.timestamp = getOsmTimestamp(pbfUrl);
             }
         }
     }
