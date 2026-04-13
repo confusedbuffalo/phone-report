@@ -105,7 +105,9 @@ async function run() {
     console.log('Done!');
 }
 
-run();
+if (require.main === module) {
+    run();
+}
 
 module.exports = {
     getSubdivisionIds,
