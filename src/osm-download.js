@@ -25,19 +25,12 @@ if (!fs.existsSync(OSM_DIR)) {
  */
 async function hasOsmData(filePath) {
     try {
-        // -g data_summary gives us counts of nodes, ways, and relations
         // We use --v to ensure we get a clean output we can parse
-        const { stdout } = await execPromise(`osmium fileinfo -g data_summary "${filePath}"`);
+        const { bbox } = await execPromise(`osmium fileinfo -g data.bbox "${filePath}"`);
+        const { nodes } = await execPromise(`osmium fileinfo -g data.count.nodes "${filePath}"`);
         
-        // The output looks like:
-        // nodes: 12345
-        // ways: 678
-        // relations: 90
-        
-        const nodeMatch = stdout.match(/nodes:\s+(\d+)/);
-        const nodeCount = nodeMatch ? parseInt(nodeMatch[1], 10) : 0;
-
-        console.log(`[FILE CHECK] ${filePath} contains ${nodeCount} nodes.`);
+        console.log(`[FILE CHECK] BBOX:\n${bbox}`)
+        console.log(`[FILE CHECK] Nodes:\n${nodes}`)
         return nodeCount > 0;
     } catch (error) {
         console.error(`[FILE CHECK ERROR] Could not read file info: ${error.message}`);
