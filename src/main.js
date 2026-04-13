@@ -364,7 +364,7 @@ async function processCountry(countryData) {
                 const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
 
                 await processPbf(pbfUrl, subPbfPath);
-                await splitPbf(subPbfPath, countryData, subData);
+                await splitPbf(subPbfPath, null, subData);
 
                 if (fs.existsSync(subPbfPath)) {
                     fs.unlinkSync(subPbfPath);

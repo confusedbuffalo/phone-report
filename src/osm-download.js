@@ -86,7 +86,7 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
         }
     }
 
-    console.log(`Finished all extractions for ${country.name || 'country'}.`);
+    console.log(`Finished all extractions for ${country?.name || 'division'}.`);
 }
 
 
