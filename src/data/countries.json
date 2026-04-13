@@ -1,9 +1,23 @@
 {
-    "France d'outre-mer": {
+    "France": {
         "countryCode": "FR",
         "locale": "fr-FR",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/france.osm.pbf",
         "divisions": {
+            "Auvergne-Rhône-Alpes": 3792877,
+            "Bourgogne – Franche-Comté": 3792878,
+            "Brittany": 102740,
+            "Centre-Val de Loire": 8640,
+            "Corsica": 76910,
+            "Grand Est": 3792876,
+            "Hauts-de-France": 4217435,
+            "Ile-de-France": 8649,
+            "Normandy": 3793170,
+            "Nouvelle-Aquitaine": 3792880,
+            "Occitania": 3792883,
+            "Pays de la Loire": 8650,
+            "Provence-Alpes-Côte d'Azur": 8654,
             "Guadeloupe": {
                 "relationId": 1401835,
                 "pbfUrl": "https://download.geofabrik.de/europe/france/guadeloupe-latest.osm.pbf"
@@ -48,15 +62,6 @@
                 "relationId": 3412448,
                 "pbfUrl": "https://download.geofabrik.de/australia-oceania/wallis-et-futuna-latest.osm.pbf"
             }
-        }
-    },
-    "Lesotho": {
-        "countryCode": "LS",
-        "locale": "en-ZA",
-        "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/lesotho.osm.pbf",
-        "divisions": {
-            "Lesotho": 2093234
         }
     }
 }

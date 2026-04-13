@@ -372,14 +372,12 @@ async function processCountry(countryData) {
 
         const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
         countryData.timestamp = dataTimestamp;
-    } else {
-        for (const [groupName, groupDivisions] of Object.entries(divisions)) {
-            for (const [subName, subData] of Object.entries(groupDivisions)) {
-                const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
-                if (!pbfUrl) {
-                    console.error(`No pbf found for ${subName} (${groupName})`)
-                }
+    }
 
+    for (const [groupName, groupDivisions] of Object.entries(divisions)) {
+        for (const [subName, subData] of Object.entries(groupDivisions)) {
+            const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
+            if (pbfUrl) {
                 const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
 
                 await processPbf(pbfUrl, subPbfPath);
