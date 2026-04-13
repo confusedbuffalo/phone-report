@@ -89,22 +89,34 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
 }
 
 /**
- * Fetches and extracts a timestamp from OSM metadata files.
- * Supports download3.bbbike.org (.timestamp) and download.openstreetmap.fr (.state.txt)
- * * @param {string} pbfUrl - The URL to the .osm.pbf file
- * @returns {Promise<string|null>} The ISO timestamp or null if not found
+ * Fetches and extracts a timestamp from OSM metadata or headers.
+ * Supports bbbike, openstreetmap.fr, and geofabrik.de
+ * @param {string} pbfUrl - The URL to the .osm.pbf file
+ * @returns {Promise<string|null>} The ISO timestamp string
  */
 async function getOsmTimestamp(pbfUrl) {
     try {
+        // Handle Geofabrik via HTTP Headers
+        if (pbfUrl.includes('geofabrik.de') || pbfUrl.includes('geo2day.com')) {
+            const response = await fetch(pbfUrl, { method: 'HEAD' });
+            const lastModified = response.headers.get('last-modified');
+
+            if (lastModified) {
+                // Convert "Mon, 13 Apr 2026 00:00:00 GMT" to "2026-04-13T00:00:00.000Z"
+                return new Date(lastModified).toISOString();
+            }
+            return null;
+        }
+
+        // Handle Sidecar Metadata Files
         let metadataUrl;
-        let type;
+        let isOsmFr = false;
 
         if (pbfUrl.includes('bbbike.org')) {
             metadataUrl = pbfUrl + '.timestamp';
-            type = 'bbbike';
         } else if (pbfUrl.includes('openstreetmap.fr')) {
             metadataUrl = pbfUrl.replace('.osm.pbf', '.state.txt');
-            type = 'osmfr';
+            isOsmFr = true;
         } else {
             throw new Error('Unsupported provider URL');
         }
@@ -114,15 +126,15 @@ async function getOsmTimestamp(pbfUrl) {
 
         const text = (await response.text()).trim();
 
-        if (type === 'bbbike') {
-            // Format: 2026-04-13T00:00:00Z
-            return text;
-        } else if (type === 'osmfr') {
-            // Format: timestamp=2026-04-13T00\:00\:30Z
-            // Note: We remove backslashes often found in .state.txt files
+        if (isOsmFr) {
             const match = text.match(/timestamp=(.+)/);
-            return match ? match[1].replace(/\\/g, '') : null;
+            // Clean backslashes and standardize to ISO
+            const raw = match ? match[1].replace(/\\/g, '') : null;
+            return raw ? new Date(raw).toISOString() : null;
         }
+
+        // Default for BBBike (already almost ISO)
+        return new Date(text).toISOString();
 
     } catch (error) {
         console.error('Error fetching timestamp:', error);
