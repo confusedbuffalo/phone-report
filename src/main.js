@@ -334,7 +334,10 @@ async function processCountry(countryData) {
     processPbf(countryData.pbfUrl, tmpPbfFilePath);
     splitPbf(tmpPbfFilePath, countryData);
 
-    fs.unlinkSync(tmpPbfFilePath);
+    if (fs.existsSync(tmpPbfFilePath)) {
+        fs.unlinkSync(tmpPbfFilePath);
+        console.log('Temporary filtered file deleted.');
+    }
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
     if (!fs.existsSync(countryDir)) {
