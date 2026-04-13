@@ -334,7 +334,7 @@ async function processCountry(countryData) {
     processPbf(countryData.pbfUrl, tmpPbfFilePath);
     splitPbf(tmpPbfFilePath, countryData);
 
-    os.unlinkSync(tmpPbfFilePath);
+    fs.unlinkSync(tmpPbfFilePath);
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
     if (!fs.existsSync(countryDir)) {
