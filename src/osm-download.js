@@ -239,27 +239,35 @@ async function processPbf(url, outputPath) {
     }
 }
 
-
 async function splitPbf(filteredFilePath, country) {
-    const configPath = './osmium-config.json';
-    fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfigForCountry(country)));
+    const ids = getSubdivisionIds(country);
+    console.log(`Starting sequential extraction for ${ids.length} divisions...`);
 
-    const monitor = setInterval(logSystemStats, 10000);
-    logSystemStats();
+    for (const id of ids) {
+        const polyPath = path.join(POLY_DIR, `${id}.poly`);
+        const outputPath = path.join(OSM_DIR, `${id}.osm.pbf`);
 
-    try {
-        const command = `osmium extract --config ${configPath} --overwrite ${filteredFilePath} --strategy simple`;
+        if (!fs.existsSync(polyPath)) {
+            console.warn(`[SKIP] Poly file not found for ID: ${id}`);
+            continue;
+        }
 
-        console.log('Running Osmium extract...');
-        await execPromise(command);
-        console.log(`Extracted files saved successfully`);
-    } catch (error) {
-        console.error('Error extracting OSM data:', error.message);
-    } finally {
-        clearInterval(monitor);
-        if (fs.existsSync(configPath)) fs.unlinkSync(configPath);
+        try {
+            logSystemStats();
+            console.log(`[EXTRACTING] ID: ${id}`);
+
+            const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${outputPath}" --strategy simple --overwrite`;
+
+            await execPromise(command);
+        } catch (error) {
+            console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
+            continue;
+        }
     }
+    
+    console.log(`Finished all extractions for ${country.name || 'country'}.`);
 }
+
 
 module.exports = {
     downloadAndFilterPlanet,
