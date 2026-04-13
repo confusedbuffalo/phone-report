@@ -370,7 +370,7 @@ async function processCountry(countryData) {
             fs.unlinkSync(tmpPbfFilePath);
         }
 
-        const dataTimestamp = getOsmTimestamp(countryData.pbfUrl);
+        const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
         countryData.timestamp = dataTimestamp;
         console.log(`Fetched timestamp for ${countryData.name}: ${dataTimestamp}`);
         console.log(countryData);
@@ -392,7 +392,7 @@ async function processCountry(countryData) {
                 }
 
                 // TODO: store this per subdivision
-                countryData.timestamp = getOsmTimestamp(pbfUrl);
+                countryData.timestamp = await getOsmTimestamp(pbfUrl);
             }
         }
     }
