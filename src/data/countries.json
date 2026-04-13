@@ -1,15 +1,51 @@
 {
-    "Danmark": {
-      "countryCode": "DK",
-      "locale": "da-DK",
-      "safeAutoFixBotEnabled": false,
-      "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/denmark.osm.pbf",
-      "divisions": {
-        "Region Nordjylland": 1319936,
-        "Region Midtjylland": 1319935,
-        "Region Syddanmark": 1319978,
-        "Region Sjælland": 1320370,
-        "Region Hovedstaden": 1320608
-      }
+    "Australia": {
+        "countryCode": "AU",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/australia.osm.pbf",
+        "divisions": {
+            "Australian Capital Territory": 2354197,
+            "Christmas Island": 2177207,
+            "Cocos (Keeling) Islands": 82636,
+            "Heard Island and McDonald Islands": 2177227,
+            "Jervis Bay Territory": 2357330,
+            "New South Wales": 2316593,
+            "Norfolk Island": 2574988,
+            "Northern Territory": 2316594,
+            "Queensland": 2316595,
+            "South Australia": 2316596,
+            "Tasmania": 2369652,
+            "Victoria": 2316741,
+            "Western Australia": 2316598
+        }
+    },
+    "Austria": {
+        "countryCode": "AT",
+        "locale": "de-DE",
+        "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/austria.osm.pbf",
+        "divisions": {
+            "Burgenland": 76909,
+            "Kärnten": 52345,
+            "Niederösterreich": 77189,
+            "Oberösterreich": 102303,
+            "Salzburg": 86539,
+            "Steiermark": 35183,
+            "Tirol": 52343,
+            "Vorarlberg": 74942,
+            "Wien": 109166
+        }
+    },
+    "België / Belgique / Belgien": {
+        "countryCode": "BE",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/belgium.osm.pbf",
+        "divisions": {
+            "Vlaanderen": 53134,
+            "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": 54094,
+            "Wallonie": 90348
+        }
     }
 }
