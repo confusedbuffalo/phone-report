@@ -43,10 +43,19 @@ jobs:
   build-report:
     needs: run-tests
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+
+    outputs:
+      is-full-build: ${{ env.BUILD_TYPE == 'full' }}
+
+    env:
+      BUILD_TYPE: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && 'simplified' || 'full' }}
 
     steps:
+      - name: Check Build Type
+        run: echo "The build type is $BUILD_TYPE"
+
       - name: Generate GitHub App Token
+        if: env.BUILD_TYPE == 'full'
         id: app-token
         uses: actions/create-github-app-token@v3
         with:
@@ -55,14 +64,14 @@ jobs:
           permission-contents: 'write'
 
       - name: Checkout repository (using App Token)
+        if: env.BUILD_TYPE == 'full'
         uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Install Osmium Tool
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y osmium-tool
+      - name: Checkout repository (without App token)
+        if: env.BUILD_TYPE == 'simplified'
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -76,18 +85,21 @@ jobs:
         run: npm run build
 
       - name: Upload History Data Artifact
+        if: env.BUILD_TYPE == 'full'
         uses: actions/upload-artifact@v6
         with:
           name: new-history-data
           path: history/
 
       - name: Upload Safe Edits Artifact
+        if: env.BUILD_TYPE == 'full'
         uses: actions/upload-artifact@v6
         with:
           name: safe-edits-data
           path: safe_edits/
 
       - name: Run HTML Minifier
+        if: env.BUILD_TYPE == 'full'
         run: |
           find public -name "*.html" -print0 | while IFS= read -r -d $'\0' file; do
             npx html-minifier-terser "$file" --output "$file" --collapse-whitespace --remove-comments --minify-css true --minify-js true
@@ -95,6 +107,7 @@ jobs:
         shell: bash
 
       - name: Run JS Minifier (terser)
+        if: env.BUILD_TYPE == 'full'
         run: |
           find public -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
             npx terser "$file" --output "$file" --compress --mangle
@@ -106,96 +119,99 @@ jobs:
         with:
           path: './public'
 
-      # - name: Deploy to GitHub Pages
-      #   id: deployment
-      #   uses: actions/deploy-pages@v5
+      - name: Deploy to GitHub Pages
+        if: env.BUILD_TYPE == 'full'
+        id: deployment
+        uses: actions/deploy-pages@v5
 
-  # bot-edit:
-  #   needs: build-report
-  #   runs-on: ubuntu-latest
+  bot-edit:
+    needs: build-report
+    if: needs.build-report.outputs.is-full-build == 'true'
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-  #     - name: Download safe edits artifact
-  #       uses: actions/download-artifact@v8
-  #       with:
-  #         name: safe-edits-data
-  #         path: safe_edits
+      - name: Download safe edits artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: safe-edits-data
+          path: safe_edits
 
-  #     - name: Install Dependencies
-  #       run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-  #     - name: Run the bot process
-  #       id: bot_process_run
-  #       env:
-  #         BOT_AUTH_TOKEN: ${{ secrets.BOT_AUTH_TOKEN }}
-  #       run: npm run bot:autofix
-  #       continue-on-error: true
+      - name: Run the bot process
+        id: bot_process_run
+        env:
+          BOT_AUTH_TOKEN: ${{ secrets.BOT_AUTH_TOKEN }}
+        run: npm run bot:autofix
+        continue-on-error: true
 
-  #     - name: Create GitHub Issue on Bot Failure
-  #       uses: dacbd/create-issue-action@main
-  #       if: always() && steps.bot_process_run.outcome == 'failure'
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         title: "🚨 Bot Edit Process Failed" 
-  #         body: |
-  #           ## Automated Edit Failure Notification
-  #           The step **'Run the bot process'** failed during the workflow run 
-  #           [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+      - name: Create GitHub Issue on Bot Failure
+        uses: dacbd/create-issue-action@main
+        if: always() && steps.bot_process_run.outcome == 'failure'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "🚨 Bot Edit Process Failed" 
+          body: |
+            ## Automated Edit Failure Notification
+            The step **'Run the bot process'** failed during the workflow run 
+            [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}).
 
-  #           The job was configured to **continue-on-error**, but this failure requires review as changes to OSM may not have been applied.
+            The job was configured to **continue-on-error**, but this failure requires review as changes to OSM may not have been applied.
 
-  #           - **Commit**: `${{ github.sha }}`
+            - **Commit**: `${{ github.sha }}`
 
-  #         labels: bot-failure
-  #         assignees: confusedbuffalo
+          labels: bot-failure
+          assignees: confusedbuffalo
 
-  # push-history:
-  #   needs: build-report
-  #   runs-on: ubuntu-latest
+  push-history:
+    needs: build-report
+    if: needs.build-report.outputs.is-full-build == 'true'
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Download history artifact
-  #       uses: actions/download-artifact@v8
-  #       with:
-  #         name: new-history-data
-  #         path: /tmp/new_history
+    steps:
+      - name: Download history artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: new-history-data
+          path: /tmp/new_history
 
-  #     - name: Generate GitHub App Token for Push
-  #       id: app-token-push
-  #       uses: actions/create-github-app-token@v3
-  #       with:
-  #         app-id: ${{ secrets.APP_ID }}
-  #         private-key: ${{ secrets.APP_PRIVATE_KEY }}
-  #         permission-contents: 'write'
+      - name: Generate GitHub App Token for Push
+        id: app-token-push
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          permission-contents: 'write'
 
-  #     - name: Checkout Main Branch
-  #       uses: actions/checkout@v5
-  #       with:
-  #         token: ${{ steps.app-token-push.outputs.token }}
-  #         ref: main
+      - name: Checkout Main Branch
+        uses: actions/checkout@v5
+        with:
+          token: ${{ steps.app-token-push.outputs.token }}
+          ref: main
 
-  #     - name: Commit and Push History Data
-  #       run: |
-  #         # Configure Git user
-  #         git config user.name "Auto-Pusher-Bot"
-  #         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Commit and Push History Data
+        run: |
+          # Configure Git user
+          git config user.name "Auto-Pusher-Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-  #         # Copy the downloaded history data into the repository's history folder
-  #         mkdir -p history
-  #         cp -r /tmp/new_history/* history/
-  #         echo "Restored new history data onto main branch working tree."
+          # Copy the downloaded history data into the repository's history folder
+          mkdir -p history
+          cp -r /tmp/new_history/* history/
+          echo "Restored new history data onto main branch working tree."
           
-  #         git add history || true
+          git add history || true
           
-  #         # Check if there are any changes to commit
-  #         if git diff --cached --exit-code; then
-  #             echo "No changes to history data. Skipping commit."
-  #         else
-  #             # Commit the changes. [skip ci] prevents an infinite loop of new workflow runs.
-  #             git commit -m "🤖 History Data Update: $(date +%Y-%m-%d) [skip ci]"
+          # Check if there are any changes to commit
+          if git diff --cached --exit-code; then
+              echo "No changes to history data. Skipping commit."
+          else
+              # Commit the changes. [skip ci] prevents an infinite loop of new workflow runs.
+              git commit -m "🤖 History Data Update: $(date +%Y-%m-%d) [skip ci]"
               
-  #             git push
-  #         fi
+              git push
+          fi
