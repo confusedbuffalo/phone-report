@@ -215,7 +215,7 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {string} locale
  * @param {Object} translations
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
- * @param {string} timestamp - The timestamp of the data
+ * @param {Date} timestamp - The timestamp of the data
  */
 async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled, timestamp) {
     const iconManager = new IconManager();

@@ -372,8 +372,6 @@ async function processCountry(countryData) {
 
         const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
         countryData.timestamp = dataTimestamp;
-        console.log(`Fetched timestamp for ${countryData.name}: ${dataTimestamp}`);
-        console.log(countryData);
     } else {
         for (const [groupName, groupDivisions] of Object.entries(divisions)) {
             for (const [subName, subData] of Object.entries(groupDivisions)) {
@@ -394,8 +392,6 @@ async function processCountry(countryData) {
                 // TODO: store this per subdivision
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);
                 countryData.timestamp = dataTimestamp;
-                console.log(`Fetched timestamp for ${subName}: ${dataTimestamp}`);
-                console.log(countryData);
             }
         }
     }
@@ -428,6 +424,9 @@ async function processCountry(countryData) {
         totalTotalNumbers += divisionTotalNumbers;
     }
 
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
+
     const countryStats = {
         name: countryName,
         slug: safeName(countryName),
@@ -438,7 +437,7 @@ async function processCountry(countryData) {
         totalNumbers: totalTotalNumbers,
         groupedDivisionStats: groupedDivisionStats,
         botEnabled: countryData.safeAutoFixBotEnabled,
-        timestamp: countryData.timestamp
+        timestamp: dataTimestamp
     };
 
     saveCountryHistory(countryStats);

@@ -116,8 +116,6 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
 
     const dataTimestamp = timestamp ? timestamp : new Date();
 
-    console.log(`Passed timestamp: ${timestamp}, parsed to ${dataTimestamp}`)
-
     // Formatting the date and time
     const formattedDate = dataTimestamp.toLocaleDateString(locale, {
         year: 'numeric',
