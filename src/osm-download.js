@@ -231,7 +231,7 @@ async function splitPbf(filteredFilePath, country) {
     fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfigForCountry(country)));
 
     try {
-        const command = `osmium extract --config ${configPath} --overwrite ${filteredFilePath}`;
+        const command = `osmium extract --config ${configPath} --overwrite ${filteredFilePath} --strategy simple`;
 
         console.log('Running Osmium extract...');
         await execPromise(command);
