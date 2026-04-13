@@ -26,8 +26,8 @@ if (!fs.existsSync(OSM_DIR)) {
 async function hasOsmData(filePath) {
     try {
         // We use --v to ensure we get a clean output we can parse
-        const { bbox } = await execPromise(`osmium fileinfo -g data.bbox "${filePath}"`);
-        const { nodes } = await execPromise(`osmium fileinfo -g data.count.nodes "${filePath}"`);
+        const { bbox } = await execPromise(`osmium fileinfo -e -g data.bbox "${filePath}"`);
+        const { nodes } = await execPromise(`osmium fileinfo -e -g data.count.nodes "${filePath}"`);
         
         console.log(`[FILE CHECK] BBOX:\n${bbox}`)
         console.log(`[FILE CHECK] Nodes:\n${nodes}`)
