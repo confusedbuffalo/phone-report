@@ -3,6 +3,7 @@
         "countryCode": "AU",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/australia.osm.pbf",
         "divisions": {
             "Australian Capital Territory": 2354197,
             "Christmas Island": 2177207,
@@ -23,6 +24,7 @@
         "countryCode": "AT",
         "locale": "de-DE",
         "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/austria.osm.pbf",
         "divisions": {
             "Burgenland": 76909,
             "Kärnten": 52345,
@@ -39,6 +41,7 @@
         "countryCode": "BE",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/belgium.osm.pbf",
         "divisions": {
             "Vlaanderen": 53134,
             "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": 54094,
@@ -49,6 +52,7 @@
         "countryCode": "CA",
         "locale": "en-CA",
         "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/canada.osm.pbf",
         "divisions": {
             "Alberta": 391186,
             "British Columbia": 390867,
@@ -69,6 +73,7 @@
       "countryCode": "DK",
       "locale": "da-DK",
       "safeAutoFixBotEnabled": false,
+      "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/denmark.osm.pbf",
       "divisions": {
         "Region Nordjylland": 1319936,
         "Region Midtjylland": 1319935,
@@ -81,6 +86,7 @@
         "countryCode": "DE",
         "locale": "de-DE",
         "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/dach.osm.pbf",
         "divisionMap": {
             "Baden-Württemberg": {
                 "Regierungsbezirk Freiburg": 2106112,
@@ -151,6 +157,7 @@
         "countryCode": "ES",
         "locale": "es-ES",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/spain.osm.pbf",
         "divisions": {
             "Andalucía": 349044,
             "Aragón": 349045,
@@ -177,6 +184,7 @@
         "countryCode": "FR",
         "locale": "fr-FR",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/france.osm.pbf",
         "divisions": {
             "Auvergne-Rhône-Alpes": 3792877,
             "Bourgogne – Franche-Comté": 3792878,
@@ -208,6 +216,7 @@
         "countryCode": "IT",
         "locale": "it-IT",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/italy.osm.pbf",
         "divisions": {
             "Centro": 17518200,
             "Isole": 17514223,
@@ -220,6 +229,7 @@
         "countryCode": "LS",
         "locale": "en-ZA",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/lesotho.osm.pbf",
         "divisions": {
             "Lesotho": 2093234
         }
@@ -228,6 +238,7 @@
         "countryCode": "MA",
         "locale": "fr-MA",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/morocco.osm.pbf",
         "divisions": {
             "Béni Mellal-Khénifra": 4734547,
             "Casablanca-Settat": 2424085,
@@ -247,6 +258,7 @@
         "countryCode": "NL",
         "locale": "nl-NL",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/netherlands.osm.pbf",
         "divisions": {
             "Drenthe": 47540,
             "Flevoland": 47407,
@@ -266,6 +278,7 @@
         "countryCode": "PL",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/poland.osm.pbf",
         "divisions": {
             "województwo dolnośląskie": 224457,
             "województwo kujawsko-pomorskie": 223407,
@@ -289,6 +302,7 @@
         "countryCode": "CH",
         "locale": "en",
         "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/switzerland.osm.pbf",
         "divisions": {
             "Aargau": 1686359,
             "Appenzell Ausserrhoden": 1686649,
@@ -322,6 +336,7 @@
         "countryCode": "SG",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/asia/malaysia-singapore-brunei.osm.pbf",
         "divisions": {
             "Central": 3831712,
             "Northeast": 3831713,
@@ -334,6 +349,7 @@
         "countryCode": "ZA",
         "locale": "en-ZA",
         "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/south-africa.osm.pbf",
         "divisions": {
             "Eastern Cape": 4782250,
             "Free State": 92417,
@@ -350,6 +366,7 @@
         "countryCode": "TR",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/turkey.osm.pbf",
         "divisions": {
             "Ege Bölgesi": 2094170,
             "Karadeniz Bölgesi": 1726294,
@@ -364,6 +381,7 @@
         "countryCode": "GB",
         "locale": "en-GB",
         "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/united-kingdom.osm.pbf",
         "divisionMap": {
             "England": {
                 "East Midlands": 151279,
@@ -391,6 +409,12 @@
         "countryCode": "US",
         "locale": "en-US",
         "safeAutoFixBotEnabled": true,
+        "pbfUrls": [
+            "https://download3.bbbike.org/osm/pbf/region/north-america/us-midwest.osm.pbf",
+            "https://download3.bbbike.org/osm/pbf/region/north-america/us-northeast.osm.pbf",
+            "https://download3.bbbike.org/osm/pbf/region/north-america/us-south.osm.pbf",
+            "https://download3.bbbike.org/osm/pbf/region/north-america/us-west.osm.pbf"
+        ],
         "divisions": {
             "Alabama": 161950,
             "Alaska": 1116270,
