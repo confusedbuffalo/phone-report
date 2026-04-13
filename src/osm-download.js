@@ -231,10 +231,17 @@ async function splitPbf(filteredFilePath, country) {
     fs.writeFileSync(configPath, JSON.stringify(generateOsmiumConfigForCountry(country)));
 
     try {
-        const command = `osmium extract --config ${configPath} --overwrite ${filteredFilePath}`;
+        const command = `osmium extract --config ${configPath} --overwrite ${filteredFilePath} --verbose`;
 
         console.log('Running Osmium extract...');
-        await execPromise(command);
+        try {
+            const { stdout, stderr } = await execPromise(command, { maxBuffer: 1024 * 1024 * 10 }); // 10MB buffer for logs
+            console.log(stdout);
+        } catch (error) {
+            console.error('Exit Code:', error.code);
+            console.error('Signal:', error.signal); // If this is 'SIGKILL', it's definitely OOM (Out of Memory)
+            console.error('Stderr:', error.stderr);
+        }
         console.log(`Extracted files saved`);
     } catch (error) {
         console.error('Error extracting OSM data:', error.message);

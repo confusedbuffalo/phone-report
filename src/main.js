@@ -328,7 +328,7 @@ async function processCountry(countryData) {
     const fullTranslations = getTranslations(locale);
     const clientTranslations = filterClientTranslations(fullTranslations);
 
-    const tmpPbfFilePath = path.join(process.cwd(), `filtered-${uuidv4()}.osm.pbf`);
+    const tmpPbfFilePath = path.join(os.tmpdir(), `filtered-${uuidv4()}.osm.pbf`);
     // TODO: deal with US, multiple URLs
     await processPbf(countryData.pbfUrl, tmpPbfFilePath);
     await splitPbf(tmpPbfFilePath, countryData);
