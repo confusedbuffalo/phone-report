@@ -998,9 +998,10 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         if (!element.tags) continue;
         const tags = element.tags;
         
-        if (element.type === 'way' || element.type === 'relation') {
-            console.log(element);
-        }
+        // if (element.type === 'way' || element.type === 'relation') {
+        //     console.log(element);
+        // }
+        console.log(element)
 
         let item = null;
         const allNormalizedPhoneNumbers = new Map();
