@@ -212,6 +212,7 @@ async function* createOsmElementStream(filePath) {
     const stream = createOSMStream(filePath, { withInfo: true });
 
     for await (const item of stream) {
+        console.log(item);
         // If the item is a node, it has lat/lon.
         // If it's a way/relation and 'osmium add-locations-to-ways' hasn't been run,
         // lat/lon will be missing
