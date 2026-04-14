@@ -410,10 +410,16 @@ function createListItem(item) {
 
     iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
-    itemMetadata = item.user ? `
+    const itemMetadata = item.user ? `
         <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
         <a href="https://www.openstreetmap.org/user/${item.user}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${item.user}</a>`
-        : `<span>${relativeTime}</span>`;
+        : item.timestamp ? `<span>${relativeTime}</span>` : '';
+    
+    const metaDataDiv = itemMetadata ? `
+        <div class="list-item-meta">
+            <svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            ${itemMetadata}
+        </div>` : '';
 
     return `
         <li class="report-list-item" data-item-id="${itemId}">
@@ -442,11 +448,7 @@ function createListItem(item) {
                     ${editorButtons}
                 </div>
             </div>
-            <div class="list-item-meta">
-                <svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
-                <a href="https://www.openstreetmap.org/user/${item.user}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${item.user}</a>
-            </div>
+            ${metaDataDiv}
         </li>
     `;
 }
