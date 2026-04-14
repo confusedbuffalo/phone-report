@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const readline = require('readline')
 const { createOSMStream } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
