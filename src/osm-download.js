@@ -1,138 +1,150 @@
-const { OVERPASS_API_URL, ALL_NUMBER_TAGS } = require('./constants');
-const { parser } = require('stream-json');
-const { chain } = require('stream-chain');
-const { pick } = require('stream-json/filters/pick.js');
-const { streamArray } = require('stream-json/streamers/stream-array.js');
-const { Readable } = require('stream');
+const os = require('os');
+const axios = require('axios');
+const fs = require('fs');
+const { exec } = require('child_process');
+const path = require('path');
+const { promisify } = require('util');
+const { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
+const { getSubdivisionIds } = require('./fetch-polys');
+
+const execPromise = promisify(exec);
+
 
 /**
- * Fetches administrative subdivisions for a given parent area from the Overpass API.
- * This function is recursive and will retry on certain API errors (429, 504).
- * @param {number} divisionId - The OSM relation ID of the parent division.
- * @param {string} divisionName - The name of the division (for logging).
- * @param {number} admin_level - The administrative level of the subdivisions to fetch.
- * @param {number} [retries=3] - Number of retries left.
- * @returns {Promise<Array<{name: string, id: number}>>} A promise that resolves to an array of subdivision objects.
+ * Downloads and filters OSM PBF files.
+ * @param {string} url - The URL of the .osm.pbf file.
+ * @param {string} outputPath - Where to save the filtered file.
  */
-async function fetchAdminLevels(divisionId, divisionName, admin_level, retries = 3) {
-    console.log(`Fetching all subdivisions for ${divisionName} (ID: ${divisionId})...`);
-    const { default: fetch } = await import('node-fetch');
-
-    const queryTimeout = 180;
-    const areaId = divisionId + 3600000000;
-
-    const query = `
-        [out:json][timeout:${queryTimeout}];
-        area(${areaId})->.division;
-        rel(area.division)["admin_level"="${admin_level}"]["boundary"="administrative"]["name"];
-        out body;
-    `;
+async function processPbf(url, outputPath) {
+    const tempInput = path.join(__dirname, 'temp_input.osm.pbf');
 
     try {
-        const response = await fetch(OVERPASS_API_URL, {
-            method: 'POST',
-            body: `data=${encodeURIComponent(query)}`,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        console.log(`Downloading: ${url}`);
+        const response = await axios({
+            url,
+            method: 'GET',
+            responseType: 'stream'
         });
 
-        if (response.status === 429 || response.status === 504) {
-            if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 30;
-                console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-                return fetchAdminLevels(divisionId, divisionName, admin_level, retries - 1);
-            } else {
-                throw new Error(`Overpass API response error: ${response.statusText}`);
-            }
-        }
+        const writer = fs.createWriteStream(tempInput);
+        response.data.pipe(writer);
 
-        if (!response.ok) {
-            throw new Error(`Overpass API response error: ${response.statusText}`);
-        }
+        await new Promise((resolve, reject) => {
+            writer.on('finish', resolve);
+            writer.on('error', reject);
+        });
 
-        const data = await response.json();
-        const subdivisions = data.elements.map(el => ({
-            name: el.tags.name,
-            id: el.id
-        }));
+        const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
-        const uniqueSubdivisions = [...new Map(subdivisions.map(item => [item.name, item])).values()];
-        return uniqueSubdivisions;
+        const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --overwrite`;
+        await execPromise(command);
     } catch (error) {
-        console.error(`Error fetching subdivisions for ${divisionName}:`, error);
-        return [];
+        console.error('Error processing OSM data:', error.message);
+    } finally {
+        if (fs.existsSync(tempInput)) {
+            fs.unlinkSync(tempInput);
+        }
     }
 }
 
 /**
- * Fetches all OSM elements that have one of the specified phone tags within a given division's area.
- * This function is recursive and will retry on certain API errors (429, 504).
- * @param {{name: string, id: number}} division - The division object, containing its name and OSM relation ID.
- * @param {number} [retries=3] - Number of retries left.
- * @returns {Promise<Array<Object>>} A promise that resolves to an array of OSM element objects.
+ * Splits a PBF file into smaller extracts based on country or specific division boundaries.
+ * * This function uses the `osmium` CLI tool to extract geographic data using `.poly` files.
+ * If a division is provided, it extracts that specific relation; otherwise, it 
+ * iterates through all subdivision IDs for the given country.
+ * * @async
+ * @param {string} filteredFilePath - The file path to the source .osm.pbf file.
+ * @param {string|null} [country=null] - The country name or identifier used to fetch subdivision IDs.
+ * @param {Object|null} [division=null] - An optional division object.
+ * @param {string} division.relationId - The OpenStreetMap relation ID for the division.
+ * @returns {Promise<void>} Resolves when the extraction process is complete for all IDs.
+ * @throws {Error} Logs an error if the `osmium` command fails for a specific division.
  */
-async function fetchOsmDataForDivision(division, retries = 3) {
-    console.log(`Fetching data for division: ${division.name} (ID: ${division.id})...`);
-    const { default: fetch } = await import('node-fetch');
+async function splitPbf(filteredFilePath, country = null, division = null) {
+    const ids = division ? [division.relationId] : getSubdivisionIds(country);
 
-    const areaId = division.id + 3600000000;
-    const queryTimeout = 600;
+    if (!fs.existsSync(OSM_DIR)) {
+        fs.mkdirSync(OSM_DIR, { recursive: true });
+    }    
 
-    const tagQuery = ALL_NUMBER_TAGS
-        .map(tag => `nwr(area.division)["${tag}"];`)
-        .join('\n');
+    for (const id of ids) {
+        const polyPath = path.join(POLY_DIR, `${id}.poly`);
+        const tempPath = path.join(OSM_DIR, `${id}.osm.pbf`);
+        const outputPath = path.join(OSM_DIR, `${id}.geojsonseq`);
 
-    const overpassQuery = `
-        [out:json][timeout:${queryTimeout}];
-        area(${areaId})->.division;
-        (
-          ${tagQuery}
-        );
-        out meta center;
-    `;
+        if (!fs.existsSync(polyPath)) {
+            console.warn(`[SKIP] Poly file not found for ID: ${id}`);
+            continue;
+        }
 
+        try {
+            const extractCommand = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${tempPath}" --strategy simple --overwrite`;
+            const exportCommand = `osmium export "${tempPath}" -a type,id,changeset,timestamp,user -f geojsonseq -o "${outputPath}" --overwrite`;
+            await execPromise(extractCommand);
+            await execPromise(exportCommand);
+            fs.unlinkSync(tempPath);
+        } catch (error) {
+            console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
+            continue;
+        }
+    }
+}
+
+/**
+ * Fetches and extracts a timestamp from OSM metadata or headers.
+ * Supports bbbike, openstreetmap.fr, geofabrik.de and geo2day.com
+ * @param {string} pbfUrl - The URL to the .osm.pbf file
+ * @returns {Promise<string|null>} The ISO timestamp string
+ */
+async function getOsmTimestamp(pbfUrl) {
     try {
-        const response = await fetch(OVERPASS_API_URL, {
-            method: 'POST',
-            body: `data=${encodeURIComponent(overpassQuery)}`,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        });
+        // Handle Geofabrik and geo2day via HTTP Headers
+        if (pbfUrl.includes('geofabrik.de') || pbfUrl.includes('geo2day.com')) {
+            const response = await fetch(pbfUrl, { method: 'HEAD' });
+            const lastModified = response.headers.get('last-modified');
 
-        if (response.status === 429 || response.status === 504) {
-            if (retries > 0) {
-                const retryAfter = response.headers.get('Retry-After') || 30 * (4 - retries);
-                console.warn(`Overpass API rate limit or gateway timeout hit (error ${response.status}). Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-                await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-                return await fetchOsmDataForDivision(division, retries - 1);
+            if (lastModified) {
+                // Convert "Mon, 13 Apr 2026 00:00:00 GMT" to "2026-04-13T00:00:00.000Z"
+                return new Date(lastModified).toISOString();
             }
+            return null;
         }
 
-        if (!response.ok) {
-            throw new Error(`Overpass API response error: ${response.statusText}`);
+        // Handle Sidecar Metadata Files
+        let metadataUrl;
+        let isOsmFr = false;
+
+        if (pbfUrl.includes('bbbike.org')) {
+            metadataUrl = pbfUrl + '.timestamp';
+        } else if (pbfUrl.includes('openstreetmap.fr')) {
+            metadataUrl = pbfUrl.replace('.osm.pbf', '.state.txt');
+            isOsmFr = true;
+        } else {
+            throw new Error('Unsupported provider URL');
         }
 
-        const pipeline = chain([
-            response.body,
-            parser(),
-            pick({ filter: 'elements' }),
-            streamArray()
-        ]);
+        const response = await fetch(metadataUrl);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-        return Readable.from(pipeline.map(item => item.value));
+        const text = (await response.text()).trim();
+
+        if (isOsmFr) {
+            const match = text.match(/timestamp=(.+)/);
+            // Clean backslashes and standardise to ISO
+            const raw = match ? match[1].replace(/\\/g, '') : null;
+            return raw ? new Date(raw).toISOString() : null;
+        }
+
+        return new Date(text).toISOString();
+
     } catch (error) {
-        const isNetworkError = ['ECONNRESET', 'ERR_STREAM_PREMATURE_CLOSE', 'ETIMEDOUT'].includes(error.code);
-        if (isNetworkError && retries > 0) {
-            const retryAfter = 30;
-            console.warn(`Overpass API connection reset. Retrying in ${retryAfter} seconds... (${retries} retries left)`);
-            await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
-            return await fetchOsmDataForDivision(division, retries - 1);
-        }
-        console.error(`Error fetching OSM data for ${division.name}:`, error);
-        return Readable.from([]);
+        console.error('Error fetching timestamp:', error);
+        return null;
     }
 }
 
 module.exports = {
-    fetchAdminLevels,
-    fetchOsmDataForDivision,
+    processPbf,
+    splitPbf,
+    getOsmTimestamp,
 };

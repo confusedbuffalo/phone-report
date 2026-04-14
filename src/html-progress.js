@@ -21,7 +21,6 @@ async function generateProgressPage(country = null, locale = 'en-GB') {
     const srcPrefix = country ? '../' : './';
 
     const historyDataPath = path.join(PUBLIC_DIR, 'history-data.json');
-    const clientHistoryPath = './history-data.json';
 
     try {
         await fsPromises.access(historyDataPath);   
@@ -115,10 +114,9 @@ if (require.main === module) {
 
         for (const countryKey in COUNTRIES) {
             const countryData = COUNTRIES[countryKey];
-            const countryName = escapeHTML(countryKey);
             const locale = countryData.locale;
 
-            await generateProgressPage(safeName(countryName), locale)
+            await generateProgressPage(safeName(countryKey), locale);
             if (testMode) {
                 break;
             }

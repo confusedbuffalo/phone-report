@@ -107,12 +107,15 @@ function getIconAttributionHtml(locale) {
  * Creates the HTML footer with data timestamp and GitHub link.
  * @param {string} locale - Locale to format the date in
  * @param {Object} translations - The translations dictionary for the current locale
+ * @param {boolean} includeIconAttribution - Whether or not to include the icon attribution message
+ * @param {Date} timestamp - The timestamp of the data
  * @returns {string}
  */
-function createFooter(locale = 'en-GB', translations, includeIconAttribution = false) {
+function createFooter(locale = 'en-GB', translations, includeIconAttribution = false, timestamp = null) {
     translations = translations || {};
 
-    const dataTimestamp = new Date();
+    const dataTimestamp = timestamp ? timestamp : new Date();
+
     // Formatting the date and time
     const formattedDate = dataTimestamp.toLocaleDateString(locale, {
         year: 'numeric',

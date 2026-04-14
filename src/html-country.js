@@ -88,7 +88,7 @@ async function generateCountryIndexHtml(countryData, translations) {
                 </div>
             </div>
             <div class="footer-container">
-                ${createFooter(locale, translations)}
+                ${createFooter(locale, translations, false, countryData.timestamp)}
             </div>
         </div>
         <script src="../background-colour.js"></script>

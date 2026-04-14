@@ -132,11 +132,20 @@ function diffPhoneNumbers(original, suggested) {
     const numericalPrefix = suggested.split(' ')[0].slice(1);
     const numericallyOnlyAddingPrefix = normalizedSuggested === `${numericalPrefix}${normalizedOriginal}`;
 
+    const originalPrefix = original.split(' ')[0];
+
     for (let i = 0; i < original.length; i++) {
         const char = original[i];
         const slice = original.slice(i, i + 3); // to check for encoded plus
 
-        if ( // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
+        if (char === '+' && suggestedRemainder[0] !== '+' && originalPrefix && originalPrefix.length <= 4) { // Special handling of REMOVING a prefix, e.g. for a short number that is not international
+            for (let j = 0; j < originalPrefix.length; j++) {
+                originalDiff.push({ value: originalPrefix[j], added: false, removed: true });
+                originalRemainder = originalRemainder.slice(1);
+            }
+            originalDiff.push({ value: ' ', added: false, removed: true });
+            i = original.indexOf(' ')
+        } else if ( // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
             suggestedRemainder[0] === '+'
             && char === '0'
             && !actualNumberStartsWithZero

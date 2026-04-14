@@ -1452,6 +1452,23 @@ describe('validateNumbers', () => {
         }
     });
 
+    // Helper to wrap elements into GeoJSON-like objects with Map properties
+    const createGeoJson = (id, tags, lat, lon, type = 'node') => ({
+        type: 'Feature',
+        geometry: {
+            type: 'Point',
+            coordinates: [lon, lat]
+        },
+        properties: {
+            ...tags,
+            '@id': id,
+            '@type': type,
+            '@user': 'test-user',
+            '@timestamp': '2026-04-14T20:00:00Z',
+            '@changeset': '12345'
+        }
+    });
+
     // UK numbers used for testing
     const VALID_LANDLINE = '+44 20 7946 0000';
     const VALID_LANDLINE_NO_SPACE = '+442079460000';
@@ -1479,13 +1496,7 @@ describe('validateNumbers', () => {
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 1001,
-                tags: { phone: VALID_LANDLINE, name: 'Valid Shop' },
-                lat: 51.5,
-                lon: 0.0,
-            },
+            createGeoJson(1001, { phone: VALID_LANDLINE, name: 'Valid Shop' }, 51.5, 0.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1496,12 +1507,7 @@ describe('validateNumbers', () => {
 
     test('should identify a single fixable invalid number (no country code) and provide suggested fix', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 2002,
-                tags: { 'contact:phone': FIXABLE_LANDLINE_INPUT, name: 'Fixable Business' },
-                center: { lat: 52.0, lon: 1.0 },
-            },
+            createGeoJson(2002, { 'contact:phone': FIXABLE_LANDLINE_INPUT, name: 'Fixable Business' }, 52.0, 1.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1512,7 +1518,6 @@ describe('validateNumbers', () => {
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
         const invalidItem = invalidItems[0];
-
 
         expect(invalidItem.id).toBe(2002);
         expect(invalidItem.autoFixable).toBe(true);
@@ -1526,13 +1531,7 @@ describe('validateNumbers', () => {
 
     test('should identify a fundamentally unfixable number (too short) and mark it as unfixable', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 3003,
-                tags: { mobile: UNFIXABLE_INPUT, name: 'Short Mobile' },
-                lat: 53.0,
-                lon: 2.0,
-            },
+            createGeoJson(3003, { mobile: UNFIXABLE_INPUT, name: 'Short Mobile' }, 53.0, 2.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1548,13 +1547,7 @@ describe('validateNumbers', () => {
 
     test('should handle multiple numbers in a single tag using a bad separator (comma)', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 4004,
-                tags: { phone: BAD_SEPARATOR_INPUT_COMMA, name: 'Multiple Contacts' },
-                lat: 54.0,
-                lon: 3.0,
-            },
+            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_COMMA, name: 'Multiple Contacts' }, 54.0, 3.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1571,13 +1564,7 @@ describe('validateNumbers', () => {
 
     test('should handle multiple numbers in a single tag using a bad separator (pipe)', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 4004,
-                tags: { phone: BAD_SEPARATOR_INPUT_PIPE, name: 'Multiple Contacts' },
-                lat: 54.0,
-                lon: 3.0,
-            },
+            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_PIPE, name: 'Multiple Contacts' }, 54.0, 3.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1594,13 +1581,7 @@ describe('validateNumbers', () => {
 
     test('should handle multiple numbers in a single tag using a bad separator (slash)', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 4004,
-                tags: { phone: BAD_SEPARATOR_INPUT_SLASH, name: 'Multiple Contacts' },
-                lat: 54.0,
-                lon: 3.0,
-            },
+            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_SLASH, name: 'Multiple Contacts' }, 54.0, 3.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1617,13 +1598,7 @@ describe('validateNumbers', () => {
 
     test('should not consider a slash as a separator in DE', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 4004,
-                tags: { phone: SLASH_IN_NUMBER_DE, name: 'Slashing Sales' },
-                lat: 54.0,
-                lon: 3.0,
-            },
+            createGeoJson(4004, { phone: SLASH_IN_NUMBER_DE, name: 'Slashing Sales' }, 54.0, 3.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_DE, tmpFilePath);
@@ -1640,13 +1615,7 @@ describe('validateNumbers', () => {
 
     test('should consider a slash as a space if removing it makes a valid number', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 4004,
-                tags: { phone: "010/420.420" },
-                lat: 54.0,
-                lon: 3.0,
-            },
+            createGeoJson(4004, { phone: "010/420.420" }, 54.0, 3.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), 'BE', tmpFilePath);
@@ -1663,17 +1632,12 @@ describe('validateNumbers', () => {
 
     test('should aggregate results from multiple phone tags on a single element', async () => {
         const elements = [
-            {
-                type: 'relation',
-                id: 5005,
-                tags: {
-                    'contact:phone': FIXABLE_LANDLINE_INPUT,
-                    'contact:mobile': FIXABLE_MOBILE_INPUT,
-                    phone: VALID_LANDLINE_2,
-                    name: 'Mixed Contact Info',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(5005, {
+                'contact:phone': FIXABLE_LANDLINE_INPUT,
+                'contact:mobile': FIXABLE_MOBILE_INPUT,
+                phone: VALID_LANDLINE_2,
+                name: 'Mixed Contact Info',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1684,7 +1648,6 @@ describe('validateNumbers', () => {
         const invalidItem = invalidItems[0];
 
         expect(invalidItem.autoFixable).toBe(true);
-        // Only the two invalid tags should be recorded in the maps
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': FIXABLE_LANDLINE_INPUT,
             'contact:mobile': FIXABLE_MOBILE_INPUT,
@@ -1698,13 +1661,7 @@ describe('validateNumbers', () => {
     test('should correctly process website tag (without protocol) and include protocol in base item', async () => {
         const websiteInput = 'www.test-site.co.uk';
         const elements = [
-            {
-                type: 'node',
-                id: 6006,
-                tags: { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput },
-                lat: 56.0,
-                lon: 5.0,
-            },
+            createGeoJson(6006, { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput }, 56.0, 5.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1719,13 +1676,7 @@ describe('validateNumbers', () => {
     test('should not change website tag if it already has a protocol', async () => {
         const websiteInput = 'https://secure.site.com';
         const elements = [
-            {
-                type: 'node',
-                id: 6006,
-                tags: { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput },
-                lat: 56.0,
-                lon: 5.0,
-            },
+            createGeoJson(6006, { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput }, 56.0, 5.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1739,32 +1690,10 @@ describe('validateNumbers', () => {
 
     test('should correctly calculate totalNumbers across multiple elements', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 7001,
-                tags: { phone: VALID_LANDLINE }, // 1 valid number
-                lat: 57.0,
-                lon: 6.0,
-            },
-            {
-                type: 'way',
-                id: 7002,
-                tags: { 'contact:phone': FIXABLE_LANDLINE_INPUT }, // 1 number, invalid
-                center: { lat: 57.1, lon: 6.1 },
-            },
-            {
-                type: 'relation',
-                id: 7003,
-                tags: { mobile: BAD_SEPARATOR_INPUT_COMMA }, // 2 numbers, invalid
-                center: { lat: 57.2, lon: 6.2 },
-            },
-            {
-                type: 'node',
-                id: 7004,
-                tags: {}, // 0 numbers
-                lat: 57.3,
-                lon: 6.3,
-            }
+            createGeoJson(7001, { phone: VALID_LANDLINE }, 57.0, 6.0),
+            createGeoJson(7002, { 'contact:phone': FIXABLE_LANDLINE_INPUT }, 57.1, 6.1, 'way'),
+            createGeoJson(7003, { mobile: BAD_SEPARATOR_INPUT_COMMA }, 57.2, 6.2, 'relation'),
+            createGeoJson(7004, {}, 57.3, 6.3)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1776,16 +1705,11 @@ describe('validateNumbers', () => {
 
     test('should do nothing with mobile=yes and process actual phone number', async () => {
         const elements = [
-            {
-                type: 'relation',
-                id: 5005,
-                tags: {
-                    'mobile': 'yes',
-                    phone: FIXABLE_LANDLINE_INPUT,
-                    name: 'Mobile caterer',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(5005, {
+                'mobile': 'yes',
+                phone: FIXABLE_LANDLINE_INPUT,
+                name: 'Mobile caterer',
+            }, 55.0, 4.0, 'relation')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1806,14 +1730,7 @@ describe('validateNumbers', () => {
 
     test('phone=no is valid as marking object as having no phone number', async () => {
         const elements = [
-            {
-                type: 'relation',
-                id: 5005,
-                tags: {
-                    'phone': 'no',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(5005, { 'phone': 'no' }, 55.0, 4.0, 'relation')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1824,15 +1741,10 @@ describe('validateNumbers', () => {
 
     test('should fix and move landline number out of mobile tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:mobile': FIXABLE_LANDLINE_INPUT,
-                    name: 'Landline in Mobile',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:mobile': FIXABLE_LANDLINE_INPUT,
+                name: 'Landline in Mobile',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1858,16 +1770,11 @@ describe('validateNumbers', () => {
 
     test('should fix and move landline number out of mobile tag and append to existing phone tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:mobile': FIXABLE_LANDLINE_INPUT,
-                    'phone': VALID_LANDLINE_2,
-                    name: 'Landline in Mobile',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:mobile': FIXABLE_LANDLINE_INPUT,
+                'phone': VALID_LANDLINE_2,
+                name: 'Landline in Mobile',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1894,15 +1801,10 @@ describe('validateNumbers', () => {
 
     test('should keep mobile number in mobile tag when moving another number out', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`,
-                    name: 'Confused mobile',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`,
+                name: 'Confused mobile',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1928,16 +1830,11 @@ describe('validateNumbers', () => {
 
     test('should remove duplicate number in different tags', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': VALID_LANDLINE,
-                    'phone': VALID_LANDLINE,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': VALID_LANDLINE,
+                'phone': VALID_LANDLINE,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1962,16 +1859,11 @@ describe('validateNumbers', () => {
 
     test('DE should remove duplicate number with extension in different tags', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': "+49 651 146262-0",
-                    'phone': "+49 651 146262-0",
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': "+49 651 146262-0",
+                'phone': "+49 651 146262-0",
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), "DE", tmpFilePath);
@@ -1996,16 +1888,11 @@ describe('validateNumbers', () => {
 
     test('FR should remove duplicate valid national numbers in different tags', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': "0 890 64 97 13",
-                    'phone': "0 890 64 97 13",
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': "0 890 64 97 13",
+                'phone': "0 890 64 97 13",
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), "FR", tmpFilePath);
@@ -2030,16 +1917,11 @@ describe('validateNumbers', () => {
 
     test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
-                    'phone': VALID_MOBILE,
-                    name: 'Triple phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
+                'phone': VALID_MOBILE,
+                name: 'Triple phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2064,16 +1946,11 @@ describe('validateNumbers', () => {
 
     test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag, phone and contact:phone', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': '+27 11 984 4050;+27 83 462 3316',
-                    'phone': '+27 11 984 4050',
-                    name: 'Triple phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': '+27 11 984 4050;+27 83 462 3316',
+                'phone': '+27 11 984 4050',
+                name: 'Triple phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2098,15 +1975,10 @@ describe('validateNumbers', () => {
 
     test('should remove duplicate number in the same tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2130,15 +2002,10 @@ describe('validateNumbers', () => {
 
     test('should remove duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2162,15 +2029,10 @@ describe('validateNumbers', () => {
 
     test('should respect country formatting with duplicate numbers in the same tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2194,15 +2056,10 @@ describe('validateNumbers', () => {
 
     test('should fix duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2226,16 +2083,11 @@ describe('validateNumbers', () => {
 
     test('different extensions are not duplicates', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${VALID_LANDLINE}x123`,
-                    'phone': `${VALID_LANDLINE}x456`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${VALID_LANDLINE}x123`,
+                'phone': `${VALID_LANDLINE}x456`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2246,16 +2098,11 @@ describe('validateNumbers', () => {
 
     test('different extensions are not duplicates, US', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${VALID_US_NUMBER} x123`,
-                    'phone': `${VALID_US_NUMBER} x456`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${VALID_US_NUMBER} x123`,
+                'phone': `${VALID_US_NUMBER} x456`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2266,16 +2113,11 @@ describe('validateNumbers', () => {
 
     test('duplicate numbers with extensions should be detected and fixed, US', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${FIXABLE_US_NUMBER} x123`,
-                    'phone': `${FIXABLE_US_NUMBER} x123`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${FIXABLE_US_NUMBER} x123`,
+                'phone': `${FIXABLE_US_NUMBER} x123`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2302,16 +2144,11 @@ describe('validateNumbers', () => {
 
     test('different spacing is still a duplicate', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': VALID_LANDLINE_NO_SPACE,
-                    'phone': VALID_LANDLINE,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': VALID_LANDLINE_NO_SPACE,
+                'phone': VALID_LANDLINE,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2336,16 +2173,11 @@ describe('validateNumbers', () => {
 
     test('fixable and correct formatting are duplicates', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': FIXABLE_LANDLINE_INPUT,
-                    'phone': VALID_LANDLINE,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': FIXABLE_LANDLINE_INPUT,
+                'phone': VALID_LANDLINE,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2370,16 +2202,11 @@ describe('validateNumbers', () => {
 
     test('duplicate with bad formatting gets fixed', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': FIXABLE_LANDLINE_INPUT,
-                    'phone': VALID_LANDLINE_NO_SPACE,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': FIXABLE_LANDLINE_INPUT,
+                'phone': VALID_LANDLINE_NO_SPACE,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2405,16 +2232,11 @@ describe('validateNumbers', () => {
 
     test('duplicate with bad formatting gets fixed, respecting country formatting', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': VALID_US_NUMBER,
-                    'phone': VALID_US_NUMBER,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': VALID_US_NUMBER,
+                'phone': VALID_US_NUMBER,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2439,16 +2261,11 @@ describe('validateNumbers', () => {
 
     test('duplicate non-mobile numbers in phone and mobile are duplicate, not type mismatch', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'mobile': VALID_LANDLINE,
-                    'phone': VALID_LANDLINE,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'mobile': VALID_LANDLINE,
+                'phone': VALID_LANDLINE,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2474,17 +2291,12 @@ describe('validateNumbers', () => {
 
     test('non-mobile number in mobile tag and other duplicate numbers has duplicate and type mismatch', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': VALID_LANDLINE_2,
-                    'mobile': VALID_LANDLINE,
-                    'phone': VALID_LANDLINE_2,
-                    name: 'Triple phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': VALID_LANDLINE_2,
+                'mobile': VALID_LANDLINE,
+                'phone': VALID_LANDLINE_2,
+                name: 'Triple phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2516,16 +2328,11 @@ describe('validateNumbers', () => {
 
     test('should fix separator and report duplicates for duplicate numbers with incorrect separator', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
-                    'phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
-                    name: 'Double phone',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
+                'phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
+                name: 'Double phone',
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2551,15 +2358,10 @@ describe('validateNumbers', () => {
 
     test('should find and remove duplicates among other numbers in one tag', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 5775129635,
-                tags: {
-                    'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
-                    name: 'Many phones',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(5775129635, {
+                'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+                name: 'Many phones',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2583,15 +2385,10 @@ describe('validateNumbers', () => {
 
     test('should fix duplicates in a single tag where number is duplicated in another tag as well', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 5775129635,
-                tags: {
-                    'phone': '+44 17687 79280; +441768779280',
-                    'contact:phone': '+44 (17687) 79280',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(5775129635, {
+                'phone': '+44 17687 79280; +441768779280',
+                'contact:phone': '+44 (17687) 79280',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2618,15 +2415,10 @@ describe('validateNumbers', () => {
 
     test('whatsapp number is not duplicate to phone tags', async () => {
         const elements = [
-            {
-                type: 'way',
-                id: 1234,
-                tags: {
-                    'contact:whatsapp': `${VALID_MOBILE}`,
-                    'contact:mobile': `${VALID_MOBILE}`,
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(1234, {
+                'contact:whatsapp': `${VALID_MOBILE}`,
+                'contact:mobile': `${VALID_MOBILE}`,
+            }, 55.0, 4.0, 'way')
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2637,15 +2429,10 @@ describe('validateNumbers', () => {
 
     test('should fix a fax number on a single element', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'fax': FIXABLE_LANDLINE_INPUT,
-                    name: 'Faxable',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'fax': FIXABLE_LANDLINE_INPUT,
+                name: 'Faxable',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2666,15 +2453,10 @@ describe('validateNumbers', () => {
 
     test('toll free fax number is valid', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'fax': VALID_TOLL_FREE,
-                    name: 'Toll Free Faxable',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'fax': VALID_TOLL_FREE,
+                name: 'Toll Free Faxable',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2685,15 +2467,10 @@ describe('validateNumbers', () => {
 
     test('mobile phone fax number is valid', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'fax': VALID_MOBILE,
-                    name: 'Toll Free Faxable',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'fax': VALID_MOBILE,
+                name: 'Toll Free Faxable',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2704,16 +2481,11 @@ describe('validateNumbers', () => {
 
     test('should fix both phone and fax numbers on a single element', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'phone': FIXABLE_MOBILE_INPUT,
-                    'fax': FIXABLE_LANDLINE_INPUT,
-                    name: 'Faxable',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'phone': FIXABLE_MOBILE_INPUT,
+                'fax': FIXABLE_LANDLINE_INPUT,
+                name: 'Faxable',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2736,16 +2508,11 @@ describe('validateNumbers', () => {
 
     test('same number for phone and fax is not duplicate', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'phone': VALID_LANDLINE,
-                    'fax': VALID_LANDLINE,
-                    name: 'Faxable',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'phone': VALID_LANDLINE,
+                'fax': VALID_LANDLINE,
+                name: 'Faxable',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2756,16 +2523,11 @@ describe('validateNumbers', () => {
 
     test('duplicate numbers in fax tags is invalid and fixable', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'contact:fax': FIXABLE_LANDLINE_INPUT,
-                    'fax': FIXABLE_LANDLINE_INPUT,
-                    name: 'Double Faxable',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'contact:fax': FIXABLE_LANDLINE_INPUT,
+                'fax': FIXABLE_LANDLINE_INPUT,
+                name: 'Double Faxable',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2791,14 +2553,7 @@ describe('validateNumbers', () => {
 
     test('phonewords is invalid and fixable and adds phone:mnemonic', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'phone': "1-870-KAKESNY",
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, { 'phone': "1-870-KAKESNY" }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2821,14 +2576,9 @@ describe('validateNumbers', () => {
 
     test('WhatsApp wa.me message link in whatsapp key is valid', async () => {
         const elements = [
-            {
-                type: 'node',
-                id: 123456,
-                tags: {
-                    'contact:whatsapp': 'https://wa.me/message/ZQ4YRTMO7OUAJ1',
-                },
-                center: { lat: 55.0, lon: 4.0 },
-            },
+            createGeoJson(123456, {
+                'contact:whatsapp': 'https://wa.me/message/ZQ4YRTMO7OUAJ1',
+            }, 55.0, 4.0)
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
