@@ -244,9 +244,11 @@ async function* createGeoJsonElementStream(filePath) {
     });
 
     for await (const line of rl) {
-        if (line.trim()) {
+        // Remove record separator
+        const cleanLine = line.replace(/^\x1e/, '').trim();
+        if (cleanLine) {
             try {
-                yield JSON.parse(line);
+                yield JSON.parse(cleanLine);
             } catch (err) {
                 console.error('Error parsing JSON line:', err);
             }
