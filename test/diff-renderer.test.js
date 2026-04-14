@@ -1060,4 +1060,17 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-unchanged">+</span><span class="diff-added">590&nbsp;</span><span class="diff-unchanged">590&nbsp;12&nbsp;34</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('should show prefix as removed when removing it from a short number', () => {
+        const original = '+33 3631';
+        const suggested = '3631';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-removed">+33&nbsp;</span><span class="diff-unchanged">3631</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">3631</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });
