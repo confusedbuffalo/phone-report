@@ -420,7 +420,9 @@ async function processCountry(countryData) {
 
                 // TODO: store this per subdivision
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);
-                countryData.timestamp = dataTimestamp;
+                if (!countryData.timestamp) {
+                    countryData.timestamp = dataTimestamp;
+                }
             }
         }
     }
