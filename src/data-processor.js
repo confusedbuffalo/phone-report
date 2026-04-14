@@ -1014,7 +1014,6 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     let safeEditCount = 0;
 
     for await (const element of elementStream) {
-        console.log(element)
         if (!element.properties) continue;
         
         const tags = element.properties;
