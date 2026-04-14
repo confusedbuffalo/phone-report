@@ -77,7 +77,7 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
         }
 
         try {
-            const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" --strategy simple -f pbf -o - | osmium export -f geojsonseq -o "${outputPath}" --overwrite`;
+            const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" --strategy simple -f pbf -o - | osmium export - -F pbf -f geojsonseq -o "${outputPath}" --overwrite`;
             await execPromise(command);
         } catch (error) {
             console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
