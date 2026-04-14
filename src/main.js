@@ -231,6 +231,29 @@ async function* createOsmElementStream(filePath) {
 }
 
 /**
+ * Creates an async generator stream of JSON objects from a geojsonseq file.
+ * @param {string} filePath - Path to the .geojsonseq file.
+ */
+async function* createGeoJsonElementStream(filePath) {
+    const fileStream = fs.createReadStream(filePath);
+    
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+
+    for await (const line of rl) {
+        if (line.trim()) {
+            try {
+                yield JSON.parse(line);
+            } catch (err) {
+                console.error('Error parsing JSON line:', err);
+            }
+        }
+    }
+}
+
+/**
  * Converts a timestamp string to a JavaScript Date object.
  * @param {string} timestampStr - The raw timestamp from the metadata file.
  * @returns {Date|null} - A valid Date object or null if parsing fails.
@@ -257,14 +280,15 @@ function parseOsmTimestamp(timestampStr) {
 async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
 
-    const pbfPath = path.join(OSM_DIR, `${subdivision.id}.osm.pbf`);
+    const geojsonPath = path.join(OSM_DIR, `${subdivision.id}.geojsonseq`);
     try {
-        await access(pbfPath);
+        await access(geojsonPath);
     } catch (error) {
-        console.error(`Error: File not found at ${pbfPath}`);
+        console.error(`Error: File not found at ${geojsonPath}`);
     }
 
-    const elementStream = createOsmElementStream(pbfPath);
+    // const elementStream = createOsmElementStream(pbfPath);
+    const elementStream = createGeoJsonElementStream(geojsonPath);
 
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const countryCode = getCountryCode(subdivision.name, countryData.countryCode);
@@ -272,7 +296,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
 
     const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
 
-    fs.unlinkSync(pbfPath);
+    fs.unlinkSync(geojsonPath);
 
     const siteInvalidCount = botEnabled ? invalidCount - safeEditCount : invalidCount;
     const siteAutoFixableCount = botEnabled ? autoFixableCount - safeEditCount : autoFixableCount;
