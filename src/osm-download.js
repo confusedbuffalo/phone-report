@@ -69,6 +69,7 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
 
     for (const id of ids) {
         const polyPath = path.join(POLY_DIR, `${id}.poly`);
+        const tempPath = path.join(OSM_DIR, `${id}.osm.pbf`);
         const outputPath = path.join(OSM_DIR, `${id}.geojsonseq`);
 
         if (!fs.existsSync(polyPath)) {
@@ -77,8 +78,11 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
         }
 
         try {
-            const command = `osmium extract -p "${polyPath}" "${filteredFilePath}" --strategy simple -f pbf -o - | osmium export - -F pbf -f geojsonseq -o "${outputPath}" --overwrite`;
-            await execPromise(command);
+            const extractCommand = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${tempPath}" --strategy simple --overwrite`;
+            const exportCommand = `osmium export "${tempPath}" -a type,id,changeset,timestamp,user -f geojsonseq -o "${outputPath}" --overwrite`;
+            await execPromise(extractCommand);
+            await execPromise(exportCommand);
+            fs.unlinkSync(tempPath);
         } catch (error) {
             console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
             continue;
