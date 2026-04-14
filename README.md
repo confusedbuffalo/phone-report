@@ -56,7 +56,7 @@ To run the project locally and generate the reports, follow these steps:
     ```bash
     npm start
     ```
-    This will generate the static site in the `public/` directory. Note that this includes downloading and processing the full planet file, which will use a lot of data, CPU and RAM.
+    This will generate the static site in the `public/` directory. Note that this includes downloading and processing extracts for all regions, using a lot of data.
 
 ## License
 

@@ -4,6 +4,7 @@
   "description": "A GitHub Pages site that reports invalid phone numbers from OpenStreetMap data.",
   "main": "src/main.js",
   "scripts": {
+    "preinstall": "osmium --version || (echo 'Error: osmium-tool is not installed.' && exit 1)",
     "download-icons": "node src/download-icons.js",
     "start": "npm run build",
     "test": "jest",
@@ -35,6 +36,10 @@
     "string-similarity-js": "^2.1.4",
     "terser": "^5.46.1",
     "uuid": "^13.0.0"
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "osmium": ">=1.18.0"
   },
   "author": "confusedbuffalo",
   "license": "GNU GPL v3.0"
