@@ -13,6 +13,11 @@ const { generateHtmlReport } = require('./html-report')
 const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
 
+const BUILD_TYPE = process.env.BUILD_TYPE;
+// A test build will only fetch and process numbers for one subdivision of one division of one country
+// (the first found of each, using the countries data file)
+const testMode = BUILD_TYPE === 'simplified';
+
 const CLIENT_KEYS = [
     'dataSourcedTemplate',
     'fixInJOSM',
@@ -211,7 +216,7 @@ function getCountryCode(divisionName, countryCode) {
  */
 async function* createGeoJsonElementStream(filePath) {
     const fileStream = fs.createReadStream(filePath);
-    
+
     // Track unique combinations of type + id
     const seenElements = new Set();
 
@@ -223,7 +228,7 @@ async function* createGeoJsonElementStream(filePath) {
     for await (const line of rl) {
         // Remove record separator
         const cleanLine = line.replace(/^\x1e/, '').trim();
-        
+
         if (cleanLine) {
             try {
                 const feature = JSON.parse(cleanLine);
@@ -352,6 +357,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     let divisionAutofixableCount = 0;
     let divisionSafeEditCount = 0;
 
+    let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
         const stats = await processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations);
         divisionStats.push(stats);
@@ -359,6 +365,11 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
         divisionSafeEditCount += stats.safeEditCount;
+
+        subdivisionCount++;
+        if (testMode && subdivisionCount >= 1) {
+            break;
+        }
     }
 
     return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
@@ -425,6 +436,7 @@ async function processCountry(countryData) {
     let totalTotalNumbers = 0;
     const groupedDivisionStats = {};
 
+    let divisionCount = 0;
     for (const rawDivisionName in divisions) {
         const {
             divisionStats,
@@ -440,6 +452,11 @@ async function processCountry(countryData) {
         totalAutofixableCount += divisionAutofixableCount;
         totalSafeEditCount += divisionSafeEditCount;
         totalTotalNumbers += divisionTotalNumbers;
+
+        divisionCount++;
+        if (testMode && divisionCount >= 1) {
+            break;
+        }
     }
 
     const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
@@ -519,6 +536,10 @@ async function main() {
         countryData.name = countryKey;
         const stats = await processCountry(countryData);
         allCountryStats.push(stats);
+
+        if (testMode) {
+            break;
+        }
     }
 
     await generateMainIndexHtml(allCountryStats, defaultLocale, clientDefaultTranslations);

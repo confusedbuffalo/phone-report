@@ -5,7 +5,8 @@ const { PUBLIC_DIR, COUNTRIES } = require('./constants');
 const { favicon, themeButton, createFooter, escapeHTML } = require('./html-utils');
 const { getTranslations } = require('./i18n');
 const { safeName } = require('./data-processor');
-
+const BUILD_TYPE = process.env.BUILD_TYPE;
+const testMode = BUILD_TYPE === 'simplified';
 
 /**
  * Generates the progress.html page, which displays charts visualizing the
@@ -20,7 +21,6 @@ async function generateProgressPage(country = null, locale = 'en-GB') {
     const srcPrefix = country ? '../' : './';
 
     const historyDataPath = path.join(PUBLIC_DIR, 'history-data.json');
-    const clientHistoryPath = './history-data.json';
 
     try {
         await fsPromises.access(historyDataPath);   
@@ -116,7 +116,10 @@ if (require.main === module) {
             const countryData = COUNTRIES[countryKey];
             const locale = countryData.locale;
 
-            await generateProgressPage(safeName(countryKey), locale)
+            await generateProgressPage(safeName(countryKey), locale);
+            if (testMode) {
+                break;
+            }
         }
     })();
 }   
