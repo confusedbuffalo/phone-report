@@ -995,12 +995,9 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     let safeEditCount = 0;
 
     for await (const element of elementStream) {
-        if (!element.tags) continue;
+        if (!element.tags || Object.keys(element.tags).length === 0) continue;
         const tags = element.tags;
-        
-        // if (element.type === 'way' || element.type === 'relation') {
-        //     console.log(element);
-        // }
+
         console.log(element)
 
         let item = null;

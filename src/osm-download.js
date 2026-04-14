@@ -4,21 +4,14 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('path');
 const { promisify } = require('util');
-const { COUNTRIES, POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
+const { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
 const { getSubdivisionIds } = require('./fetch-polys');
 
 const execPromise = promisify(exec);
 
-// const PLANET_URL = 'https://download3.bbbike.org/osm/planet/planet-daily.osm.pbf';
-const PLANET_URL = 'https://download3.bbbike.org/osm/pbf/region/africa/south-africa-and-lesotho.osm.pbf';
-
-// Ensure output directory exists
-if (!fs.existsSync(OSM_DIR)) {
-    fs.mkdirSync(OSM_DIR, { recursive: true });
-}
 
 /**
- * Downloads, filters, and cleans up OSM PBF files.
+ * Downloads and filters OSM PBF files.
  * @param {string} url - The URL of the .osm.pbf file.
  * @param {string} outputPath - Where to save the filtered file.
  */
@@ -26,7 +19,7 @@ async function processPbf(url, outputPath) {
     const tempInput = path.join(__dirname, 'temp_input.osm.pbf');
 
     try {
-        console.log(`Downloading: ${url}...`);
+        console.log(`Downloading: ${url}`);
         const response = await axios({
             url,
             method: 'GET',
@@ -48,15 +41,31 @@ async function processPbf(url, outputPath) {
     } catch (error) {
         console.error('Error processing OSM data:', error.message);
     } finally {
-        // 4. Cleanup the original large file
         if (fs.existsSync(tempInput)) {
             fs.unlinkSync(tempInput);
         }
     }
 }
 
+/**
+ * Splits a PBF file into smaller extracts based on country or specific division boundaries.
+ * * This function uses the `osmium` CLI tool to extract geographic data using `.poly` files.
+ * If a division is provided, it extracts that specific relation; otherwise, it 
+ * iterates through all subdivision IDs for the given country.
+ * * @async
+ * @param {string} filteredFilePath - The file path to the source .osm.pbf file.
+ * @param {string|null} [country=null] - The country name or identifier used to fetch subdivision IDs.
+ * @param {Object|null} [division=null] - An optional division object.
+ * @param {string} division.relationId - The OpenStreetMap relation ID for the division.
+ * @returns {Promise<void>} Resolves when the extraction process is complete for all IDs.
+ * @throws {Error} Logs an error if the `osmium` command fails for a specific division.
+ */
 async function splitPbf(filteredFilePath, country = null, division = null) {
     const ids = division ? [division.relationId] : getSubdivisionIds(country);
+
+    if (!fs.existsSync(OSM_DIR)) {
+        fs.mkdirSync(OSM_DIR, { recursive: true });
+    }    
 
     for (const id of ids) {
         const polyPath = path.join(POLY_DIR, `${id}.poly`);
@@ -79,13 +88,13 @@ async function splitPbf(filteredFilePath, country = null, division = null) {
 
 /**
  * Fetches and extracts a timestamp from OSM metadata or headers.
- * Supports bbbike, openstreetmap.fr, and geofabrik.de
+ * Supports bbbike, openstreetmap.fr, geofabrik.de and geo2day.com
  * @param {string} pbfUrl - The URL to the .osm.pbf file
  * @returns {Promise<string|null>} The ISO timestamp string
  */
 async function getOsmTimestamp(pbfUrl) {
     try {
-        // Handle Geofabrik via HTTP Headers
+        // Handle Geofabrik and geo2day via HTTP Headers
         if (pbfUrl.includes('geofabrik.de') || pbfUrl.includes('geo2day.com')) {
             const response = await fetch(pbfUrl, { method: 'HEAD' });
             const lastModified = response.headers.get('last-modified');
@@ -117,12 +126,11 @@ async function getOsmTimestamp(pbfUrl) {
 
         if (isOsmFr) {
             const match = text.match(/timestamp=(.+)/);
-            // Clean backslashes and standardize to ISO
+            // Clean backslashes and standardise to ISO
             const raw = match ? match[1].replace(/\\/g, '') : null;
             return raw ? new Date(raw).toISOString() : null;
         }
 
-        // Default for BBBike (already almost ISO)
         return new Date(text).toISOString();
 
     } catch (error) {
