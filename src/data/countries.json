@@ -3,64 +3,18 @@
         "countryCode": "FR",
         "locale": "fr-FR",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/france.osm.pbf",
         "divisions": {
-            "Auvergne-Rhône-Alpes": 3792877,
-            "Bourgogne – Franche-Comté": 3792878,
-            "Brittany": 102740,
-            "Centre-Val de Loire": 8640,
-            "Corsica": 76910,
-            "Grand Est": 3792876,
-            "Hauts-de-France": 4217435,
-            "Ile-de-France": 8649,
-            "Normandy": 3793170,
-            "Nouvelle-Aquitaine": 3792880,
-            "Occitania": 3792883,
-            "Pays de la Loire": 8650,
-            "Provence-Alpes-Côte d'Azur": 8654,
             "Guadeloupe": {
                 "relationId": 1401835,
                 "pbfUrl": "https://download.geofabrik.de/europe/france/guadeloupe-latest.osm.pbf"
-            },
-            "Guyane": {
-                "relationId": 2502058,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/guyane-latest.osm.pbf"
-            },
-            "La Réunion": {
-                "relationId": 1785276,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/reunion-latest.osm.pbf"
-            },
-            "Martinique": {
-                "relationId": 1891495,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/martinique-latest.osm.pbf"
-            },
-            "Mayotte": {
-                "relationId": 1259885,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/mayotte-latest.osm.pbf"
             },
             "Nouvelle-Calédonie": {
                 "relationId": 3407643,
                 "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf"
             },
-            "Polynésie française": {
-                "relationId": 3412620,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf"
-            },
             "Saint-Barthélemy": {
                 "relationId": 537967,
                 "pbfUrl": "https://geo2day.com/central_america/saint_barthelemy.pbf"
-            },
-            "Saint-Martin": {
-                "relationId": 1891583,
-                "pbfUrl": "https://geo2day.com/central_america/saint_martin.pbf"
-            },
-            "Saint-Pierre-et-Miquelon": {
-                "relationId": 3406826,
-                "pbfUrl": "https://geo2day.com/north_america/saint_pierre_et_miquelon.pbf"
-            },
-            "Wallis-et-Futuna": {
-                "relationId": 3412448,
-                "pbfUrl": "https://download.geofabrik.de/australia-oceania/wallis-et-futuna-latest.osm.pbf"
             }
         }
     }
