@@ -4,7 +4,6 @@
   "description": "A GitHub Pages site that reports invalid phone numbers from OpenStreetMap data.",
   "main": "src/main.js",
   "scripts": {
-    "preinstall": "osmium --version || (echo 'Error: osmium-tool is not installed.' && exit 1)",
     "download-icons": "node src/download-icons.js",
     "start": "npm run build",
     "test": "jest",
