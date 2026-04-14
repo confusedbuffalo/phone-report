@@ -205,12 +205,16 @@ function getCountryCode(divisionName, countryCode) {
 }
 
 /**
- * Creates an async generator stream of JSON objects from a geojsonseq file.
+ * Creates an async generator stream of unique JSON objects from a geojsonseq file.
+ * Uses a combination of @id and @type to ensure uniqueness across OSM types.
  * @param {string} filePath - Path to the .geojsonseq file.
  */
 async function* createGeoJsonElementStream(filePath) {
     const fileStream = fs.createReadStream(filePath);
     
+    // Track unique combinations of type + id
+    const seenElements = new Set();
+
     const rl = readline.createInterface({
         input: fileStream,
         crlfDelay: Infinity
@@ -219,14 +223,31 @@ async function* createGeoJsonElementStream(filePath) {
     for await (const line of rl) {
         // Remove record separator
         const cleanLine = line.replace(/^\x1e/, '').trim();
+        
         if (cleanLine) {
             try {
-                yield JSON.parse(cleanLine);
+                const feature = JSON.parse(cleanLine);
+                const props = feature.properties;
+
+                if (props && props['@id'] && props['@type']) {
+                    // Create a composite key, e.g., "way/10432"
+                    const compositeKey = `${props['@type']}/${props['@id']}`;
+
+                    if (!seenElements.has(compositeKey)) {
+                        seenElements.add(compositeKey);
+                        yield feature;
+                    }
+                } else {
+                    // If metadata is missing, yield anyway to avoid data loss
+                    yield feature;
+                }
             } catch (err) {
                 console.error('Error parsing JSON line:', err);
             }
         }
     }
+
+    seenElements.clear();
 }
 
 /**
