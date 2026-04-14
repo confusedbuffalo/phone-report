@@ -410,6 +410,11 @@ function createListItem(item) {
 
     iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
+    itemMetadata = item.user ? `
+        <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
+        <a href="https://www.openstreetmap.org/user/${item.user}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${item.user}</a>`
+        : `<span>${relativeTime}</span>`;
+
     return `
         <li class="report-list-item" data-item-id="${itemId}">
             <div class="list-item-content-wrapper">
