@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const readline = require('readline')
-const { createOSMStream } = require('osm-pbf-parser-node');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
@@ -206,32 +205,6 @@ function getCountryCode(divisionName, countryCode) {
 }
 
 /**
- * Creates an async generator that yields OSM elements from a PBF file.
- * @param {string} filePath - Path to the .osm.pbf file
- */
-async function* createOsmElementStream(filePath) {
-    const stream = createOSMStream(filePath, { withInfo: true });
-
-    for await (const item of stream) {
-        // If the item is a node, it has lat/lon.
-        // If it's a way/relation and 'osmium add-locations-to-ways' hasn't been run,
-        // lat/lon will be missing
-        yield {
-            type: item.type,
-            id: item.id,
-            tags: item.tags || {},
-            lat: item.lat,
-            lon: item.lon,
-            timestamp: item.info?.timestamp,
-            version: item.info?.version,
-            changeset: item.info?.changeset,
-            user: item.info?.user,
-            uid: item.info?.uid
-        };
-    }
-}
-
-/**
  * Creates an async generator stream of JSON objects from a geojsonseq file.
  * @param {string} filePath - Path to the .geojsonseq file.
  */
@@ -290,7 +263,6 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         console.error(`Error: File not found at ${geojsonPath}`);
     }
 
-    // const elementStream = createOsmElementStream(pbfPath);
     const elementStream = createGeoJsonElementStream(geojsonPath);
 
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
