@@ -1,5 +1,5 @@
 const fs = require('fs');
-const turf = require('@turf/turf');
+const pointOnFeature = require('@turf/point-on-feature').default;
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
 const {
@@ -986,7 +986,7 @@ function isSafeItemEdit(item, countryCode) {
 function getRepresentativeLocation(geometry) {
     if (!geometry) return null;
 
-    const representativePoint = turf.pointOnFeature(geometry);
+    const representativePoint = pointOnFeature(geometry);
     const [lon, lat] = representativePoint.geometry.coordinates;
 
     return {
@@ -1014,6 +1014,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     let safeEditCount = 0;
 
     for await (const element of elementStream) {
+        console.log(element)
         if (!element.properties) continue;
         
         const tags = element.properties;
@@ -1032,17 +1033,17 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             const { lat, lon } = getRepresentativeLocation(element.geometry);
             
-            const { type: geometryType, coordinates: c } = geometry;
+            const { type: geometryType, coordinates: c } = element.geometry;
             // Many areas are returned as LineString due to osmium export
             const couldBeArea = ['Polygon', 'MultiPolygon'].includes(geometryType)
                 || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
 
             const baseItem = {
-                type: element.properties.get("type"),
-                id: element.properties.get("id"),
-                user: element.properties.get("user"),
-                timestamp: element.properties.get("@timestamp"),
-                changeset: element.properties.get("changeset"),
+                type: element.properties["@type"],
+                id: element.properties["@id"],
+                user: element.properties["@user"],
+                timestamp: element.properties["@timestamp"],
+                changeset: element.properties["@changeset"],
                 website,
                 lat,
                 lon,
