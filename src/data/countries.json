@@ -335,6 +335,29 @@
             "Zeeland": 47806
         }
     },
+    "Norge": {
+        "countryCode": "NO",
+        "locale": "nb-NO",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/norway.osm.pbf",
+        "divisions": {
+            "Agder": 10155517,
+            "Akershus": 406106,
+            "Buskerud": 412297,
+            "Finnmark": 406389,
+            "Innlandet": 10155527,
+            "Møre og Romsdal": 406868,
+            "Nordland": 408105,
+            "Oslo": 406091,
+            "Rogaland": 405836,
+            "Telemark": 405156,
+            "Troms": 407717,
+            "Trøndelag": 406567,
+            "Vestfold": 404589,
+            "Vestland": 10155543,
+            "Østfold": 406060
+        }
+    },
     "Polska": {
         "countryCode": "PL",
         "locale": "en",
@@ -421,6 +444,35 @@
             "North West": 349519,
             "Northern Cape": 86720,
             "Western Cape": 80501
+        }
+    },
+    "Sverige": {
+        "countryCode": "SE",
+        "locale": "sv-SE",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/sweden.osm.pbf",
+        "divisions": {
+            "Blekinge län": 54413,
+            "Dalarnas län": 52834,
+            "Gotlands län": 941530,
+            "Gävleborgs län": 52832,
+            "Hallands län": 54403,
+            "Jämtlands län": 52826,
+            "Jönköpings län": 54374,
+            "Kalmar län": 54417,
+            "Kronobergs län": 54412,
+            "Norrbottens län": 52824,
+            "Skåne län": 54409,
+            "Stockholms län": 54391,
+            "Södermanlands län": 54386,
+            "Uppsala län": 54220,
+            "Värmlands län": 54223,
+            "Västerbottens län": 52825,
+            "Västernorrlands län": 52827,
+            "Västmanlands län": 54221,
+            "Västra Götalands län": 54367,
+            "Örebro län": 54222,
+            "Östergötlands län": 940675
         }
     },
     "Türkiye": {
