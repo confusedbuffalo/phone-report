@@ -254,6 +254,14 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
 
     processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
+    // Not in the proposals
+    if (
+        (/^\+\s.*$/.test(originalNumberStr) || /\s{2,}/.test(originalNumberStr) || /\-{2,}/.test(originalNumberStr))
+        && originalNumberStr.replace(/\s/g, '').replace(/\-/g, '') === newNumberStr.replace(/\s/g, '').replace(/\-/g, '')
+    ) {
+        return false;
+    }
+
     // Double check that the original number parses to the new number
     if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
 
@@ -718,9 +726,12 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
 
             if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
-                // Targets numbers with no spaces after the country code or space after plus
-                isInvalid = /^\+?\s?\d{4,}[\d\s]+$/.test(numberStr) || /^\+\s.*$/.test(numberStr);
+                // Targets numbers with no spaces after the country code
+                isInvalid = /^\+?\s?\d{4,}[\d\s]+$/.test(numberStr);
             }
+
+            // Bad spacing: space after plus, multiple consecutive spaces/dashes
+            isInvalid = isInvalid || /^\+\s.*$/.test(numberStr) || /\s{2,}/.test(numberStr) || /\-{2,}/.test(numberStr);
 
             isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
 

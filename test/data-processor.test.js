@@ -732,6 +732,20 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('GB: consider space after plus to be invalid and fixable', () => {
+        const result = processSingleNumber('+ 44 20 79 46 00 00', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+        expect(result.autoFixable).toBe(true);
+    });
+
+    test('GB: double space is invalid and fixable', () => {
+        const result = processSingleNumber('+44  20 79 46 00 00', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.suggestedFix).toBe('+44 20 7946 0000');
+        expect(result.autoFixable).toBe(true);
+    });
+
     test('GB: correctly validate and format a simple valid local number', () => {
         const result = processSingleNumber('02079460000', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
@@ -919,6 +933,13 @@ describe('processSingleNumber', () => {
     test('US: dashes is not invalid', () => {
         const result = processSingleNumber('+1-213-373-4253', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(false);
+    });
+
+    test('US: consecutive dashes is invalid and fixable', () => {
+        const result = processSingleNumber('+1-213--373-4253', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(true);
+        expect(result.suggestedFix).toBe('+1-213-373-4253');
+        expect(result.autoFixable).toBe(true);
     });
 
     test('US: toll free number is fixable to international format', () => {
@@ -2747,6 +2768,19 @@ describe('isSafeEdit', () => {
         const countryCode = 'US';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(false);
+    });
+
+    test('should return false for fixing bad but not invalid spacing (not in original proposals)', () => {
+        const newNumber = '+447700900000';
+        const countryCode = 'GB';
+
+        const originalNumberPlusSpace = '+ 44 7700 900000';
+        expect(isSafeEdit(originalNumberPlusSpace, newNumber, countryCode)).toBe(false);
+
+        const originalNumberDoubleSpace = '+44  7700 900000';
+        expect(isSafeEdit(originalNumberDoubleSpace, newNumber, countryCode)).toBe(false);
+
+        expect(isSafeEdit('+1-213-373--1234', '+1-213-373-1234', 'US')).toBe(false);
     });
 });
 
