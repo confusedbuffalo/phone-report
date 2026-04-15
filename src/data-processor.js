@@ -1043,11 +1043,13 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             const couldBeArea = ['Polygon', 'MultiPolygon'].includes(geometryType)
                 || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
 
+            const elementTimestamp = element.properties["@timestamp"] ? new Date(element.properties["@timestamp"] * 1000).toISOString() : 0;
+
             const baseItem = {
                 type: element.properties["@type"],
                 id: element.properties["@id"],
                 user: element.properties["@user"],
-                timestamp: element.properties["@timestamp"],
+                timestamp: elementTimestamp,
                 changeset: element.properties["@changeset"],
                 website,
                 lat,
