@@ -323,28 +323,6 @@ const NANP_COUNTRY_CODES = [
     'VI', // U.S. Virgin Islands
 ];
 
-const usTerritoryCodes = new Map([
-    ['American Samoa', 'AS'],
-    ['Guam', 'GU'],
-    ['Puerto Rico', 'PR'],
-    ['Northern Mariana Islands', 'MP'],
-    ['United States Virgin Islands', 'VI'],
-]);
-
-const frTerritoryCodes = new Map([
-    ['Guadeloupe', 'GP'],
-    ['Guyane', 'GF'],
-    ['La Réunion', 'RE'],
-    ['Martinique','MQ'],
-    ['Mayotte', 'YT'],
-    ['Nouvelle-Calédonie', 'NC'],
-    ['Polynésie française', 'PF'],
-    ['Saint-Barthélemy', 'BL'],
-    ['Saint-Martin', 'MF'],
-    ['Saint-Pierre-et-Miquelon', 'PM'],
-    ['Wallis-et-Futuna', 'WF'],
-]);
-
 const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'BL', 'GB', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT', 'ZA'];
 const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT'];
 
@@ -396,8 +374,6 @@ module.exports = {
     GITHUB_LINK,
     HOST_URL,
     NANP_COUNTRY_CODES,
-    usTerritoryCodes,
-    frTerritoryCodes,
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
     INVALID_SPACING_CHARACTERS_REGEX,

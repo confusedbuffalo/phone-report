@@ -4,7 +4,7 @@ const os = require('os');
 const readline = require('readline')
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, OSM_DIR } = require('./constants');
 const { processPbf, splitPbf, getOsmTimestamp } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
@@ -162,6 +162,7 @@ function getSubdivisions(countryData, divisionName) {
             return {
                 name: name,
                 id: value.relationId,
+                countryCode: value.countryCode ?? countryData.countryCode,
                 ...(value.pbfUrl && { pbfUrl: value.pbfUrl })
             };
         }
@@ -188,25 +189,6 @@ function getSubdivisions(countryData, divisionName) {
 
     console.error(`Data for ${countryData.name} set up incorrectly, no divisions or divisionMap found`);
     return [];
-}
-
-/**
- * Returns the two-letter country code, taking into account territories and possessions of FR and US.
- * * @param {string} divisionName The full name of the territory (e.g., "Puerto Rico").
- * * @param {string} countryCode The two-letter country code (e.g. "US")
- * @returns {string} The two-letter country code (e.g., "PR"), or the provided countryCode as default.
- */
-function getCountryCode(divisionName, countryCode) {
-    if (!divisionName) {
-        return null;
-    }
-    if (countryCode === 'US') {
-        return usTerritoryCodes.get(divisionName) || 'US';
-    }
-    if (countryCode === 'FR') {
-        return frTerritoryCodes.get(divisionName) || 'FR';
-    }
-    return countryCode;
 }
 
 /**
@@ -293,10 +275,9 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const elementStream = createGeoJsonElementStream(geojsonPath);
 
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
-    const countryCode = getCountryCode(subdivision.name, countryData.countryCode);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
+    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 

@@ -48,6 +48,93 @@
             "Wallonie": 90348
         }
     },
+    "British Crown Dependencies and Overseas Territories": {
+        "countryCode": "GB",
+        "locale": "en-GB",
+        "safeAutoFixBotEnabled": false,
+        "divisions": {
+            "Akrotiri and Dhekelia": {
+                "relationId": 3263728,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/cyprus.osm.pbf",
+                "countryCode": "CY"
+            },
+            "Anguilla ": {
+                "relationId": 2177161,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/anguilla-latest.osm.pbf",
+                "countryCode": "AI"
+            },
+            "Bermuda": {
+                "relationId": 1993208,
+                "pbfUrl": "https://geo2day.com/north_america/bermuda.pbf",
+                "countryCode": "BM"
+            },
+            "British Indian Ocean Territory": {
+                "relationId": 1993867,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/asia/british_indian_ocean_territory-latest.osm.pbf",
+                "countryCode": "IO"
+            },
+            "British Virgin Islands": {
+                "relationId": 285454,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/british_virgin_islands-latest.osm.pbf",
+                "countryCode": "VG"
+            },
+            "Cayman Islands": {
+                "relationId": 2185366,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/cayman_islands.osm.pbf",
+                "countryCode": "KY"
+            },
+            "Falkland Islands": {
+                "relationId": 2185374,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/south-america/falkland-latest.osm.pbf",
+                "countryCode": "FK"
+            },
+            "Gibraltar": {
+                "relationId": 1278736,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/gibraltar-latest.osm.pbf",
+                "countryCode": "GI"
+            },
+            "Guernsey": {
+                "relationId": 270009,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/guernesey-latest.osm.pbf",
+                "countryCode": "GG"
+            },
+            "Isle of Man": {
+                "relationId": 62269,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/isle-of-man.osm.pbf",
+                "countryCode": "IM"
+            },
+            "Jersey": {
+                "relationId": 367988,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/jersey-latest.osm.pbf",
+                "countryCode": "GJ"
+            },
+            "Montserrat ": {
+                "relationId": 537257,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/montserrat-latest.osm.pbf",
+                "countryCode": "MS"
+            },
+            "Pitcairn Islands": {
+                "relationId": 2185375,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/oceania/pitcairn-latest.osm.pbf",
+                "countryCode": "PN"
+            },
+            "Saint Helena, Ascension and Tristan da Cunha": {
+                "relationId": 1964272,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/africa/saint_helena_ascension_tristan_da_cunha-latest.osm.pbf",
+                "countryCode": "SH"
+            },
+            "South Georgia and the South Sandwich Islands": {
+                "relationId": 1983628,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/south-america/south_georgia_and_south_sandwich-latest.osm.pbf",
+                "countryCode": "GS"
+            },
+            "Turks and Caicos Islands": {
+                "relationId": 547479,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/turks_and_caicos_islands-latest.osm.pbf",
+                "countryCode": "TC"
+            }
+        }
+    },
     "Canada": {
         "countryCode": "CA",
         "locale": "en-CA",
@@ -86,7 +173,7 @@
         "countryCode": "DE",
         "locale": "de-DE",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/dach.osm.pbf",
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/germany.osm.pbf",
         "divisionMap": {
             "Baden-Württemberg": {
                 "Regierungsbezirk Freiburg": 2106112,
@@ -204,47 +291,58 @@
             "Provence-Alpes-Côte d'Azur": 8654,
             "Guadeloupe": {
                 "relationId": 1401835,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/guadeloupe-latest.osm.pbf"
+                "pbfUrl": "https://download.geofabrik.de/europe/france/guadeloupe-latest.osm.pbf",
+                "countryCode": "GP"
             },
             "Guyane": {
                 "relationId": 2502058,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/guyane-latest.osm.pbf"
+                "pbfUrl": "https://download.geofabrik.de/europe/france/guyane-latest.osm.pbf",
+                "countryCode": "GF"
             },
             "La Réunion": {
                 "relationId": 1785276,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/reunion-latest.osm.pbf"
+                "pbfUrl": "https://download.geofabrik.de/europe/france/reunion-latest.osm.pbf",
+                "countryCode": "RE"
             },
             "Martinique": {
                 "relationId": 1891495,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/martinique-latest.osm.pbf"
+                "pbfUrl": "https://download.geofabrik.de/europe/france/martinique-latest.osm.pbf",
+                "countryCode": "MQ"
             },
             "Mayotte": {
                 "relationId": 1259885,
-                "pbfUrl": "https://download.geofabrik.de/europe/france/mayotte-latest.osm.pbf"
+                "pbfUrl": "https://download.geofabrik.de/europe/france/mayotte-latest.osm.pbf",
+                "countryCode": "YT"
             },
             "Nouvelle-Calédonie": {
                 "relationId": 3407643,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf",
+                "countryCode": "NC"
             },
             "Polynésie française": {
                 "relationId": 3412620,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf",
+                "countryCode": "PF"
             },
             "Saint-Barthélemy": {
                 "relationId": 537967,
-                "pbfUrl": "https://geo2day.com/central_america/saint_barthelemy.pbf"
+                "pbfUrl": "https://geo2day.com/central_america/saint_barthelemy.pbf",
+                "countryCode": "BL"
             },
             "Saint-Martin": {
                 "relationId": 1891583,
-                "pbfUrl": "https://geo2day.com/central_america/saint_martin.pbf"
+                "pbfUrl": "https://geo2day.com/central_america/saint_martin.pbf",
+                "countryCode": "MF"
             },
             "Saint-Pierre-et-Miquelon": {
                 "relationId": 3406826,
-                "pbfUrl": "https://geo2day.com/north_america/saint_pierre_et_miquelon.pbf"
+                "pbfUrl": "https://geo2day.com/north_america/saint_pierre_et_miquelon.pbf",
+                "countryCode": "PM"
             },
             "Wallis-et-Futuna": {
                 "relationId": 3412448,
-                "pbfUrl": "https://download.geofabrik.de/australia-oceania/wallis-et-futuna-latest.osm.pbf"
+                "pbfUrl": "https://download.geofabrik.de/australia-oceania/wallis-et-futuna-latest.osm.pbf",
+                "countryCode": "WF"
             }
         }
     },
@@ -533,7 +631,8 @@
             },
             "American Samoa": {
                 "relationId": 2177187,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
+                "countryCode": "AS"
             },
             "Arizona": {
                 "relationId": 162018,
@@ -573,7 +672,8 @@
             },
             "Guam": {
                 "relationId": 306001,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
+                "countryCode": "GU"
             },
             "Hawaii": {
                 "relationId": 166563,
@@ -673,7 +773,8 @@
             },
             "Northern Mariana Islands": {
                 "relationId": 306004,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
+                "countryCode": "MP"
             },
             "Ohio": {
                 "relationId": 162061,
@@ -693,7 +794,8 @@
             },
             "Puerto Rico": {
                 "relationId": 4422604,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/puerto-rico.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/puerto-rico.osm.pbf",
+                "countryCode": "PR"
             },
             "Rhode Island": {
                 "relationId": 392915,
@@ -717,7 +819,8 @@
             },
             "United States Virgin Islands": {
                 "relationId": 286898,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/us-virgin-islands.osm.pbf"
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/us-virgin-islands.osm.pbf",
+                "countryCode": "VI"
             },
             "Utah": {
                 "relationId": 161993,

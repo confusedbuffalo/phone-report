@@ -47,7 +47,8 @@ describe('Countries file tests', () => {
             } else {
                 expect(value).toEqual({
                     relationId: expect.any(Number),
-                    pbfUrl: expect.any(String)
+                    pbfUrl: expect.any(String),
+                    ...(value.countryCode !== undefined && { countryCode: expect.any(String) })
                 });
             }
         }
@@ -73,18 +74,12 @@ describe('Countries file tests', () => {
                 expect(typeof countryData.pbfUrl).toBe('string')
             } else if (countryData.hasOwnProperty('divisions')) {
                 Object.values(countryData.divisions).forEach((value) => {
-                    expect(value).toEqual({
-                        relationId: expect.any(Number),
-                        pbfUrl: expect.any(String)
-                    });
+                    expect(value.hasOwnProperty('pbfUrl')).toBe(true)
                 });
             } else {
                 Object.values(countryData.divisionMap).forEach((division) => {
                     Object.values(division).forEach((value) => {
-                        expect(value).toEqual({
-                            relationId: expect.any(Number),
-                            pbfUrl: expect.any(String)
-                        });
+                        expect(value.hasOwnProperty('pbfUrl')).toBe(true)
                     });
                 });
             }
