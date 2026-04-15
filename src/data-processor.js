@@ -25,6 +25,7 @@ const {
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -716,6 +717,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
             numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
 
+            if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
+                // Targets numbers with no spaces after the country code or space after plus
+                isInvalid = /^\+?\s?\d{4,}[\d\s]+$/.test(numberStr) || /^\+\s.*$/.test(numberStr);
+            }
+
             isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
 
             if (phoneNumber.ext && !hasStandardExtension) {
@@ -1037,11 +1043,13 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             const couldBeArea = ['Polygon', 'MultiPolygon'].includes(geometryType)
                 || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
 
+            const elementTimestamp = element.properties["@timestamp"] ? new Date(element.properties["@timestamp"] * 1000).toISOString() : 0;
+
             const baseItem = {
                 type: element.properties["@type"],
                 id: element.properties["@id"],
                 user: element.properties["@user"],
-                timestamp: element.properties["@timestamp"],
+                timestamp: elementTimestamp,
                 changeset: element.properties["@changeset"],
                 website,
                 lat,

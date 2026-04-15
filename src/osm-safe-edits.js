@@ -18,6 +18,12 @@ const { getSubdivisionRelativeFilePath } = require('./html-report');
  */
 const BOT_AUTH_TOKEN = process.env.BOT_AUTH_TOKEN;
 
+
+/**
+ * Basic sleep utility to pause between uploads so as not to overload the OSM servers
+ */
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 /**
  * A custom stream transform that takes a single object chunk and stringifies it
  * with 2-space indentation (pretty-printing).
@@ -444,14 +450,13 @@ async function processSafeEdits() {
 
                 if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0) {
                     console.debug(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
-                    const uploadPromise = uploadSafeChanges(filePath)
-                        .then(() => {
-                            stats.uploaded++;
-                        })
-                        .catch(err => {
-                            console.error(`Upload failed for ${filePath}:`, err.message);
-                        });
-                    uploadPromises.push(uploadPromise);
+                    try {
+                        await uploadSafeChanges(filePath);
+                        stats.uploaded++;
+                        await sleep(500); 
+                    } catch (err) {
+                        console.error(`Upload failed for ${filePath}:`, err.message);
+                    }
                 } else {
                     stats.skipped++;
                 }
@@ -461,9 +466,6 @@ async function processSafeEdits() {
                 throw error;
             }
         }
-
-        // Wait for all successful uploads to complete
-        const results = await Promise.allSettled(uploadPromises);
 
         const uploadedCount = results.filter(r => r.status === 'fulfilled').length;
 
@@ -475,7 +477,7 @@ async function processSafeEdits() {
             console.log(`  Suggested Fixes: ${stats.totalSuggestedEdits}`);
             console.log(`  Safe Edits: ${stats.totalSafeEdits}`);
             console.log(`  Files Uploaded (Active Bot): ${stats.uploaded}`);
-            console.log(`  Files Skipped (No Config/Bot Disabled): ${stats.skipped}`);
+            console.log(`  Files Skipped (No Edits/NoConfig/Bot Disabled): ${stats.skipped}`);
         }
 
         console.log(`\n--- Processing Complete ---`);

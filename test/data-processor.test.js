@@ -595,20 +595,16 @@ describe('checkExclusions', () => {
         expect(checkExclusions(phoneNumber, otherNumber, FR, requiredTags)).toBeNull();
     });
 
-    
-    // Disabled these tests since all 3xxx numbers are valid, so I don't have any exclusions to test against
+    test('should return null when the required OSM tag value is incorrect', () => {
+        const phoneNumber = mockPhoneNumber('115', DE);
+        expect(checkExclusions(phoneNumber, '115', DE, { office: 'yes' })).toBeNull();
+    });
 
-    // test('should return null when the required OSM tag value is incorrect', () => {
-    //     // Correct country and number, but the amenity tag is 'bank' instead of 'post_office'
-    //     const phoneNumber = mockPhoneNumber(excludedNumber, FR);
-    //     expect(checkExclusions(phoneNumber, excludedNumber, FR, irrelevantTags)).toBeNull();
-    // });
-
-    // test('should return null when the required OSM tag is missing (empty tags)', () => {
-    //     // Correct country and number, but no tags are passed
-    //     const phoneNumber = mockPhoneNumber(excludedNumber, FR);
-    //     expect(checkExclusions(phoneNumber, excludedNumber, FR, emptyTags)).toBeNull();
-    // });
+    test('should return null when the required OSM tag is missing (empty tags)', () => {
+        // Correct country and number, but no tags are passed
+        const phoneNumber = mockPhoneNumber('115', DE);
+        expect(checkExclusions(phoneNumber, '115', FR, emptyTags)).toBeNull();
+    });
     
     test('should return null when no phoneNumber object is provided', () => {
         // Should handle the case where parsePhoneNumber failed and returned null
@@ -1103,6 +1099,33 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+39 090 377129');
     });
 
+    // --- MA Tests
+    test('MA: no spacing is fixable', () => {
+        const result = processSingleNumber('+212522312345', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
+    });
+    
+    test('MA: no spacing after country code but other spacing is fixable', () => {
+        const result = processSingleNumber('+2125223 12345', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
+    });
+
+    test('MA: space after plus is fixable', () => {
+        const result = processSingleNumber('+ 212 5 22 31 23 45', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
+    });
+
+    test('MA: unusual spacing is valid', () => {
+        const result = processSingleNumber('+212 522 312 345', 'MA');
+        expect(result.isInvalid).toBe(false);
+    });
+
     // --- WhatsApp Tests ---
     test('Whatsapp number is fixable', () => {
         const result = processSingleNumber('27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
@@ -1464,7 +1487,7 @@ describe('validateNumbers', () => {
             '@id': id,
             '@type': type,
             '@user': 'test-user',
-            '@timestamp': '2026-04-14T20:00:00Z',
+            '@timestamp': '1776196800',
             '@changeset': '12345'
         }
     });

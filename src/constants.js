@@ -98,7 +98,11 @@ const DEFAULT_EDITORS_DESKTOP = ["JOSM"];
 const DEFAULT_EDITORS_MOBILE = ["Geo", "Level0"];
 
 const EXCLUSIONS = {
-    'FR': { // France
+    'DE': {
+        '115': {
+            'office': 'government',
+        },
+    },'FR': { // France
         '3631': { // The phone number to check (must be the core number, no country code or spaces)
             'amenity': 'post_office',
         },
@@ -346,6 +350,10 @@ const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ'
 
 const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
 
+const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
+    'MA', // https://github.com/confusedbuffalo/phone-report/issues/234#issuecomment-4230467314
+]
+
 module.exports = {
     PUBLIC_DIR,
     MOBILE_TAGS,
@@ -397,4 +405,5 @@ module.exports = {
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES
 };

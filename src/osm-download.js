@@ -117,7 +117,7 @@ async function getOsmTimestamp(pbfUrl) {
         if (pbfUrl.includes('bbbike.org')) {
             metadataUrl = pbfUrl + '.timestamp';
         } else if (pbfUrl.includes('openstreetmap.fr')) {
-            metadataUrl = pbfUrl.replace('.osm.pbf', '.state.txt');
+            metadataUrl = pbfUrl.replace('-latest.osm.pbf', '.state.txt').replace('.osm.pbf', '.state.txt');
             isOsmFr = true;
         } else {
             throw new Error('Unsupported provider URL');
