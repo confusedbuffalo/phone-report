@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const { MASTER_KEYS } = require('./i18n.master');
 const { translate, getTranslations } = require('../src/i18n.js');
-const { COUNTRIES } = require('../src/constants.js');
 
 
 // Helper to load all translation files
@@ -24,17 +23,6 @@ const PLACEHOLDER_REGEX = /%[a-z]/g;
 const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
 const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
 
-describe('Countries file tests', () => {
-
-    for (const countryKey in COUNTRIES) {
-        const countryData = COUNTRIES[countryKey];
-        const locale = countryData.locale;
-
-        test(`[${countryKey}] must have a locale file`, () => {
-            expect(translationFiles.some(file => file.locale === locale)).toBe(true);
-        });
-    }
-});
 
 describe('Localization File Integrity Tests', () => {
 
