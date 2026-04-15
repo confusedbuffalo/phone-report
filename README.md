@@ -8,7 +8,7 @@ The generated site is available at https://confusedbuffalo.github.io/phone-repor
 
 The project fetches data from OSM, validates phone numbers, and generates a static HTML report. The process is as follows:
 
-1.  **Fetch Data**: For each country and its subdivisions defined in `src/data/constants.js`, the project queries the Overpass API to fetch OSM elements with phone number tags.
+1.  **Fetch Data**: For each country and/or its subdivisions defined in `src/data/constants.js`, a planet extract is downloaded and filtered to objects with phone number tags.
 2.  **Validate Numbers**: The fetched phone numbers are validated using `libphonenumber-js`. Numbers are checked for correct formatting and validity for the specific country.
 3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers, providing an option to fix the item directly and upload the edits in a batch as well as direct links to edit the data in various OSM editors (iD, JOSM, etc.).
 
@@ -20,6 +20,9 @@ To add a new country to the report, you need to modify [countries.json](/src/dat
     *   `name`: The name of the country.
     *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code.
     *   `locale`: The locale for formatting and language of the generated pages.
+    *   `pbfUrl`: A url for an OSM pbf file for the country
+        *   Alternatively this can be on a per division basis (like USA), or mixed (like France).
+        *   [bbbike.org](https://download3.bbbike.org/osm/pbf/region/) and [openstreetmap.fr](https://download.openstreetmap.fr/extracts/) have full metadata, [geofabrik.de](https://download.geofabrik.de/) only has timestamps and [geo2day.com](https://geo2day.com/) has no metadata
     *   `divisions` or `divisionMap`:
         *   Use `divisions` to specify a map of division names to their OSM relation IDs
         *   Use `divisionMap` for a list of divisions and subdivisions (like Germany).
@@ -61,8 +64,12 @@ To run the project locally and generate the reports, follow these steps:
     ```bash
     BUILD_TYPE=simplified npm start
     ```
-    This will only process one subdivision for one division for one country, which is much faster than a full build.
+    This will only process one subdivision for one division for one country, which is much faster than a full build, but will still download a full OSM extract for the first country in [countries.json](/src/data/countries.json).
 
 ## License
 
 This project is licensed under the GNU GPL v3.0. See the [LICENSE](LICENSE) file for details.
+
+Files in the `icons/` directory have different licenses, see the [README](/icons/README.md) there for more details.
+
+Files in the `poly/` directory are sourced from OpenStreetMap data via [https://polygons.openstreetmap.fr/](https://polygons.openstreetmap.fr/) and are licensed under the [ODbl](https://opendatacommons.org/licenses/odbl/)

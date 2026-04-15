@@ -1,4 +1,5 @@
 const fs = require('fs');
+const pointOnFeature = require('@turf/point-on-feature').default;
 const { parsePhoneNumber } = require('libphonenumber-js/max');
 const { getBestPreset, getGeometry } = require('./preset-matcher');
 const {
@@ -24,6 +25,7 @@ const {
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -715,6 +717,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
             numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
 
+            if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
+                // Targets numbers with no spaces after the country code or space after plus
+                isInvalid = /^\+?\s?\d{4,}[\d\s]+$/.test(numberStr) || /^\+\s.*$/.test(numberStr);
+            }
+
             isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
 
             if (phoneNumber.ext && !hasStandardExtension) {
@@ -977,9 +984,27 @@ function isSafeItemEdit(item, countryCode) {
 }
 
 /**
+ * Extracts a representative [lat, lng] from a GeoJSON geometry.
+ * Uses 'pointOnFeature' to ensure the point resides within the geometry boundaries.
+ * * @param {Object} geometry - A GeoJSON geometry object (Polygon, MultiPolygon, etc.)
+ * @returns {Object} An object containing lat and lng.
+ */
+function getRepresentativeLocation(geometry) {
+    if (!geometry) return null;
+
+    const representativePoint = pointOnFeature(geometry);
+    const [lon, lat] = representativePoint.geometry.coordinates;
+
+    return {
+        lat: lat,
+        lon: lon
+    };
+}
+
+/**
  * Validates phone numbers using libphonenumber-js, marking tags as invalid if
  * they contain bad separators (comma, slash, 'or') or invalid numbers.
- * @param {Array<Object>} elements - OSM elements with phone tags.
+ * @param {Array<Object>} elementStream - OSM elements with phone tags.
  * @param {string} countryCode - The country code for validation.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
  * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}
@@ -995,8 +1020,9 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     let safeEditCount = 0;
 
     for await (const element of elementStream) {
-        if (!element.tags) continue;
-        const tags = element.tags;
+        if (!element.properties) continue;
+        
+        const tags = element.properties;
 
         let item = null;
         const allNormalizedPhoneNumbers = new Map();
@@ -1009,19 +1035,22 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
                 website = `http://${website}`;
             }
-            const lat = element.lat || (element.center && element.center.lat);
-            const lon = element.lon || (element.center && element.center.lon);
-            const couldBeArea =
-                element.type === 'way' &&
-                element.nodes &&
-                element.nodes.at(0) === element.nodes.at(-1);
+
+            const { lat, lon } = getRepresentativeLocation(element.geometry);
+            
+            const { type: geometryType, coordinates: c } = element.geometry;
+            // Many areas are returned as LineString due to osmium export
+            const couldBeArea = ['Polygon', 'MultiPolygon'].includes(geometryType)
+                || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
+
+            const elementTimestamp = element.properties["@timestamp"] ? new Date(element.properties["@timestamp"] * 1000).toISOString() : 0;
 
             const baseItem = {
-                type: element.type,
-                id: element.id,
-                user: element.user,
-                timestamp: element.timestamp,
-                changeset: element.changeset,
+                type: element.properties["@type"],
+                id: element.properties["@id"],
+                user: element.properties["@user"],
+                timestamp: elementTimestamp,
+                changeset: element.properties["@changeset"],
                 website,
                 lat,
                 lon,

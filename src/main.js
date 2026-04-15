@@ -1,15 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const readline = require('readline')
+const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes } = require('./constants');
-const { fetchAdminLevels, fetchOsmDataForDivision } = require('./osm-download');
+const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, usTerritoryCodes, frTerritoryCodes, OSM_DIR } = require('./constants');
+const { processPbf, splitPbf, getOsmTimestamp } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
 const { generateHtmlReport } = require('./html-report')
 const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
+
+const BUILD_TYPE = process.env.BUILD_TYPE;
+// A test build will only fetch and process numbers for one subdivision of one division of one country
+// (the first found of each, using the countries data file)
+const testMode = BUILD_TYPE === 'simplified';
 
 const CLIENT_KEYS = [
     'dataSourcedTemplate',
@@ -53,11 +60,6 @@ const CLIENT_KEYS = [
     "hasInvalidPlural",
 ];
 
-const BUILD_TYPE = process.env.BUILD_TYPE;
-
-// A test build will only fetch and process numbers for one subdivision of one division of one country
-// (the first found of each, using the countries data file)
-const testMode = BUILD_TYPE === 'simplified';
 
 /**
  * Filters the full translations object to include only keys needed by the client.
@@ -148,37 +150,44 @@ function saveCountryHistory(originalCountryStats) {
 }
 
 /**
- * Fetches the list of subdivisions for a given administrative division, handling both
- * dynamic fetching via Overpass API and static lists from the configuration.
+ * Returns the list of subdivisions for a given administrative division from the configuration.
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} divisionName - The name of the division.
- * @returns {Promise<Array<Object>>} A promise that resolves to a list of subdivision objects.
+ * @returns {Array<Object>} A list of subdivision objects.
  */
-async function getSubdivisions(countryData, divisionName) {
-    if (countryData.divisions && countryData.subdivisionAdminLevel) {
-        const divisionId = countryData.divisions[divisionName];
-        return await fetchAdminLevels(divisionId, divisionName, countryData.subdivisionAdminLevel);
-    } else if (countryData.divisions) {
-        // Single depth divisions, return the divisions (this is the only call to getSubdivisions for such a country)
-        console.log(`Using single level of hardcoded divisions for ${countryData.name}...`);
-        return Object.entries(countryData.divisions).map(([name, id]) => ({
-            name: name,
-            id: id
-        }));
-    } else if (countryData.divisionMap) {
-        console.log(`Using hardcoded subdivisions for ${divisionName}...`);
-        const divisionMap = countryData.divisionMap[divisionName];
-        if (divisionMap) {
-            return Object.entries(divisionMap).map(([name, id]) => ({
+function getSubdivisions(countryData, divisionName) {
+    // Helper to normalize the entry into a standard object
+    const formatSubdivision = ([name, value]) => {
+        if (typeof value === 'object' && value !== null) {
+            return {
                 name: name,
-                id: id
-            }));
+                id: value.relationId,
+                ...(value.pbfUrl && { pbfUrl: value.pbfUrl })
+            };
+        }
+        // Fallback for standard number-only format
+        return {
+            name: name,
+            id: value
+        };
+    };
+
+    if (countryData.divisions) {
+        console.debug(`Using single level of hardcoded divisions for ${countryData.name}...`);
+        return Object.entries(countryData.divisions).map(formatSubdivision);
+    }
+
+    if (countryData.divisionMap) {
+        console.debug(`Using hardcoded subdivisions for ${divisionName}...`);
+        const subRegions = countryData.divisionMap[divisionName];
+        if (subRegions) {
+            return Object.entries(subRegions).map(formatSubdivision);
         }
         return [];
-    } else {
-        console.error(`Data for ${countryData.name} set up incorrectly, no divisions or divisionMap found`);
-        return [];
     }
+
+    console.error(`Data for ${countryData.name} set up incorrectly, no divisions or divisionMap found`);
+    return [];
 }
 
 /**
@@ -201,7 +210,68 @@ function getCountryCode(divisionName, countryCode) {
 }
 
 /**
- * Processes a single subdivision: fetches OSM data, validates numbers, generates the HTML report,
+ * Creates an async generator stream of unique JSON objects from a geojsonseq file.
+ * Uses a combination of @id and @type to ensure uniqueness across OSM types.
+ * @param {string} filePath - Path to the .geojsonseq file.
+ */
+async function* createGeoJsonElementStream(filePath) {
+    const fileStream = fs.createReadStream(filePath);
+
+    // Track unique combinations of type + id
+    const seenElements = new Set();
+
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+
+    for await (const line of rl) {
+        // Remove record separator
+        const cleanLine = line.replace(/^\x1e/, '').trim();
+
+        if (cleanLine) {
+            try {
+                const feature = JSON.parse(cleanLine);
+                const props = feature.properties;
+
+                if (props && props['@id'] && props['@type']) {
+                    // Create a composite key, e.g., "way/10432"
+                    const compositeKey = `${props['@type']}/${props['@id']}`;
+
+                    if (!seenElements.has(compositeKey)) {
+                        seenElements.add(compositeKey);
+                        yield feature;
+                    }
+                } else {
+                    // If metadata is missing, yield anyway to avoid data loss
+                    yield feature;
+                }
+            } catch (err) {
+                console.error('Error parsing JSON line:', err);
+                console.log(cleanLine);
+            }
+        }
+    }
+
+    seenElements.clear();
+}
+
+/**
+ * Converts a timestamp string to a JavaScript Date object.
+ * @param {string} timestampStr - The raw timestamp from the metadata file.
+ * @returns {Date|null} - A valid Date object or null if parsing fails.
+ */
+function parseOsmTimestamp(timestampStr) {
+    if (!timestampStr) return null;
+
+    const date = new Date(timestampStr);
+
+    // Check if the date is valid
+    return isNaN(date.getTime()) ? null : date;
+}
+
+/**
+ * Processes a single subdivision: processes OSM data, validates numbers, generates the HTML report,
  * and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
  * @param {Object} countryData - The configuration object for the country.
@@ -212,15 +282,29 @@ function getCountryCode(divisionName, countryCode) {
  */
 async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
-    const elementStream = await fetchOsmDataForDivision(subdivision);
+
+    const geojsonPath = path.join(OSM_DIR, `${subdivision.id}.geojsonseq`);
+    try {
+        await access(geojsonPath);
+    } catch (error) {
+        console.error(`Error: File not found at ${geojsonPath}`);
+    }
+
+    const elementStream = createGeoJsonElementStream(geojsonPath);
+
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const countryCode = getCountryCode(subdivision.name, countryData.countryCode);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
     const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, countryCode, tmpFilePath);
 
+    fs.unlinkSync(geojsonPath);
+
     const siteInvalidCount = botEnabled ? invalidCount - safeEditCount : invalidCount;
     const siteAutoFixableCount = botEnabled ? autoFixableCount - safeEditCount : autoFixableCount;
+
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
 
     const stats = {
         name: subdivision.name,
@@ -230,7 +314,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         autoFixableCount: siteAutoFixableCount,
         safeEditCount: safeEditCount,
         totalNumbers: totalNumbers,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: dataTimestamp.toISOString()
     };
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
@@ -240,7 +324,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     }
 
     await generateSafeEditFile(countryName, stats, tmpFilePath)
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled);
+    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
 
     fs.unlinkSync(tmpFilePath); // Clean up the temporary file
 
@@ -259,7 +343,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     const divisionName = rawDivisionName;
     console.log(`Processing subdivisions for ${divisionName}...`);
 
-    const subdivisions = await getSubdivisions(countryData, rawDivisionName);
+    const subdivisions = getSubdivisions(countryData, rawDivisionName);
 
     if (!subdivisions || subdivisions.length === 0) {
         console.error(`No subdivisions to process for ${divisionName}.`);
@@ -304,7 +388,45 @@ async function processCountry(countryData) {
     const fullTranslations = getTranslations(locale);
     const clientTranslations = filterClientTranslations(fullTranslations);
 
-    console.log(`Starting fetching divisions for ${countryName}...`);
+    const divisions = countryData.divisions
+        ? { [countryData.name]: countryData.divisions }
+        : countryData.divisionMap;
+
+    if (countryData.pbfUrl) {
+        const tmpPbfFilePath = path.join(process.cwd(), `filtered-${uuidv4()}.osm.pbf`);
+
+        await processPbf(countryData.pbfUrl, tmpPbfFilePath);
+        await splitPbf(tmpPbfFilePath, countryData);
+
+        if (fs.existsSync(tmpPbfFilePath)) {
+            fs.unlinkSync(tmpPbfFilePath);
+        }
+
+        const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
+        countryData.timestamp = dataTimestamp;
+    }
+
+    for (const [groupName, groupDivisions] of Object.entries(divisions)) {
+        for (const [subName, subData] of Object.entries(groupDivisions)) {
+            const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
+            if (pbfUrl) {
+                const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+
+                await processPbf(pbfUrl, subPbfPath);
+                await splitPbf(subPbfPath, null, subData);
+
+                if (fs.existsSync(subPbfPath)) {
+                    fs.unlinkSync(subPbfPath);
+                }
+
+                // TODO: store this per subdivision
+                const dataTimestamp = await getOsmTimestamp(pbfUrl);
+                if (!countryData.timestamp) {
+                    countryData.timestamp = dataTimestamp;
+                }
+            }
+        }
+    }
 
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
     if (!fs.existsSync(countryDir)) {
@@ -316,11 +438,6 @@ async function processCountry(countryData) {
     let totalSafeEditCount = 0;
     let totalTotalNumbers = 0;
     const groupedDivisionStats = {};
-
-    // If no subdivision admin level then use the list of divisions as is, one level deep
-    const divisions = (countryData.divisions && !countryData.subdivisionAdminLevel)
-        ? { [countryData.name]: countryData.divisions }
-        : (countryData.divisions ?? countryData.divisionMap);
 
     let divisionCount = 0;
     for (const rawDivisionName in divisions) {
@@ -345,6 +462,9 @@ async function processCountry(countryData) {
         }
     }
 
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
+
     const countryStats = {
         name: countryName,
         slug: safeName(countryName),
@@ -354,7 +474,8 @@ async function processCountry(countryData) {
         safeEditCount: totalSafeEditCount,
         totalNumbers: totalTotalNumbers,
         groupedDivisionStats: groupedDivisionStats,
-        botEnabled: countryData.safeAutoFixBotEnabled
+        botEnabled: countryData.safeAutoFixBotEnabled,
+        timestamp: dataTimestamp
     };
 
     saveCountryHistory(countryStats);

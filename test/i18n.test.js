@@ -3,6 +3,7 @@ const path = require('path');
 const { MASTER_KEYS } = require('./i18n.master');
 const { translate, getTranslations } = require('../src/i18n.js');
 
+
 // Helper to load all translation files
 const localesDir = path.join(__dirname, '../locales');
 const translationFiles = fs.readdirSync(localesDir)
@@ -21,6 +22,7 @@ const PLACEHOLDER_REGEX = /%[a-z]/g;
 // Regex to find common, disallowed HTML characters (e.g., <, >, &, ", ')
 const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
 const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
+
 
 describe('Localization File Integrity Tests', () => {
 

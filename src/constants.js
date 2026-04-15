@@ -3,7 +3,6 @@ const { translate } = require('./i18n');
 const packageInfo = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-const OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
 
 const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
@@ -99,7 +98,11 @@ const DEFAULT_EDITORS_DESKTOP = ["JOSM"];
 const DEFAULT_EDITORS_MOBILE = ["Geo", "Level0"];
 
 const EXCLUSIONS = {
-    'FR': { // France
+    'DE': {
+        '115': {
+            'office': 'government',
+        },
+    },'FR': { // France
         '3631': { // The phone number to check (must be the core number, no country code or spaces)
             'amenity': 'post_office',
         },
@@ -268,6 +271,7 @@ const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
 const POLY_DIR = path.join(__dirname, '..', 'poly');
+const OSM_DIR = path.join(__dirname, '..', 'osm');
 
 const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
 const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
@@ -346,9 +350,12 @@ const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ'
 
 const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
 
+const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
+    'MA', // https://github.com/confusedbuffalo/phone-report/issues/234#issuecomment-4230467314
+]
+
 module.exports = {
     PUBLIC_DIR,
-    OVERPASS_API_URL,
     MOBILE_TAGS,
     NON_MOBILE_TAGS,
     PHONE_TAGS,
@@ -379,6 +386,7 @@ module.exports = {
     HISTORY_DIR,
     SAFE_EDITS_DIR,
     POLY_DIR,
+    OSM_DIR,
     PHONE_TAG_PREFERENCE_ORDER,
     EXTENSION_REGEX,
     DIN_EXTENSION_REGEX,
@@ -397,4 +405,5 @@ module.exports = {
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES
 };
