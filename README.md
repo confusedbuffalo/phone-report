@@ -21,7 +21,8 @@ To add a new country to the report, you need to modify [countries.json](/src/dat
     *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code.
     *   `locale`: The locale for formatting and language of the generated pages.
     *   `pbfUrl`: A url for an OSM pbf file for the country
-        *   Alternatively this can be on a per division basis (like USA), or mixed (like France). If mixed, the divisions with individual pbfs should be listed after those without. 
+        *   Alternatively this can be on a per division basis (like USA), or mixed (like France).
+        *   [bbbike.org](https://download3.bbbike.org/osm/pbf/region/) and [openstreetmap.fr](https://download.openstreetmap.fr/extracts/) have full metadata, [geofabrik.de](https://download.geofabrik.de/) only has timestamps and [geo2day.com](https://geo2day.com/) has no metadata
     *   `divisions` or `divisionMap`:
         *   Use `divisions` to specify a map of division names to their OSM relation IDs
         *   Use `divisionMap` for a list of divisions and subdivisions (like Germany).
