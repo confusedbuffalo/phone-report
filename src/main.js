@@ -248,6 +248,7 @@ async function* createGeoJsonElementStream(filePath) {
                 }
             } catch (err) {
                 console.error('Error parsing JSON line:', err);
+                console.log(cleanLine);
             }
         }
     }
