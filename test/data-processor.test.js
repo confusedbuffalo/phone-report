@@ -1487,7 +1487,7 @@ describe('validateNumbers', () => {
             '@id': id,
             '@type': type,
             '@user': 'test-user',
-            '@timestamp': '2026-04-14T20:00:00Z',
+            '@timestamp': '1776196800',
             '@changeset': '12345'
         }
     });
