@@ -346,6 +346,10 @@ const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ'
 
 const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
 
+const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
+    'MA', // https://github.com/confusedbuffalo/phone-report/issues/234#issuecomment-4230467314
+]
+
 module.exports = {
     PUBLIC_DIR,
     MOBILE_TAGS,
@@ -397,4 +401,5 @@ module.exports = {
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES
 };

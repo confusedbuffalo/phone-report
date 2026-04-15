@@ -25,6 +25,7 @@ const {
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -715,6 +716,11 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 numbersMatch = normalizedOriginal === normalizedTollFree;
             }
             numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
+
+            if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
+                // Targets numbers with no spaces after the country code or space after plus
+                isInvalid = /^\+?\s?\d{4,}[\d\s]+$/.test(numberStr) || /^\+\s.*$/.test(numberStr);
+            }
 
             isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
 

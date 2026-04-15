@@ -1103,6 +1103,33 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+39 090 377129');
     });
 
+    // --- MA Tests
+    test('MA: no spacing is fixable', () => {
+        const result = processSingleNumber('+212522312345', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
+    });
+    
+    test('MA: no spacing after country code but other spacing is fixable', () => {
+        const result = processSingleNumber('+2125223 12345', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
+    });
+
+    test('MA: space after plus is fixable', () => {
+        const result = processSingleNumber('+ 212 5 22 31 23 45', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
+    });
+
+    test('MA: unusual spacing is valid', () => {
+        const result = processSingleNumber('+212 522 312 345', 'MA');
+        expect(result.isInvalid).toBe(false);
+    });
+
     // --- WhatsApp Tests ---
     test('Whatsapp number is fixable', () => {
         const result = processSingleNumber('27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
