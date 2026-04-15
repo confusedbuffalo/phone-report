@@ -595,20 +595,16 @@ describe('checkExclusions', () => {
         expect(checkExclusions(phoneNumber, otherNumber, FR, requiredTags)).toBeNull();
     });
 
-    
-    // Disabled these tests since all 3xxx numbers are valid, so I don't have any exclusions to test against
+    test('should return null when the required OSM tag value is incorrect', () => {
+        const phoneNumber = mockPhoneNumber('115', DE);
+        expect(checkExclusions(phoneNumber, '115', DE, { office: 'yes' })).toBeNull();
+    });
 
-    // test('should return null when the required OSM tag value is incorrect', () => {
-    //     // Correct country and number, but the amenity tag is 'bank' instead of 'post_office'
-    //     const phoneNumber = mockPhoneNumber(excludedNumber, FR);
-    //     expect(checkExclusions(phoneNumber, excludedNumber, FR, irrelevantTags)).toBeNull();
-    // });
-
-    // test('should return null when the required OSM tag is missing (empty tags)', () => {
-    //     // Correct country and number, but no tags are passed
-    //     const phoneNumber = mockPhoneNumber(excludedNumber, FR);
-    //     expect(checkExclusions(phoneNumber, excludedNumber, FR, emptyTags)).toBeNull();
-    // });
+    test('should return null when the required OSM tag is missing (empty tags)', () => {
+        // Correct country and number, but no tags are passed
+        const phoneNumber = mockPhoneNumber('115', DE);
+        expect(checkExclusions(phoneNumber, '115', FR, emptyTags)).toBeNull();
+    });
     
     test('should return null when no phoneNumber object is provided', () => {
         // Should handle the case where parsePhoneNumber failed and returned null

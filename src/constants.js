@@ -98,7 +98,11 @@ const DEFAULT_EDITORS_DESKTOP = ["JOSM"];
 const DEFAULT_EDITORS_MOBILE = ["Geo", "Level0"];
 
 const EXCLUSIONS = {
-    'FR': { // France
+    'DE': {
+        '115': {
+            'office': 'government',
+        },
+    },'FR': { // France
         '3631': { // The phone number to check (must be the core number, no country code or spaces)
             'amenity': 'post_office',
         },
