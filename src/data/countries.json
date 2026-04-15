@@ -163,7 +163,6 @@
             "Aragón": 349045,
             "Asturias": 349033,
             "Islas Baleares": 348981,
-            "Islas Canarias": 349048,
             "Cantabria": 349013,
             "Castilla-La Mancha": 349052,
             "Castilla y León": 349041,
@@ -177,7 +176,11 @@
             "Comunidad Foral de Navarra": 349027,
             "País Vasco": 349042,
             "Ceuta": 1154756,
-            "Melilla": 1154757
+            "Melilla": 1154757,
+            "Islas Canarias": {
+                "relationId": 349048,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/canary-islands.osm.pbf"
+            }
         }
     },
     "France": {
