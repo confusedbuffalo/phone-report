@@ -169,7 +169,8 @@ function getSubdivisions(countryData, divisionName) {
         // Fallback for standard number-only format
         return {
             name: name,
-            id: value
+            id: value,
+            countryCode: countryData.countryCode
         };
     };
 

@@ -411,8 +411,6 @@ async function processSafeEdits() {
         await collectSafeEditFiles(SAFE_EDITS_DIR);
         console.debug(`Found ${filesToProcess.length} safe edit files.`);
 
-        const uploadPromises = [];
-
         for (const filePath of filesToProcess) {
             try {
                 const fileContent = await fsp.readFile(filePath, 'utf8');
@@ -449,7 +447,7 @@ async function processSafeEdits() {
                 }
 
                 if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0) {
-                    console.debug(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
+                    // console.debug(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
                     try {
                         await uploadSafeChanges(filePath);
                         stats.uploaded++;
@@ -467,8 +465,6 @@ async function processSafeEdits() {
             }
         }
 
-        const uploadedCount = results.filter(r => r.status === 'fulfilled').length;
-
         console.log(`\n--- Country Processing Statistics ---`);
         for (const country in countryStats) {
             const stats = countryStats[country];
@@ -479,6 +475,8 @@ async function processSafeEdits() {
             console.log(`  Files Uploaded (Active Bot): ${stats.uploaded}`);
             console.log(`  Files Skipped (No Edits/NoConfig/Bot Disabled): ${stats.skipped}`);
         }
+
+        const uploadedCount = Object.values(countryStats).reduce((sum, stats) => sum + stats.uploaded, 0);
 
         console.log(`\n--- Processing Complete ---`);
         console.log(`Total files processed: ${filesToProcess.length}`);
