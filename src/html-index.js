@@ -38,6 +38,15 @@ function buildSearchIndex() {
         if (countryObj.divisionMap) {
             for (const [divName, subdivisions] of Object.entries(countryObj.divisionMap)) {
                 const divSafe = safeName(divName);
+
+                if (Object.entries(subdivisions).length === 1) {
+                    index.push({
+                        name: divName,
+                        type: "Region",
+                        url: `./${countrySafe}.html`,
+                        parent: countryName
+                    });
+                }
                 
                 for (const [subName, relId] of Object.entries(subdivisions)) {
                     // If names match (e.g., Berlin/Berlin), only add the deeper one

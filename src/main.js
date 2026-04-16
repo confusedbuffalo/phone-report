@@ -406,6 +406,10 @@ async function processCountry(countryData) {
                 if (!countryData.timestamp) {
                     countryData.timestamp = dataTimestamp;
                 }
+
+                if (testMode) {
+                    break;
+                }
             }
         }
     }
