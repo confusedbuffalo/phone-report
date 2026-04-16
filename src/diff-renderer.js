@@ -223,7 +223,19 @@ function diffPhoneNumbers(original, suggested) {
             )
         ) {
             const isNanp = suggested.startsWith('+1-');
-            const prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
+            let prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
+
+            // Handle two-part prefix being added
+            if (normalize(prefix).length + normalizedOriginal.length < normalizedSuggested.length) {
+                const nanpMatch = suggested.match(/^(\+1-\d{3})-/);
+                const intlMatch = suggested.match(/^(\+\d+\s\d+)\s/);
+
+                if (nanpMatch) {
+                    prefix = nanpMatch[1];
+                } else if (intlMatch) {
+                    prefix = intlMatch[1];
+                }
+            }
 
             if (originalRemainderNew.slice(0, 1) === '+') {
                 suggestedDiff.push({ value: '+', added: false, removed: false });
@@ -248,18 +260,10 @@ function diffPhoneNumbers(original, suggested) {
                 }
             }
 
-            // Get position of end of prefix, to slice to
-            if (isNanp) {
-                suggestedDiff.push({ value: '-', added: true });
-                if (suggested.indexOf('-') !== -1) {
-                    i = suggested.indexOf('-')
-                }
-            } else {
-                suggestedDiff.push({ value: ' ', added: true });
-                if (suggested.indexOf(' ') !== -1) {
-                    i = suggested.indexOf(' ')
-                }
-            }
+            // Update the main loop index to skip the entire prefix we just processed
+            i = prefix.length;
+
+            suggestedDiff.push({ value: isNanp ? '-' : ' ', added: true });
 
             if (commonDigits[commonPointerNew] === '0' && originalRemainderNew.match(/[^d]+0.*/) && !actualNumberStartsWithZero) {
                 while (originalRemainderNew && originalRemainderNew[0] !== '0') {
