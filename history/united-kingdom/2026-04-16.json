@@ -2,9 +2,9 @@
   "name": "United Kingdom",
   "slug": "united-kingdom",
   "locale": "en-GB",
-  "invalidCount": 329,
-  "autoFixableCount": 14,
-  "safeEditCount": 0,
+  "invalidCount": 293,
+  "autoFixableCount": 17,
+  "safeEditCount": 36,
   "totalNumbers": 168385,
   "groupedDivisionStats": {
     "England": [
@@ -23,7 +23,7 @@
         "divisionSlug": "england",
         "slug": "east-of-england",
         "invalidCount": 31,
-        "autoFixableCount": 4,
+        "autoFixableCount": 5,
         "safeEditCount": 0,
         "totalNumbers": 17499,
         "lastUpdated": "2026-04-16T00:00:00.000Z"
@@ -32,9 +32,9 @@
         "name": "Greater London",
         "divisionSlug": "england",
         "slug": "greater-london",
-        "invalidCount": 43,
+        "invalidCount": 41,
         "autoFixableCount": 0,
-        "safeEditCount": 0,
+        "safeEditCount": 2,
         "totalNumbers": 24821,
         "lastUpdated": "2026-04-16T00:00:00.000Z"
       },
@@ -53,7 +53,7 @@
         "divisionSlug": "england",
         "slug": "north-west-england",
         "invalidCount": 19,
-        "autoFixableCount": 1,
+        "autoFixableCount": 3,
         "safeEditCount": 0,
         "totalNumbers": 17129,
         "lastUpdated": "2026-04-16T00:00:00.000Z"
@@ -72,9 +72,9 @@
         "name": "South West England",
         "divisionSlug": "england",
         "slug": "south-west-england",
-        "invalidCount": 51,
+        "invalidCount": 18,
         "autoFixableCount": 2,
-        "safeEditCount": 0,
+        "safeEditCount": 33,
         "totalNumbers": 14357,
         "lastUpdated": "2026-04-16T00:00:00.000Z"
       },
@@ -92,9 +92,9 @@
         "name": "Yorkshire and the Humber",
         "divisionSlug": "england",
         "slug": "yorkshire-and-the-humber",
-        "invalidCount": 29,
+        "invalidCount": 28,
         "autoFixableCount": 1,
-        "safeEditCount": 0,
+        "safeEditCount": 1,
         "totalNumbers": 10826,
         "lastUpdated": "2026-04-16T00:00:00.000Z"
       }
