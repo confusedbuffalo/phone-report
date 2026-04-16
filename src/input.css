@@ -722,3 +722,46 @@
     border-red-300
     rounded-lg;
 }
+
+@utility search-wrapper {
+  @apply relative flex-1 max-w-md mx-4 mt-3 sm:mt-0;
+}
+
+@utility search-input {
+  @apply w-full py-2 pl-10 pr-4 text-sm rounded-lg transition-all outline-none;
+  @apply bg-gray-100 border border-transparent text-gray-900;
+  @apply dark:bg-gray-700 dark:text-white dark:placeholder-gray-400;
+  @apply focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-gray-700;
+}
+
+@utility search-icon-container {
+  @apply absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none;
+}
+
+@utility search-icon {
+  @apply w-4 h-4 text-gray-500 dark:text-gray-400;
+}
+
+@utility autocomplete-dropdown {
+  @apply absolute z-50 w-full mt-1 overflow-hidden rounded-lg shadow-xl;
+  @apply bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700;
+}
+
+@utility autocomplete-row {
+  @apply px-4 py-3 cursor-pointer flex flex-col border-b last:border-b-0;
+  @apply border-gray-100 dark:border-gray-700;
+  @apply hover:bg-gray-50 dark:hover:bg-gray-800;
+  @apply transition-colors;
+}
+
+@utility autocomplete-name {
+  @apply text-sm font-medium text-gray-900 dark:text-gray-100;
+}
+
+@utility autocomplete-meta {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+@utility autocomplete-row-selected {
+  @apply bg-gray-100 dark:bg-gray-700 ring-2 ring-inset ring-blue-500;
+}

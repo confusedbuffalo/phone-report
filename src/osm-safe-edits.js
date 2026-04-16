@@ -481,7 +481,6 @@ async function processSafeEdits() {
         console.log(`\n--- Processing Complete ---`);
         console.log(`Total files processed: ${filesToProcess.length}`);
         console.log(`Successful uploads: ${uploadedCount}`);
-        console.log(`Failed uploads: ${results.length - uploadedCount}`);
 
     } catch (error) {
         console.error('An error occurred during directory traversal:', error);

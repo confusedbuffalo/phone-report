@@ -1073,4 +1073,30 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-unchanged">3631</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('should show prefix as added for two-part prefix with hyphen', () => {
+        const original = '491-1234';
+        const suggested = '+1-664-491-1234';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">491-1234</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+1-664-</span><span class="diff-unchanged">491-1234</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('should show prefix as added for two-part prefix with space', () => {
+        const original = '621234';
+        const suggested = '+44 1624 621234';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">621234</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-added">+44&nbsp;1624&nbsp;</span><span class="diff-unchanged">621234</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });
