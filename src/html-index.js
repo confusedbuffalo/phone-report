@@ -39,7 +39,7 @@ function buildSearchIndex() {
             for (const [divName, subdivisions] of Object.entries(countryObj.divisionMap)) {
                 const divSafe = safeName(divName);
 
-                if (Object.entries(subdivisions).length === 1) {
+                if (Object.entries(subdivisions).length > 1) {
                     index.push({
                         name: divName,
                         type: "Region",
