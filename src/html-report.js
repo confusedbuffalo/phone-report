@@ -59,6 +59,8 @@ function createClientItems(item, locale, botEnabled, iconManager) {
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
+    console.log(`${item.id} got phoneTagToUse and featureTypeName`)
+
     const iconName = getFeatureIcon(item, locale);
     const iconHtml = iconManager.getIconHtml(iconName);
     if (iconHtml.includes(iconName)) {
@@ -66,6 +68,8 @@ function createClientItems(item, locale, botEnabled, iconManager) {
     } else {
         item.iconHtml = iconHtml;
     }
+
+    console.log(`${item.id} got icon`)
 
     item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
 
@@ -142,9 +146,13 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         }
     }).filter(Boolean);
 
+    console.log(`${item.id} created fixRows`)
+
     item.josmFixUrl = createJosmFixUrl(item);
 
     const { allTags, ...clientItem } = item;
+
+    console.log(`${item.id} finished`)
 
     return clientItem;
 }
