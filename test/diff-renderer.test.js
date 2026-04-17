@@ -1099,4 +1099,17 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-added">+44&nbsp;1624&nbsp;</span><span class="diff-unchanged">621234</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('Original ending with a plus is handled', () => {
+        const original = '+353 21 427 1234+';
+        const suggested = '+353 21 427 1234';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+353&nbsp;21&nbsp;427&nbsp;1234</span><span class="diff-removed">+</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">+353&nbsp;21&nbsp;427&nbsp;1234</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });

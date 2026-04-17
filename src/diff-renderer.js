@@ -138,7 +138,7 @@ function diffPhoneNumbers(original, suggested) {
         const char = original[i];
         const slice = original.slice(i, i + 3); // to check for encoded plus
 
-        if (char === '+' && suggestedRemainder[0] !== '+' && originalPrefix && originalPrefix.length <= 4) { // Special handling of REMOVING a prefix, e.g. for a short number that is not international
+        if (char === '+' && suggestedRemainder && suggestedRemainder[0] !== '+' && originalPrefix && originalPrefix.length <= 4) { // Special handling of REMOVING a prefix, e.g. for a short number that is not international
             for (let j = 0; j < originalPrefix.length; j++) {
                 originalDiff.push({ value: originalPrefix[j], added: false, removed: true });
                 originalRemainder = originalRemainder.slice(1);
