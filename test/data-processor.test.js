@@ -37,15 +37,15 @@ describe('safeName', () => {
     const testCases = [
         // 1. Dual-Name Division with slash
         ["Ynys Môn / Isle of Anglesey", "ynys-môn-isle-of-anglesey"],
-        
+
         // 2. Name with Accented character and hyphen (hyphen should be kept, apostrophe substituted)
-        ["Côte-d'Or", "côte-d-or"], 
-        
+        ["Côte-d'Or", "côte-d-or"],
+
         // 3. Name starting with apostrophe/special character (should be stripped by strict/trim logic)
-        ["'s-Hertogenbosch", "s-hertogenbosch"], 
-        
+        ["'s-Hertogenbosch", "s-hertogenbosch"],
+
         // 4. Non-Latin script (should be fully preserved)
-        ["愛知県", "愛知県"], 
+        ["愛知県", "愛知県"],
 
         // Additional edge cases:
         // Case with multiple separators and trailing/leading symbols
@@ -53,7 +53,7 @@ describe('safeName', () => {
 
         // Case with mixed script and symbols
         ["Москва (Moscow) - 2024", "москва-moscow-2024"],
-        
+
         // Case with repeated special characters
         ["United -- States", "united-states"],
 
@@ -62,7 +62,7 @@ describe('safeName', () => {
 
         // Empty string
         ["", ""],
-        
+
         // Null/Undefined input
         [null, ""],
     ];
@@ -83,32 +83,32 @@ describe('safeName', () => {
 describe("isDisused", () => {
     // Disused
     test('disused object is disused', () => {
-        expect(isDisused({allTags: {'disused:amenity': 'cafe'}})).toBe(true)
+        expect(isDisused({ allTags: { 'disused:amenity': 'cafe' } })).toBe(true)
     });
 
     test('historic object is disused', () => {
-        expect(isDisused({allTags: {'historic:amenity': 'cafe'}})).toBe(true)
+        expect(isDisused({ allTags: { 'historic:amenity': 'cafe' } })).toBe(true)
     });
 
     test('was object is disused', () => {
-        expect(isDisused({allTags: {'was:amenity': 'cafe'}})).toBe(true)
+        expect(isDisused({ allTags: { 'was:amenity': 'cafe' } })).toBe(true)
     });
 
     test('abandoned object is disused', () => {
-        expect(isDisused({allTags: {'abandoned:amenity': 'cafe'}})).toBe(true)
+        expect(isDisused({ allTags: { 'abandoned:amenity': 'cafe' } })).toBe(true)
     });
 
     // Not disused
     test('regular object is not disused', () => {
-        expect(isDisused({allTags: {'amenity': 'cafe'}})).toBe(false)
+        expect(isDisused({ allTags: { 'amenity': 'cafe' } })).toBe(false)
     });
 
     test('regular object with old disused tags is not disused', () => {
-        expect(isDisused({allTags: {'amenity': 'cafe', 'was:amenity': 'place_of_worship'}})).toBe(false)
+        expect(isDisused({ allTags: { 'amenity': 'cafe', 'was:amenity': 'place_of_worship' } })).toBe(false)
     });
 
     test('empty tags is not disused', () => {
-        expect(isDisused({allTags: {}})).toBe(false)
+        expect(isDisused({ allTags: {} })).toBe(false)
     });
 });
 
@@ -170,7 +170,7 @@ describe('getStandardExtension', () => {
     test('should return null if no extension prefix is present', () => {
         expect(getStandardExtension('0800 123 4567')).toBeNull();
     });
-    
+
     test('should return null if the prefix is present but no digits follow', () => {
         expect(getStandardExtension('555-1212 x')).toBeNull();
     });
@@ -204,7 +204,7 @@ describe('isStandardExtension', () => {
 
 
     // --- Cases expected to be FALSE (Non-Standard Formats that match the regex) ---
-    
+
     test('should return false for "x" with a trailing space', () => {
         expect(isStandardExtension('1234 x 567')).toBe(false);
     });
@@ -212,7 +212,7 @@ describe('isStandardExtension', () => {
     test('should return false for "ext." with missing trailing space', () => {
         expect(isStandardExtension('1234 ext.567')).toBe(false);
     });
-    
+
     test('should return false for uppercase non-standard keywords (e.g., "EXTENSION")', () => {
         expect(isStandardExtension('1234 EXTENSION 567')).toBe(false);
     });
@@ -224,7 +224,7 @@ describe('isStandardExtension', () => {
     test('should return false for non-standard keyword (wewn)', () => {
         expect(isStandardExtension('1234 wewn 567')).toBe(false);
     });
-    
+
     test('should return false for uppercase ext. or x in otherwise standard format', () => {
         expect(isStandardExtension('1234 EXT. 999')).toBe(false);
         expect(isStandardExtension('1234 X123')).toBe(false);
@@ -236,7 +236,7 @@ describe('isStandardExtension', () => {
         // No match for the full regex
         expect(isStandardExtension('1234567')).toBeNull();
     });
-    
+
     test('should return null when the separator exists but no digits follow (ext.)', () => {
         expect(isStandardExtension('1234 ext. ')).toBeNull();
     });
@@ -444,21 +444,21 @@ describe('phoneTagToUse', () => {
     test('should return phone if no other tags are present', () => {
         expect(phoneTagToUse({})).toBe('phone');
     });
-    
+
     test('should return contact:phone if it is present', () => {
-        expect(phoneTagToUse({'contact:phone': '01234'})).toBe('contact:phone');
+        expect(phoneTagToUse({ 'contact:phone': '01234' })).toBe('contact:phone');
     });
 
     test('should return phone if both phone and contact:phone are present', () => {
-        expect(phoneTagToUse({'contact:phone': '01234', 'phone': '06789'})).toBe('phone');
+        expect(phoneTagToUse({ 'contact:phone': '01234', 'phone': '06789' })).toBe('phone');
     });
 
     test('should return phone if it is present', () => {
-        expect(phoneTagToUse({'phone': '01234'})).toBe('phone');
+        expect(phoneTagToUse({ 'phone': '01234' })).toBe('phone');
     });
 
     test('should not be affected by other tags', () => {
-        expect(phoneTagToUse({'phone': '01234', 'mobile': '07123'})).toBe('phone');
+        expect(phoneTagToUse({ 'phone': '01234', 'mobile': '07123' })).toBe('phone');
     });
 });
 
@@ -488,7 +488,7 @@ describe('keyToRemove', () => {
         // Equal known scores
         expect(keyToRemove('phone', 'phone')).toBe('phone');
         expect(keyToRemove('mobile', 'mobile')).toBe('mobile');
-        
+
         // Ensure key1 is kept if they are equal
         expect(keyToRemove('contact:phone', 'contact:phone')).toBe('contact:phone');
     });
@@ -496,11 +496,11 @@ describe('keyToRemove', () => {
     // Test cases involving unknown keys (which get Infinity score and should be removed)
     test('should remove an unknown key when compared against a known key', () => {
         const unknownKey = 'fax';
-        const knownKey = 'phone'; 
-        
+        const knownKey = 'phone';
+
         // Case 1: Unknown key is key1 (score: Infinity > 0)
         expect(keyToRemove(unknownKey, knownKey)).toBe(unknownKey);
-        
+
         // Case 2: Unknown key is key2 (score: 0 < Infinity)
         expect(keyToRemove(knownKey, unknownKey)).toBe(unknownKey);
     });
@@ -522,12 +522,12 @@ describe('keyToRemove', () => {
  * @returns {Object} A mock phone number object.
  */
 const mockPhoneNumber = (nationalNumber, countryCode) => ({
-    nationalNumber: nationalNumber, 
+    nationalNumber: nationalNumber,
     country: countryCode,
 });
 
 describe('checkExclusions', () => {
-    
+
     const FR = 'FR';
     const GP = 'GP';
     const DE = 'DE'; // Non-excluded country
@@ -605,7 +605,7 @@ describe('checkExclusions', () => {
         const phoneNumber = mockPhoneNumber('115', DE);
         expect(checkExclusions(phoneNumber, '115', FR, emptyTags)).toBeNull();
     });
-    
+
     test('should return null when no phoneNumber object is provided', () => {
         // Should handle the case where parsePhoneNumber failed and returned null
         expect(checkExclusions(null, null, FR, requiredTags)).toBeNull();
@@ -1127,7 +1127,7 @@ describe('processSingleNumber', () => {
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+212 5 22 31 23 45');
     });
-    
+
     test('MA: no spacing after country code but other spacing is fixable', () => {
         const result = processSingleNumber('+2125223 12345', 'MA');
         expect(result.isInvalid).toBe(true);
@@ -1475,7 +1475,14 @@ describe('validateSingleTag', () => {
     });
 
     test('fix slash used to denote multiple endings to a number', () => {
-        const result = validateSingleTag('+212522941234/35', 'MA');
+        const result = validateSingleTag('+212522941234/45', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 12 45"]);
+    });
+
+    test('fix slash used to denote multiple endings to a number (1 digit)', () => {
+        const result = validateSingleTag('+212522941234/5', 'MA');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 12 35"]);
@@ -1486,6 +1493,18 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 35 79"]);
+    });
+
+    test('slash cannot denote alternate ending longer than 4 digits', () => {
+        const result = validateSingleTag('+212522941234/56789', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+    });
+
+    test('slash as alternate endings is invalid if the core number is invalid', () => {
+        const result = validateSingleTag('+21252294123/31', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
     });
 
     test('give up if slash might be used to denote more than two options for endings', () => {
