@@ -43,7 +43,7 @@ function buildSearchIndex() {
                     index.push({
                         name: divName,
                         type: "Region",
-                        url: `./${countrySafe}.html`,
+                        url: `./${countrySafe}/`,
                         parent: countryName
                     });
                 }
