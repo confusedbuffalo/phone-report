@@ -771,16 +771,50 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
 
 /**
- * Validates a whole phone number tag using libphonenumber-js.
- * @param {string} tagValue - The phone number value string to validate (possibly containing multiple numbers).
+ * Checks if the forward slash character should be considered as a spacing character.
+ * @param {string} tagValue - The phone number value string to validate.
  * @param {string} countryCode - The country code for validation.
  * @param {map} osmTags - All the OSM tags of the object, to check against exclusions
  * @param {string} tag - The OSM phone tag being used for this number
  * @returns {boolean} - Whether forward slash should be treated as a space character.
  */
 function isSlashSpace(tagValue, countryCode, osmTags, tag) {
-    let validationResult = processSingleNumber(tagValue, countryCode, osmTags = {}, tag = 'phone');
+    const validationResult = processSingleNumber(tagValue, countryCode, osmTags, tag);
     return (!validationResult.isInvalid || validationResult.autoFixable);
+}
+
+
+/**
+ * Expands a phone number string where a slash denotes an alternative suffix.
+ * Example: "01234 567/568" -> ["01234 567", "01234 568"]
+ * @param {string} tagValue - The phone number value string to validate.
+ * @param {string} countryCode - The country code for validation.
+ * @param {map} osmTags - All the OSM tags of the object, to check against exclusions
+ * @param {string} tag - The OSM phone tag being used for this number
+ * @returns {string[]|null} - Array of expanded numbers if valid or null if validation fails.
+ */
+function expandSlashEnding(tagValue, countryCode, osmTags, tag) {
+    const parts = tagValue.split('/').map(part => part.trim());
+
+    // Only attempt two possible endings (original and alternative)
+    if (parts.length !== 2 || parts[1].length > 4) {
+        return null;
+    }
+
+    const validationResult = processSingleNumber(parts[0], countryCode, osmTags, tag);
+
+    if (validationResult.isInvalid && !validationResult.autoFixable) {
+        return null;
+    }
+
+    const altNumber = parts[0].slice(0, -parts[1].length) + [parts[1]];
+
+    const altValidationResult = processSingleNumber(altNumber, countryCode, osmTags, tag);
+
+    if (!altValidationResult.isInvalid || altValidationResult.autoFixable) {
+        return [parts[0], altNumber]
+    }
+    return null;
 }
 
 
@@ -805,13 +839,15 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const hasBadExtension = originalTagValue.match(/, ext|\\;ext=/gi);
 
     const slashAsSpace = isSlashSpace(tagValue, countryCode, osmTags, tag);
+    const slashForMultipleEndings = expandSlashEnding(tagValue, countryCode, osmTags, tag);
 
     splitRegex = slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
     const numberList = tag === 'contact:whatsapp'
         ? originalTagValue.split(';')
-        : originalTagValue.replace('\\;ext=', ' ext ').replace('\\;=ext=', ' ext ').split(splitRegex);
+        : slashForMultipleEndings
+        ?? originalTagValue.replace('\\;ext=', ' ext ').replace('\\;=ext=', ' ext ').split(splitRegex);
     const numbers = numberList
         .map(s => s.trim())
         .filter(s => s.length > 0);

@@ -1473,6 +1473,26 @@ describe('validateSingleTag', () => {
         expect(result.isAutoFixable).toBe(false);
         expect(result.validPhonewords).toBe(false);
     });
+
+    test('fix slash used to denote multiple endings to a number', () => {
+        const result = validateSingleTag('+212522941234/35', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 12 35"]);
+    });
+
+    test('fix slash used to denote multiple endings to a number (4 digits)', () => {
+        const result = validateSingleTag('+212522941234/3579', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 35 79"]);
+    });
+
+    test('give up if slash might be used to denote more than two options for endings', () => {
+        const result = validateSingleTag('+212522941234/35/46', 'MA');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+    });
 });
 
 // =====================================================================
