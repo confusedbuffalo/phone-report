@@ -50,7 +50,10 @@ function createJosmFixUrl(item) {
  * @returns {string}
  */
 function createClientItems(item, locale, botEnabled, iconManager) {
-    // console.log(item);
+    if (item.id !== '979393947') {
+        return null;
+    }
+    console.log(item);
     // Skip safe edit items if the bot is enabled here
     if (botEnabled && item.safeEdit) {
         return null;
