@@ -53,7 +53,10 @@ function createClientItems(item, locale, botEnabled, iconManager) {
     if (item.type === 'node') {
         return null;
     }
-    // console.log(item);
+    if (item.id == 1391400991) {
+        console.log(item);
+    }
+    
     // Skip safe edit items if the bot is enabled here
     if (botEnabled && item.safeEdit) {
         return null;
