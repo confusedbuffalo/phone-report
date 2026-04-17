@@ -50,7 +50,7 @@ function createJosmFixUrl(item) {
  * @returns {string}
  */
 function createClientItems(item, locale, botEnabled, iconManager) {
-    if (item.id !== '979393947') {
+    if (item.id !== 979393947) {
         return null;
     }
     console.log(item);
