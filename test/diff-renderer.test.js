@@ -1112,4 +1112,17 @@ describe('getDiffHtml', () => {
         const expectedSuggested = '<span class="diff-unchanged">+353&nbsp;21&nbsp;427&nbsp;1234</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
+
+    test('Slash denoting multiple endings', () => {
+        const original = '+212522941234/35';
+        const suggested = '+212 5 22 94 12 34; +212 5 22 94 12 35';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+212522941234</span><span class="diff-removed">/</span><span class="diff-unchanged">35</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">34</span><span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;12&nbsp;</span><span class="diff-unchanged">35</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
 });
