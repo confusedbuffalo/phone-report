@@ -50,10 +50,10 @@ function createJosmFixUrl(item) {
  * @returns {string}
  */
 function createClientItems(item, locale, botEnabled, iconManager) {
-    if (item.id !== 979393947) {
+    if (item.type === 'node') {
         return null;
     }
-    console.log(item);
+    // console.log(item);
     // Skip safe edit items if the bot is enabled here
     if (botEnabled && item.safeEdit) {
         return null;
@@ -62,7 +62,7 @@ function createClientItems(item, locale, botEnabled, iconManager) {
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
-    console.log(`${item.id} got phoneTagToUse and featureTypeName`)
+    // console.log(`${item.id} got phoneTagToUse and featureTypeName`)
 
     const iconName = getFeatureIcon(item, locale);
     const iconHtml = iconManager.getIconHtml(iconName);
@@ -149,13 +149,13 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         }
     }).filter(Boolean);
 
-    console.log(`${item.id} created fixRows`)
+    // console.log(`${item.id} created fixRows`)
 
     item.josmFixUrl = createJosmFixUrl(item);
 
     const { allTags, ...clientItem } = item;
 
-    console.log(`${item.id} finished`)
+    // console.log(`${item.id} finished`)
 
     return clientItem;
 }
