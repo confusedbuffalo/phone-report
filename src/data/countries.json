@@ -351,11 +351,41 @@
         "locale": "en-GB",
         "safeAutoFixBotEnabled": false,
         "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/ireland-latest.osm.pbf",
-        "divisions": {
-            "Connacht": 278721,
-            "Leinster": 278746,
-            "Munster": 278750,
-            "Ulster": 14419962
+        "divisionMap": {
+            "Connacht": {
+                "County Galway": 335444,
+                "County Leitrim": 284368,
+                "County Mayo": 338539,
+                "County Roscommon": 335443,
+                "County Sligo": 335330
+            },
+            "Leinster": {
+                "County Carlow": 285977,
+                "County Dublin": 282800,
+                "County Kildare": 285833,
+                "County Kilkenny": 285980,
+                "County Laois": 285915,
+                "County Longford": 335445,
+                "County Louth": 1763195,
+                "County Meath": 282818,
+                "County Offaly": 335442,
+                "County Westmeath": 335446,
+                "County Wexford": 285981,
+                "County Wicklow": 282760
+            },
+            "Munster": {
+                "County Clare": 334885,
+                "County Cork": 332631,
+                "County Kerry": 332622,
+                "County Limerick": 334898,
+                "County Tipperary": 334372,
+                "County Waterford": 283426
+            },
+            "Ulster": {
+                "County Cavan": 283679,
+                "County Donegal": 283732,
+                "County Monaghan": 283647
+            }
         }
     },
     "Italia": {
