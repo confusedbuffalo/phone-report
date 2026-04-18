@@ -26,6 +26,7 @@ const {
     DIN_FORMAT_COUNTRIES,
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
+    INVALID_SPACING_CHARACTERS_REGEX_TW,
 } = require('./constants');
 const { PhoneNumber } = require('libphonenumber-js');
 
@@ -440,6 +441,28 @@ function getNumberAndExtension(numberStr, countryCode) {
             }
         }
     }
+    // TW uses # for extension
+    else if (countryCode === 'TW') {
+        const match = numberStr.match(/^(.*?)(\s*(?:[#~]|分機)\s*)(.+)$/);
+
+        if (match && match[1] && match[2] && match[3]) {
+            try {
+                const mainNumber = parsePhoneNumber(match[1], countryCode);
+                const isHash = match[2].trim() === '#';
+                const extensionDigits = match[3].replace(/[^\d]/, '');
+                
+                if (mainNumber.isValid() && extensionDigits) {
+                    return {
+                        coreNumber: match[1].trim(),
+                        extension: extensionDigits,
+                        hasStandardExtension: isHash,
+                    }
+                }
+            } catch (e) {
+                // Parsing failed due to an exception
+            }
+        }
+    }
     return {
         coreNumber: stripStandardExtension(numberStr),
         extension: getStandardExtension(numberStr),
@@ -467,9 +490,13 @@ function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = 
         ? internationalNumber.replace(/\s/g, '-').replace('-ext.-', ' x')
         : internationalNumber;
 
-    // Append the extension in the standard format (' x{ext}' or DIN format)
+    // Append the extension in the standard format (' x{ext}', DIN format or with hash for TW)
     const extension = phoneNumber.ext ?
-        (DIN_FORMAT_COUNTRIES.includes(countryCode) ? `-${phoneNumber.ext}` : ` x${phoneNumber.ext}`)
+        (
+            DIN_FORMAT_COUNTRIES.includes(countryCode) ? `-${phoneNumber.ext}`
+            : countryCode === 'TW' ? `#${phoneNumber.ext}`
+            : ` x${phoneNumber.ext}`
+        )
         : '';
 
     if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) && !tollFreeAsInternational) {
@@ -672,7 +699,9 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(INVALID_SPACING_CHARACTERS_REGEX, " "), countryCode);
+    const invalidSpacingRegex = countryCode === 'TW' ? INVALID_SPACING_CHARACTERS_REGEX_TW : INVALID_SPACING_CHARACTERS_REGEX
+
+    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(invalidSpacingRegex, " "), countryCode);
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
 
     try {
@@ -753,7 +782,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     }
 
     // DE numbers do not have fixed length and could start with 49, but maybe a + was missed off
-    // so it is not clear what the correct fix should be
+    // so it is not clear what the correct fix should be, whether adding 0 or adding +
     // see https://github.com/confusedbuffalo/phone-report/issues/78 and https://github.com/confusedbuffalo/phone-report/issues/53
     if (
         isInvalid

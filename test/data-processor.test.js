@@ -257,9 +257,9 @@ describe('isStandardExtension', () => {
 // =====================================================================
 describe('getNumberAndExtension', () => {
 
-    // --- DE (German) Specific Tests (DIN Format) ---
+    // --- DE/AT (Germany/Austria) Specific Tests (DIN Format) ---
 
-    describe('DE Country Code (DIN Format)', () => {
+    describe('DE and AT Country Code (DIN Format)', () => {
         const countryCode = 'DE';
 
         test('should correctly parse DIN-style extension (1-4 digits) when core number is valid', () => {
@@ -351,7 +351,63 @@ describe('getNumberAndExtension', () => {
         });
     });
 
-    // --- Standard (Fallback) Tests (Any Country Code other than DE) ---
+    // --- TW (Taiwan) Specific Tests (Hash Format) ---
+
+    describe('TW Country Code (Hash Format)', () => {
+        test('should correctly parse hash-style extension when core number is valid', () => {
+            expect(getNumberAndExtension('+886 2 2938 2300#630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: true,
+            });
+        });
+
+        test('should correctly parse hash-style extension with spaces around hash', () => {
+            expect(getNumberAndExtension('+886 2 2938 2300 #630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: true,
+            });
+
+            expect(getNumberAndExtension('+886 2 2938 2300# 630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: true,
+            });
+
+            expect(getNumberAndExtension('+886 2 2938 2300 # 630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: true,
+            });
+        });
+
+        test('should parse tilde extension and mark as non-standard', () => {
+            expect(getNumberAndExtension('+886 2 2938 2300~630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: false,
+            });
+        });
+
+        test('should parse Chinese extension and mark as non-standard', () => {
+            expect(getNumberAndExtension('+886 2 2938 2300分機630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: false,
+            });
+        });
+
+        test('should fall back to standard extension parsing and mark as valid', () => {
+            expect(getNumberAndExtension('+886 2 2938 2300 ext. 630', 'TW')).toEqual({
+                coreNumber: '+886 2 2938 2300',
+                extension: '630',
+                hasStandardExtension: true,
+            });
+        });
+    });
+
+    // --- Standard (Fallback) Tests (Any Country Code other than DIN or TW) ---
 
     describe('Standard Format)', () => {
 
@@ -1120,7 +1176,7 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+39 090 377129');
     });
 
-    // --- MA Tests
+    // --- MA Tests ---
     test('MA: no spacing is fixable', () => {
         const result = processSingleNumber('+212522312345', 'MA');
         expect(result.isInvalid).toBe(true);
@@ -1144,6 +1200,36 @@ describe('processSingleNumber', () => {
 
     test('MA: unusual spacing is valid', () => {
         const result = processSingleNumber('+212 522 312 345', 'MA');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    // --- TW Tests ---
+    test('TW: Hash format extension is valid', () => {
+        const result = processSingleNumber('+886 2 2938 2300#630', 'TW');
+        expect(result.isInvalid).toBe(false);
+    });
+    
+    test('TW: Standard format extension is valid', () => {
+        const result = processSingleNumber('+886 2 2938 2300 ext. 630', 'TW');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('TW: Extension using tilde is invalid and fixable', () => {
+        const result = processSingleNumber('+886 2 2938 2300~630', 'TW');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+886 2 2938 2300#630');
+    });
+
+    test('TW: Chinese extension is invalid and fixable', () => {
+        const result = processSingleNumber('+886 2 2938 2300分機630', 'TW');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+886 2 2938 2300#630');
+    });
+
+    test('TW: Hash extension with space is valid', () => {
+        const result = processSingleNumber('+886 2 2938 2300 #630', 'TW');
         expect(result.isInvalid).toBe(false);
     });
 
