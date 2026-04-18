@@ -495,6 +495,31 @@
             }
         }
     },
+    "New Zealand": {
+        "countryCode": "NZ",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/new-zealand.osm.pbf",
+        "divisions": {
+            "Northland": 2133870,
+            "Auckland": 2094141,
+            "Waikato": 2094142,
+            "Bay of Plenty": 1790755,
+            "Gisborne": 2643819,
+            "Hawke's Bay": 1643811,
+            "Taranaki": 1643812,
+            "Manawatū-Whanganui": 1638992,
+            "Wellington": 1638991,
+            "Tasman": 4266979,
+            "Nelson": 4266962,
+            "Marlborough": 4266977,
+            "West Coast": 1640136,
+            "Canterbury": 1640137,
+            "Otago": 1640138,
+            "Southland": 1640159,
+            "Chatham Islands": 2647558
+        }
+    },
     "Norge": {
         "countryCode": "NO",
         "locale": "nb-NO",
