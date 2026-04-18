@@ -567,6 +567,34 @@
             "województwo zachodniopomorskie": 104401
         }
     },
+    "Portugal": {
+        "countryCode": "PT",
+        "locale": "pt-PT",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/portugal-latest.osm.pbf",
+        "divisions": {
+            "Aveiro": 3920249,
+            "Beja": 5134927,
+            "Braga": 3738284,
+            "Bragança": 3905929,
+            "Castelo Branco": 4104644,
+            "Coimbra": 4875183,
+            "Évora": 5130767,
+            "Faro": 1278415,
+            "Guarda": 3905924,
+            "Leiria": 5011694,
+            "Lisbon": 2897141,
+            "Portalegre": 5123448,
+            "Porto": 3459013,
+            "Santarém": 5122644,
+            "Setúbal": 5143590,
+            "Viana do Castelo": 3898131,
+            "Vila Real": 3967823,
+            "Viseu": 3920285,
+            "Azores": 1629146,
+            "Madeira": 1629145
+        }
+    },
     "Schweiz / Suisse / Svizzera / Svizra": {
         "countryCode": "CH",
         "locale": "en",
