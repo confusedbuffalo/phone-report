@@ -19,12 +19,12 @@ const NEW_SPLIT_CAPTURE_REGEX = /(; ?)/g;
 // --- Helper Functions ---
 
 /**
- * Normalizes a phone number string to contain only digits.
+ * Normalises a phone number string to contain only digits.
  * Used for finding true (semantic) changes in the numbers.
  * @param {string} str - The phone number string.
- * @returns {string} The normalized string (digits only).
+ * @returns {string} The normalised string (digits only).
  */
-const normalize = (str) => str.replace(/[^\d]/g, '');
+const normalise = (str) => str.replace(/[^\d]/g, '');
 
 /**
  * Helper function to consolidate lone '+' signs with the following segment, 
@@ -106,9 +106,9 @@ function diffPhoneNumbers(original, suggested) {
     }
 
     // --- 1. Semantic Diff (Digits only) ---
-    const normalizedOriginal = normalize(original);
-    const normalizedSuggested = normalize(suggested);
-    const semanticParts = diffChars(normalizedOriginal, normalizedSuggested);
+    const normalisedOriginal = normalise(original);
+    const normalisedSuggested = normalise(suggested);
+    const semanticParts = diffChars(normalisedOriginal, normalisedSuggested);
 
     // Create a sequential map of digits for the common sequence
     let commonDigits = [];
@@ -128,9 +128,9 @@ function diffPhoneNumbers(original, suggested) {
         ?.startsWith('0')
         ?? false;
 
-    const onlyAddingPlus = normalizedOriginal === normalizedSuggested;
+    const onlyAddingPlus = normalisedOriginal === normalisedSuggested;
     const numericalPrefix = suggested.split(' ')[0].slice(1);
-    const numericallyOnlyAddingPrefix = normalizedSuggested === `${numericalPrefix}${normalizedOriginal}`;
+    const numericallyOnlyAddingPrefix = normalisedSuggested === `${numericalPrefix}${normalisedOriginal}`;
 
     const originalPrefix = original.split(' ')[0];
 
@@ -177,7 +177,7 @@ function diffPhoneNumbers(original, suggested) {
                 commonPointer++;
 
             } else {
-                // Digit was part of the normalized original string, but NOT in the common sequence. REMOVED.
+                // Digit was part of the normalised original string, but NOT in the common sequence. REMOVED.
                 originalDiff.push({ value: char, removed: true });
             }
         } else if (char === suggestedRemainder[0]) {
@@ -215,10 +215,10 @@ function diffPhoneNumbers(original, suggested) {
                 !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
                 || (originalRemainderNew.includes('+') && numericallyOnlyAddingPrefix) // in case of incorrect leading plus and first digits the same as prefix, see "should show prefix as added when actual number starts with the same prefix and incorrect plus"
             )
-            && normalizedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
+            && normalisedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
             && !onlyAddingPlus // doesn't need special handling
             && (
-                normalizedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
+                normalisedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
                 || numericallyOnlyAddingPrefix // needed because of clash with this case, see "should mark prefix as new, even when it is the same as the first digits of the original" test
             )
         ) {
@@ -226,7 +226,7 @@ function diffPhoneNumbers(original, suggested) {
             let prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
 
             // Handle two-part prefix being added
-            if (normalize(prefix).length + normalizedOriginal.length < normalizedSuggested.length) {
+            if (normalise(prefix).length + normalisedOriginal.length < normalisedSuggested.length) {
                 const nanpMatch = suggested.match(/^(\+1-\d{3})-/);
                 const intlMatch = suggested.match(/^(\+\d+\s\d+)\s/);
 
@@ -278,10 +278,19 @@ function diffPhoneNumbers(original, suggested) {
                     commonPointerNew++;
                 }
             }
-            suggestedRemainderNew = suggestedRemainderNew.slice(i + 1) // Remove the prefix
+            suggestedRemainderNew = suggestedRemainderNew.slice(i) // Remove the prefix
         } else if (/\d/.test(char)) {
-            // It's a digit. Check if it's the next digit in the common sequence.
-            if (commonPointerNew < commonDigits.length && commonDigits[commonPointerNew] === char) {
+            // Slash used to denote multiple endings being expanded to full number
+            if (
+                normalisedOriginal.length <= 4
+                && normalisedOriginal.length < normalisedSuggested.length
+                && normalisedSuggested.slice(-normalisedOriginal.length) === normalisedOriginal
+                && normalise(suggestedRemainderNew) !== normalisedOriginal.slice(commonPointerNew)
+            ) {
+                suggestedDiff.push({ value: char, added: true });
+            }
+            // Check if it's the next digit in the common sequence.
+            else if (commonPointerNew < commonDigits.length && commonDigits[commonPointerNew] === char) {
                 // Digit is part of the common sequence. UNCHANGED.
                 suggestedDiff.push({ value: char, removed: false, added: false });
 
@@ -577,4 +586,4 @@ function getDiffHtml(oldString, newString) {
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
 }
 
-module.exports = { normalize, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml };
+module.exports = { normalise, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml };

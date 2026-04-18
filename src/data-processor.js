@@ -361,7 +361,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
 
     // Get the core national number without country code
     const coreNationalNumber = phoneNumber.nationalNumber;
-    const normalizedOriginal = numberStr.replace(getSpacingRegex(countryCode), '');
+    const normalisedOriginal = numberStr.replace(getSpacingRegex(countryCode), '');
 
     // See https://github.com/confusedbuffalo/phone-report/issues/18
     if (['FR', 'GF', 'GP', 'YT'].includes(countryCode)) {
@@ -373,7 +373,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
         )
         if (isValidShortNumberFr) {
             return {
-                isInvalid: !(normalizedOriginal === coreNationalNumber),
+                isInvalid: !(normalisedOriginal === coreNationalNumber),
                 autoFixable: true,
                 suggestedFix: coreNationalNumber
             };
@@ -390,7 +390,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
                 if (numberExclusions.hasOwnProperty(key)) {
                     if (osmTags[key] === numberExclusions[key]) {
                         return {
-                            isInvalid: !(normalizedOriginal === coreNationalNumber),
+                            isInvalid: !(normalisedOriginal === coreNationalNumber),
                             autoFixable: true,
                             suggestedFix: coreNationalNumber
                         };
@@ -712,9 +712,9 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             return exclusionResult;
         }
 
-        const normalizedOriginal = coreNumber.replace(spacingRegex, '');
+        const normalisedOriginal = coreNumber.replace(spacingRegex, '');
 
-        let normalizedParsed = '';
+        let normalisedParsed = '';
 
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
         const isItalianMissingZero = isItalianMissingZeroNumber(phoneNumber, countryCode);
@@ -732,7 +732,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed || isItalianMissingZero)) {
-            normalizedParsed = phoneNumber.number.replace(spacingRegex, '');
+            normalisedParsed = phoneNumber.number.replace(spacingRegex, '');
 
             if (couldBePhonewords) {
                 validPhonewords = true;
@@ -749,10 +749,10 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
             let numbersMatch = false;
             if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())) {
-                const normalizedTollFree = suggestedFix.replace(spacingRegex, '');
-                numbersMatch = normalizedOriginal === normalizedTollFree;
+                const normalisedTollFree = suggestedFix.replace(spacingRegex, '');
+                numbersMatch = normalisedOriginal === normalisedTollFree;
             }
-            numbersMatch = numbersMatch || normalizedOriginal === normalizedParsed;
+            numbersMatch = numbersMatch || normalisedOriginal === normalisedParsed;
 
             if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
                 // Targets numbers with no spaces after the country code
@@ -1101,8 +1101,8 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         const tags = element.properties;
 
         let item = null;
-        const allNormalizedPhoneNumbers = new Map();
-        const allNormalizedFaxNumbers = new Map();
+        const allNormalisedPhoneNumbers = new Map();
+        const allNormalisedFaxNumbers = new Map();
 
         const getOrCreateItem = (autoFixable) => {
             if (item) return item;
@@ -1159,7 +1159,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             let suggestedFix = null;
             let duplicateMismatchCount = 0;
 
-            const allNormalizedNumbers = FAX_TAGS.includes(tag) ? allNormalizedFaxNumbers : allNormalizedPhoneNumbers;
+            const allNormalisedNumbers = FAX_TAGS.includes(tag) ? allNormalisedFaxNumbers : allNormalisedPhoneNumbers;
 
             // --- Detect internal duplicates within the same tag ---
             const formattedNumbers = validatedNumbers.map(n => n.format('INTERNATIONAL'));
@@ -1183,22 +1183,22 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 // Skip duplicate detection for whatsapp numbers
                 if (tag === 'contact:whatsapp') continue;
 
-                const normalizedNumber = getFormattedNumber(
+                const normalisedNumber = getFormattedNumber(
                     phoneNumber,
                     countryCode,
                     !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
                 ).replace(getSpacingRegex(countryCode), '');
 
                 // Correct the tag of a mismatch type number early
-                const normalizedMismatch = validationResult.mismatchTypeNumbers.map(number =>
+                const normalisedMismatch = validationResult.mismatchTypeNumbers.map(number =>
                     number.replace(getSpacingRegex(countryCode), '')
                 );
-                const isMismatchNumber = validationResult.mismatchTypeNumbers && normalizedMismatch.includes(normalizedNumber);
-                if (isMismatchNumber && allNormalizedNumbers.get(normalizedNumber)) {
+                const isMismatchNumber = validationResult.mismatchTypeNumbers && normalisedMismatch.includes(normalisedNumber);
+                if (isMismatchNumber && allNormalisedNumbers.get(normalisedNumber)) {
                     duplicateMismatchCount++;
                 }
 
-                const existingTag = allNormalizedNumbers.get(normalizedNumber);
+                const existingTag = allNormalisedNumbers.get(normalisedNumber);
 
                 if (existingTag) {
                     const tagToRemove = keyToRemove(tag, existingTag);
@@ -1212,11 +1212,11 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     const removeTagToValidate = currentItem.suggestedFixes.get(tagToRemove) ? currentItem.suggestedFixes.get(tagToRemove) : tags[tagToRemove];
                     const validatedRemoved = validateSingleTag(removeTagToValidate, countryCode, tags, tagToRemove);
                     if (validatedRemoved.suggestedNumbersList) {
-                        const normalizedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
+                        const normalisedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
                             number.replace(getSpacingRegex(countryCode), '')
                         );
                         let removedValue = null;
-                        const deduplicatedRemoved = normalizedRemoved.filter(item => item !== normalizedNumber);
+                        const deduplicatedRemoved = normalisedRemoved.filter(item => item !== normalisedNumber);
                         if (deduplicatedRemoved) {
                             const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), countryCode, tags, tagToRemove);
                             removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
@@ -1255,12 +1255,12 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         currentItem.mismatchTypeNumbers.delete(tagToRemove);
                     }
 
-                    // Update normalized record to reflect the kept tag
-                    allNormalizedNumbers.set(normalizedNumber, keptTag);
+                    // Update normalised record to reflect the kept tag
+                    allNormalisedNumbers.set(normalisedNumber, keptTag);
 
                     if (tagToRemove === tag) tagShouldBeFlaggedForRemoval = true;
                 } else {
-                    allNormalizedNumbers.set(normalizedNumber, tag);
+                    allNormalisedNumbers.set(normalisedNumber, tag);
                 }
             }
 
