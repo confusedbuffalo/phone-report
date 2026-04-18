@@ -351,11 +351,41 @@
         "locale": "en-GB",
         "safeAutoFixBotEnabled": false,
         "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/ireland-latest.osm.pbf",
-        "divisions": {
-            "Connacht": 278721,
-            "Leinster": 278746,
-            "Munster": 278750,
-            "Ulster": 14419962
+        "divisionMap": {
+            "Connacht": {
+                "County Galway": 335444,
+                "County Leitrim": 284368,
+                "County Mayo": 338539,
+                "County Roscommon": 335443,
+                "County Sligo": 335330
+            },
+            "Leinster": {
+                "County Carlow": 285977,
+                "County Dublin": 282800,
+                "County Kildare": 285833,
+                "County Kilkenny": 285980,
+                "County Laois": 285915,
+                "County Longford": 335445,
+                "County Louth": 1763195,
+                "County Meath": 282818,
+                "County Offaly": 335442,
+                "County Westmeath": 335446,
+                "County Wexford": 285981,
+                "County Wicklow": 282760
+            },
+            "Munster": {
+                "County Clare": 334885,
+                "County Cork": 332631,
+                "County Kerry": 332622,
+                "County Limerick": 334898,
+                "County Tipperary": 334372,
+                "County Waterford": 283426
+            },
+            "Ulster": {
+                "County Cavan": 283679,
+                "County Donegal": 283732,
+                "County Monaghan": 283647
+            }
         }
     },
     "Italia": {
@@ -442,7 +472,52 @@
             "Overijssel": 47608,
             "Zuid-Holland": 47772,
             "Utrecht": 47667,
-            "Zeeland": 47806
+            "Zeeland": 47806,
+            "Aruba": {
+                "relationId": 1231749,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/aruba-latest.osm.pbf",
+                "countryCode": "AW"
+            },
+            "Curaçao": {
+                "relationId": 1216719,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/curacao-latest.osm.pbf",
+                "countryCode": "CW"
+            },
+            "Sint Maarten": {
+                "relationId": 1231790,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/sint_maarten-latest.osm.pbf",
+                "countryCode": "SX"
+            },
+            "Caribisch Nederland": {
+                "relationId": 1216720,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/caribbean-latest.osm.pbf",
+                "countryCode": "BQ"
+            }
+        }
+    },
+    "New Zealand": {
+        "countryCode": "NZ",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/new-zealand.osm.pbf",
+        "divisions": {
+            "Northland": 2133870,
+            "Auckland": 2094141,
+            "Waikato": 2094142,
+            "Bay of Plenty": 1790755,
+            "Gisborne": 2643819,
+            "Hawke's Bay": 1643811,
+            "Taranaki": 1643812,
+            "Manawatū-Whanganui": 1638992,
+            "Wellington": 1638991,
+            "Tasman": 4266979,
+            "Nelson": 4266962,
+            "Marlborough": 4266977,
+            "West Coast": 1640136,
+            "Canterbury": 1640137,
+            "Otago": 1640138,
+            "Southland": 1640159,
+            "Chatham Islands": 2647558
         }
     },
     "Norge": {
@@ -490,6 +565,34 @@
             "województwo warmińsko-mazurskie": 223408,
             "województwo wielkopolskie": 130971,
             "województwo zachodniopomorskie": 104401
+        }
+    },
+    "Portugal": {
+        "countryCode": "PT",
+        "locale": "pt-PT",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/portugal-latest.osm.pbf",
+        "divisions": {
+            "Aveiro": 3920249,
+            "Beja": 5134927,
+            "Braga": 3738284,
+            "Bragança": 3905929,
+            "Castelo Branco": 4104644,
+            "Coimbra": 4875183,
+            "Évora": 5130767,
+            "Faro": 1278415,
+            "Guarda": 3905924,
+            "Leiria": 5011694,
+            "Lisbon": 2897141,
+            "Portalegre": 5123448,
+            "Porto": 3459013,
+            "Santarém": 5122644,
+            "Setúbal": 5143590,
+            "Viana do Castelo": 3898131,
+            "Vila Real": 3967823,
+            "Viseu": 3920285,
+            "Azores": 1629146,
+            "Madeira": 1629145
         }
     },
     "Schweiz / Suisse / Svizzera / Svizra": {

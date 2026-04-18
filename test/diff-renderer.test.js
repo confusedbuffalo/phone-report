@@ -1,6 +1,6 @@
 const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN } = require('../src/constants');
 const {
-    normalize,
+    normalise,
     consolidatePlusSigns,
     replaceInvisibleChars,
     diffPhoneNumbers,
@@ -13,10 +13,10 @@ const {
 
 describe('Phone Diff Helper Functions', () => {
 
-    test('normalize should remove all non-digits', () => {
-        expect(normalize('+44 (0) 1234-567 890')).toBe('4401234567890');
-        expect(normalize('0471 124 380')).toBe('0471124380');
-        expect(normalize('32 471 12 43 80')).toBe('32471124380');
+    test('normalise should remove all non-digits', () => {
+        expect(normalise('+44 (0) 1234-567 890')).toBe('4401234567890');
+        expect(normalise('0471 124 380')).toBe('0471124380');
+        expect(normalise('32 471 12 43 80')).toBe('32471124380');
     });
 
     test('consolidatePlusSigns should merge lone "+" with the following segment', () => {
@@ -1123,6 +1123,38 @@ describe('getDiffHtml', () => {
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">34</span><span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;12&nbsp;</span><span class="diff-unchanged">35</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('Slash denoting multiple endings, ending starts with previous digit', () => {
+        const original = '+212522940770/74';
+        const suggested = '+212 5 22 94 07 70; +212 5 22 94 07 74';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+212522940770</span><span class="diff-removed">/</span><span class="diff-unchanged">74</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedFirst = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">70</span>';
+        const expectedSecond = '<span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;07&nbsp;</span><span class="diff-unchanged">74</span>';
+
+        const expectedSuggested = expectedFirst + expectedSecond;
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
+    test('Slash denoting multiple endings (4 characters), ending starts with previous digit', () => {
+        const original = '+212522940770/2774';
+        const suggested = '+212 5 22 94 07 70; +212 5 22 94 27 74';
+
+        const result = getDiffHtml(original, suggested);
+
+        const expectedOriginal = '<span class="diff-unchanged">+212522940770</span><span class="diff-removed">/</span><span class="diff-unchanged">2774</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedFirst = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">70</span>';
+        const expectedSecond = '<span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">74</span>';
+
+        const expectedSuggested = expectedFirst + expectedSecond;
         expect(result.newDiff).toBe(expectedSuggested);
     });
 });

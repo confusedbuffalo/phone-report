@@ -156,7 +156,7 @@ function saveCountryHistory(originalCountryStats) {
  * @returns {Array<Object>} A list of subdivision objects.
  */
 function getSubdivisions(countryData, divisionName) {
-    // Helper to normalize the entry into a standard object
+    // Helper to normalise the entry into a standard object
     const formatSubdivision = ([name, value]) => {
         if (typeof value === 'object' && value !== null) {
             return {

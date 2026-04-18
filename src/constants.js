@@ -207,7 +207,10 @@ const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
 // Characters that libphonenumbers does not parse but may be used instead of spaces
 // Includes all other spacing characters, such as thin space
 // also directional isolates
-const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g
+const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g;
+
+// TW: tilde is used for denoting an extension
+const INVALID_SPACING_CHARACTERS_REGEX_TW = /_|·|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g;
 
 const ICON_ATTRIBUTION = [
     {
@@ -377,6 +380,7 @@ module.exports = {
     TOLL_FREE_AS_NATIONAL_COUNTRIES,
     NON_STANDARD_COST_TYPES,
     INVALID_SPACING_CHARACTERS_REGEX,
+    INVALID_SPACING_CHARACTERS_REGEX_TW,
     CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     COUNTRIES_WITH_PHONEWORDS,

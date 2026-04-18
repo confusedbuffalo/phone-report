@@ -21,7 +21,7 @@ const PLACEHOLDER_REGEX = /%[a-z]/g;
 
 // Regex to find common, disallowed HTML characters (e.g., <, >, &, ", ')
 const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
-const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
+const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;|quot;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
 
 
 describe('Localization File Integrity Tests', () => {
