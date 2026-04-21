@@ -1,6 +1,7 @@
 const fs = require('fs/promises');
 const path = require('path');
 const { ICONS_DIR, GITHUB_ICON_PACKS, GITHUB_API_BASE_URL } = require('./constants.js')
+const AdmZip = require('adm-zip');
 
 
 /**
@@ -79,6 +80,47 @@ async function downloadSinglePack(packName, packDetails) {
 }
 
 /**
+ * Downloads and unzips Flagpedia icons.
+ */
+async function downloadFlagpediaIcons() {
+    const FLAG_URL = 'https://flagcdn.com/svg.zip';
+    const OUTPUT_DIR = path.join(ICONS_DIR, 'Flagpedia');
+    const TEMP_ZIP_PATH = path.join(ICONS_DIR, 'flags_temp.zip');
+
+    console.log(`\n--- Processing Pack: Flagpedia ---`);
+    console.log(`  Source: ${FLAG_URL}`);
+
+    const { default: fetch } = await import('node-fetch');
+
+    try {
+        // 1. Ensure icons directory exists
+        await fs.mkdir(ICONS_DIR, { recursive: true });
+
+        // 2. Fetch the ZIP file
+        const response = await fetch(FLAG_URL);
+        if (!response.ok) throw new Error(`Failed to fetch ZIP: ${response.statusText}`);
+        
+        const buffer = await response.arrayBuffer();
+        await fs.writeFile(TEMP_ZIP_PATH, Buffer.from(buffer));
+
+        // 3. Unzip the contents
+        console.log(`  Extracting icons to ${OUTPUT_DIR}...`);
+        const zip = new AdmZip(TEMP_ZIP_PATH);
+        
+        // Extract all to the Flagpedia folder
+        zip.extractAllTo(OUTPUT_DIR, true);
+
+        // 4. Cleanup the temporary zip file
+        await fs.unlink(TEMP_ZIP_PATH);
+
+        console.log(`  Successfully downloaded and extracted Flagpedia icons.`);
+    } catch (error) {
+        console.error(`  - FAILED Flagpedia: ${error.message}`);
+    }
+    console.log('------------------------------------------');
+}
+
+/**
  * Main function to iterate over all configured icon packs and download them.
  */
 async function downloadAllIcons() {
@@ -90,7 +132,8 @@ async function downloadAllIcons() {
         return downloadSinglePack(name, details);
     });
 
-    await Promise.all(packPromises);
+    // Run GitHub downloads and Flagpedia download in parallel
+    await Promise.all([...packPromises, downloadFlagpediaIcons()]);
 
     console.log('\n=============================================');
     console.log('== ALL ICON DOWNLOADS COMPLETE / SKIPPED ==');
