@@ -362,6 +362,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
                     <div class="spinner mx-auto"></div>
                 </section>
                 <section id="invalidSection" class="space-y-8"></section>
+                <section id="foreignSection" class="space-y-8"></section>
                 <section id="noInvalidSection"></section>
             </div>
             <div class="footer-container">
