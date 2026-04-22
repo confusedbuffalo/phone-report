@@ -27,6 +27,8 @@
   "invalidNumbersHeader": "Ungültige Telefonnummern",
   "invalidNumbersDescription": "Diese Telefonnummern sind alle in irgendeiner Weise ungültig; möglicherweise sind sie zu lang oder zu kurz, oder es fehlt die Vorwahl. Die Webseite oder eine Internet-Recherche könnte zur Findung der gültigen Telefonnummer genutzt werden oder.",
   "noInvalidNumbers": "In diesem Bereich wurden keine ungültigen Telefonnummern gefunden.",
+  "foreignNumbersHeader": "Ausländische Nummern",
+  "foreignNumbersDescription": "Diese Nummern sind alle gültig, gehören jedoch zu einem anderen Land. Es handelt sich nicht zwangsläufig um Fehler, in manchen Fällen könnte jedoch eine falsche Landeskennzahl verwendet worden sein.",
   "invalid": "ungültig",
   "disused": "Ungenutzt",
   "fixable": "Reparierbar",
@@ -80,5 +82,6 @@
   "noteIsClose": "Notiz %n ist in der Nähe",
   "noteCreated": "Notiz %n geöffnet",
   "hasInvalidSingular": "%n hat eine ungültige Telefonnummer, wie sollte sie lauten?",
-  "hasInvalidPlural": "%n hat ungültige Telefonnummern, wie sollten sie lauten?"
+  "hasInvalidPlural": "%n hat ungültige Telefonnummern, wie sollten sie lauten?",
+  "phoneNumber": "Nummer"
 }

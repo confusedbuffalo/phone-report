@@ -24,6 +24,8 @@
   "invalidNumbersHeader": "Ogiltiga nummer",
   "invalidNumbersDescription": "Dessa nummer är alla ogiltiga på något sätt; kanske är de för långa eller för korta, eller så saknar de ett riktnummer. Webbplatsen kan användas för att hitta ett giltigt nummer, eller en undersökning på plats kan vara nödvändig.",
   "noInvalidNumbers": "Inga ogiltiga telefonnummer hittades i denna region.",
+  "foreignNumbersHeader": "Utländska nummer",
+  "foreignNumbersDescription": "Dessa nummer är alla giltiga, men tillhör ett annat land. De är inte nödvändigtvis felaktiga, men i vissa fall kan en felaktig landskod ha använts.",
   "invalid": "ogiltig",
   "disused": "Ej i bruk",
   "fixable": "Åtgärdbar",
@@ -72,5 +74,6 @@
   "noteIsClose": "Notering %n finns i närheten",
   "noteCreated": "Notering %n öppnad",
   "hasInvalidSingular": "%n har ett ogiltigt telefonnummer, vad ska det vara?",
-  "hasInvalidPlural": "%n har ogiltiga telefonnummer, vad ska de vara?"
+  "hasInvalidPlural": "%n har ogiltiga telefonnummer, vad ska de vara?",
+  "phoneNumber": "Nummer"
 }

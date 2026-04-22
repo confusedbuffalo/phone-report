@@ -27,6 +27,8 @@
   "invalidNumbersHeader": "Ongeldige nummers",
   "invalidNumbersDescription": "Deze nummers zijn op de een of andere manier ongeldig; misschien zijn ze te lang of te kort, of missen ze een netnummer. De website kan worden gebruikt om een geldig nummer te controleren, of een survey kan nodig zijn.",
   "noInvalidNumbers": "Geen ongeldige telefoonnummers gevonden in deze onderverdeling.",
+  "foreignNumbersHeader": "Buitenlandse nummers",
+  "foreignNumbersDescription": "Deze nummers zijn allemaal geldig, maar behoren tot een ander land. Het zijn niet noodzakelijkerwijs fouten, hoewel in sommige gevallen een onjuiste landcode kan zijn gebruikt.",
   "invalid": "ongeldig",
   "disused": "Buiten gebruik",
   "fixable": "Herstelbaar",
@@ -80,5 +82,6 @@
   "noteIsClose": "Notitie %n is dichtbij",
   "noteCreated": "Notitie %n geopend",
   "hasInvalidSingular": "%n heeft een ongeldig telefoonnummer, wat zou het moeten zijn?",
-  "hasInvalidPlural": "%n heeft ongeldige telefoonnummers, wat zouden ze moeten zijn?"
+  "hasInvalidPlural": "%n heeft ongeldige telefoonnummers, wat zouden ze moeten zijn?",
+  "phoneNumber": "Nummer"
 }

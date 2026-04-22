@@ -31,6 +31,8 @@
   "invalidNumbersHeader": "Numeri non validi",
   "invalidNumbersDescription": "Questi numeri sono tutti non validi in qualche modo: forse sono troppo lunghi o troppo corti, o forse manca un prefisso. Il sito web può essere utilizzato per verificare un numero valido, oppure potrebbe essere necessario un rilievo sul posto.",
   "noInvalidNumbers": "Nessun numero di telefono non valido trovato in questa suddivisione.",
+  "foreignNumbersHeader": "Numeri stranieri",
+  "foreignNumbersDescription": "Questi numeri sono tutti validi, ma appartengono a un altro paese. Non sono necessariamente errori, tuttavia in alcuni casi potrebbe essere stato utilizzato un prefisso internazionale errato.",
   "invalid": "non valido",
   "disused": "Fuori servizio",
   "fixable": "Corregibile",
@@ -80,5 +82,6 @@
   "noteIsClose": "La nota %n è nelle vicinanze",
   "noteCreated": "Nota %n aperta",
   "hasInvalidSingular": "%n ha un numero di telefono non valido, quale dovrebbe essere?",
-  "hasInvalidPlural": "%n ha numeri di telefono non validi, quali dovrebbero essere?"
+  "hasInvalidPlural": "%n ha numeri di telefono non validi, quali dovrebbero essere?",
+  "phoneNumber": "Numero"
 }

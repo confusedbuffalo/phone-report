@@ -58,6 +58,7 @@ const CLIENT_KEYS = [
     "noteCreated",
     "hasInvalidSingular",
     "hasInvalidPlural",
+    "phoneNumber",
 ];
 
 

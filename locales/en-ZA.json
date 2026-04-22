@@ -28,6 +28,8 @@
   "invalidNumbersHeader": "Invalid numbers",
   "invalidNumbersDescription": "These numbers are all invalid in some way; maybe they are too long or too short, or perhaps they&apos;re missing an area code. The website could be used to check for a valid number, or a survey may be necessary.",
   "noInvalidNumbers": "No invalid phone numbers found in this province.",
+  "foreignNumbersHeader": "Foreign numbers",
+  "foreignNumbersDescription": "These numbers are all valid, but belong to a different country. They are not necessarily errors, however in some cases an incorrect country code may have been used.",
   "invalid": "invalid",
   "disused": "Disused",
   "fixable": "Fixable",
@@ -80,5 +82,6 @@
   "noteIsClose": "Note %n is close by",
   "noteCreated": "Note %n opened",
   "hasInvalidSingular": "%n has an invalid phone number, what should it be?",
-  "hasInvalidPlural": "%n has invalid phone numbers, what should they be?"
+  "hasInvalidPlural": "%n has invalid phone numbers, what should they be?",
+  "phoneNumber": "Number"
 }

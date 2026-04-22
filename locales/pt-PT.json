@@ -29,6 +29,8 @@
   "invalidNumbersHeader": "Números inválidos",
   "invalidNumbersDescription": "Estes números são todos inválidos de alguma forma; talvez sejam demasiado longos ou curtos, ou talvez falte o código de área. O website pode ser utilizado para verificar se o número é válido, ou poderá ser necessário um levantamento local.",
   "noInvalidNumbers": "Não foram encontrados números de telefone inválidos nesta subdivisão.",
+  "foreignNumbersHeader": "Números estrangeiros",
+  "foreignNumbersDescription": "Estes números são todos válidos, mas pertencem a um país diferente. Não são necessariamente erros, contudo, em alguns casos, pode ter sido utilizado um código de país incorreto.",
   "invalid": "inválido",
   "disused": "Em desuso",
   "fixable": "Corrigível",
@@ -80,5 +82,6 @@
   "noteIsClose": "A nota %n está por perto",
   "noteCreated": "Nota %n aberta",
   "hasInvalidSingular": "%n tem um número de telefone inválido, qual deveria ser?",
-  "hasInvalidPlural": "%n tem números de telefone inválidos, quais deveriam ser?"
+  "hasInvalidPlural": "%n tem números de telefone inválidos, quais deveriam ser?",
+  "phoneNumber": "Número"
 }
