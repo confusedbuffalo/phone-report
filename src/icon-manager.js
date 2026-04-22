@@ -60,9 +60,20 @@ class IconManager {
         let svgContent = readFileSync(iconPath, 'utf8');
 
         const viewBoxMatch = svgContent.match(/viewBox=["']([^"']+)["']/i);
+        const widthMatch = svgContent.match(/width=["']([^"']+)["']/i);
+        const heightMatch = svgContent.match(/height=["']([^"']+)["']/i);
 
-        // Default viewBox, probably only needed for Roentgen icons
-        const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 14 14';
+        let viewBox;
+
+        if (viewBoxMatch) {
+            viewBox = viewBoxMatch[1];
+        } else if (widthMatch && heightMatch) {
+            // Construct viewBox from width and height: "0 0 width height"
+            viewBox = `0 0 ${widthMatch[1]} ${heightMatch[1]}`;
+        } else {
+            // Fallback for edge cases
+            viewBox = '0 0 14 14';
+        }
 
         svgContent = svgContent.replace(/<svg[^>]*>/i, '').replace(/<\/svg>\s*$/i, '');
         svgContent = svgContent.replace(/<\?xml[^>]*\?>/, '');
