@@ -4,9 +4,9 @@ let foreignCurrentPage = 1;
 let pageSize = 50;
 let fixableSortKey = 'none'; // 'name', 'invalid', 'fixable'
 let fixableSortDirection = 'asc'; // 'asc', 'desc'
-let invalidSortKey = 'none'; // 'name', 'invalid'
+let invalidSortKey = 'none'; // 'name', 'invalid', 'date'
 let invalidSortDirection = 'asc'; // 'asc', 'desc'
-let foreignSortKey = 'none'; // 'name', 'number'
+let foreignSortKey = 'none'; // 'name', 'number', 'foreign'
 let foreignSortDirection = 'asc'; // 'asc', 'desc'
 
 /**
@@ -491,6 +491,7 @@ function getFirstNonNullValue(obj) {
  * - 'invalid': Sorts by the first value in 'invalidNumbers'.
  * - 'fixable': Sorts by the first value in 'suggestedFixes'.
  * - 'date': Sorts by the item's 'timestamp'.
+ * - 'foreign': Sorts by the first value in 'validForeignNumbers'.
  * - 'none': Returns the original array unsorted.
  * @param {('asc'|'desc')} direction - The sort order: 'asc' for ascending, 'desc' for descending.
  * @returns {Array<Object>} A new, sorted array of items. Returns the original array copy if key is 'none'.
@@ -516,6 +517,11 @@ function sortItems(items, key, direction) {
                 // Get the value of the first key in invalidNumbers
                 valA = getFirstNonNullValue(a.invalidNumbers);
                 valB = getFirstNonNullValue(b.invalidNumbers);
+                break;
+            case 'foreign':
+                // Get the value of the first key in validForeignNumbers
+                valA = Object.keys(getFirstNonNullValue(a.validForeignNumbers))[0];
+                valB = Object.keys(getFirstNonNullValue(b.validForeignNumbers))[0];
                 break;
             case 'fixable':
                 // Get the value of the first key in suggestedFixes
@@ -668,19 +674,25 @@ function renderPaginatedSection(
                 ${translate('name')}
             </button>
             ${filterType === 'fixable' ? `
-            <button onclick="handleSort('${suffix}', 'fixable')"
-                    class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
-                ${translate('suggestedFix')}
-            </button>` :
-            `<button onclick="handleSort('${suffix}', 'date')"
-                    class="sort-btn sort-btn-style ${getSortStyle('date')}">
-                ${translate('date')}
-            </button>`
+                <button onclick="handleSort('${suffix}', 'fixable')"
+                        class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
+                    ${translate('suggestedFix')}
+                </button>` :
+                `<button onclick="handleSort('${suffix}', 'date')"
+                        class="sort-btn sort-btn-style ${getSortStyle('date')}">
+                    ${translate('date')}
+                </button>`
             }
-            <button onclick="handleSort('${suffix}', 'invalid')"
+            ${filterType === 'foreign' ? `
+                <button onclick="handleSort('${suffix}', 'foreign')"
+                    class="sort-btn sort-btn-style ${getSortStyle('foreign')}">
+                    ${translate('phoneNumber')}
+                </button>` :
+                `<button onclick="handleSort('${suffix}', 'invalid')"
                     class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
                     ${translate('invalidNumber')}
-            </button>
+                </button>`
+                }
         </div>`
 
     const paginationSortCard = `
