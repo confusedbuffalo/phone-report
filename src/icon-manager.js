@@ -29,11 +29,13 @@ class IconManager {
 
         for (const [iconName, data] of this.iconSvgData.entries()) {
             const viewBox = data.viewBox || defaultViewBox;
-            const cleanContent = data.content
-                .replace(/ fill="#[^"]+"/g, '')
-                .replace(/ stroke="#[^"]+"/g, '')
-                .replace(/ fill='[^']+'/g, '')
-                .replace(/ stroke='[^']+'/g, '');
+            const cleanContent = iconName.startsWith('Flagpedia')
+                ? data.content
+                : data.content
+                    .replace(/ fill="#[^"]+"/g, '')
+                    .replace(/ stroke="#[^"]+"/g, '')
+                    .replace(/ fill='[^']+'/g, '')
+                    .replace(/ stroke='[^']+'/g, '');
 
             symbols += `
                 <symbol id="${iconName}" viewBox="${viewBox}">
@@ -58,9 +60,20 @@ class IconManager {
         let svgContent = readFileSync(iconPath, 'utf8');
 
         const viewBoxMatch = svgContent.match(/viewBox=["']([^"']+)["']/i);
+        const widthMatch = svgContent.match(/width=["']([^"']+)["']/i);
+        const heightMatch = svgContent.match(/height=["']([^"']+)["']/i);
 
-        // Default viewBox, probably only needed for Roentgen icons
-        const viewBox = viewBoxMatch ? viewBoxMatch[1] : '0 0 14 14';
+        let viewBox;
+
+        if (viewBoxMatch) {
+            viewBox = viewBoxMatch[1];
+        } else if (widthMatch && heightMatch) {
+            // Construct viewBox from width and height: "0 0 width height"
+            viewBox = `0 0 ${widthMatch[1]} ${heightMatch[1]}`;
+        } else {
+            // Fallback for edge cases
+            viewBox = '0 0 14 14';
+        }
 
         svgContent = svgContent.replace(/<svg[^>]*>/i, '').replace(/<\/svg>\s*$/i, '');
         svgContent = svgContent.replace(/<\?xml[^>]*\?>/, '');
@@ -110,7 +123,7 @@ class IconManager {
             case 'temaki':
                 packageName = '@rapideditor/temaki';
                 break;
-            default: // iD and Roentgen icons
+            default: // iD, Roentgen and Flagpedia icons
                 const basePath = path.resolve(ICONS_DIR, library);
                 iconPath = path.join(basePath, `${icon}.svg`);
         }
@@ -130,14 +143,19 @@ class IconManager {
         if (existsSync(iconPath)) {
             const { content, viewBox } = this.getSvgContent(iconPath);
             this.addIconToSprite(iconName, content, viewBox);
-            iconHtml = `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${iconName}"></use></svg></span>`;
+            const svgClass = library === 'Flagpedia' ? 'flag-svg' : 'icon-svg'
+            const svgContainerClass = library === 'Flagpedia' ? 'flag-svg-container' : 'icon-svg-container'
+            iconHtml = `<span class="${svgContainerClass}"><svg class="${svgClass}"><use href="#${iconName}"></use></svg></span>`;
         } else {
             console.log(`Icon not found: ${library}-${icon}`);
         }
 
         if (!iconHtml && iconName !== 'iD-icon-point') {
-            console.log(`No icon found for ${iconName}, using point fallback`);
-            return this.getIconHtml('iD-icon-point');
+            console.log(`No icon found for ${iconName}, using fallback`);
+            // Return flag for flags, point icon for icons
+            return library === 'Flagpedia'
+                ? '<span class="list-item-icon-container icon-fallback">🏳️</span>'
+                : this.getIconHtml('iD-icon-point')
         }
 
         return iconHtml || `<span class="list-item-icon-container icon-fallback">?</span>`;

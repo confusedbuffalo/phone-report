@@ -244,7 +244,12 @@ const ICON_ATTRIBUTION = [
         license: 'ISC License',
         license_link: 'https://github.com/openstreetmap/iD/blob/develop/LICENSE.md',
         link: 'https://github.com/openstreetmap/iD/tree/develop/svg/iD-sprite'
-    }
+    },
+    {
+        name: 'Flag icons',
+        license: 'Public Domain',
+        link: 'https://flagpedia.net'
+    },
 ]
 
 const GITHUB_ICON_PACKS = {

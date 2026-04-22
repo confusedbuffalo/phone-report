@@ -27,6 +27,8 @@ const CLIENT_KEYS = [
     'fixableNumbersDescription',
     'invalidNumbersHeader',
     'invalidNumbersDescription',
+    'foreignNumbersHeader',
+    'foreignNumbersDescription',
     'noInvalidNumbers',
     'pageOf',
     'name',
@@ -58,6 +60,7 @@ const CLIENT_KEYS = [
     "noteCreated",
     "hasInvalidSingular",
     "hasInvalidPlural",
+    "phoneNumber",
 ];
 
 
@@ -350,9 +353,9 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionSafeEditCount += stats.safeEditCount;
 
         subdivisionCount++;
-        if (testMode && subdivisionCount >= 1) {
-            break;
-        }
+        // if (testMode && subdivisionCount >= 1) {
+        //     break;
+        // }
     }
 
     return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
@@ -443,9 +446,9 @@ async function processCountry(countryData) {
         totalTotalNumbers += divisionTotalNumbers;
 
         divisionCount++;
-        if (testMode && divisionCount >= 1) {
-            break;
-        }
+        // if (testMode && divisionCount >= 1) {
+        //     break;
+        // }
     }
 
     const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)

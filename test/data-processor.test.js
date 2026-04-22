@@ -133,7 +133,6 @@ describe('stripStandardExtension', () => {
     });
 });
 
-
 // =====================================================================
 // getStandardExtension Tests
 // =====================================================================
@@ -179,7 +178,6 @@ describe('getStandardExtension', () => {
         expect(getStandardExtension('')).toBeNull();
     });
 });
-
 
 // =====================================================================
 // isStandardExtension Tests
@@ -250,7 +248,6 @@ describe('isStandardExtension', () => {
         expect(isStandardExtension(null)).toBeNull();
     });
 });
-
 
 // =====================================================================
 // getNumberAndExtension Tests
@@ -1144,6 +1141,13 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('AT: toll free number is valid', () => {
+        const result = processSingleNumber('800 8481 0000', 'AT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+43 800 84810000');
+    });
+
     // --- FR Tests ---
     test('FR: shared cost number in national format is valid', () => {
         const result = processSingleNumber('0820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
@@ -1279,6 +1283,25 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('https://www.whatsapp.com/channel/ABCD1234', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:mobile');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(false);
+    });
+
+    // --- Foreign number tests ---
+    test('Valid GB number assuming US country code is valid foreign', () => {
+        const result = processSingleNumber('+442079460000', SAMPLE_COUNTRY_CODE_US);
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe('GB');
+    });
+
+    test('Valid GB number assuming GB country code is not foreign', () => {
+        const result = processSingleNumber('+442079460000', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe(null);
+    });
+
+    test('Valid toll free number is not foreign in non-US NANP country', () => {
+        const result = processSingleNumber('+1-888-865-1234', 'CA');
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe(null);
     });
 });
 
@@ -1598,6 +1621,28 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(false);
     });
+
+    test('Should find foreign number when assuming a different country code', () => {
+        const result = validateSingleTag('+44 2079460000', 'US');
+        expect(result.isInvalid).toBe(false);
+        expect(result.validForeignNumbersMap.size).toEqual(1);
+
+        const expected = new Map([
+            ['+44 2079460000', 'GB']
+        ]);
+        expect(result.validForeignNumbersMap).toEqual(expected);
+    });
+
+    test('Should find foreign number among valid number for the country', () => {
+        const result = validateSingleTag('+44 2079460000; +1-304-845-9810', 'US');
+        expect(result.isInvalid).toBe(false);
+        expect(result.validForeignNumbersMap.size).toEqual(1);
+
+        const expected = new Map([
+            ['+44 2079460000', 'GB']
+        ]);
+        expect(result.validForeignNumbersMap).toEqual(expected);
+    });
 });
 
 // =====================================================================
@@ -1695,6 +1740,30 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
+        });
+    });
+
+    test('AT: should identify a single fixable invalid toll free number (no country code) and provide suggested fix', async () => {
+        const elements = [
+            createGeoJson(2002, { 'phone': '0800 6624 5324' }, 52.0, 1.0, 'way')
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), 'AT', tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone': '0800 6624 5324',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone': '+43 800 66245324',
         });
     });
 
@@ -2122,7 +2191,7 @@ describe('validateNumbers', () => {
             }, 55.0, 4.0, 'way')
         ];
 
-        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+        const result = await validateNumbers(Readable.from(elements), 'ZA', tmpFilePath);
 
         expect(result.totalNumbers).toBe(3);
         expect(result.invalidCount).toBe(1);
@@ -2754,6 +2823,51 @@ describe('validateNumbers', () => {
 
         expect(result.totalNumbers).toBe(1);
         expect(result.invalidCount).toBe(0);
+    });
+
+    test('should identify a valid foreign number', async () => {
+        const elements = [
+            createGeoJson(2002, { 'phone': VALID_LANDLINE }, 52.0, 1.0, 'way')
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.isForeignItem).toBe(true);
+        expect(invalidItem.validForeignNumbers).toEqual({
+            'phone': { [VALID_LANDLINE]: 'GB' },
+        });
+    });
+
+    test('should identify multiple valid foreign numbers of different countries', async () => {
+        const elements = [
+            createGeoJson(2002, { 'phone': `${VALID_LANDLINE}; ${SLASH_IN_NUMBER_DE_FIX}` }, 52.0, 1.0, 'way')
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.isForeignItem).toBe(true);
+        expect(invalidItem.validForeignNumbers).toEqual({
+            'phone': {
+                [VALID_LANDLINE]: 'GB',
+                [SLASH_IN_NUMBER_DE_FIX]: 'DE',
+            },
+        });
     });
 });
 

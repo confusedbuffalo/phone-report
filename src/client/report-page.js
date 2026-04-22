@@ -1,10 +1,13 @@
 let fixableCurrentPage = 1;
 let invalidCurrentPage = 1;
+let foreignCurrentPage = 1;
 let pageSize = 50;
 let fixableSortKey = 'none'; // 'name', 'invalid', 'fixable'
 let fixableSortDirection = 'asc'; // 'asc', 'desc'
-let invalidSortKey = 'none'; // 'name', 'invalid'
+let invalidSortKey = 'none'; // 'name', 'invalid', 'date'
 let invalidSortDirection = 'asc'; // 'asc', 'desc'
+let foreignSortKey = 'none'; // 'name', 'number', 'foreign'
+let foreignSortDirection = 'asc'; // 'asc', 'desc'
 
 /**
  * Global variable storing the last loaded report data.
@@ -488,6 +491,7 @@ function getFirstNonNullValue(obj) {
  * - 'invalid': Sorts by the first value in 'invalidNumbers'.
  * - 'fixable': Sorts by the first value in 'suggestedFixes'.
  * - 'date': Sorts by the item's 'timestamp'.
+ * - 'foreign': Sorts by the first value in 'validForeignNumbers'.
  * - 'none': Returns the original array unsorted.
  * @param {('asc'|'desc')} direction - The sort order: 'asc' for ascending, 'desc' for descending.
  * @returns {Array<Object>} A new, sorted array of items. Returns the original array copy if key is 'none'.
@@ -513,6 +517,11 @@ function sortItems(items, key, direction) {
                 // Get the value of the first key in invalidNumbers
                 valA = getFirstNonNullValue(a.invalidNumbers);
                 valB = getFirstNonNullValue(b.invalidNumbers);
+                break;
+            case 'foreign':
+                // Get the value of the first key in validForeignNumbers
+                valA = Object.keys(getFirstNonNullValue(a.validForeignNumbers))[0];
+                valB = Object.keys(getFirstNonNullValue(b.validForeignNumbers))[0];
                 break;
             case 'fixable':
                 // Get the value of the first key in suggestedFixes
@@ -584,7 +593,7 @@ function sortItems(items, key, direction) {
  * @param {string} descriptionStr - The description text.
  * @param {number} currentPage - The current page number for this section.
  * @param {function} setCurrentPageFn - Function to call to update the current page in the global state (e.g., setFixableCurrentPage).
- * @param {boolean} isFixableSection - True if rendering the autofixable section (used for unique IDs).
+ * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to render for (used for unique IDs). 
  */
 function renderPaginatedSection(
     containerId,
@@ -593,7 +602,7 @@ function renderPaginatedSection(
     descriptionStr,
     currentPage,
     setCurrentPageFn,
-    isFixableSection
+    filterType
 ) {
     const totalItems = items.length;
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
@@ -610,7 +619,10 @@ function renderPaginatedSection(
     const itemsOnPage = items.slice(startIndex, endIndex);
     const listContent = itemsOnPage.map(item => createListItem(item)).join('');
 
-    const currentSortKey = isFixableSection ? fixableSortKey : invalidSortKey;
+    const currentSortKey = 
+        filterType === 'fixable' ? fixableSortKey :
+        filterType === 'invalid' ? invalidSortKey :
+        foreignSortKey;
 
     const getSortStyle = (key) => {
         if (currentSortKey === key) {
@@ -621,7 +633,7 @@ function renderPaginatedSection(
     };
 
     // Unique ID suffix for this section's controls
-    const suffix = isFixableSection ? 'fixable' : 'invalid';
+    const suffix = filterType;
 
     const pageControls = totalItems > pageSize ? `
         <div class="page-btns-container">
@@ -642,7 +654,7 @@ function renderPaginatedSection(
             </button>
         </div>` : '<div></div>';
 
-    const saveRow = isFixableSection ? `
+    const saveRow = filterType === 'fixable' ? `
         <div class="save-undo-row">
             <span class="flex items-center">
                 <button id="undo-btn" class="btn-undo-redo gray-btn-disabled" onclick="undoChange()" disabled><svg class="icon-svg"><use href="#icon-undo"></use></svg></button>
@@ -661,25 +673,31 @@ function renderPaginatedSection(
                     class="sort-btn sort-btn-style ${getSortStyle('name')}">
                 ${translate('name')}
             </button>
-            ${isFixableSection ? `
-            <button onclick="handleSort('${suffix}', 'fixable')"
-                    class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
-                ${translate('suggestedFix')}
-            </button>` :
-            `<button onclick="handleSort('${suffix}', 'date')"
-                    class="sort-btn sort-btn-style ${getSortStyle('date')}">
-                ${translate('date')}
-            </button>`
+            ${filterType === 'fixable' ? `
+                <button onclick="handleSort('${suffix}', 'fixable')"
+                        class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
+                    ${translate('suggestedFix')}
+                </button>` :
+                `<button onclick="handleSort('${suffix}', 'date')"
+                        class="sort-btn sort-btn-style ${getSortStyle('date')}">
+                    ${translate('date')}
+                </button>`
             }
-            <button onclick="handleSort('${suffix}', 'invalid')"
+            ${filterType === 'foreign' ? `
+                <button onclick="handleSort('${suffix}', 'foreign')"
+                    class="sort-btn sort-btn-style ${getSortStyle('foreign')}">
+                    ${translate('phoneNumber')}
+                </button>` :
+                `<button onclick="handleSort('${suffix}', 'invalid')"
                     class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
                     ${translate('invalidNumber')}
-            </button>
+                </button>`
+                }
         </div>`
 
     const paginationSortCard = `
         <div class="page-sort-card">
-            ${isFixableSection ? `
+            ${filterType === 'fixable' ? `
                 <div class="save-sort-container">
                     <div>${saveRow}</div>
                     <div class="page-sort-controls">${pageAndSortControls}</div>
@@ -690,12 +708,12 @@ function renderPaginatedSection(
     `;
 
     const sectionContent = `
-        <div class="section-header-container ${isFixableSection ? '' : 'text-center'}">
+        <div class="section-header-container ${filterType === 'fixable' ? '' : 'text-center'}">
             <h2 class="section-header">${headerStr}</h2>
             <p class="section-description">${descriptionStr}</p>
         </div>
         ${paginationSortCard}
-        <ul class="report-list mt-4" id="${isFixableSection ? 'report-list-fixable' : 'report-list-invalid'}">
+        <ul class="report-list mt-4" id="report-list-${filterType}">
             ${totalItems > 0 ? listContent : ''}
         </ul>
     `;
@@ -733,7 +751,7 @@ function changePage(section, delta) {
  * Handles the user request to sort a report section. It toggles the sort direction
  * if the same key is clicked, or sets a new key and resets the direction to ascending.
  * It also resets the current page to 1 and triggers a full UI re-render and a smooth scroll.
- * @param {('Fixable'|'Invalid')} section - The section being sorted ('fixable' for autofixable, 'invalid' for manual fix).
+ * @param {('fixable'|'invalid'|'foreign')} section - The section being sorted.
  * @param {('name'|'invalid'|'fixable')} newKey - The column key requested for sorting.
  */
 function handleSort(section, newKey) {
@@ -742,32 +760,41 @@ function handleSort(section, newKey) {
     if (section === 'fixable') {
         currentKey = fixableSortKey;
         currentDirection = fixableSortDirection;
-    } else { // 'invalid'
+    } else if (section === 'invalid') {
         currentKey = invalidSortKey;
         currentDirection = invalidSortDirection;
+    } else { // foreign
+        currentKey = foreignSortKey;
+        currentDirection = foreignSortDirection;
     }
 
     if (newKey === currentKey) {
         // Same key clicked, toggle direction
         if (section === 'fixable') {
             fixableSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
-        } else {
+        } else if (section === 'invalid') {
             invalidSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
+        } else {
+            foreignSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
         }
     } else {
         // New key clicked, set key and default to ascending
         if (section === 'fixable') {
             fixableSortKey = newKey;
             fixableSortDirection = 'asc';
-        } else {
+        } else if (section === 'invalid') {
             invalidSortKey = newKey;
             invalidSortDirection = 'asc';
+        } else {
+            foreignSortKey = newKey;
+            foreignSortDirection = 'asc';
         }
     }
 
     // Reset to the first page after sorting
     if (section === 'fixable') fixableCurrentPage = 1;
-    else invalidCurrentPage = 1;
+    else if (section === 'invalid') invalidCurrentPage = 1;
+    else foreignCurrentPage = 1;
 
     renderNumbers();
     document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
@@ -777,16 +804,18 @@ function handleSort(section, newKey) {
  * Retrieves the subset of report items (either autofixable or manual fix)
  * that have not been marked as edited or uploaded, and applies the current
  * section-specific sorting parameters.
- *
- * @param {boolean} fixable - True to get autofixable items, false for manual fix items.
+ * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to retrieve.
  * @returns {Array<Object>} A new, sorted array of items for the specified section.
  */
-function getSortedItems(fixable) {
+function getSortedItems(filterType) {
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
     const targetItems = reportData.filter(item => {
-        const isWanted = fixable ? item.autoFixable : !item.autoFixable;
+        const isWanted = 
+            filterType === 'foreign' ? item.isForeignItem :
+            filterType === 'fixable' ? item.autoFixable :
+            (!item.autoFixable && !item.isForeignItem); // 'invalid' case
         const isNotInUploadedChanges = !(
             uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
         );
@@ -796,8 +825,14 @@ function getSortedItems(fixable) {
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
     });
 
-    const sortKey = fixable ? fixableSortKey : invalidSortKey;
-    const sortDirection = fixable ? fixableSortDirection : invalidSortDirection;
+    const sortKey =
+        filterType === 'fixable' ? fixableSortKey :
+        filterType === 'foreign' ? foreignSortKey :
+        invalidSortKey;
+    const sortDirection = 
+        filterType === 'fixable' ? fixableSortDirection :
+        filterType === 'foreign' ? foreignSortDirection :
+        invalidSortDirection;
     const sortedItems = sortItems(targetItems, sortKey, sortDirection);
     return sortedItems;
 }
@@ -818,6 +853,7 @@ function renderNumbers() {
     }
     const fixableContainer = document.getElementById("fixableSection");
     const invalidContainer = document.getElementById("invalidSection");
+    const foreignContainer = document.getElementById("foreignSection");
     const noInvalidContainer = document.getElementById("noInvalidSection");
 
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
@@ -837,15 +873,18 @@ function renderNumbers() {
         }
     }
 
-    const sortedFixable = getSortedItems(true);
-    const sortedInvalid = getSortedItems(false);
+    const sortedFixable = getSortedItems('fixable');
+    const sortedInvalid = getSortedItems('invalid');
+    const sortedForeign = getSortedItems('foreign');
 
-    const anyInvalid = sortedInvalid.length > 0;
     const anyFixable = sortedFixable.length > 0;
+    const anyInvalid = sortedInvalid.length > 0;
+    const anyForeign = sortedForeign.length > 0;
 
     // Clear all containers first
     fixableContainer.innerHTML = '';
     invalidContainer.innerHTML = '';
+    foreignContainer.innerHTML = '';
     noInvalidContainer.innerHTML = '';
 
     if (anyFixable || anyInvalid || editCount > 0) {
@@ -857,7 +896,7 @@ function renderNumbers() {
                 translate('fixableNumbersDescription'),
                 fixableCurrentPage,
                 (page) => fixableCurrentPage = page, // Setter function for fixableCurrentPage
-                true // isFixableSection
+                'fixable'
             );
         }
 
@@ -869,7 +908,7 @@ function renderNumbers() {
                 translate('invalidNumbersDescription'),
                 invalidCurrentPage,
                 (page) => invalidCurrentPage = page, // Setter function for invalidCurrentPage
-                false // isFixableSection
+                'invalid'
             );
         }
     } else {
@@ -878,6 +917,20 @@ function renderNumbers() {
             <p class="report-list-item-empty">${translate('noInvalidNumbers')}</p>
         `;
     }
+
+    // Always render foreign items
+    if (anyForeign) {
+        renderPaginatedSection(
+            "foreignSection",
+            sortedForeign,
+            translate('foreignNumbersHeader'),
+            translate('foreignNumbersDescription'),
+            foreignCurrentPage,
+            (page) => foreignCurrentPage = page,
+            'foreign'
+        );
+    }
+
     applyEditorVisibility();
     setUpSaveBtn();
     setUpUndoRedoBtns();
@@ -1324,11 +1377,11 @@ function animateInItem(newListItem) {
  *
  * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
  * @param {number} osmId - The ID of the OpenStreetMap element.
- * @param {boolean} fixable - True to search the fixable section, false for the invalid section.
+ * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to search. 
  * @returns {{item: Object, index: number}|void} An object containing the item and its index, or void if not found.
  */
-function getItemWithIndex(osmType, osmId, fixable) {
-    const sortedItems = getSortedItems(fixable);
+function getItemWithIndex(osmType, osmId, filterType) {
+    const sortedItems = getSortedItems(filterType);
     const targetItem = sortedItems.filter(item => {
         return item.type === osmType && item.id === osmId;
     });
@@ -1352,7 +1405,7 @@ function getItemWithIndex(osmType, osmId, fixable) {
  * @returns {void}
  */
 function transitionInsertItem(osmType, osmId) {
-    const sortedItems = getSortedItems(true);
+    const sortedItems = getSortedItems('fixable');
     const { item: newItem, index } = getItemWithIndex(osmType, osmId, true);
 
     const newListItemHtmlString = createListItem(newItem);

@@ -658,10 +658,10 @@ function convertPhonewordToDigits(phoneword) {
  * @param {string} countryCode - The country code for validation.
  * @param {map} osmTags - All the OSM tags of the object, to check against exclusions
  * @param {string} tag - The OSM phone tag being used for this number
- * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean, validPhonewords: boolean}}
+ * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean, validPhonewords: boolean, foreign: string|null}}
  */
 function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
-    let suggestedFix = null, phoneNumber = null;
+    let suggestedFix = null, phoneNumber = null, foreign = null;
     let autoFixable = true;
     let isInvalid = false, typeMismatch = false, validPhonewords = false;
 
@@ -767,6 +767,13 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             if (phoneNumber.ext && !hasStandardExtension) {
                 isInvalid = true;
             }
+
+            // Toll free numbers in all of NANP are parsed as US
+            // It is not possible to tell the country from the phone number in this case
+            const isNanpTollFree = NANP_COUNTRY_CODES.includes(countryCode)
+                && NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())
+                && phoneNumber.country === 'US'
+            foreign = (phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() && !isNanpTollFree) ? phoneNumber.country : null;
         } else {
             // The number is fundamentally invalid (e.g., too few digits)
             phoneNumber = null;
@@ -795,7 +802,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         suggestedFix = null;
     }
 
-    return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords };
+    return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords, foreign: foreign };
 }
 
 
@@ -858,7 +865,8 @@ function expandSlashEnding(tagValue, countryCode, osmTags, tag) {
  * @property {boolean} isAutoFixable - Indicates whether the number can be automatically corrected.
  * @property {Array<string>} suggestedNumbersList - A list of suggested corrections (as strings).
  * @property {number} numberOfValues - The number of phone values checked.
- * @property {phoneNumber} validNumbersList - A list of all valid phone numbers found in the tag.
+ * @property {Array<phoneNumber>} validNumbersList - A list of all valid phone numbers found in the tag.
+ * @property {Map<string, string>} validForeignNumbersMap - A map of all valid but foreign phone numbers found in the tag, phone string to country code.
  */
 function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const originalTagValue = tagValue.trim();
@@ -891,6 +899,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
         mismatchTypeNumbers: [],
         numberOfValues: 0,
         validNumbersList: [],
+        validForeignNumbersMap: new Map(),
     };
 
     let hasTypeMismatch = false;
@@ -919,7 +928,7 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
             }
         }
 
-        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords } = validationResult;
+        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords, foreign } = validationResult;
 
         if (phoneNumber) {
             tagValidationResult.validNumbersList.push(phoneNumber);
@@ -947,6 +956,10 @@ function validateSingleTag(tagValue, countryCode, osmTags, tag) {
                 tagValidationResult.validPhonewords = false;
                 tagValidationResult.isAutoFixable = false;
             }
+        }
+
+        if (foreign) {
+            tagValidationResult.validForeignNumbersMap.set(numberStr, foreign);
         }
     });
 
@@ -1101,12 +1114,11 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         const tags = element.properties;
 
         let item = null;
+        let foreignItem = null;
         const allNormalisedPhoneNumbers = new Map();
         const allNormalisedFaxNumbers = new Map();
 
-        const getOrCreateItem = (autoFixable) => {
-            if (item) return item;
-
+        const createItem = () => {
             let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
             if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
                 website = `http://${website}`;
@@ -1138,9 +1150,31 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 hasTypeMismatch: false,
                 mismatchTypeNumbers: new Map(),
                 duplicateNumbers: new Map(),
+                validForeignNumbers: new Map(),
             };
-            item = { ...baseItem, autoFixable };
-            return item;
+            return baseItem;
+        };
+
+        const getOrCreateItem = (autoFixable) => {
+            if (item) return item;
+
+            baseItem = createItem();
+            item = { ...baseItem, autoFixable }
+            return item
+        };
+
+        const getOrCreateForeignItem = () => {
+            if (foreignItem) return foreignItem;
+
+            const baseItem = createItem();
+
+            foreignItem = {
+                ...baseItem,
+                isForeignItem: true,
+                validForeignNumbers: new Map(),
+
+            };
+            return foreignItem;
         };
 
         for (const tag of ALL_NUMBER_TAGS) {
@@ -1306,6 +1340,12 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
                 currentItem.autoFixable = currentItem.autoFixable && autoFixable;
             }
+
+            // Record foreign entries
+            if (validationResult.validForeignNumbersMap.size > 0) {
+                const currentForeignItem = getOrCreateForeignItem();
+                currentForeignItem.validForeignNumbers.set(tag, validationResult.validForeignNumbersMap);
+            }
         }
 
         if (item) {
@@ -1318,17 +1358,35 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             const finalItem = {
                 ...item,
-                safeEdit: safeEdit,
-                invalidNumbers: Object.fromEntries(item.invalidNumbers),
-                suggestedFixes: Object.fromEntries(item.suggestedFixes),
-                mismatchTypeNumbers: Object.fromEntries(item.mismatchTypeNumbers),
-                duplicateNumbers: Object.fromEntries(item.duplicateNumbers),
+                safeEdit: safeEdit
             };
-
+            
             if (!isFirstItem) {
                 fileStream.write(',\n');
             }
-            fileStream.write(JSON.stringify(finalItem));
+            
+            // Convert Maps and nested Maps
+            fileStream.write(JSON.stringify(finalItem, (key, value) => {
+                if (value instanceof Map) {
+                    return Object.fromEntries(value);
+                }
+                return value;
+            }));
+            isFirstItem = false;
+        }
+
+        if (foreignItem) {
+            if (!isFirstItem) {
+                fileStream.write(',\n');
+            }
+            
+            // Convert Maps and nested Maps
+            fileStream.write(JSON.stringify(foreignItem, (key, value) => {
+                if (value instanceof Map) {
+                    return Object.fromEntries(value);
+                }
+                return value;
+            }));
             isFirstItem = false;
         }
     }

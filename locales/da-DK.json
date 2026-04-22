@@ -26,6 +26,8 @@
   "invalidNumbersHeader": "Ugyldige numre",
   "invalidNumbersDescription": "Disse numre er alle ugyldige på en eller anden måde; måske er de for lange eller for korte, eller de mangler måske et områdenummer. Hjemmesiden kan bruges til at finde et gyldigt nummer, eller en undersøgelse på stedet kan være nødvendig.",
   "noInvalidNumbers": "Ingen ugyldige telefonnumre fundet i denne region.",
+  "foreignNumbersHeader": "Udenlandske numre",
+  "foreignNumbersDescription": "Disse numre er alle gyldige, men tilhører et andet land. De er ikke nødvendigvis fejl, men i visse tilfælde kan der være brugt en forkert landekode.",
   "invalid": "ugyldig",
   "disused": "Ikke i brug",
   "fixable": "Rettelig",
@@ -76,5 +78,6 @@
   "noteIsClose": "Note %n er i nærheden",
   "noteCreated": "Note %n åbnet",
   "hasInvalidSingular": "%n har et ugyldigt telefonnummer, hvad skal det være?",
-  "hasInvalidPlural": "%n har ugyldige telefonnumre, hvad skal de være?"
+  "hasInvalidPlural": "%n har ugyldige telefonnumre, hvad skal de være?",
+  "phoneNumber": "Nummer"
 }

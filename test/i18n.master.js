@@ -14,6 +14,7 @@ const MASTER_KEYS = {
     'phoneNumberReport': [],
     'fixableNumbersHeader': [],
     'invalidNumbersHeader': [],
+    'foreignNumbersHeader': [],
     'invalid': [],
     'osmPhoneNumberValidation': [],
     'reportSubtitle': [],
@@ -56,6 +57,8 @@ const MASTER_KEYS = {
     "openNote": [],
     'fixableNumbersDescription': [],
     'invalidNumbersDescription': [],
+    'foreignNumbersDescription': [],
+    'phoneNumber': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],

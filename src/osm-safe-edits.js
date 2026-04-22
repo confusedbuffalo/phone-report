@@ -93,10 +93,10 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
             const item = chunk.value;
 
-            if (item && item.autoFixable) {
+            if (item && item.autoFixable && !item.isForeignItem) {
                 this.totalSuggestedEdits++;
             }
-            if (item && item.safeEdit === true) {
+            if (item && item.safeEdit === true && !item.isForeignItem) {
                 this.totalSafeEdits++;
 
                 const disassembledItem = {

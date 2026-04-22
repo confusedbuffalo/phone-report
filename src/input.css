@@ -765,3 +765,10 @@
 @utility autocomplete-row-selected {
   @apply bg-gray-100 dark:bg-gray-700 ring-2 ring-inset ring-blue-500;
 }
+
+@utility flag-svg {
+  @apply
+    w-8 max-h-6
+    mr-2
+    inline-block;
+}
