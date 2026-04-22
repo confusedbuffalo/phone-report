@@ -29,11 +29,13 @@ class IconManager {
 
         for (const [iconName, data] of this.iconSvgData.entries()) {
             const viewBox = data.viewBox || defaultViewBox;
-            const cleanContent = data.content
-                .replace(/ fill="#[^"]+"/g, '')
-                .replace(/ stroke="#[^"]+"/g, '')
-                .replace(/ fill='[^']+'/g, '')
-                .replace(/ stroke='[^']+'/g, '');
+            const cleanContent = iconName.startsWith('Flagpedia')
+                ? data.content
+                : data.content
+                    .replace(/ fill="#[^"]+"/g, '')
+                    .replace(/ stroke="#[^"]+"/g, '')
+                    .replace(/ fill='[^']+'/g, '')
+                    .replace(/ stroke='[^']+'/g, '');
 
             symbols += `
                 <symbol id="${iconName}" viewBox="${viewBox}">

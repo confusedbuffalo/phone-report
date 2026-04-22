@@ -288,7 +288,6 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
 
     const svgSprite = iconManager.generateSvgSprite();
 
-
     let confettiScripts = '';
     if (invalidCount === 0) {
         confettiScripts = `
