@@ -1141,6 +1141,13 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('AT: toll free number is valid', () => {
+        const result = processSingleNumber('800 8481 0000', 'AT');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+43 800 84810000');
+    });
+
     // --- FR Tests ---
     test('FR: shared cost number in national format is valid', () => {
         const result = processSingleNumber('0820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
@@ -1727,6 +1734,30 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
+        });
+    });
+
+    test('AT: should identify a single fixable invalid toll free number (no country code) and provide suggested fix', async () => {
+        const elements = [
+            createGeoJson(2002, { 'phone': '0800 6624 5324' }, 52.0, 1.0, 'way')
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), 'AT', tmpFilePath);
+
+        expect(result.totalNumbers).toBe(1);
+        expect(result.invalidCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone': '0800 6624 5324',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone': '+43 800 66245324',
         });
     });
 
