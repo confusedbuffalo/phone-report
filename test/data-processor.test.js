@@ -1297,6 +1297,12 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
         expect(result.foreign).toBe(null);
     });
+
+    test('Valid toll free number is not foreign in non-US NANP country', () => {
+        const result = processSingleNumber('+1-888-865-1234', 'CA');
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe(null);
+    });
 });
 
 // =====================================================================

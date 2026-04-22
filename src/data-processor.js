@@ -768,7 +768,12 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 isInvalid = true;
             }
 
-            foreign = phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() ? phoneNumber.country : null;
+            // Toll free numbers in all of NANP are parsed as US
+            // It is not possible to tell the country from the phone number in this case
+            const isNanpTollFree = NANP_COUNTRY_CODES.includes(countryCode)
+                && NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())
+                && phoneNumber.country === 'US'
+            foreign = (phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() && !isNanpTollFree) ? phoneNumber.country : null;
         } else {
             // The number is fundamentally invalid (e.g., too few digits)
             phoneNumber = null;
