@@ -739,7 +739,7 @@ function changePage(section, delta) {
  * Handles the user request to sort a report section. It toggles the sort direction
  * if the same key is clicked, or sets a new key and resets the direction to ascending.
  * It also resets the current page to 1 and triggers a full UI re-render and a smooth scroll.
- * @param {('Fixable'|'Invalid')} section - The section being sorted ('fixable' for autofixable, 'invalid' for manual fix).
+ * @param {('fixable'|'invalid'|'foreign')} section - The section being sorted.
  * @param {('name'|'invalid'|'fixable')} newKey - The column key requested for sorting.
  */
 function handleSort(section, newKey) {
@@ -748,32 +748,41 @@ function handleSort(section, newKey) {
     if (section === 'fixable') {
         currentKey = fixableSortKey;
         currentDirection = fixableSortDirection;
-    } else { // 'invalid'
+    } else if (section === 'invalid') {
         currentKey = invalidSortKey;
         currentDirection = invalidSortDirection;
+    } else { // foreign
+        currentKey = foreignSortKey;
+        currentDirection = foreignSortDirection;
     }
 
     if (newKey === currentKey) {
         // Same key clicked, toggle direction
         if (section === 'fixable') {
             fixableSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
-        } else {
+        } else if (section === 'invalid') {
             invalidSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
+        } else {
+            foreignSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
         }
     } else {
         // New key clicked, set key and default to ascending
         if (section === 'fixable') {
             fixableSortKey = newKey;
             fixableSortDirection = 'asc';
-        } else {
+        } else if (section === 'invalid') {
             invalidSortKey = newKey;
             invalidSortDirection = 'asc';
+        } else {
+            foreignSortKey = newKey;
+            foreignSortDirection = 'asc';
         }
     }
 
     // Reset to the first page after sorting
     if (section === 'fixable') fixableCurrentPage = 1;
-    else invalidCurrentPage = 1;
+    else if (section === 'invalid') invalidCurrentPage = 1;
+    else foreignCurrentPage = 1;
 
     renderNumbers();
     document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
