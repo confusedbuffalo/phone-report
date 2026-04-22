@@ -110,7 +110,7 @@ class IconManager {
             case 'temaki':
                 packageName = '@rapideditor/temaki';
                 break;
-            default: // iD and Roentgen icons
+            default: // iD, Roentgen and Flagpedia icons
                 const basePath = path.resolve(ICONS_DIR, library);
                 iconPath = path.join(basePath, `${icon}.svg`);
         }
@@ -130,7 +130,8 @@ class IconManager {
         if (existsSync(iconPath)) {
             const { content, viewBox } = this.getSvgContent(iconPath);
             this.addIconToSprite(iconName, content, viewBox);
-            iconHtml = `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${iconName}"></use></svg></span>`;
+            const classPrefix = library === 'Flagpedia' ? 'flag' : 'icon'
+            iconHtml = `<span class="${classPrefix}-svg-container"><svg class="${classPrefix}-svg"><use href="#${iconName}"></use></svg></span>`;
         } else {
             console.log(`Icon not found: ${library}-${icon}`);
         }

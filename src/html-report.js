@@ -68,6 +68,36 @@ function createClientItems(item, locale, botEnabled, iconManager) {
 
     item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
 
+    if (item.isForeignItem) {
+        // validForeignNumbers: { phone: { '+44 20 7946 0000': 'GB' } },
+
+        const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
+
+        item.fixRows = Object.keys(item.validForeignNumbers).map(key => {
+            const foreignRows = [];
+            for (const [phone, code] of Object.entries(item.validForeignNumbers[key])) {
+                const flagHtml = iconManager.getIconHtml(`Flagpedia-${code}`);
+
+                // Add title tag for country/region name
+                const flagName = regionNames.of(code);
+
+                const spanPrefix = '<span';
+                const flagIconAndTitle = flagHtml.startsWith(spanPrefix)
+                    ? `${spanPrefix} title="${flagName}" ${flagHtml.slice(spanPrefix.length)}`
+                    : flagHtml;
+
+                foreignRows.push(`<span>${flagIconAndTitle}${phone}</span>`)
+            }
+
+            return {
+                [key]: foreignRows.join(';'),
+            };
+        }).filter(Boolean);
+
+        const { allTags, ...clientItem } = item;
+        return clientItem;
+    }
+
     item.fixRows = Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];

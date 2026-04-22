@@ -2808,6 +2808,30 @@ describe('validateNumbers', () => {
             'phone': { [VALID_LANDLINE]: 'GB' },
         });
     });
+
+    test('should identify multiple valid foreign numbers of different countries', async () => {
+        const elements = [
+            createGeoJson(2002, { 'phone': `${VALID_LANDLINE}; ${SLASH_IN_NUMBER_DE_FIX}` }, 52.0, 1.0, 'way')
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalNumbers).toBe(2);
+        expect(result.invalidCount).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.isForeignItem).toBe(true);
+        expect(invalidItem.validForeignNumbers).toEqual({
+            'phone': {
+                [VALID_LANDLINE]: 'GB',
+                [SLASH_IN_NUMBER_DE_FIX]: 'DE',
+            },
+        });
+    });
 });
 
 // =====================================================================
