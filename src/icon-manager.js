@@ -137,8 +137,11 @@ class IconManager {
         }
 
         if (!iconHtml && iconName !== 'iD-icon-point') {
-            console.log(`No icon found for ${iconName}, using point fallback`);
-            return this.getIconHtml('iD-icon-point');
+            console.log(`No icon found for ${iconName}, using fallback`);
+            // Return flag for flags, point icon for icons
+            return library === 'Flagpedia'
+                ? '<span class="list-item-icon-container icon-fallback">🏳️</span>'
+                : this.getIconHtml('iD-icon-point')
         }
 
         return iconHtml || `<span class="list-item-icon-container icon-fallback">?</span>`;

@@ -794,7 +794,7 @@ function getSortedItems(filterType) {
         const isWanted = 
             filterType === 'foreign' ? item.isForeignItem :
             filterType === 'fixable' ? item.autoFixable :
-            !item.autoFixable; // 'invalid' case
+            (!item.autoFixable && !item.isForeignItem); // 'invalid' case
         const isNotInUploadedChanges = !(
             uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
         );
@@ -804,8 +804,14 @@ function getSortedItems(filterType) {
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
     });
 
-    const sortKey = fixable ? fixableSortKey : invalidSortKey;
-    const sortDirection = fixable ? fixableSortDirection : invalidSortDirection;
+    const sortKey =
+        filterType === 'fixable' ? fixableSortKey :
+        filterType === 'foreign' ? foreignSortKey :
+        invalidSortKey;
+    const sortDirection = 
+        filterType === 'fixable' ? fixableSortDirection :
+        filterType === 'foreign' ? foreignSortDirection :
+        invalidSortDirection;
     const sortedItems = sortItems(targetItems, sortKey, sortDirection);
     return sortedItems;
 }
@@ -846,7 +852,7 @@ function renderNumbers() {
         }
     }
 
-    const sortedFixable = getSortedItems('auto');
+    const sortedFixable = getSortedItems('fixable');
     const sortedInvalid = getSortedItems('invalid');
     const sortedForeign = getSortedItems('foreign');
 
@@ -893,17 +899,15 @@ function renderNumbers() {
 
     // Always render foreign items
     if (anyForeign) {
-        if (anyInvalid) {
-            renderPaginatedSection(
-                "foreignSection",
-                sortedForeign,
-                translate('foreignNumbersHeader'),
-                translate('foreignNumbersDescription'),
-                foreignCurrentPage,
-                (page) => foreignCurrentPage = page,
-                'foreign'
-            );
-        }
+        renderPaginatedSection(
+            "foreignSection",
+            sortedForeign,
+            translate('foreignNumbersHeader'),
+            translate('foreignNumbersDescription'),
+            foreignCurrentPage,
+            (page) => foreignCurrentPage = page,
+            'foreign'
+        );
     }
 
     applyEditorVisibility();
