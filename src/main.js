@@ -27,6 +27,8 @@ const CLIENT_KEYS = [
     'fixableNumbersDescription',
     'invalidNumbersHeader',
     'invalidNumbersDescription',
+    'foreignNumbersHeader',
+    'foreignNumbersDescription',
     'noInvalidNumbers',
     'pageOf',
     'name',
