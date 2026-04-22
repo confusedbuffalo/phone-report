@@ -143,8 +143,9 @@ class IconManager {
         if (existsSync(iconPath)) {
             const { content, viewBox } = this.getSvgContent(iconPath);
             this.addIconToSprite(iconName, content, viewBox);
-            const classPrefix = library === 'Flagpedia' ? 'flag' : 'icon'
-            iconHtml = `<span class="${classPrefix}-svg-container"><svg class="${classPrefix}-svg"><use href="#${iconName}"></use></svg></span>`;
+            const svgClass = library === 'Flagpedia' ? 'flag-svg' : 'icon-svg'
+            const svgContainerClass = library === 'Flagpedia' ? 'flag-svg-container' : 'icon-svg-container'
+            iconHtml = `<span class="${svgContainerClass}"><svg class="${svgClass}"><use href="#${iconName}"></use></svg></span>`;
         } else {
             console.log(`Icon not found: ${library}-${icon}`);
         }

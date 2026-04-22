@@ -86,7 +86,7 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                     ? `${spanPrefix} title="${flagName}" ${flagHtml.slice(spanPrefix.length)}`
                     : flagHtml;
 
-                foreignRows.push(`<span>${flagIconAndTitle}${phone}</span>`)
+                foreignRows.push(`<span class="inline-flex items-center">${flagIconAndTitle}${phone}</span>`)
             }
 
             return {
