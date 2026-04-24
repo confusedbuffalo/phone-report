@@ -255,14 +255,6 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
 
     processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
-    // Not in the proposals
-    if (
-        (/^\+\s.*$/.test(originalNumberStr) || /\s{2,}/.test(originalNumberStr) || /\-{2,}/.test(originalNumberStr))
-        && originalNumberStr.replace(/\s/g, '').replace(/\-/g, '') === newNumberStr.replace(/\s/g, '').replace(/\-/g, '')
-    ) {
-        return false;
-    }
-
     // Double check that the original number parses to the new number
     if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
 
