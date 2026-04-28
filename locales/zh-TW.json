@@ -29,6 +29,8 @@
   "invalidNumbersHeader": "無效號碼",
   "invalidNumbersDescription": "這些號碼均存在某種錯誤；可能太長、太短，或者缺少區碼。可使用網站查核有效號碼，或可能需要進行實地調查。",
   "noInvalidNumbers": "在此行政區內未發現無效的電話號碼。",
+  "foreignNumbersHeader": "海外號碼",
+  "foreignNumbersDescription": "這些號碼皆為有效號碼，但屬於不同的國家。這些不一定代表錯誤，但在某些情況下，可能誤用了不正確的國碼。",
   "invalid": "無效",
   "disused": "廢棄",
   "fixable": "可修正",
@@ -80,5 +82,6 @@
   "noteIsClose": "註記 %n 就在附近",
   "noteCreated": "註記 %n 已開啟",
   "hasInvalidSingular": "%n 含有一個無效的電話號碼，正確號碼應該是什麼？",
-  "hasInvalidPlural": "%n 含有多個無效的電話號碼，正確號碼應該是什麼？"
+  "hasInvalidPlural": "%n 含有多個無效的電話號碼，正確號碼應該是什麼？",
+  "phoneNumber": "電話號碼"
 }

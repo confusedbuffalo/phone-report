@@ -3002,24 +3002,24 @@ describe('isSafeEdit', () => {
     });
 
     test('should return false if the original number suggests a foreign fix which does not match the countryCode', () => {
-        const originalNumber = '07700 900000';
-        const newNumber = '+447700900000';
+        const originalNumber = '07712 900000';
+        const newNumber = '+447712900000';
         const countryCode = 'US';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(false);
     });
 
-    test('should return false for fixing bad but not invalid spacing (not in original proposals)', () => {
-        const newNumber = '+447700900000';
+    test('should fix bad but technically not invalid spacing', () => {
+        const newNumber = '+44 7712 900000';
         const countryCode = 'GB';
 
-        const originalNumberPlusSpace = '+ 44 7700 900000';
-        expect(isSafeEdit(originalNumberPlusSpace, newNumber, countryCode)).toBe(false);
+        const originalNumberPlusSpace = '+ 44 7712 900000';
+        expect(isSafeEdit(originalNumberPlusSpace, newNumber, countryCode)).toBe(true);
 
-        const originalNumberDoubleSpace = '+44  7700 900000';
-        expect(isSafeEdit(originalNumberDoubleSpace, newNumber, countryCode)).toBe(false);
+        const originalNumberDoubleSpace = '+44  7712 900000';
+        expect(isSafeEdit(originalNumberDoubleSpace, newNumber, countryCode)).toBe(true);
 
-        expect(isSafeEdit('+1-213-373--1234', '+1-213-373-1234', 'US')).toBe(false);
+        expect(isSafeEdit('+1-213-373--1234', '+1-213-373-1234', 'US')).toBe(true);
     });
 });
 

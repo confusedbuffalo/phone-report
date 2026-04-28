@@ -460,38 +460,58 @@
         "locale": "nl-NL",
         "safeAutoFixBotEnabled": false,
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/netherlands.osm.pbf",
-        "divisions": {
-            "Drenthe": 47540,
-            "Flevoland": 47407,
-            "Fryslân (Friesland)": 47381,
-            "Gelderland": 47554,
-            "Groningen": 47826,
-            "Limburg": 47793,
-            "Noord-Brabant": 47696,
-            "Noord-Holland": 47654,
-            "Overijssel": 47608,
-            "Zuid-Holland": 47772,
-            "Utrecht": 47667,
-            "Zeeland": 47806,
+        "divisionMap": {
+            "Europees Nederland": {
+                "Drenthe": 47540,
+                "Flevoland": 47407,
+                "Fryslân (Friesland)": 47381,
+                "Gelderland": 47554,
+                "Groningen": 47826,
+                "Limburg": 47793,
+                "Noord-Brabant": 47696,
+                "Noord-Holland": 47654,
+                "Overijssel": 47608,
+                "Zuid-Holland": 47772,
+                "Utrecht": 47667,
+                "Zeeland": 47806
+            },
             "Aruba": {
-                "relationId": 1231749,
-                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/aruba-latest.osm.pbf",
-                "countryCode": "AW"
+                "Aruba": {
+                    "relationId": 1231749,
+                    "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/aruba-latest.osm.pbf",
+                    "countryCode": "AW"
+                }
             },
             "Curaçao": {
-                "relationId": 1216719,
-                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/curacao-latest.osm.pbf",
-                "countryCode": "CW"
+                "Curaçao": {
+                    "relationId": 1216719,
+                    "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/curacao-latest.osm.pbf",
+                    "countryCode": "CW"
+                }
             },
             "Sint Maarten": {
-                "relationId": 1231790,
-                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/sint_maarten-latest.osm.pbf",
-                "countryCode": "SX"
+                "Sint Maarten": {
+                    "relationId": 1231790,
+                    "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/sint_maarten-latest.osm.pbf",
+                    "countryCode": "SX"
+                }
             },
             "Caribisch Nederland": {
-                "relationId": 1216720,
-                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/caribbean-latest.osm.pbf",
-                "countryCode": "BQ"
+                "Bonaire": {
+                    "relationId": 2324450,
+                    "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/caribbean-latest.osm.pbf",
+                    "countryCode": "BQ"
+                },
+                "Saba": {
+                    "relationId": 2324451,
+                    "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/caribbean-latest.osm.pbf",
+                    "countryCode": "BQ"
+                },
+                "Sint Eustatius": {
+                    "relationId": 2324452,
+                    "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/caribbean-latest.osm.pbf",
+                    "countryCode": "BQ"
+                }
             }
         }
     },
