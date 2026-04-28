@@ -708,6 +708,36 @@
             "Östergötlands län": 940675
         }
     },
+    "Taiwan / 臺灣": {
+        "countryCode": "TW",
+        "locale": "zh-TW",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/asia/taiwan.osm.pbf",
+        "divisions": {
+            "Taipei / 臺北市": 1293250,
+            "New Taipei / 新北市": 1527220,
+            "Taoyuan City / 桃園市": 2770986,
+            "Taichung / 臺中市": 2921154,
+            "Tainan / 臺南市": 2418506,
+            "Kaohsiung / 高雄市": 2127079,
+            "Keelung / 基隆市": 1296154,
+            "Hsinchu / 新竹市": 2849488,
+            "Hsinchu County / 新竹縣": 2912613,
+            "Miaoli County / 苗栗縣": 2915592,
+            "Changhua County / 彰化縣": 2917549,
+            "Nantou County / 南投縣": 2497975,
+            "Yunlin County / 雲林縣": 2915930,
+            "Chiayi / 嘉義市": 2790418,
+            "Chiayi County / 嘉義縣": 2908173,
+            "Pingtung County / 屏東縣": 2775815,
+            "Yilan County / 宜蘭縣": 2912630,
+            "Hualien County / 花蓮縣": 2921156,
+            "Taitung County / 臺東縣": 2921155,
+            "Penghu / 澎湖縣": 3339738,
+            "Kinmen / 金門縣": 3339695,
+            "Lienchiang County / 連江縣": 3777249
+        }
+    },
     "Türkiye": {
         "countryCode": "TR",
         "locale": "en",
