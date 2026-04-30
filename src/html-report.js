@@ -110,7 +110,7 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         const problemLabel = duplicateLabel + notMobileLabel;
 
         const tagToUse = item.phoneTagToUse;
-        const mobileMovingToEmptyTag = !(tagToUse in item.invalidNumbers) && (tagToUse in item.suggestedFixes);
+        const numberMovingToEmptyTag = !(item.invalidNumbers.hasOwnProperty(tagToUse)) && (item.suggestedFixes.hasOwnProperty(tagToUse));
 
         // Internal duplicate (in same tag)
         if (isDuplicateKey && item.duplicateNumbers[key] == key) {
@@ -137,6 +137,17 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                 };
             }
 
+            if (numberMovingToEmptyTag) {
+                // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
+                const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
+                const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
+                return {
+                    [key]: originalRowValue,
+                    [suggestedRowKey]: newDiff,
+                    [newTagDiff]: newMovingDiff
+                };
+            }
+
             return {
                 [key]: originalRowValue,
                 [suggestedRowKey]: newDiff
@@ -146,14 +157,14 @@ function createClientItems(item, locale, botEnabled, iconManager) {
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
-        } else if (isMismatchKey && !mobileMovingToEmptyTag) {
+        } else if (isMismatchKey && !numberMovingToEmptyTag) {
             const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
         } else if (item.autoFixable) {
             // Mobile is being moved to standard key, which did not exist before
-            if (mobileMovingToEmptyTag) {
+            if (numberMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
                 const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
                 return {
