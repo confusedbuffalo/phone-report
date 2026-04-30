@@ -18,8 +18,6 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
-        if (Object.keys(tags).length === 0) continue;
-
         totalNames++;
         
         let item = null;

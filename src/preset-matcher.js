@@ -75,10 +75,6 @@ loadTranslation('en');
 function getGeometry(item) {
     if (item.type === 'node') return 'point'; // TODO: could also be vertex, but is there anything that can only be a vertex and have a phone number?
 
-    if (!item.allTags) {
-        console.log(item)
-    }
-
     // For ways and relations, determine if it's an area based on 'area' tag
     if (item.allTags.area === 'yes') return 'area';
     if (item.allTags.area === 'no') return 'line';

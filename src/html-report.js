@@ -191,7 +191,7 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
         return null;
     }
 
-    item = { item, ...(reportType === 'phone' && {phoneTagToUse: phoneTagToUse(item.allTags)})}
+    item = { ...item, ...(reportType === 'phone' && {phoneTagToUse: phoneTagToUse(item.allTags)})}
 
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
