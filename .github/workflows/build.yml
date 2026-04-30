@@ -106,7 +106,7 @@ jobs:
       - name: Run HTML Minifier
         if: env.BUILD_TYPE == 'full'
         run: |
-          find public -name "*.html" -print0 | while IFS= read -r -d $'\0' file; do
+          find public names_build -name "*.html" -print0 | while IFS= read -r -d $'\0' file; do
             npx html-minifier-terser "$file" --output "$file" --collapse-whitespace --remove-comments --minify-css true --minify-js true
           done
         shell: bash
@@ -114,10 +114,16 @@ jobs:
       - name: Run JS Minifier (terser)
         if: env.BUILD_TYPE == 'full'
         run: |
-          find public -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
+          find public names_build -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
             npx terser "$file" --output "$file" --compress --mangle
           done
         shell: bash
+
+      - name: Upload Names Pages Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: new-history-data
+          path: names_build/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
