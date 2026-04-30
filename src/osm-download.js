@@ -105,6 +105,7 @@ async function splitPbf(filteredFilePath, outputDir, country = null, division = 
             await execPromise(extractCommand);
             await execPromise(exportCommand);
             fs.unlinkSync(tempPath);
+            console.log(`Created geojsonseq at: ${outputPath}`)
         } catch (error) {
             console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
             continue;
