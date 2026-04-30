@@ -1,6 +1,6 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
-const { PUBLIC_DIR, COUNTRIES } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
 const {favicon, themeButton, createFooter} = require('./html-utils');
 const { safeName } = require('./data-processor');
@@ -75,11 +75,12 @@ function buildSearchIndex() {
 
 /**
  * Generates the main index.html file listing all country reports.
+ * @param {'phone' | 'name'} reportType - The type of report being created.
  * @param {Array<Object>} countryStats - Array of country statistic objects, including country.locale.
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  * @param {Object} translations
  */
-async function generateMainIndexHtml(countryStats, locale, translations) {
+async function generateMainIndexHtml(reportType, countryStats, locale, translations) {
 
     const listContent = countryStats.map(country => {
         const safeCountryName = country.slug;
@@ -175,7 +176,8 @@ async function generateMainIndexHtml(countryStats, locale, translations) {
     </body>
     </html>
     `;
-    await fsPromises.writeFile(path.join(PUBLIC_DIR, 'index.html'), htmlContent);
+    const fileName = reportType === 'name' ? path.join(NAMES_BUILD_DIR, 'index.html') : path.join(PUBLIC_DIR, 'index.html');
+    await fsPromises.writeFile(fileName, htmlContent);
     console.log('Main index.html generated.');
 }
 

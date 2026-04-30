@@ -8,7 +8,7 @@ const { parser } = require('stream-json/parser.js');
 const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { disassembler } = require('stream-json/disassembler.js');
 const { stringer } = require('stream-json/stringer.js');
-const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS } = require('./constants');
+const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
@@ -42,63 +42,45 @@ function createJosmFixUrl(item) {
 }
 
 /**
- * Creates the items for client side injection, with extra content.
+ * Creates the fix rows for a phone number item that is showing foreign numbers.
  * @param {Object} item - The invalid number data item.
- * @param {string} locale - The locale for the text
- * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {string}
  */
-function createClientItems(item, locale, botEnabled, iconManager) {
-    // Skip safe edit items if the bot is enabled here
-    if (botEnabled && item.safeEdit) {
-        return null;
-    }
+function createPhoneForeignFixRows(item, iconManager) {
+    // validForeignNumbers: { phone: { '+44 20 7946 0000': 'GB' } },
 
-    item.phoneTagToUse = phoneTagToUse(item.allTags);
-    item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
+    return Object.keys(item.validForeignNumbers).map(key => {
+        const foreignRows = [];
+        for (const [phone, code] of Object.entries(item.validForeignNumbers[key])) {
+            const flagHtml = iconManager.getIconHtml(`Flagpedia-${code.toLowerCase()}`);
 
-    const iconName = getFeatureIcon(item, locale);
-    const iconHtml = iconManager.getIconHtml(iconName);
-    if (iconHtml.includes(iconName)) {
-        item.iconName = iconName;
-    } else {
-        item.iconHtml = iconHtml;
-    }
+            // Add title tag for country/region name
+            const flagName = regionNames.of(code);
 
-    item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
+            const spanPrefix = '<span';
+            const flagIconAndTitle = flagHtml.startsWith(spanPrefix)
+                ? `${spanPrefix} title="${flagName}" ${flagHtml.slice(spanPrefix.length)}`
+                : flagHtml;
 
-    if (item.isForeignItem) {
-        // validForeignNumbers: { phone: { '+44 20 7946 0000': 'GB' } },
+            foreignRows.push(`<span class="inline-flex items-center">${flagIconAndTitle}${phone}</span>`)
+        }
 
-        const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
+        return {
+            [key]: foreignRows.join(';'),
+        };
+    }).filter(Boolean)
+}
 
-        item.fixRows = Object.keys(item.validForeignNumbers).map(key => {
-            const foreignRows = [];
-            for (const [phone, code] of Object.entries(item.validForeignNumbers[key])) {
-                const flagHtml = iconManager.getIconHtml(`Flagpedia-${code.toLowerCase()}`);
-
-                // Add title tag for country/region name
-                const flagName = regionNames.of(code);
-
-                const spanPrefix = '<span';
-                const flagIconAndTitle = flagHtml.startsWith(spanPrefix)
-                    ? `${spanPrefix} title="${flagName}" ${flagHtml.slice(spanPrefix.length)}`
-                    : flagHtml;
-
-                foreignRows.push(`<span class="inline-flex items-center">${flagIconAndTitle}${phone}</span>`)
-            }
-
-            return {
-                [key]: foreignRows.join(';'),
-            };
-        }).filter(Boolean);
-
-        const { allTags, ...clientItem } = item;
-        return clientItem;
-    }
-
-    item.fixRows = Object.keys(item.invalidNumbers).map(key => {
+/**
+ * Creates the fix rows for an invalid phone number item.
+ * @param {Object} item - The invalid number data item.
+ * @param {string} locale - The locale for the text
+ * @param {IconManager} iconManager - The icon manager instance for this report.
+ * @returns {string}
+ */
+function createPhoneFixRows(item, locale, iconManager) {
+    return Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
         const isDuplicateKey = key in item.duplicateNumbers;
@@ -181,6 +163,58 @@ function createClientItems(item, locale, botEnabled, iconManager) {
             };
         }
     }).filter(Boolean);
+}
+
+/**
+ * Creates the fix rows for an invalid name item.
+ * @param {Object} item - The invalid data item.
+ * @param {string} locale - The locale for the text
+ * @param {IconManager} iconManager - The icon manager instance for this report.
+ * @returns {string}
+ */
+function createNameFixRows(item, locale, iconManager) {
+    return item.nameTags;
+}
+
+/**
+ * Creates the items for client side injection, with extra content.
+ * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {Object} item - The invalid number data item.
+ * @param {string} locale - The locale for the text
+ * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
+ * @param {IconManager} iconManager - The icon manager instance for this report.
+ * @returns {string}
+ */
+function createClientItems(reportType, item, locale, botEnabled, iconManager) {
+    // Skip safe edit items if the bot is enabled here
+    if (reportType === 'phone' && botEnabled && item.safeEdit) {
+        return null;
+    }
+
+    item = { item, ...(reportType === 'phone' && {phoneTagToUse: phoneTagToUse(item.allTags)})}
+
+    item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
+
+    const iconName = getFeatureIcon(item, locale);
+    const iconHtml = iconManager.getIconHtml(iconName);
+    if (iconHtml.includes(iconName)) {
+        item.iconName = iconName;
+    } else {
+        item.iconHtml = iconHtml;
+    }
+
+    item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
+
+    if (reportType === 'phone' && item.isForeignItem) {
+        const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
+
+        item.fixRows = createPhoneForeignFixRows(item, iconManager);
+
+        const { allTags, ...clientItem } = item;
+        return clientItem;
+    }
+
+    item.fixRows = reportType === 'phone' ? createPhoneFixRows(item, locale, iconManager) : createNameFixRows(item, locale, iconManager);
 
     item.josmFixUrl = createJosmFixUrl(item);
 
@@ -250,22 +284,23 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
 
 /**
  * Generates the HTML report for a single subdivision.
+ * @param {'phone' | 'name'} reportType - The type of report being created.
  * @param {string} countryName
  * @param {Object} subdivisionStats - The subdivision statistics object.
- * @param {Array<Object>} invalidNumbers - List of invalid items.
+ * @param {string} tmpFilePath - Filepath of the json file containing the invalid items.
  * @param {string} locale
  * @param {Object} translations
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {Date} timestamp - The timestamp of the data
  */
-async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled, timestamp) {
+async function generateHtmlReport(reportType, countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled, timestamp) {
     const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
-    const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug)
-    const htmlFilePath = `${path.join(PUBLIC_DIR, relativeFilePath)}.html`
-    const dataFilePath = `${path.join(PUBLIC_DIR, relativeFilePath)}.json`
+    const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug);
+    const htmlFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.html` : `${path.join(PUBLIC_DIR, relativeFilePath)}.html`;
+    const dataFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.json` : `${path.join(PUBLIC_DIR, relativeFilePath)}.json`;
 
     const { invalidCount, autoFixableCount } = subdivisionStats;
 
@@ -278,7 +313,7 @@ async function generateHtmlReport(countryName, subdivisionStats, tmpFilePath, lo
         parser(),
         streamArray(),
         new ItemTransformer(item => {
-            const clientItem = createClientItems(item, locale, botEnabled, iconManager);
+            const clientItem = createClientItems(reportType, item, locale, botEnabled, iconManager);
             return clientItem;
         }),
         disassembler(),

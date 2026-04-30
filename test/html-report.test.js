@@ -199,7 +199,7 @@ describe('generateHtmlReport', () => {
         };
         const tmpFilePath = 'test.json';
 
-        await generateHtmlReport(countryName, subdivisionStats, tmpFilePath, 'en-US', {});
+        await generateHtmlReport('phone', countryName, subdivisionStats, tmpFilePath, 'en-US', {});
 
         await new Promise(resolve => setTimeout(resolve, 10));
 

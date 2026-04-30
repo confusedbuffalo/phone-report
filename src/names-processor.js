@@ -56,16 +56,18 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
             return baseItem;
         };
 
-        if (!tags['name']) {
+        const nameEntries = Object.entries(tags).filter(([key]) => key.startsWith('name'));
+        const primaryName = tags['name'];
+
+        // Condition 1: There is no 'name' tag
+        // Condition 2: There are localised names (name:*) and none of them match the primary name
+        const isInvalid =
+            !primaryName ||
+            (nameEntries.some(([k]) => k.startsWith('name:')) && !nameEntries.some(([_, v]) => v === primaryName));
+
+        if (isInvalid) {
             const currentItem = getOrCreateItem(true);
-            currentItem.nameTags = Object.fromEntries(Object.entries(tags).filter(([key]) => key.startsWith('name')));
-        } else {
-            const primaryName = tags['name'];
-            const localisedValues = Object.entries(tags).filter(([key]) => key.startsWith('name:')).map(([_, value]) => value);
-            if (localisedValues.length > 0 && !localisedValues.includes(primaryName)) {
-                const currentItem = getOrCreateItem(true);
-                currentItem.nameTags = Object.fromEntries(Object.entries(tags).filter(([key]) => key.startsWith('name')));
-            }
+            currentItem.nameTags = Object.fromEntries(nameEntries);
         }
 
         if (item) {

@@ -52,7 +52,7 @@ describe('generateCountryIndexHtml', () => {
             },
         };
 
-        await generateCountryIndexHtml(countryData, {});
+        await generateCountryIndexHtml('phone', countryData, {});
 
         // Verify the server-side template escapes the country name
         const writtenContent = fs.promises.writeFile.mock.calls[0][1];

@@ -1,6 +1,6 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
-const { PUBLIC_DIR } = require('./constants');
+const { PUBLIC_DIR, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
 const {favicon, themeButton, createFooter, createStatsBox, escapeHTML} = require('./html-utils');
 const { safeName } = require('./data-processor');
@@ -36,10 +36,11 @@ function createClientConstants(countryData, locale) {
 
 /**
  * Generates the country index page with a list of its subdivisions.
+ * @param {'phone' | 'name'} reportType - The type of report being created.
  * @param {Object} countryData
  * @param {Object} translations
  */
-async function generateCountryIndexHtml(countryData, translations) {
+async function generateCountryIndexHtml(reportType, countryData, translations) {
     const locale = countryData.locale;
     const htmlContent = `
     <!DOCTYPE html>
@@ -97,7 +98,7 @@ async function generateCountryIndexHtml(countryData, translations) {
     </body>
     </html>
     `;
-    pageFileName = path.join(PUBLIC_DIR, countryData.slug, 'index.html')
+    const pageFileName = reportType === 'name' ? path.join(NAMES_BUILD_DIR, countryData.slug, 'index.html') : path.join(PUBLIC_DIR, countryData.slug, 'index.html');
     await fsPromises.writeFile(pageFileName, htmlContent);
     console.log(`Report for ${countryData.name} generated at ${pageFileName}.`);
 }

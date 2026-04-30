@@ -267,7 +267,7 @@ function parseOsmTimestamp(timestampStr) {
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
  */
-async function processSubdivisionPhone(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
+async function processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
 
     const geojsonPath = path.join(OSM_DIR, 'phone', `${subdivision.id}.geojsonseq`);
@@ -310,9 +310,9 @@ async function processSubdivisionPhone(subdivision, countryData, rawDivisionName
     }
 
     await generateSafeEditFile(countryName, stats, tmpFilePath)
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
+    await generateHtmlReport('phone', countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
 
-    fs.unlinkSync(tmpFilePath); // Clean up the temporary file
+    fs.unlinkSync(tmpFilePath);
 
     return stats;
 }
@@ -363,10 +363,9 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
         fs.mkdirSync(divisionDir, { recursive: true });
     }
 
-    // TODO: change this function or make a new function to be called for names
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
+    await generateHtmlReport('name', countryName, stats, tmpFilePath, locale, clientTranslations, false, dataTimestamp);
 
-    fs.unlinkSync(tmpFilePath); // Clean up the temporary file
+    fs.unlinkSync(tmpFilePath);
 
     return stats;
 }
@@ -400,12 +399,14 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
-        const stats = await processSubdivisionPhone(subdivision, countryData, rawDivisionName, locale, clientTranslations);
+        const stats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations);
         divisionStats.push(stats);
         divisionTotalNumbers += stats.totalNumbers;
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
         divisionSafeEditCount += stats.safeEditCount;
+
+        const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations);
 
         subdivisionCount++;
         // if (testMode && subdivisionCount >= 1) {
@@ -442,7 +443,7 @@ async function processCountry(countryData) {
         await filterPbfName(tmpPbfFilePath, tmpNamePbfFilePath);
 
         fs.rmSync(tmpPbfFilePath, { force: true });
-        
+
         await splitPbf(tmpPhonePbfFilePath, os.path.join(OSM_DIR, 'phone'), countryData);
         await splitPbf(tmpNamePbfFilePath, os.path.join(OSM_DIR, 'name'), countryData);
 
@@ -458,9 +459,6 @@ async function processCountry(countryData) {
         for (const [subName, subData] of Object.entries(groupDivisions)) {
             const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
             if (pbfUrl) {
-                const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
-
-
                 const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
                 const subPhonePbfFilePath = path.join(process.cwd(), `sub-filtered-phone-${uuidv4()}.osm.pbf`);
                 const subNamePbfFilePath = path.join(process.cwd(), `sub-filtered-name-${uuidv4()}.osm.pbf`);
@@ -470,7 +468,7 @@ async function processCountry(countryData) {
                 await filterPbfName(subPbfFilePath, subNamePbfFilePath);
 
                 fs.rmSync(subPbfFilePath, { force: true });
-                
+
                 await splitPbf(subPhonePbfFilePath, os.path.join(OSM_DIR, 'phone'), null, subData);
                 await splitPbf(subNamePbfFilePath, os.path.join(OSM_DIR, 'name'), null, subData);
 
@@ -494,6 +492,11 @@ async function processCountry(countryData) {
     const countryDir = path.join(PUBLIC_DIR, safeName(countryName));
     if (!fs.existsSync(countryDir)) {
         fs.mkdirSync(countryDir, { recursive: true });
+    }
+
+    const namesCountryDir = path.join(NAMES_BUILD_DIR, safeName(countryName));
+    if (!fs.existsSync(namesCountryDir)) {
+        fs.mkdirSync(namesCountryDir, { recursive: true });
     }
 
     let totalInvalidCount = 0;
@@ -543,7 +546,8 @@ async function processCountry(countryData) {
 
     saveCountryHistory(countryStats);
 
-    await generateCountryIndexHtml(countryStats, clientTranslations);
+    await generateCountryIndexHtml('phone', countryStats, clientTranslations);
+    await generateCountryIndexHtml('name', countryStats, clientTranslations);
 
     return countryStats;
 }
@@ -552,42 +556,43 @@ async function processCountry(countryData) {
  * The main function to orchestrate the entire build process for the validation reports.
  */
 async function main() {
-    if (!fs.existsSync(PUBLIC_DIR)) {
-        fs.mkdirSync(PUBLIC_DIR);
-    }
-
     const CLIENT_DIR = path.join(__dirname, 'client');
-    try {
-        const filesToCopy = fs.readdirSync(CLIENT_DIR);
+    [PUBLIC_DIR, NAMES_BUILD_DIR].forEach((dir) => {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+        try {
+            const filesToCopy = fs.readdirSync(CLIENT_DIR);
 
-        filesToCopy.forEach(file => {
-            const source = path.join(CLIENT_DIR, file);
-            const destination = path.join(PUBLIC_DIR, file);
+            filesToCopy.forEach(file => {
+                const source = path.join(CLIENT_DIR, file);
+                const destination = path.join(dir, file);
 
-            // Only copy files, ignore subdirectories (if any)
-            if (fs.statSync(source).isFile()) {
-                fs.copyFileSync(source, destination);
-            }
-        });
-        console.log('Successfully copied client directory contents to public');
-    } catch (err) {
-        console.error('Error copying files:', err);
-    }
+                // Only copy files, ignore subdirectories (if any)
+                if (fs.statSync(source).isFile()) {
+                    fs.copyFileSync(source, destination);
+                }
+            });
+            console.log(`Successfully copied client directory contents to ${dir}`);
+        } catch (err) {
+            console.error('Error copying files:', err);
+        }
 
-    const VENDOR_DIR = path.join(PUBLIC_DIR, 'vendor')
-    if (!fs.existsSync(VENDOR_DIR)) {
-        fs.mkdirSync(VENDOR_DIR);
-    }
+        const VENDOR_DIR = path.join(dir, 'vendor')
+        if (!fs.existsSync(VENDOR_DIR)) {
+            fs.mkdirSync(VENDOR_DIR);
+        }
 
-    fs.copyFileSync(
-        path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
-        path.join(PUBLIC_DIR, 'vendor', 'osm-api.min.js')
-    );
+        fs.copyFileSync(
+            path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
+            path.join(VENDOR_DIR, 'osm-api.min.js')
+        );
 
-    fs.copyFileSync(
-        path.join(__dirname, '..', 'node_modules', 'chart.js', 'dist', 'chart.umd.js'),
-        path.join(PUBLIC_DIR, 'vendor', 'chart.js')
-    );
+        fs.copyFileSync(
+            path.join(__dirname, '..', 'node_modules', 'chart.js', 'dist', 'chart.umd.js'),
+            path.join(VENDOR_DIR, 'chart.js')
+        );
+    });
 
     console.log('Starting full build process...');
 
@@ -608,7 +613,8 @@ async function main() {
         }
     }
 
-    await generateMainIndexHtml(allCountryStats, defaultLocale, clientDefaultTranslations);
+    await generateMainIndexHtml('phone', allCountryStats, defaultLocale, clientDefaultTranslations);
+    await generateMainIndexHtml('name', allCountryStats, defaultLocale, clientDefaultTranslations);
 
     console.log('Full build process completed successfully.');
 }
