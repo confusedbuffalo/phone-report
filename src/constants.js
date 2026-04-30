@@ -128,6 +128,7 @@ const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
     'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
+    'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
 ]
 
 const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
