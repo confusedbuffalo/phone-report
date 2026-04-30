@@ -287,7 +287,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
 
     console.log('Numbers validated')
 
@@ -352,7 +352,7 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
 
     const tmpFilePath = path.join(os.tmpdir(), `${uuidv4()}.json`);
 
-    const { totalNames, incompleteNames } = validateNames(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalNames, incompleteNames } = await validateNames(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 
