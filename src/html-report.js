@@ -55,6 +55,10 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         return null;
     }
 
+    if (item.id !== 12487567102) {
+        return null;
+    }
+
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
