@@ -55,12 +55,6 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         return null;
     }
 
-    if (item.id !== 12487567102) {
-        return null;
-    }
-
-    console.log(item);
-
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
@@ -118,9 +112,6 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         const tagToUse = item.phoneTagToUse;
         const numberMovingToEmptyTag = !(item.invalidNumbers.hasOwnProperty(tagToUse)) && (item.suggestedFixes.hasOwnProperty(tagToUse));
 
-        console.log(key, originalNumber, suggestedFix, isDuplicateKey, isMismatchKey, suggestedRowKey)
-        console.log(`Moving to empty: ${numberMovingToEmptyTag}`)
-
         // Internal duplicate (in same tag)
         if (isDuplicateKey && item.duplicateNumbers[key] == key) {
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
@@ -131,18 +122,14 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         }
 
         if (suggestedFix) {
-            console.log(1);
             const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
 
             let originalRowValue;
             if (problemLabel) {
-                console.log('1.1');
                 originalRowValue = `<span class="list-item-old-value">${oldDiff}${problemLabel}</span>`;
             } else if (originalNumber) {
-                console.log('1.2');
                 originalRowValue = oldDiff;
             } else {
-                console.log('1.3');
                 // e.g. phone:mnemonic being added as new tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
                 return {
@@ -151,37 +138,31 @@ function createClientItems(item, locale, botEnabled, iconManager) {
             }
 
             if (numberMovingToEmptyTag) {
-                console.log('1.4');
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
-                const { oldMovingDiff, newMovingDiff } = getDiffHtml('', item.suggestedFixes.tagToUse);
+                const { oldMovingDiff, newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
                 return {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
                     [newTagDiff]: newMovingDiff
                 };
             }
-            
-            console.log('1.5');
 
             return {
                 [key]: originalRowValue,
                 [suggestedRowKey]: newDiff
             };
         } else if (isDuplicateKey) {
-            console.log(2);
             const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
         } else if (isMismatchKey && !numberMovingToEmptyTag) {
-            console.log(3);
             const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
         } else if (item.autoFixable) {
-            console.log(4);
             // Mobile is being moved to standard key, which did not exist before
             if (numberMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
@@ -195,20 +176,15 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                 [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };
         } else {
-            console.log(5);
             return {
                 [key]: `<span>${escapeHTML(originalNumber)}</span>`
             };
         }
     }).filter(Boolean);
 
-    console.log(item);
-
     item.josmFixUrl = createJosmFixUrl(item);
 
     const { allTags, ...clientItem } = item;
-
-    console.log(clientItem);
 
     return clientItem;
 }
