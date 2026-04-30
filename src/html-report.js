@@ -50,6 +50,8 @@ function createJosmFixUrl(item) {
 function createPhoneForeignFixRows(item, iconManager) {
     // validForeignNumbers: { phone: { '+44 20 7946 0000': 'GB' } },
 
+    const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
+
     return Object.keys(item.validForeignNumbers).map(key => {
         const foreignRows = [];
         for (const [phone, code] of Object.entries(item.validForeignNumbers[key])) {
@@ -206,8 +208,6 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
     item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
 
     if (reportType === 'phone' && item.isForeignItem) {
-        const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
-
         item.fixRows = createPhoneForeignFixRows(item, iconManager);
 
         const { allTags, ...clientItem } = item;
