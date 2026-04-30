@@ -145,6 +145,7 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
                 const { oldMovingDiff, newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
+                console.log(tagToUse, item.suggestedFixes, item.suggestedFixes[tagToUse])
                 console.log(oldMovingDiff)
                 console.log(newMovingDiff)
                 return {
