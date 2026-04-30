@@ -55,10 +55,6 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         return null;
     }
 
-    if (item.id !== 12487567102) {
-        return null;
-    }
-
     item.phoneTagToUse = phoneTagToUse(item.allTags);
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
@@ -145,9 +141,6 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
                 const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
-                console.log(tagToUse, item.suggestedFixes, item.suggestedFixes[tagToUse])
-                console.log(oldMovingDiff)
-                console.log(newMovingDiff)
                 return {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
@@ -190,9 +183,9 @@ function createClientItems(item, locale, botEnabled, iconManager) {
     }).filter(Boolean);
 
     item.josmFixUrl = createJosmFixUrl(item);
-    console.log(item)
+
     const { allTags, ...clientItem } = item;
-    console.log(clientItem)
+
     return clientItem;
 }
 
