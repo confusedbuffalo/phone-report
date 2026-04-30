@@ -141,6 +141,8 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
                 const { oldMovingDiff, newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
+                console.log(oldMovingDiff)
+                console.log(newMovingDiff)
                 return {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
@@ -183,9 +185,9 @@ function createClientItems(item, locale, botEnabled, iconManager) {
     }).filter(Boolean);
 
     item.josmFixUrl = createJosmFixUrl(item);
-
+    console.log(item)
     const { allTags, ...clientItem } = item;
-
+    console.log(clientItem)
     return clientItem;
 }
 
