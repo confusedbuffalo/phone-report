@@ -16,10 +16,12 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
     for await (const element of elementStream) {
         if (!element.properties) continue;
 
-        totalNames++;
-        
         const tags = element.properties;
 
+        if (Object.keys(tags).length === 0) continue;
+
+        totalNames++;
+        
         let item = null;
 
         const getOrCreateItem = () => {
