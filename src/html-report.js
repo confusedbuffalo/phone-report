@@ -129,7 +129,15 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                 originalRowValue = `<span class="list-item-old-value">${oldDiff}${problemLabel}</span>`;
             } else if (originalNumber) {
                 originalRowValue = oldDiff;
-            } else if (numberMovingToEmptyTag) {
+            } else {
+                // e.g. phone:mnemonic being added as new tag
+                const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
+                return {
+                    [newTagDiff]: newDiff
+                };
+            }
+
+            if (numberMovingToEmptyTag) {
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
                 const { oldMovingDiff, newMovingDiff } = getDiffHtml('', item.suggestedFixes.tagToUse);
@@ -137,12 +145,6 @@ function createClientItems(item, locale, botEnabled, iconManager) {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
                     [newTagDiff]: newMovingDiff
-                };
-            } else {
-                // e.g. phone:mnemonic being added as new tag
-                const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
-                return {
-                    [newTagDiff]: newDiff
                 };
             }
 
