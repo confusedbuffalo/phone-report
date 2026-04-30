@@ -4,14 +4,15 @@ const os = require('os');
 const readline = require('readline')
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, OSM_DIR } = require('./constants');
-const { processPbf, splitPbf, getOsmTimestamp } = require('./osm-download');
+const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, OSM_DIR, NAMES_BUILD_DIR } = require('./constants');
+const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
 const { safeName, validateNumbers } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
 const { generateHtmlReport } = require('./html-report')
 const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
+const { validateNames } = require('./names-processor');
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country
@@ -257,8 +258,8 @@ function parseOsmTimestamp(timestampStr) {
 }
 
 /**
- * Processes a single subdivision: processes OSM data, validates numbers, generates the HTML report,
- * and returns statistics.
+ * Processes a single subdivision for phone numbers: processes OSM data, validates numbers,
+ * generates the HTML report and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} rawDivisionName - The unescaped name of the parent division.
@@ -266,10 +267,10 @@ function parseOsmTimestamp(timestampStr) {
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
  */
-async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
+async function processSubdivisionPhone(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
     const countryName = countryData.name;
 
-    const geojsonPath = path.join(OSM_DIR, `${subdivision.id}.geojsonseq`);
+    const geojsonPath = path.join(OSM_DIR, 'phone', `${subdivision.id}.geojsonseq`);
     try {
         await access(geojsonPath);
     } catch (error) {
@@ -281,7 +282,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 
@@ -317,6 +318,60 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
 }
 
 /**
+ * Processes a single subdivision for names: processes OSM data, generates the HTML report
+ * and returns statistics.
+ * @param {Object} subdivision - The subdivision object (with name and id).
+ * @param {Object} countryData - The configuration object for the country.
+ * @param {string} rawDivisionName - The unescaped name of the parent division.
+ * @param {string} locale - The locale for the report.
+ * @param {Object} clientTranslations - The client-side translations.
+ * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
+ */
+async function processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
+    const countryName = countryData.name;
+
+    const geojsonPath = path.join(OSM_DIR, 'name', `${subdivision.id}.geojsonseq`);
+    try {
+        await access(geojsonPath);
+    } catch (error) {
+        console.error(`Error: File not found at ${geojsonPath}`);
+    }
+
+    const elementStream = createGeoJsonElementStream(geojsonPath);
+
+    const tmpFilePath = path.join(os.tmpdir(), `${uuidv4()}.json`);
+
+    const { totalNames, incompleteNames } = validateNames(elementStream, subdivision.countryCode, tmpFilePath);
+
+    fs.unlinkSync(geojsonPath);
+
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
+
+    const stats = {
+        name: subdivision.name,
+        divisionSlug: safeName(rawDivisionName),
+        slug: safeName(subdivision.name),
+        incompleteNames: incompleteNames,
+        totalNames: totalNames,
+        lastUpdated: dataTimestamp.toISOString()
+    };
+
+    const countryDir = path.join(NAMES_BUILD_DIR, safeName(countryName));
+    const divisionDir = path.join(countryDir, stats.divisionSlug)
+    if (!fs.existsSync(divisionDir)) {
+        fs.mkdirSync(divisionDir, { recursive: true });
+    }
+
+    // TODO: change this function or make a new function to be called for names
+    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
+
+    fs.unlinkSync(tmpFilePath); // Clean up the temporary file
+
+    return stats;
+}
+
+/**
  * Processes all subdivisions within a single administrative division.
  * @param {string} rawDivisionName - The unescaped name of the division.
  * @param {Object} countryData - The configuration object for the country.
@@ -335,7 +390,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         return { divisionStats: [], divisionTotalNumbers: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0 };
     }
 
-    console.log(`Processing phone numbers for ${subdivisions.length} subdivisions in ${divisionName}.`);
+    console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
     const divisionStats = [];
     let divisionTotalNumbers = 0;
@@ -345,7 +400,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
-        const stats = await processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations);
+        const stats = await processSubdivisionPhone(subdivision, countryData, rawDivisionName, locale, clientTranslations);
         divisionStats.push(stats);
         divisionTotalNumbers += stats.totalNumbers;
         divisionInvalidCount += stats.invalidCount;
@@ -378,14 +433,22 @@ async function processCountry(countryData) {
         : countryData.divisionMap;
 
     if (countryData.pbfUrl) {
-        const tmpPbfFilePath = path.join(process.cwd(), `filtered-${uuidv4()}.osm.pbf`);
+        const tmpPbfFilePath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+        const tmpPhonePbfFilePath = path.join(process.cwd(), `filtered-phone-${uuidv4()}.osm.pbf`);
+        const tmpNamePbfFilePath = path.join(process.cwd(), `filtered-name-${uuidv4()}.osm.pbf`);
 
-        await processPbf(countryData.pbfUrl, tmpPbfFilePath);
-        await splitPbf(tmpPbfFilePath, countryData);
+        await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
+        await filterPbfPhone(tmpPbfFilePath, tmpPhonePbfFilePath);
+        await filterPbfName(tmpPbfFilePath, tmpNamePbfFilePath);
 
-        if (fs.existsSync(tmpPbfFilePath)) {
-            fs.unlinkSync(tmpPbfFilePath);
-        }
+        fs.rmSync(tmpPbfFilePath, { force: true });
+        
+        await splitPbf(tmpPhonePbfFilePath, os.path.join(OSM_DIR, 'phone'), countryData);
+        await splitPbf(tmpNamePbfFilePath, os.path.join(OSM_DIR, 'name'), countryData);
+
+        [tmpPhonePbfFilePath, tmpNamePbfFilePath].forEach(file => {
+            fs.rmSync(file, { force: true });
+        });
 
         const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
         countryData.timestamp = dataTimestamp;
@@ -397,12 +460,23 @@ async function processCountry(countryData) {
             if (pbfUrl) {
                 const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
 
-                await processPbf(pbfUrl, subPbfPath);
-                await splitPbf(subPbfPath, null, subData);
 
-                if (fs.existsSync(subPbfPath)) {
-                    fs.unlinkSync(subPbfPath);
-                }
+                const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+                const subPhonePbfFilePath = path.join(process.cwd(), `sub-filtered-phone-${uuidv4()}.osm.pbf`);
+                const subNamePbfFilePath = path.join(process.cwd(), `sub-filtered-name-${uuidv4()}.osm.pbf`);
+
+                await downloadPbf(countryData.pbfUrl, subPbfFilePath);
+                await filterPbfPhone(subPbfFilePath, subPhonePbfFilePath);
+                await filterPbfName(subPbfFilePath, subNamePbfFilePath);
+
+                fs.rmSync(subPbfFilePath, { force: true });
+                
+                await splitPbf(subPhonePbfFilePath, os.path.join(OSM_DIR, 'phone'), null, subData);
+                await splitPbf(subNamePbfFilePath, os.path.join(OSM_DIR, 'name'), null, subData);
+
+                [subPhonePbfFilePath, subNamePbfFilePath].forEach(file => {
+                    fs.rmSync(file, { force: true });
+                });
 
                 // TODO: store this per subdivision
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);

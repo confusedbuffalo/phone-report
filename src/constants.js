@@ -3,6 +3,7 @@ const { translate } = require('./i18n');
 const packageInfo = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const NAMES_BUILD_DIR = path.join(__dirname, '..', 'names_build');
 
 const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
@@ -342,6 +343,7 @@ const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
 
 module.exports = {
     PUBLIC_DIR,
+    NAMES_BUILD_DIR,
     MOBILE_TAGS,
     NON_MOBILE_TAGS,
     PHONE_TAGS,

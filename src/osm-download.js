@@ -11,13 +11,11 @@ const execPromise = promisify(exec);
 
 
 /**
- * Downloads and filters OSM PBF files.
+ * Downloads a specified OSM PBF file and saves it to the given path.
  * @param {string} url - The URL of the .osm.pbf file.
- * @param {string} outputPath - Where to save the filtered file.
+ * @param {string} outputPath - Where to save the file.
  */
-async function processPbf(url, outputPath) {
-    const tempInput = path.join(__dirname, 'temp_input.osm.pbf');
-
+async function downloadPbf(url, outputPath) {
     try {
         console.log(`Downloading: ${url}`);
         const response = await axios({
@@ -26,24 +24,47 @@ async function processPbf(url, outputPath) {
             responseType: 'stream'
         });
 
-        const writer = fs.createWriteStream(tempInput);
+        const writer = fs.createWriteStream(outputPath);
         response.data.pipe(writer);
 
         await new Promise((resolve, reject) => {
             writer.on('finish', resolve);
             writer.on('error', reject);
         });
+    } catch (error) {
+        console.error('Error download OSM file:', error.message);
+    }
+}
 
+/**
+ * Filters an OSM PBF file by phone related tags.
+ * @param {string} inputPath - The filename of the .osm.pbf file.
+ * @param {string} outputPath - Where to save the filtered file.
+ */
+async function filterPbfPhone(inputPath, outputPath) {
+    try {
         const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
-        const command = `osmium tags-filter "${tempInput}" ${filterExpression} -o "${outputPath}" --overwrite`;
+        const command = `osmium tags-filter "${inputPath}" ${filterExpression} -o "${outputPath}" --overwrite`;
         await execPromise(command);
     } catch (error) {
         console.error('Error processing OSM data:', error.message);
-    } finally {
-        if (fs.existsSync(tempInput)) {
-            fs.unlinkSync(tempInput);
-        }
+    }
+}
+
+/**
+ * Filters an OSM PBF file by name tags.
+ * @param {string} inputPath - The filename of the .osm.pbf file.
+ * @param {string} outputPath - Where to save the filtered file.
+ */
+async function filterPbfName(inputPath, outputPath) {
+    try {
+        const filterExpression = "name:*";
+
+        const command = `osmium tags-filter "${inputPath}" ${filterExpression} -o "${outputPath}" --overwrite`;
+        await execPromise(command);
+    } catch (error) {
+        console.error('Error processing OSM data:', error.message);
     }
 }
 
@@ -54,23 +75,24 @@ async function processPbf(url, outputPath) {
  * iterates through all subdivision IDs for the given country.
  * * @async
  * @param {string} filteredFilePath - The file path to the source .osm.pbf file.
+ * @param {string} outputDir - The directory in which to save the output files.
  * @param {string|null} [country=null] - The country name or identifier used to fetch subdivision IDs.
  * @param {Object|null} [division=null] - An optional division object.
  * @param {string} division.relationId - The OpenStreetMap relation ID for the division.
  * @returns {Promise<void>} Resolves when the extraction process is complete for all IDs.
  * @throws {Error} Logs an error if the `osmium` command fails for a specific division.
  */
-async function splitPbf(filteredFilePath, country = null, division = null) {
+async function splitPbf(filteredFilePath, outputDir, country = null, division = null) {
     const ids = division ? [division.relationId] : getSubdivisionIds(country);
 
-    if (!fs.existsSync(OSM_DIR)) {
-        fs.mkdirSync(OSM_DIR, { recursive: true });
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
     }    
 
     for (const id of ids) {
         const polyPath = path.join(POLY_DIR, `${id}.poly`);
-        const tempPath = path.join(OSM_DIR, `${id}.osm.pbf`);
-        const outputPath = path.join(OSM_DIR, `${id}.geojsonseq`);
+        const tempPath = path.join(outputDir, `${id}.osm.pbf`);
+        const outputPath = path.join(outputDir, `${id}.geojsonseq`);
 
         if (!fs.existsSync(polyPath)) {
             console.warn(`[SKIP] Poly file not found for ID: ${id}`);
@@ -144,7 +166,9 @@ async function getOsmTimestamp(pbfUrl) {
 }
 
 module.exports = {
-    processPbf,
+    downloadPbf,
+    filterPbfPhone,
+    filterPbfName,
     splitPbf,
     getOsmTimestamp,
 };
