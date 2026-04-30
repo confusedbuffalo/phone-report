@@ -268,7 +268,6 @@ function parseOsmTimestamp(timestampStr) {
  * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
  */
 async function processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
-    console.log(`Starting process for ${rawDivisionName}`)
     const countryName = countryData.name;
 
     const geojsonPath = path.join(OSM_DIR, 'phone', `${subdivision.id}.geojsonseq`);
@@ -278,18 +277,12 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
         console.error(`Error: File not found at ${geojsonPath}`);
     }
 
-    console.log('Found file')
-
     const elementStream = createGeoJsonElementStream(geojsonPath);
-
-    console.log('Stream created')
 
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
     const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
-
-    console.log('Numbers validated')
 
     fs.unlinkSync(geojsonPath);
 
@@ -316,12 +309,8 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
         fs.mkdirSync(divisionDir, { recursive: true });
     }
 
-    console.log('Creating safe edit/report')
-
     await generateSafeEditFile(countryName, stats, tmpFilePath)
     await generateHtmlReport('phone', countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
-
-    console.log('Safe edit and reports created')
 
     fs.unlinkSync(tmpFilePath);
 
