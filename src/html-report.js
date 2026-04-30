@@ -202,9 +202,13 @@ function createClientItems(item, locale, botEnabled, iconManager) {
         }
     }).filter(Boolean);
 
+    console.log(item);
+
     item.josmFixUrl = createJosmFixUrl(item);
 
     const { allTags, ...clientItem } = item;
+
+    console.log(clientItem);
 
     return clientItem;
 }
