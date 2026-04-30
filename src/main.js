@@ -444,8 +444,8 @@ async function processCountry(countryData) {
 
         fs.rmSync(tmpPbfFilePath, { force: true });
 
-        await splitPbf(tmpPhonePbfFilePath, os.path.join(OSM_DIR, 'phone'), countryData);
-        await splitPbf(tmpNamePbfFilePath, os.path.join(OSM_DIR, 'name'), countryData);
+        await splitPbf(tmpPhonePbfFilePath, path.join(OSM_DIR, 'phone'), countryData);
+        await splitPbf(tmpNamePbfFilePath, path.join(OSM_DIR, 'name'), countryData);
 
         [tmpPhonePbfFilePath, tmpNamePbfFilePath].forEach(file => {
             fs.rmSync(file, { force: true });
@@ -469,8 +469,8 @@ async function processCountry(countryData) {
 
                 fs.rmSync(subPbfFilePath, { force: true });
 
-                await splitPbf(subPhonePbfFilePath, os.path.join(OSM_DIR, 'phone'), null, subData);
-                await splitPbf(subNamePbfFilePath, os.path.join(OSM_DIR, 'name'), null, subData);
+                await splitPbf(subPhonePbfFilePath, path.join(OSM_DIR, 'phone'), null, subData);
+                await splitPbf(subNamePbfFilePath, path.join(OSM_DIR, 'name'), null, subData);
 
                 [subPhonePbfFilePath, subNamePbfFilePath].forEach(file => {
                     fs.rmSync(file, { force: true });
