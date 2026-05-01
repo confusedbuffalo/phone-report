@@ -122,7 +122,7 @@ jobs:
       - name: Upload Names Pages Artifact
         uses: actions/upload-artifact@v7
         with:
-          name: new-history-data
+          name: names-build
           path: names_build/
 
       - name: Upload Pages artifact
