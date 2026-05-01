@@ -303,7 +303,7 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
     const htmlFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.html` : `${path.join(PUBLIC_DIR, relativeFilePath)}.html`;
     const dataFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.json` : `${path.join(PUBLIC_DIR, relativeFilePath)}.json`;
 
-    const { invalidCount, autoFixableCount } = subdivisionStats;
+    const { totalCount, invalidCount, autoFixableCount } = subdivisionStats;
 
     const stringerOptions = { makeArray: true };
 
@@ -432,7 +432,7 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
                 <h1 class="page-title">${translate('phoneNumberReport', locale)}</h1>
                 <h2 class="page-subtitle">${escapeHTML(subdivisionStats.name)}</h2>
             </header>
-            ${createStatsBox(subdivisionStats.totalNumbers, invalidCount, autoFixableCount, locale)}
+            ${createStatsBox(totalCount, invalidCount, autoFixableCount, locale)}
             <div id="reportContainer" class="space-y-8">
                 <section id="fixableSection" class="space-y-8">
                     <div class="spinner mx-auto"></div>

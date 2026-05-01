@@ -299,7 +299,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
         invalidCount: siteInvalidCount,
         autoFixableCount: siteAutoFixableCount,
         safeEditCount: safeEditCount,
-        totalNumbers: totalNumbers,
+        totalCount: totalNumbers,
         lastUpdated: dataTimestamp.toISOString()
     };
 
@@ -352,8 +352,8 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
         name: subdivision.name,
         divisionSlug: safeName(rawDivisionName),
         slug: safeName(subdivision.name),
-        incompleteNames: incompleteNames,
-        totalNames: totalNames,
+        invalidCount: incompleteNames,
+        totalCount: totalNames,
         lastUpdated: dataTimestamp.toISOString()
     };
 

@@ -13,14 +13,14 @@ const themeButton = `<button id="theme-toggle" type="button" class="theme-toggle
 
 /**
  * Creates the HTML box displaying statistics.
- * @param {number} total - Total phone numbers
- * @param {number} invalid - Number of invalid numbers
- * @param {number} fixable - Number of autofixable numbers
- * @param {string} locale - Locale to display numbers in
+ * @param {number} total - Total values
+ * @param {number} invalid - Number of invalid values
+ * @param {number} fixable - Number of autofixable values
+ * @param {string} locale - Locale to display stats in
  * @param {boolean} includeProgress - Whether or not to include a link to the progress page
  * @returns {string}
  */
-function createStatsBox(total, invalid, fixable, locale, includeProgress = false) {
+function createStatsBox(total, invalid, fixable=0, locale, includeProgress = false) {
     const percentageOptions = {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
