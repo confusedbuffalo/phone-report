@@ -46,7 +46,7 @@ function createJosmFixUrl(item) {
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @param {IconManager} iconManager - The icon manager instance for this report.
- * @returns {string}
+ * @returns {Object}
  */
 function createPhoneForeignFixRows(item, locale, iconManager) {
     // validForeignNumbers: { phone: { '+44 20 7946 0000': 'GB' } },
@@ -80,7 +80,7 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @param {IconManager} iconManager - The icon manager instance for this report.
- * @returns {string}
+ * @returns {Object}
  */
 function createPhoneFixRows(item, locale, iconManager) {
     return Object.keys(item.invalidNumbers).map(key => {
@@ -173,7 +173,7 @@ function createPhoneFixRows(item, locale, iconManager) {
  * @param {Object} item - The invalid data item.
  * @param {string} locale - The locale for the text
  * @param {IconManager} iconManager - The icon manager instance for this report.
- * @returns {string}
+ * @returns {Object}
  */
 function createNameFixRows(item, locale, iconManager) {
     return [{
@@ -189,7 +189,7 @@ function createNameFixRows(item, locale, iconManager) {
  * @param {string} locale - The locale for the text
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {IconManager} iconManager - The icon manager instance for this report.
- * @returns {string}
+ * @returns {Object}
  */
 function createClientItems(reportType, item, locale, botEnabled, iconManager) {
     // Skip safe edit items if the bot is enabled here
