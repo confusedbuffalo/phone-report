@@ -1,9 +1,13 @@
+const fs = require('fs');
+const { WEBSITE_TAGS } = require('./constants');
+const { getRepresentativeLocation } = require('./data-processor');
+
 /**
  * Validates names.
  * @param {Array<Object>} elementStream - OSM elements with name tags.
  * @param {string} countryCode - The country code for special handling of multi-lingual names in the name tag.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
- * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}
+ * @returns {{incompleteNames: Array<Object>, totalNames: number}}
  */
 async function validateNames(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
@@ -53,10 +57,11 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
                 allTags: tags,
                 nameTags: new Map(),
             };
-            return baseItem;
+            item = baseItem
+            return item;
         };
 
-        const nameEntries = Object.entries(tags).filter(([key]) => key.startsWith('name'));
+        const nameEntries = Object.entries(tags).filter(([key]) => key.startsWith('name:'));
         const primaryName = tags['name'];
 
         // Condition 1: There is no 'name' tag

@@ -1413,4 +1413,5 @@ module.exports = {
     isWhatsappUrl,
     isItalianMissingZeroNumber,
     isSlashSpace,
+    getRepresentativeLocation,
 };
