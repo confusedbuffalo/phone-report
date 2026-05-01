@@ -9,11 +9,12 @@ const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { disassembler } = require('stream-json/disassembler.js');
 const { stringer } = require('stream-json/stringer.js');
 const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR } = require('./constants');
-const { safeName, getFeatureTypeName, getFeatureIcon, isDisused, phoneTagToUse } = require('./data-processor');
+const { safeName, getFeatureTypeName, getFeatureIcon, isDisused } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
 const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
 const { IconManager } = require('./icon-manager');
+const { phoneTagToUse } = require('./phone-processor');
 
 
 /**

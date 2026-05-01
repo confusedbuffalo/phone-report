@@ -6,13 +6,14 @@ const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, OSM_DIR, NAMES_BUILD_DIR } = require('./constants');
 const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
-const { safeName, validateNumbers } = require('./data-processor');
+const { safeName } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
 const { generateHtmlReport } = require('./html-report')
 const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
 const { validateNames } = require('./names-processor');
+const { validateNumbers } = require('./phone-processor');
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country

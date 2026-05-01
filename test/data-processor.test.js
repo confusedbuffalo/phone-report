@@ -4,12 +4,14 @@ const path = require('path');
 const fs = require('fs');
 const {
     safeName,
+    isDisused,
+} = require('../src/data-processor');
+
+const {
     stripStandardExtension,
     checkExclusions,
     processSingleNumber,
     validateNumbers,
-    getFeatureTypeName,
-    isDisused,
     validateSingleTag,
     phoneTagToUse,
     keyToRemove,
@@ -19,8 +21,7 @@ const {
     isSafeItemEdit,
     isStandardExtension,
     getWhatsappNumber,
-    isItalianMissingZeroNumber
-} = require('../src/data-processor');
+} = require('../src/phone-processor');
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
 const SAMPLE_COUNTRY_CODE_DE = 'DE';
