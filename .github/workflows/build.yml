@@ -125,6 +125,14 @@ jobs:
           name: names-build
           path: names_build/
 
+      - name: Deploy names to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
+          command: pages deploy names_build --project-name=names-report
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
