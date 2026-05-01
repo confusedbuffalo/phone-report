@@ -7,7 +7,7 @@
     "download-icons": "node src/download-icons.js",
     "start": "npm run build",
     "test": "jest",
-    "build:css": "npx @tailwindcss/cli -i src/input.css -o public/styles.css",
+    "build:css": "npx @tailwindcss/cli -i src/input.css -o public/styles.css && npx @tailwindcss/cli -i src/input.css -o names-build/styles.css",
     "build:history": "node src/history-processor.js",
     "build:progress": "node src/html-progress.js",
     "build": "node src/main.js && npm run build:history && npm run build:progress && npm run build:css",
