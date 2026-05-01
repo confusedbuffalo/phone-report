@@ -193,7 +193,7 @@ describe('generateHtmlReport', () => {
             name: "O'Fallon",
             divisionSlug: 'st-clair-county',
             slug: 'ofallon',
-            totalNumbers: 10,
+            totalCount: 10,
             invalidCount: 0,
             autoFixableCount: 0,
         };
