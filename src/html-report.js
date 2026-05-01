@@ -176,7 +176,10 @@ function createPhoneFixRows(item, locale, iconManager) {
  * @returns {string}
  */
 function createNameFixRows(item, locale, iconManager) {
-    return [item.nameTags];
+    return [{
+        ...(item.name && { name: item.name }),
+        ...item.nameTags
+    }];
 }
 
 /**
