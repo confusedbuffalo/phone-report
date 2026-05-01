@@ -45,7 +45,7 @@ for (const divisionName in groupedDivisionStats) {
     let groupFixable = 0;
     groupedDivisionStats[divisionName].forEach(stat => {
         groupInvalid += stat.invalidCount;
-        groupTotal += stat.totalNumbers;
+        groupTotal += stat.totalCount;
         groupFixable += stat.autoFixableCount;
     });
     calculatedDivisionTotals[divisionName] = {
@@ -161,8 +161,8 @@ function renderList() {
 
             sortedData.sort((a, b) => {
                 if (currentSort === 'percentage') {
-                    const percentageA = a.totalNumbers > 0 ? (a.invalidCount / a.totalNumbers) : 0;
-                    const percentageB = b.totalNumbers > 0 ? (b.invalidCount / b.totalNumbers) : 0;
+                    const percentageA = a.totalCount > 0 ? (a.invalidCount / a.totalCount) : 0;
+                    const percentageB = b.totalCount > 0 ? (b.invalidCount / b.totalCount) : 0;
                     const diff = percentageB - percentageA;
                     return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'invalidCount') {
@@ -255,14 +255,14 @@ function renderList() {
                 const singleLevelDivision = safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
                 const subdivisionSlug = singleLevelDivision ? subdivision.slug : `${subdivision.divisionSlug}/${subdivision.slug}`;
     
-                const percentage = subdivision.totalNumbers > 0 ? (subdivision.invalidCount / subdivision.totalNumbers) * 100 : 0;
+                const percentage = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
                 const formattedInvalidCount = formatNumber(subdivision.invalidCount);
                 const formattedFixableCount = formatNumber(subdivision.autoFixableCount);
-                const formattedTotalCount = formatNumber(subdivision.totalNumbers);
+                const formattedTotalCount = formatNumber(subdivision.totalCount);
 
-                const percentageNumber = subdivision.totalNumbers > 0 ? (subdivision.invalidCount / subdivision.totalNumbers) * 100 : 0;
+                const percentageNumber = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const formattedPercentage = percentageNumber.toLocaleString(locale, percentageOptions);
                 
                 // Client-side substitution using the embedded template literal
