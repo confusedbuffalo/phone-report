@@ -22,7 +22,8 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
-        const nameEntries = Object.entries(tags).filter(([key]) => key.startsWith('name:'));
+        const nameEntries = Object.entries(tags).filter(([key]) => key.match(/^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/));
+        console.log(tags, nameEntries)
         const primaryName = tags['name'];
 
         if (Object.keys(nameEntries).length === 0 && !primaryName) continue;

@@ -134,4 +134,86 @@ describe('validateNames', () => {
             'name:en': 'Test',
         })
     });
+
+    test('name:signed is not a name', async () => {
+        const elements = [
+            createGeoJson(1001, { name: 'Test', 'name:signed': 'no' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(0);
+    });
+
+    test('name:signed without a name is not a name', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name:signed': 'no' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        expect(result.totalNames).toBe(0);
+        expect(result.incompleteNames).toBe(0);
+    });
+
+    test('name:etymology is not a name', async () => {
+        const elements = [
+            createGeoJson(1001, { name: 'Test', 'name:etymology': 'Testing' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(0);
+    });
+
+    test('name:zh-Hant is a name', async () => {
+        const elements = [
+            createGeoJson(1001, { name: 'Test', 'name:zh-Hant': '測試' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+    });
+
+    test('name:zh-Latn-pinyin is a name', async () => {
+        const elements = [
+            createGeoJson(1001, { name: 'Test', 'name:zh-Latn-pinyin': 'cè shì' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+    });
+
+    test('name:be-tarask is a name', async () => {
+        const elements = [
+            createGeoJson(1001, { name: 'Test', 'name:be-tarask': 'Тэст' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+    });
+
+    test('name:ja-Latn is a name', async () => {
+        const elements = [
+            createGeoJson(1001, { name: 'Test', 'name:ja-Latn': 'Tesuto' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+    });
 });
