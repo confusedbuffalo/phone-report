@@ -22,6 +22,11 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
+        const nameEntries = Object.entries(tags).filter(([key]) => key.startsWith('name:'));
+        const primaryName = tags['name'];
+
+        if (Object.keys(nameEntries).length === 0 && !primaryName) continue;
+
         totalNames++;
         
         let item = null;
@@ -60,9 +65,6 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
             item = baseItem
             return item;
         };
-
-        const nameEntries = Object.entries(tags).filter(([key]) => key.startsWith('name:'));
-        const primaryName = tags['name'];
 
         // Condition 1: There is no 'name' tag
         // Condition 2: There are localised names (name:*) and none of them match the primary name

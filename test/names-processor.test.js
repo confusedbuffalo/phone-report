@@ -47,6 +47,17 @@ describe('validateNames', () => {
         expect(result.incompleteNames).toBe(0);
     });
 
+    test('no name tags is not counted', async () => {
+        const elements = [
+            createGeoJson(1001, { highway: 'residential' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        expect(result.totalNames).toBe(0);
+        expect(result.incompleteNames).toBe(0);
+    });
+
     test('name and matching name in subtag is valid', async () => {
         const elements = [
             createGeoJson(1001, { name: 'Test', 'name:en': 'Test' })
