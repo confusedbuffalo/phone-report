@@ -44,10 +44,11 @@ function createJosmFixUrl(item) {
 /**
  * Creates the fix rows for a phone number item that is showing foreign numbers.
  * @param {Object} item - The invalid number data item.
+ * @param {string} locale - The locale for the text
  * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {string}
  */
-function createPhoneForeignFixRows(item, iconManager) {
+function createPhoneForeignFixRows(item, locale, iconManager) {
     // validForeignNumbers: { phone: { '+44 20 7946 0000': 'GB' } },
 
     const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
@@ -208,7 +209,7 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
     item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
 
     if (reportType === 'phone' && item.isForeignItem) {
-        item.fixRows = createPhoneForeignFixRows(item, iconManager);
+        item.fixRows = createPhoneForeignFixRows(item, locale, iconManager);
 
         const { allTags, ...clientItem } = item;
         return clientItem;
