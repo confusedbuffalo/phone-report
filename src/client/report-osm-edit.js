@@ -1,6 +1,6 @@
-import { addNoteBtn, noteButtonClickHandler, noteCancelBtn, noteCloseBtnBottom, reportData, undoPosition, undoStack, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
+import { addNoteBtn, appState, noteCancelBtn, noteCloseBtnBottom, reportData, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
 import { moveEditsToUploadedStorage } from "./report-storage.js";
-import { openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
+import { enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
 
 const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
 
@@ -249,15 +249,15 @@ export function addNote(osmType, osmId) {
                 disableCreateNoteWithMessage(openNotesMessage);
             } else {
                 const itemId = `${item.type}/${item.id}`;
-                if (noteButtonClickHandler) {
-                    addNoteBtn.removeEventListener('click', noteButtonClickHandler);
+                if (appState.noteButtonClickHandler) {
+                    addNoteBtn.removeEventListener('click', appState.noteButtonClickHandler);
                 }
 
-                noteButtonClickHandler = function () {
+                appState.noteButtonClickHandler = function () {
                     checkAndCreateNote(itemId, item.lat, item.lon);
                 };
 
-                addNoteBtn.addEventListener('click', noteButtonClickHandler);
+                addNoteBtn.addEventListener('click', appState.noteButtonClickHandler);
             }
         })
         .catch((err) => {
@@ -375,8 +375,8 @@ export function checkAndSubmit() {
                 uploadBtn.classList.add('hidden');
                 uploadCloseBtnBottom.classList.remove('hidden');
 
-                undoPosition = 0;
-                undoStack = [];
+                undoData.position = 0;
+                undoData.stack = [];
 
                 // Re-render numbers to hide uploaded elements
                 renderNumbers();

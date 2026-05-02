@@ -1,4 +1,4 @@
-import { fixableSortDirection, fixableSortKey, foreignSortDirection, foreignSortKey, invalidSortDirection, invalidSortKey, UPLOADED_ITEMS_KEY } from "./report-state.js";
+import { sortDirection, sortKey, UPLOADED_ITEMS_KEY } from "./report-state.js";
 
 /**
  * Sorts an array of report items based on a specified key and direction.
@@ -178,15 +178,7 @@ export function getSortedItems(filterType) {
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
     });
 
-    const sortKey =
-        filterType === 'fixable' ? fixableSortKey :
-        filterType === 'foreign' ? foreignSortKey :
-        invalidSortKey;
-    const sortDirection = 
-        filterType === 'fixable' ? fixableSortDirection :
-        filterType === 'foreign' ? foreignSortDirection :
-        invalidSortDirection;
-    const sortedItems = sortItems(targetItems, sortKey, sortDirection);
+    const sortedItems = sortItems(targetItems, sortKey[filterType], sortDirection[filterType]);
     return sortedItems;
 }
 

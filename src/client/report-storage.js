@@ -1,4 +1,4 @@
-import { CLICKED_ITEMS_KEY, currentActiveEditors, DEFAULT_EDITORS, reportData, undoPosition, undoStack, UPLOADED_ITEMS_KEY } from './report-state.js';
+import { appState, CLICKED_ITEMS_KEY, DEFAULT_EDITORS, undoData, UPLOADED_ITEMS_KEY } from './report-state.js';
 import { enableRedo, disableRedo, renderNumbers, closeEditsModal, setUpSaveBtn, setUpUndoRedoBtns, transitionRemoveItem, transitionInsertItem } from './report-ui-controller.js';
 
 /**
@@ -69,14 +69,14 @@ export function loadSettings() {
     try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
-            currentActiveEditors = JSON.parse(saved);
+            appState.currentActiveEditors = JSON.parse(saved);
             return;
         }
     } catch (e) {
         console.error("Error loading settings from localStorage:", e);
     }
     // Fallback to defaults
-    currentActiveEditors = [...DEFAULT_EDITORS];
+    appState.currentActiveEditors = [...DEFAULT_EDITORS];
 }
 
 /**
@@ -84,7 +84,7 @@ export function loadSettings() {
  */
 export function saveSettings() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentActiveEditors));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.currentActiveEditors));
     } catch (e) {
         console.error("Error saving settings to localStorage:", e);
     }
@@ -141,8 +141,8 @@ export function discardEdits() {
         localStorage.removeItem(`undoPosition_${subdivisionName}`);
         localStorage.removeItem(`undoStack_${subdivisionName}`);
 
-        undoPosition = 0;
-        undoStack = [];
+        undoData.position = 0;
+        undoData.stack = [];
 
         setUpSaveBtn();
         setUpUndoRedoBtns();
@@ -168,7 +168,7 @@ function saveChangeToStorage(osmType, osmId) {
         edits[subdivisionName][osmType] = {};
     }
 
-    const item = reportData.find(item => {
+    const item = appState.reportData.find(item => {
         return item.id === osmId && item.type === osmType;
     });
 
@@ -198,7 +198,7 @@ export function applyFix(osmType, osmId) {
 
 /**
  * Adds a fixed item's ID and type to the local undo stack and updates the
- * `undoPosition`. It also enables the Undo button and updates the Save button state.
+ * undo position. It also enables the Undo button and updates the Save button state.
  *
  * @param {string} osmType - The OpenStreetMap element type.
  * @param {number} osmId - The ID of the OpenStreetMap element.
@@ -206,20 +206,20 @@ export function applyFix(osmType, osmId) {
  */
 function addToUndo(osmType, osmId) {
     const undoBtn = document.getElementById('undo-btn');
-    if (undoStack.length !== undoPosition) {
-        undoStack = undoStack.slice(0, undoPosition);
+    if (undoData.stack.length !== undoData.position) {
+        undoData.stack = undoData.stack.slice(0, undoData.position);
     }
-    undoStack.push([osmType, osmId]);
-    undoPosition = undoStack.length;
-    if (undoStack.length > 0 && undoBtn.disabled) {
+    undoData.stack.push([osmType, osmId]);
+    undoData.position = undoData.stack.length;
+    if (undoData.stack.length > 0 && undoBtn.disabled) {
         enableUndo();
     }
     if (OSM.isLoggedIn()) {
         enableSave();
     }
     disableRedo();
-    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
-    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
 }
 
 /**
@@ -229,11 +229,11 @@ function addToUndo(osmType, osmId) {
  * @returns {void}
  */
 export function undoChange() {
-    if (undoPosition === 0) {
+    if (undoData.position === 0) {
         return
     }
-    undoPosition -= 1;
-    if (undoPosition === 0) {
+    undoData.position -= 1;
+    if (undoData.position === 0) {
         disableUndo();
     }
     const redoBtn = document.getElementById('redo-btn');
@@ -242,7 +242,7 @@ export function undoChange() {
     }
 
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
-    const undoneElement = undoStack[undoPosition];
+    const undoneElement = undoData.stack[undoData.position];
     const osmType = undoneElement[0];
     const osmId = undoneElement[1];
 
@@ -251,8 +251,8 @@ export function undoChange() {
 
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
-    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
-    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
 
     transitionInsertItem(osmType, osmId);
 }
@@ -264,15 +264,15 @@ export function undoChange() {
  * @returns {void}
  */
 export function redoChange() {
-    if (undoPosition === undoStack.length) {
+    if (undoData.position === undoData.stack.length) {
         return
     }
 
-    const undoneElement = undoStack[undoPosition];
+    const undoneElement = undoData.stack[undoData.position];
     const osmType = undoneElement[0];
     const osmId = undoneElement[1];
 
-    const item = reportData.find(item => {
+    const item = appState.reportData.find(item => {
         return item.id === osmId && item.type === osmType;
     });
 
@@ -281,10 +281,10 @@ export function redoChange() {
     edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
     recordItemClick(`${osmType}/${osmId}`);
 
-    undoPosition += 1;
+    undoData.position += 1;
     setUpUndoRedoBtns();
-    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoStack));
-    localStorage.setItem(`undoPosition_${subdivisionName}`, undoPosition);
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
 
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();

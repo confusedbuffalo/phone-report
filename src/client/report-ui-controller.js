@@ -1,5 +1,5 @@
 import { addNote, openInJosm, login, logout, checkAndSubmit } from "./report-osm-edit.js";
-import { addNoteBtn, commentBox, currentActiveEditors, editsModal, noteButtonClickHandler, noteCancelBtn, noteCloseBtnBottom, noteModal, reportData, settingsMenu, undoPosition, undoStack, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, fixableSortKey, foreignSortKey, invalidSortKey, pageSize, foreignCurrentPage, invalidCurrentPage, fixableCurrentPage } from "./report-state.js";
+import { addNoteBtn, commentBox, editsModal, noteCancelBtn, noteCloseBtnBottom, noteModal, settingsMenu, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, pageSize, currentPage, sortKey, undoData, appState } from "./report-state.js";
 import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from "./report-storage.js";
 import { changePage, handleSort } from "./report-ui-actions.js";
 import { createListItem, decodeHtmlEntities } from "./report-ui-components.js";
@@ -113,7 +113,7 @@ commentBox.addEventListener('keydown', (event) => {
  * @returns {void}
  */
 export function renderNumbers() {
-    if (!reportData) {
+    if (!appState.reportData) {
         console.error("Attempted to render numbers before data was loaded.");
         return;
     }
@@ -134,8 +134,8 @@ export function renderNumbers() {
         if (editCount > 0) {
             openEditsModal(editCount);
         } else {
-            undoPosition = 0;
-            undoStack = [];
+            undoData.position = 0;
+            undoData.stack = [];
         }
     }
 
@@ -160,8 +160,8 @@ export function renderNumbers() {
                 sortedFixable,
                 translate('fixableNumbersHeader'),
                 translate('fixableNumbersDescription'),
-                fixableCurrentPage,
-                (page) => fixableCurrentPage = page, // Setter function for fixableCurrentPage
+                currentPage['fixable'],
+                (page) => currentPage['fixable'] = page,
                 'fixable'
             );
         }
@@ -172,8 +172,8 @@ export function renderNumbers() {
                 sortedInvalid,
                 translate('invalidNumbersHeader'),
                 translate('invalidNumbersDescription'),
-                invalidCurrentPage,
-                (page) => invalidCurrentPage = page, // Setter function for invalidCurrentPage
+                currentPage['invalid'],
+                (page) => currentPage['invalid'] = page,
                 'invalid'
             );
         }
@@ -191,8 +191,8 @@ export function renderNumbers() {
             sortedForeign,
             translate('foreignNumbersHeader'),
             translate('foreignNumbersDescription'),
-            foreignCurrentPage,
-            (page) => foreignCurrentPage = page,
+            currentPage['foreign'],
+            (page) => currentPage['foreign'] = page,
             'foreign'
         );
     }
@@ -210,7 +210,7 @@ export function renderNumbers() {
  * @param {string} headerStr - The main heading text.
  * @param {string} descriptionStr - The description text.
  * @param {number} currentPage - The current page number for this section.
- * @param {function} setCurrentPageFn - Function to call to update the current page in the global state (e.g., setFixableCurrentPage).
+ * @param {function} setCurrentPageFn - Function to call to update the current page in the global state.
  * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to render for (used for unique IDs). 
  */
 function renderPaginatedSection(
@@ -237,10 +237,7 @@ function renderPaginatedSection(
     const itemsOnPage = items.slice(startIndex, endIndex);
     const listContent = itemsOnPage.map(item => createListItem(item)).join('');
 
-    const currentSortKey = 
-        filterType === 'fixable' ? fixableSortKey :
-        filterType === 'invalid' ? invalidSortKey :
-        foreignSortKey;
+    const currentSortKey = sortKey[filterType];
 
     const getSortStyle = (key) => {
         if (currentSortKey === key) {
@@ -515,9 +512,9 @@ function closeNoteModal() {
     const messageBox = document.getElementById('note-message-box');
     noteModal.classList.remove('active');
 
-    if (noteButtonClickHandler) {
-        addNoteBtn.removeEventListener('click', noteButtonClickHandler);
-        noteButtonClickHandler = null;
+    if (appState.noteButtonClickHandler) {
+        addNoteBtn.removeEventListener('click', appState.noteButtonClickHandler);
+        appState.noteButtonClickHandler = null;
     }
 
     setTimeout(() => {
@@ -624,7 +621,7 @@ export function createSettingsCheckboxes() {
     settingsMenu.innerHTML = '';
 
     ALL_EDITOR_IDS.forEach(id => {
-        const isChecked = currentActiveEditors.includes(id);
+        const isChecked = appState.currentActiveEditors.includes(id);
         const checkboxHtml = `
             <div class="flex items-center justify-between py-5 px-5">
                 <label for="editor-${id}" class="text-sm text-gray-700 dark:text-gray-300 w-full text-right mr-2">${id}</label>
@@ -640,7 +637,7 @@ export function createSettingsCheckboxes() {
 
 /**
  * Handles the change event for editor visibility checkboxes.
- * Updates the \`currentActiveEditors\` array and saves the settings.
+ * Updates the `currentActiveEditors` array and saves the settings.
  * @param {Event} event - The change event from the checkbox.
  */
 function handleEditorChange(event) {
@@ -649,11 +646,11 @@ function handleEditorChange(event) {
         const editorId = checkbox.dataset.editorId;
 
         if (checkbox.checked) {
-            if (!currentActiveEditors.includes(editorId)) {
-                currentActiveEditors.push(editorId);
+            if (!appState.currentActiveEditors.includes(editorId)) {
+                appState.currentActiveEditors.push(editorId);
             }
         } else {
-            currentActiveEditors = currentActiveEditors.filter(id => id !== editorId);
+            appState.currentActiveEditors = appState.currentActiveEditors.filter(id => id !== editorId);
         }
 
         saveSettings();
@@ -663,7 +660,7 @@ function handleEditorChange(event) {
 
 /**
  * Shows or hides editor buttons on the page based on the user's
- * current visibility settings in \`currentActiveEditors\`.
+ * current visibility settings in `currentActiveEditors`.
  */
 export function applyEditorVisibility() {
     // Find all editor buttons using the data-editor-id attribute
@@ -683,19 +680,19 @@ export function applyEditorVisibility() {
             return;
         }
         if (editorId === 'josm-fix') {
-            const isVisible = currentActiveEditors.includes('JOSM');
+            const isVisible = appState.currentActiveEditors.includes('JOSM');
             button.style.display = isVisible ? 'inline-flex' : 'none';
             return;
         }
         if (editorId === 'fix-label') {
-            // const isVisible = !currentActiveEditors.includes('JOSM');
+            // const isVisible = !appState.currentActiveEditors.includes('JOSM');
             // TODO: determine whether to keep this label or just always show the fix button
             const isVisible = false;
             button.style.display = isVisible ? 'inline-flex' : 'none';
             return;
         }
 
-        const isVisible = currentActiveEditors.includes(editorId);
+        const isVisible = appState.currentActiveEditors.includes(editorId);
         button.style.display = isVisible ? 'inline-flex' : 'none';
     });
 }
@@ -803,16 +800,16 @@ export function setUpSaveBtn() {
 
 /**
  * Sets the disabled/enabled state of the 'Undo' and 'Redo' buttons based
- * on the current state of the `undoPosition` and `undoStack`.
+ * on the current state of the `undoData` position and stack.
  * @returns {void}
  */
 export function setUpUndoRedoBtns() {
-    if (undoPosition === 0) {
+    if (undoData.position === 0) {
         disableUndo();
     } else {
         enableUndo();
     }
-    if (undoPosition < undoStack.length) {
+    if (undoData.position < undoData.stack.length) {
         enableRedo();
     } else {
         disableRedo();

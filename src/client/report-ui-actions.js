@@ -1,28 +1,25 @@
-import { fixableCurrentPage, fixableSortDirection, fixableSortKey, foreignSortDirection, foreignSortKey, invalidCurrentPage, invalidSortDirection, invalidSortKey, pageSize, reportData } from "./report-state.js";
+import { appState, currentPage, pageSize, sortKey } from "./report-state.js";
 import { renderNumbers } from "./report-ui-controller.js";
 import { getSortedItems } from "./report-utils.js";
 
 /**
  * Handles pagination control logic by calculating the new current page,
- * updating the relevant global state variable (fixableCurrentPage or invalidCurrentPage),
- * triggering a full re-render, and smoothly scrolling to the section.
- * @param {('Fixable'|'Invalid')} section - The section being navigated ('Fixable' for autofixable, 'Invalid' for manual fix).
+ * updating the relevant global state variable, triggering a full re-render and smoothly scrolling to the section.
+ * @param {('fixable'|'invalid'|'foreign')} section - The section being navigated ('Fixable' for autofixable, 'Invalid' for manual fix).
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 export function changePage(section, delta) {
-    if (!reportData) {
+    if (!appState.reportData) {
         console.error("Cannot change page before data is loaded.");
         return;
     }
-    if (section === 'fixable') {
-        const totalPages = Math.ceil(reportData.filter(item => item.autoFixable).length / pageSize);
-        fixableCurrentPage = Math.max(1, Math.min(totalPages, fixableCurrentPage + delta));
-        renderNumbers(); // Re-render the whole page to update the state
-    } else if (section === 'invalid') {
-        const totalPages = Math.ceil(reportData.filter(item => !item.autoFixable).length / pageSize);
-        invalidCurrentPage = Math.max(1, Math.min(totalPages, invalidCurrentPage + delta));
-        renderNumbers(); // Re-render the whole page
-    }
+    const totalPages =
+        section === 'fixable' ? Math.ceil(appState.reportData.filter(item => item.autoFixable).length / pageSize) :
+            section === 'foreign' ? Math.ceil(appState.reportData.filter(item => item.isForeignItem).length / pageSize) :
+                Math.ceil(appState.reportData.filter(item => (!item.autoFixable && !item.isForeignItem)).length / pageSize); // invalid
+
+    currentPage[section] = Math.max(1, Math.min(totalPages, currentPage[section] + delta));
+    renderNumbers();
     document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
 }
 
@@ -36,44 +33,20 @@ export function changePage(section, delta) {
 export function handleSort(section, newKey) {
     let currentKey, currentDirection;
 
-    if (section === 'fixable') {
-        currentKey = fixableSortKey;
-        currentDirection = fixableSortDirection;
-    } else if (section === 'invalid') {
-        currentKey = invalidSortKey;
-        currentDirection = invalidSortDirection;
-    } else { // foreign
-        currentKey = foreignSortKey;
-        currentDirection = foreignSortDirection;
-    }
+    currentKey = sortKey[section];
+    currentDirection = sortDirection[section];
 
     if (newKey === currentKey) {
         // Same key clicked, toggle direction
-        if (section === 'fixable') {
-            fixableSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
-        } else if (section === 'invalid') {
-            invalidSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
-        } else {
-            foreignSortDirection = (currentDirection === 'asc') ? 'desc' : 'asc';
-        }
+        sortKey[section] = (currentDirection === 'asc') ? 'desc' : 'asc';
     } else {
         // New key clicked, set key and default to ascending
-        if (section === 'fixable') {
-            fixableSortKey = newKey;
-            fixableSortDirection = 'asc';
-        } else if (section === 'invalid') {
-            invalidSortKey = newKey;
-            invalidSortDirection = 'asc';
-        } else {
-            foreignSortKey = newKey;
-            foreignSortDirection = 'asc';
-        }
+        sortKey[section] = newKey;
+        sortDirection[section] = 'asc'
     }
 
     // Reset to the first page after sorting
-    if (section === 'fixable') fixableCurrentPage = 1;
-    else if (section === 'invalid') invalidCurrentPage = 1;
-    else foreignCurrentPage = 1;
+    currentPage[section] = 1;
 
     renderNumbers();
     document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });

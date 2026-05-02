@@ -1,7 +1,7 @@
 import { initLogin } from "./report-osm-edit.js";
-import { commentBox, reportData, settingsMenu, settingsToggle } from "./report-state.js";
+import { appState, commentBox, settingsMenu, settingsToggle } from "./report-state.js";
 import { loadSettings } from "./report-storage.js";
-import { applyEditorVisibility, createSettingsCheckboxes, renderNumbers } from "./report-ui-controller.js";
+import { applyEditorVisibility, createSettingsCheckboxes, enableModalCloseListeners, renderNumbers } from "./report-ui-controller.js";
 import { filterCreatedNotes } from "./report-utils.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,7 +35,7 @@ async function initReportPage() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        reportData = await response.json();
+        appState.reportData = await response.json();
     } catch (error) {
         console.error("Failed to load phone validation data:", error);
         // Display an error message to the user if data loading fails
@@ -48,7 +48,7 @@ async function initReportPage() {
 
     // Check stored ids of elements that have had notes created and clear any no longer in report data (presume fixed)
     let createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
-    const updatedNotes = filterCreatedNotes(createdNotes, reportData);
+    const updatedNotes = filterCreatedNotes(createdNotes, appState.reportData);
     localStorage.setItem(`createdNotes_${subdivisionName}`, JSON.stringify(updatedNotes));
 
     renderNumbers();
