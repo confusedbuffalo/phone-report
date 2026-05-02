@@ -78,7 +78,7 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
                 percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
             },
             {
-                value: data.missingNames.toLocaleString(locale),
+                value: data.missingNamesCount.toLocaleString(locale),
                 label: translate('missingNames', locale),
                 numberClass: 'stats-box-number-fixable',
                 percentage: translate('invalidPercentageOfTotal', locale, [formattedMissingPercentage])
