@@ -1,4 +1,4 @@
-import { sortDirection, sortKey, UPLOADED_ITEMS_KEY } from "./report-state.js";
+import { appState, sortDirection, sortKey, UPLOADED_ITEMS_KEY } from "./report-state.js";
 
 /**
  * Sorts an array of report items based on a specified key and direction.
@@ -164,7 +164,7 @@ export function getSortedItems(filterType) {
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
-    const targetItems = reportDataIds.filter(item => {
+    const targetItems = appState.reportData.filter(item => {
         const isWanted = 
             filterType === 'foreign' ? item.isForeignItem :
             filterType === 'fixable' ? item.autoFixable :
