@@ -196,6 +196,7 @@ describe('generateHtmlReport', () => {
             totalCount: 10,
             invalidCount: 0,
             autoFixableCount: 0,
+            foreignCount: 0,
         };
         const tmpFilePath = 'test.json';
 
