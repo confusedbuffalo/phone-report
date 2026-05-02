@@ -9,6 +9,7 @@ import { getSortedItems } from "./report-utils.js";
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 export function changePage(section, delta) {
+    delta = Number(delta)
     if (!appState.reportData) {
         console.error("Cannot change page before data is loaded.");
         return;

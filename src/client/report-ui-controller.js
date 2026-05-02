@@ -250,7 +250,7 @@ function renderPaginatedSection(
 
     const pageControls = totalItems > pageSize ? `
         <div class="page-btns-container">
-            <button id="prevPage${suffix}" data-action="page" data-page-change="-1" data-section="${suffix}
+            <button id="prevPage${suffix}" data-action="page" data-page-change="-1" data-section="${suffix}"
                     class="page-btn
                             ${currentPage <= 1 ? 'page-btn-disabled' : 'page-btn-active'}"
                     ${currentPage <= 1 ? 'disabled' : ''}>
@@ -259,7 +259,7 @@ function renderPaginatedSection(
             <span class="page-numbers">
                 ${translate('pageOf', { '%n': currentPage, '%t': totalPages })}
             </span>
-            <button id="nextPage${suffix}" data-action="page" data-page-change="1" data-section="${suffix}
+            <button id="nextPage${suffix}" data-action="page" data-page-change="1" data-section="${suffix}"
                     class="page-btn
                             ${currentPage >= totalPages ? 'page-btn-disabled' : 'page-btn-active'}"
                     ${currentPage >= totalPages ? 'disabled' : ''}>
