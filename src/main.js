@@ -283,7 +283,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalCount, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalCount, invalidCount, autoFixableCount, foreignCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 
@@ -299,6 +299,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
         slug: safeName(subdivision.name),
         invalidCount: siteInvalidCount,
         autoFixableCount: siteAutoFixableCount,
+        foreignCount: foreignCount,
         safeEditCount: safeEditCount,
         totalCount: totalCount,
         lastUpdated: dataTimestamp.toISOString()
@@ -388,7 +389,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     if (!subdivisions || subdivisions.length === 0) {
         console.error(`No subdivisions to process for ${divisionName}.`);
-        return { divisionStats: [], divisionTotalCount: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0 };
+        return { divisionStats: [], divisionTotalCount: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0, divisionForeignCount: 0 };
     }
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
@@ -397,6 +398,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     let divisiontotalCount = 0;
     let divisionInvalidCount = 0;
     let divisionAutofixableCount = 0;
+    let divisionForeignCount = 0;
     let divisionSafeEditCount = 0;
 
     let subdivisionCount = 0;
@@ -406,6 +408,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisiontotalCount += stats.totalCount;
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
+        divisionForeignCount += stats.foreignCount;
         divisionSafeEditCount += stats.safeEditCount;
 
         const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations);
@@ -417,7 +420,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         // }
     }
 
-    return { divisionStats, divisionTotalCount, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
+    return { divisionStats, divisionTotalCount, divisionInvalidCount, divisionAutofixableCount, divisionForeignCount, divisionSafeEditCount };
 }
 
 /**
@@ -505,6 +508,7 @@ async function processCountry(countryData) {
 
     let totalInvalidCount = 0;
     let totalAutofixableCount = 0;
+    let totalForeignCount = 0;
     let totalSafeEditCount = 0;
     let totalTotalCount = 0;
     const groupedDivisionStats = {};
@@ -516,6 +520,7 @@ async function processCountry(countryData) {
             divisionTotalCount,
             divisionInvalidCount,
             divisionAutofixableCount,
+            divisionForeignCount,
             divisionSafeEditCount
         } = await processDivision(rawDivisionName, countryData, locale, clientTranslations);
 
@@ -523,6 +528,7 @@ async function processCountry(countryData) {
         groupedDivisionStats[divisionName] = divisionStats;
         totalInvalidCount += divisionInvalidCount;
         totalAutofixableCount += divisionAutofixableCount;
+        totalForeignCount += divisionForeignCount;
         totalSafeEditCount += divisionSafeEditCount;
         totalTotalCount += divisionTotalCount;
 
@@ -541,6 +547,7 @@ async function processCountry(countryData) {
         locale: locale,
         invalidCount: totalInvalidCount,
         autoFixableCount: totalAutofixableCount,
+        foreignCount: totalForeignCount,
         safeEditCount: totalSafeEditCount,
         totalCount: totalTotalCount,
         groupedDivisionStats: groupedDivisionStats,

@@ -942,6 +942,7 @@ function isSafeItemEdit(item, countryCode) {
  * totalCount: number,
  * invalidCount: number,
  * autoFixableCount: number,
+ * foreignCount: number,
  * safeEditCount: number
  * }} An object containing the breakdown of record counts.
  */
@@ -953,6 +954,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     let totalCount = 0;
     let invalidCount = 0;
     let autoFixableCount = 0;
+    let foreignCount = 0;
     let safeEditCount = 0;
 
     for await (const element of elementStream) {
@@ -1190,6 +1192,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             // Record foreign entries
             if (validationResult.validForeignNumbersMap.size > 0) {
+                foreignCount += validationResult.validForeignNumbersMap.size;
                 const currentForeignItem = getOrCreateForeignItem();
                 currentForeignItem.validForeignNumbers.set(tag, validationResult.validForeignNumbersMap);
             }
@@ -1243,7 +1246,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
     await new Promise(resolve => fileStream.on('finish', resolve));
 
-    return { totalCount, invalidCount, autoFixableCount, safeEditCount };
+    return { totalCount, invalidCount, autoFixableCount, foreignCount, safeEditCount };
 }
 
 

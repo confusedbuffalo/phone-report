@@ -57,6 +57,16 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
                 percentage: translate('fixablePercentageOfInvalid', locale, [formattedFixablePercentage])
             }
         ];
+        if (!includeProgress) {
+            statsData.push(
+                {
+                    value: data.foreignCount.toLocaleString(locale),
+                    label: translate('foreignNumbersHeader', locale),
+                    numberClass: 'stats-box-number',
+                    percentage: null
+                }
+            )
+        }
     } else if (reportType === 'name') {
         const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
         const missingPercentageNumber = data.totalCount > 0 ? (data.missingNamesCount / data.totalCount) * 100 : 0;
@@ -99,7 +109,8 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
         </div>
         ` : '';
 
-    const statsBoxClass = includeProgress ? "stats-box-three" : "stats-box-no-four";
+    const statsBoxClass = reportType === 'phone' ? "stats-box-four" :
+        includeProgress ? "stats-box-three" : "stats-box-four";
 
     const statsContent = statsData.map(stat => `
         <div>
@@ -108,7 +119,7 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
             ${stat.percentage ? `<p class="stats-box-percentage">${stat.percentage}</p>` : ''}
         </div>
     `).join('');
-    
+
     return `
         <div class="stats-box ${statsBoxClass}">
             ${statsContent}

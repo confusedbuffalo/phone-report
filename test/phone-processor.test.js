@@ -2748,6 +2748,7 @@ describe('validateNumbers', () => {
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
+        expect(result.foreignCount).toBe(1);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
@@ -2769,6 +2770,7 @@ describe('validateNumbers', () => {
 
         expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(0);
+        expect(result.foreignCount).toBe(2);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);

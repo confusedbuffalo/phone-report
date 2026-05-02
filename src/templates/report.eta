@@ -7,7 +7,7 @@
     <%~ it.favicon %>
     <link href="<%= it.singleLevelDivision ? '' : '../' %>../styles.css" rel="stylesheet">
     <script src="<%= it.singleLevelDivision ? '' : '../' %>../theme.js"></script>
-    <% if (it.invalidCount === 0) { %>
+    <% if (it.subdivisionStats.invalidCount === 0) { %>
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -58,15 +58,7 @@
             <h1 class="page-title"><%= it.translate(it.reportType === 'phone' ? 'phoneNumberReport' : 'incompleteNamesReport', it.locale) %></h1>
             <h2 class="page-subtitle"><%= it.subdivisionStats.name %></h2>
         </header>
-        
-        <%
-            if (it.reportType === 'phone') {
-                it.createStatsBox(it.reportType, it, it.locale)
-            } else if (it.reportType === 'name') {
-                it.createStatsBox(it.reportType, it, it.locale)
-            }
-        %>
-
+        <% it.createStatsBox(it.reportType, it.subdivisionStats, it.locale) %>
         <div id="reportContainer" class="space-y-8">
             <section id="fixableSection" class="space-y-8">
                 <div class="spinner mx-auto"></div>
