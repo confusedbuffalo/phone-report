@@ -1,4 +1,4 @@
-import { addNoteBtn, appState, noteCancelBtn, noteCloseBtnBottom, reportData, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
+import { addNoteBtn, appState, noteCancelBtn, noteCloseBtnBottom, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
 import { moveEditsToUploadedStorage } from "./report-storage.js";
 import { enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
 
@@ -122,7 +122,7 @@ function applyEditsToFeatureTags(feature, elementEdits) {
         return false;
     }
 
-    const item = reportData.find(item => {
+    const item = appState.reportData.find(item => {
         return item.id === feature.id && item.type === feature.type;
     });
 
@@ -234,7 +234,7 @@ async function checkForNotes(lat, lon) {
  * @returns {void}
  */
 export function addNote(osmType, osmId) {
-    const item = reportData.find(item => {
+    const item = appState.reportData.find(item => {
         return item.id === osmId && item.type === osmType;
     });
     openNoteModal(item);
