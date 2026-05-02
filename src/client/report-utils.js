@@ -1,4 +1,4 @@
-import { fixableSortDirection, fixableSortKey, foreignSortDirection, foreignSortKey, invalidSortDirection, invalidSortKey, UPLOADED_ITEMS_KEY } from "./report-state";
+import { fixableSortDirection, fixableSortKey, foreignSortDirection, foreignSortKey, invalidSortDirection, invalidSortKey, UPLOADED_ITEMS_KEY } from "./report-state.js";
 
 /**
  * Sorts an array of report items based on a specified key and direction.

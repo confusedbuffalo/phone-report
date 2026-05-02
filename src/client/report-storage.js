@@ -1,5 +1,5 @@
-import { CLICKED_ITEMS_KEY, currentActiveEditors, DEFAULT_EDITORS, reportData, undoPosition, undoStack, UPLOADED_ITEMS_KEY } from './report-state';
-import { enableRedo, disableRedo, renderNumbers, closeEditsModal, setUpSaveBtn, setUpUndoRedoBtns, transitionRemoveItem, transitionInsertItem } from './report-ui-controller';
+import { CLICKED_ITEMS_KEY, currentActiveEditors, DEFAULT_EDITORS, reportData, undoPosition, undoStack, UPLOADED_ITEMS_KEY } from './report-state.js';
+import { enableRedo, disableRedo, renderNumbers, closeEditsModal, setUpSaveBtn, setUpUndoRedoBtns, transitionRemoveItem, transitionInsertItem } from './report-ui-controller.js';
 
 /**
  * Adds an item's ID to localStorage to mark it as clicked.

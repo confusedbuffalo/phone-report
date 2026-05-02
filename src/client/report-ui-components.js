@@ -1,4 +1,4 @@
-import { isItemClicked } from "./report-storage";
+import { isItemClicked } from "./report-storage.js";
 
 /**
  * Creates the HTML content for a single invalid number item.

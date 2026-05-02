@@ -1,6 +1,6 @@
-import { fixableCurrentPage, fixableSortDirection, fixableSortKey, foreignCurrentPage, foreignSortDirection, foreignSortKey, invalidCurrentPage, invalidSortDirection, invalidSortKey, pageSize, reportData } from "./report-state";
-import { renderNumbers } from "./report-ui-controller";
-import { getSortedItems } from "./report-utils";
+import { fixableCurrentPage, fixableSortDirection, fixableSortKey, foreignSortDirection, foreignSortKey, invalidCurrentPage, invalidSortDirection, invalidSortKey, pageSize, reportData } from "./report-state.js";
+import { renderNumbers } from "./report-ui-controller.js";
+import { getSortedItems } from "./report-utils.js";
 
 /**
  * Handles pagination control logic by calculating the new current page,

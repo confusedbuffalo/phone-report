@@ -1,8 +1,8 @@
-import { initLogin } from "./report-osm-edit";
-import { commentBox, reportData, settingsMenu, settingsToggle } from "./report-state";
-import { loadSettings } from "./report-storage";
-import { applyEditorVisibility, createSettingsCheckboxes, renderNumbers } from "./report-ui-controller";
-import { filterCreatedNotes } from "./report-utils";
+import { initLogin } from "./report-osm-edit.js";
+import { commentBox, reportData, settingsMenu, settingsToggle } from "./report-state.js";
+import { loadSettings } from "./report-storage.js";
+import { applyEditorVisibility, createSettingsCheckboxes, renderNumbers } from "./report-ui-controller.js";
+import { filterCreatedNotes } from "./report-utils.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();

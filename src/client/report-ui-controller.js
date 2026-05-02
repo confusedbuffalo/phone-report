@@ -1,9 +1,9 @@
-import { addNote, openInJosm, login, logout, checkAndSubmit } from "./report-osm-edit";
-import { addNoteBtn, commentBox, currentActiveEditors, editsModal, noteButtonClickHandler, noteCancelBtn, noteCloseBtnBottom, noteModal, reportData, settingsMenu, undoPosition, undoStack, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, fixableSortKey, foreignSortKey, invalidSortKey, pageSize, foreignCurrentPage, invalidCurrentPage, fixableCurrentPage } from "./report-state";
-import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from "./report-storage";
-import { changePage, handleSort } from "./report-ui-actions";
-import { createListItem, decodeHtmlEntities } from "./report-ui-components";
-import { getSortedItems } from "./report-utils";
+import { addNote, openInJosm, login, logout, checkAndSubmit } from "./report-osm-edit.js";
+import { addNoteBtn, commentBox, currentActiveEditors, editsModal, noteButtonClickHandler, noteCancelBtn, noteCloseBtnBottom, noteModal, reportData, settingsMenu, undoPosition, undoStack, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, fixableSortKey, foreignSortKey, invalidSortKey, pageSize, foreignCurrentPage, invalidCurrentPage, fixableCurrentPage } from "./report-state.js";
+import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from "./report-storage.js";
+import { changePage, handleSort } from "./report-ui-actions.js";
+import { createListItem, decodeHtmlEntities } from "./report-ui-components.js";
+import { getSortedItems } from "./report-utils.js";
 
 let firstLoad = true;
 

@@ -1,6 +1,6 @@
-import { addNoteBtn, noteButtonClickHandler, noteCancelBtn, noteCloseBtnBottom, reportData, undoPosition, undoStack, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state";
-import { moveEditsToUploadedStorage } from "./report-storage";
-import { openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller";
+import { addNoteBtn, noteButtonClickHandler, noteCancelBtn, noteCloseBtnBottom, reportData, undoPosition, undoStack, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
+import { moveEditsToUploadedStorage } from "./report-storage.js";
+import { openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
 
 const redirectUrl = "https://confusedbuffalo.github.io/phone-report/land.html";
 

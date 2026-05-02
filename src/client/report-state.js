@@ -1,5 +1,3 @@
-import { isMobileView } from './report-utils.js';
-
 export let fixableCurrentPage = 1;
 export let invalidCurrentPage = 1;
 export let foreignCurrentPage = 1;
