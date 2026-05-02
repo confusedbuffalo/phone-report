@@ -395,7 +395,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
     const divisionStats = [];
-    let divisiontotalCount = 0;
+    let divisionTotalCount = 0;
     let divisionInvalidCount = 0;
     let divisionAutofixableCount = 0;
     let divisionForeignCount = 0;
@@ -405,7 +405,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     for (const subdivision of subdivisions) {
         const stats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations);
         divisionStats.push(stats);
-        divisiontotalCount += stats.totalCount;
+        divisionTotalCount += stats.totalCount;
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
         divisionForeignCount += stats.foreignCount;
