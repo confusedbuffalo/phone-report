@@ -370,7 +370,7 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
     `;
 
     const eta = new Eta({
-        views: path.join(process.cwd(), "templates"),
+        views: path.join(process.cwd(), "src", "templates"),
         cache: true,
     });
 
@@ -379,6 +379,8 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
         subdivisionStats,
         translate,
         escapeHTML,
+        createStatsBox,
+        createFooter,
         favicon,
         singleLevelDivision,
         svgSprite,
