@@ -46,6 +46,15 @@ describe('html-utils', () => {
             expect(html).toContain('fixablePercentageOfInvalid[10.00]');
         });
 
+        test('should generate stats box with correct numbers and percentages for names', () => {
+            const html = createStatsBox('name', {totalCount: 1000, invalidCount: 100, missingNamesCount: 50}, 'en-US');
+            expect(html).toContain('1,000');
+            expect(html).toContain('100');
+            expect(html).toContain('50');
+            expect(html).toContain('invalidPercentageOfTotal[10.00]');
+            expect(html).toContain('invalidPercentageOfTotal[5.00]');
+        });
+
         test('should handle zero total numbers', () => {
             const html = createStatsBox('phone', {totalCount: 0, invalidCount: 0, autoFixableCount: 0, foreignCount: 0}, 'en-US');
             expect(html).toContain('>0<');

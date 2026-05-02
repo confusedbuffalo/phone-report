@@ -412,7 +412,6 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionSafeEditCount += stats.safeEditCount;
 
         const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations);
-        console.log(nameStats);
 
         subdivisionCount++;
         // if (testMode && subdivisionCount >= 1) {

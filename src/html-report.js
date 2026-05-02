@@ -308,8 +308,6 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
     const htmlFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.html` : `${path.join(PUBLIC_DIR, relativeFilePath)}.html`;
     const dataFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.json` : `${path.join(PUBLIC_DIR, relativeFilePath)}.json`;
 
-    const { totalCount, invalidCount, autoFixableCount } = subdivisionStats;
-
     const stringerOptions = { makeArray: true };
 
     const inputStream = fs.createReadStream(tmpFilePath);

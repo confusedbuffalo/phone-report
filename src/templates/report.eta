@@ -58,7 +58,7 @@
             <h1 class="page-title"><%= it.translate(it.reportType === 'phone' ? 'phoneNumberReport' : 'incompleteNamesReport', it.locale) %></h1>
             <h2 class="page-subtitle"><%= it.subdivisionStats.name %></h2>
         </header>
-        <% it.createStatsBox(it.reportType, it.subdivisionStats, it.locale) %>
+        <%~ it.createStatsBox(it.reportType, it.subdivisionStats, it.locale) %>
         <div id="reportContainer" class="space-y-8">
             <section id="fixableSection" class="space-y-8">
                 <div class="spinner mx-auto"></div>
@@ -135,7 +135,7 @@
         </div>
     </div>
     <script>
-        const reportType = <%~ it.reportType %>;
+        const reportType = '<%~ it.reportType %>';
         const ALL_EDITOR_IDS = <%~ JSON.stringify(it.ALL_EDITOR_IDS) %>;
         const DEFAULT_EDITORS_DESKTOP = <%~ JSON.stringify(it.DEFAULT_EDITORS_DESKTOP) %>;
         const DEFAULT_EDITORS_MOBILE = <%~ JSON.stringify(it.DEFAULT_EDITORS_MOBILE) %>;
@@ -144,7 +144,7 @@
         const STORAGE_KEY = 'osm_report_editors';
         const subdivisionName = <%~ JSON.stringify(it.subdivisionStats.name) %>;
         const CHANGESET_TAGS = <%~ JSON.stringify(it.CHANGESET_TAGS) %>;
-        const CHANGESET_COMMENT = <%~ it.CHANGESET_COMMENTS[it.reportType] %>;
+        const CHANGESET_COMMENT = '<%~ it.CHANGESET_COMMENTS[it.reportType] %>';
 
         <%~ it.clientOsmEditorsScript %>
 
