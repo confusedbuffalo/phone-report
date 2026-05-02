@@ -187,7 +187,7 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
             const now = new Date();
             const millisecondsAgo = now.getTime() - dataDate.getTime();
             const totalMinutes = Math.floor(millisecondsAgo / (1000 * 60));
-            
+
             let timeAgoText;
             const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
             if (totalMinutes < 60) {

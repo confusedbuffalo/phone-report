@@ -375,6 +375,7 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
     });
 
     const templateData = {
+        reportType,
         locale,
         subdivisionStats,
         translate,

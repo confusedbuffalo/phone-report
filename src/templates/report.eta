@@ -92,7 +92,49 @@
             </div>
         </div>
     </div>
-
+    <div id="edits-modal-overlay" class="save-modal-overlay modal-overlay hidden">
+        <div class="save-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="save-modal-content">
+                <h3 id="edits-modal-title" class="save-modal-title"></h3>
+                <button id="edits-close-modal-btn-top" class="modal-close" data-action="discard">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <p class="modal-decription"><%= it.translate('restoreUnsavedEdits', it.locale) %></p>
+            <div class="modal-button-container">
+                <button id="edits-modal-discard-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" data-action="discard">
+                    <%= it.translate('discard', it.locale) %>
+                </button>
+                <button id="edits-modal-keep-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer" data-action="close-edits-modal">
+                    <%= it.translate('keep', it.locale) %>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="note-modal-overlay" class="save-modal-overlay modal-overlay hidden">
+        <div class="save-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="save-modal-content">
+                <h3 id="note-modal-title" class="save-modal-title"></h3>
+                <button id="note-close-modal-btn-top" class="modal-close" data-action="close-note-modal">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <textarea id="note-comment" rows="10" class="comment-box"></textarea>
+            <div id="note-message-box" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-lg hidden" role="alert"></div>
+            <div class="modal-button-container">
+                <div id="note-spinner" class="hidden spinner mr-4"></div>
+                <button id="close-note-modal-btn-bottom" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer hidden" data-action="close-note-modal">
+                    <%= it.translate('close', it.locale) %>
+                </button>
+                <button id="cancel-note-modal-btn" class="btn-modal bg-red-500 hover:bg-red-600 cursor-pointer" data-action="close-note-modal">
+                    <%= it.translate('cancel', it.locale) %>
+                </button>
+                <button id="add-note-btn" class="btn-modal bg-gray-500 hover:bg-gray-600 cursor-pointer">
+                    <%= it.translate('openNote', it.locale) %>
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         const ALL_EDITOR_IDS = <%~ JSON.stringify(it.ALL_EDITOR_IDS) %>;
         const DEFAULT_EDITORS_DESKTOP = <%~ JSON.stringify(it.DEFAULT_EDITORS_DESKTOP) %>;
