@@ -12,7 +12,6 @@ const editsModalTitle = document.getElementById('edits-modal-title');
 const noteModalTitle = document.getElementById('note-modal-title');
 
 export function handleGlobalClicks(event) {
-    // 1. Find the element with a data-action attribute
     const target = event.target.closest('[data-action]');
     if (!target) return;
 
@@ -20,7 +19,6 @@ export function handleGlobalClicks(event) {
     const itemType = target.dataset.type;
     const itemId = target.dataset.id;        
 
-    // 2. Route the action to the correct function
     switch (action) {
         case 'fix':
             applyFix(itemType, itemId);
@@ -82,11 +80,11 @@ export function handleGlobalClicks(event) {
             break;
 
         case 'sort':
-            handleSort(target.dataset.section, target.dataset.sort-key);
+            handleSort(target.dataset.section, target.dataset.sortKey);
             break;
 
         case 'page':
-            changePage(target.dataset.section, target.dataset.page-change);
+            changePage(target.dataset.section, target.dataset.pageChange);
             break;
 
         default:

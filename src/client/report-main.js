@@ -1,7 +1,7 @@
 import { initLogin } from "./report-osm-edit.js";
 import { appState, commentBox, settingsMenu, settingsToggle } from "./report-state.js";
 import { loadSettings } from "./report-storage.js";
-import { applyEditorVisibility, createSettingsCheckboxes, enableModalCloseListeners, renderNumbers } from "./report-ui-controller.js";
+import { applyEditorVisibility, createSettingsCheckboxes, enableModalCloseListeners, renderNumbers, handleGlobalClicks } from "./report-ui-controller.js";
 import { filterCreatedNotes } from "./report-utils.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsMenu.classList.add('hidden');
         }
     });
+
+    document.addEventListener('click', handleGlobalClicks);
 });
 
 /**

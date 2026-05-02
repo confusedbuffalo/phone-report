@@ -13,7 +13,7 @@ export function createListItem(item) {
 
     const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton } = createButtons(item, clickedClass);
 
-    iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
+    const iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
     const itemMetadata = item.user ? `
         <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>

@@ -1,4 +1,4 @@
-import { appState, currentPage, pageSize, sortKey } from "./report-state.js";
+import { appState, currentPage, pageSize, sortDirection, sortKey } from "./report-state.js";
 import { renderNumbers } from "./report-ui-controller.js";
 import { getSortedItems } from "./report-utils.js";
 
@@ -31,14 +31,12 @@ export function changePage(section, delta) {
  * @param {('name'|'invalid'|'fixable')} newKey - The column key requested for sorting.
  */
 export function handleSort(section, newKey) {
-    let currentKey, currentDirection;
-
-    currentKey = sortKey[section];
-    currentDirection = sortDirection[section];
+    let currentKey = sortKey[section];
+    let currentDirection = sortDirection[section];
 
     if (newKey === currentKey) {
         // Same key clicked, toggle direction
-        sortKey[section] = (currentDirection === 'asc') ? 'desc' : 'asc';
+        sortDirection[section] = (currentDirection === 'asc') ? 'desc' : 'asc';
     } else {
         // New key clicked, set key and default to ascending
         sortKey[section] = newKey;
