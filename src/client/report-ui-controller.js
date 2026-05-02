@@ -161,7 +161,7 @@ export function renderNumbers() {
         if (anyFixable || editCount > 0) {
             renderPaginatedSection(
                 "fixableSection",
-                sorted.fixable,
+                sortedItems.fixable,
                 translate('fixableNumbersHeader'),
                 translate('fixableNumbersDescription'),
                 currentPage['fixable'],
@@ -173,7 +173,7 @@ export function renderNumbers() {
         if (anyInvalid) {
             renderPaginatedSection(
                 "invalidSection",
-                sorted.invalid,
+                sortedItems.invalid,
                 reportType === 'phone' ? translate('invalidNumbersHeader') : translate('incompleteNames'),
                 reportType === 'phone' ? translate('invalidNumbersDescription') : translate('incompleteNamesDescription'),
                 currentPage['invalid'],
@@ -185,7 +185,7 @@ export function renderNumbers() {
         if (anyMissing) {
             renderPaginatedSection(
                 "missingSection",
-                sorted.missing,
+                sortedItems.missing,
                 translate('missingNames'),
                 translate('missingNamesDescription'),
                 currentPage['missing'],
@@ -204,7 +204,7 @@ export function renderNumbers() {
     if (anyForeign) {
         renderPaginatedSection(
             "foreignSection",
-            sorted.foreign,
+            sortedItems.foreign,
             translate('foreignNumbersHeader'),
             translate('foreignNumbersDescription'),
             currentPage['foreign'],

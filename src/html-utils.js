@@ -110,7 +110,7 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
         ` : '';
 
     const statsBoxClass = reportType === 'phone' ? "stats-box-four" :
-        includeProgress ? "stats-box-three" : "stats-box-four";
+        includeProgress ? "stats-box-four" : "stats-box-three";
 
     const statsContent = statsData.map(stat => `
         <div>
