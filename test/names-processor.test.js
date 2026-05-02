@@ -45,6 +45,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('no name tags is not counted', async () => {
@@ -56,6 +57,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(0);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name and matching name in subtag is valid', async () => {
@@ -67,6 +69,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name and matching name in subtag is valid with other different names', async () => {
@@ -78,6 +81,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('multiple matching names is valid', async () => {
@@ -89,6 +93,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name and different names with no matching is invalid', async () => {
@@ -100,6 +105,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
 
@@ -124,6 +130,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(1);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
@@ -144,6 +151,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:signed without a name is not a name', async () => {
@@ -155,6 +163,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(0);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:etymology is not a name', async () => {
@@ -167,6 +176,7 @@ describe('validateNames', () => {
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:zh-Hant is a name', async () => {
@@ -179,6 +189,7 @@ describe('validateNames', () => {
         
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:zh-Latn-pinyin is a name', async () => {
@@ -191,6 +202,7 @@ describe('validateNames', () => {
         
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:be-tarask is a name', async () => {
@@ -203,6 +215,7 @@ describe('validateNames', () => {
         
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:ja-Latn is a name', async () => {
@@ -215,5 +228,6 @@ describe('validateNames', () => {
         
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
     });
 });

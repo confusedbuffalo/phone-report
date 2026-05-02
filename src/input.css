@@ -170,11 +170,11 @@
   @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 gap-6 text-center;
 }
 
-@utility stats-box-no-progress {
+@utility stats-box-three {
   @apply grid grid-cols-1 sm:grid-cols-3;
 }
 
-@utility stats-box-progress {
+@utility stats-box-four {
   @apply grid grid-cols-2 sm:grid-cols-4;
 }
 

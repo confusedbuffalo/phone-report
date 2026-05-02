@@ -290,15 +290,19 @@ const PACKAGE_NAME = packageInfo.name;
 const PACKAGE_VERSION = packageInfo.version;
 const PACKAGE_STRING = `${PACKAGE_NAME}/${PACKAGE_VERSION}`;
 
+const CHANGESET_COMMENTS = {
+    phone: "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
+    name: "Fix incomplete names"
+}
+
 const CHANGESET_TAGS = {
-    "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
     "created_by": PACKAGE_STRING,
     "host": HOST_URL
 }
 
 const AUTO_CHANGESET_TAGS = {
     "comment": "Automatically fix phone number issues: missing country code, extra punctuation",
-    "created_by": `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
+    "created_by": PACKAGE_STRING,
     "bot": "yes",
     "automatic": "yes",
     "source_code": GITHUB_LINK,
@@ -382,6 +386,7 @@ module.exports = {
     ACCEPTABLE_EXTENSION_FORMATS,
     CHANGESET_TAGS,
     AUTO_CHANGESET_TAGS,
+    CHANGESET_COMMENTS,
     GITHUB_LINK,
     HOST_URL,
     NANP_COUNTRY_CODES,

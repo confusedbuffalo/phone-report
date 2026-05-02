@@ -4,18 +4,21 @@ export const currentPage = {
     fixable: 1,
     invalid: 1,
     foreign: 1,
+    missing: 1,
 }
 
 export const sortDirection = {
     fixable: 'asc',
     invalid: 'asc',
     foreign: 'asc',
+    missing: 'asc',
 }
 
 export const sortKey = {
     fixable: 'none',
     invalid: 'none',
     foreign: 'none',
+    missing: 'none',
 }
 
 export const undoData = {

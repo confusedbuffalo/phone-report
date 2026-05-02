@@ -89,7 +89,7 @@ function sortItems(items, key, direction) {
         if (key === 'date') {
             if (valA === valB) return 0;
             // For first click ('asc'), we want higher (newer) numbers to come first
-            return direction === 'asc' 
+            return direction === 'asc'
                 ? (valB - valA)  // Newest to Oldest
                 : (valA - valB); // Oldest to Newest
         }
@@ -165,10 +165,11 @@ export function getSortedItems(filterType) {
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
     const targetItems = appState.reportData.filter(item => {
-        const isWanted = 
+        const isWanted =
             filterType === 'foreign' ? item.isForeignItem :
-            filterType === 'fixable' ? item.autoFixable :
-            (!item.autoFixable && !item.isForeignItem); // 'invalid' case
+                filterType === 'fixable' ? item.autoFixable :
+                    reportType === 'phone' ? (!item.autoFixable && !item.isForeignItem) // 'invalid' case
+                        : filterType === 'missing' ? !item.name : item.name; // names report
         const isNotInUploadedChanges = !(
             uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
         );

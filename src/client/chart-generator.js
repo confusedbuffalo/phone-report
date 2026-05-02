@@ -46,8 +46,8 @@ function updateCharts(days) {
             const regionHistory = allData[regionKey];
             const dataPoints = labels.map(date => {
                 const entry = regionHistory.find(d => d.date === date);
-                if (entry && entry.totalNumbers > 0) {
-                    return ((entry.invalidCount / entry.totalNumbers) * 100).toFixed(2);
+                if (entry && entry.totalCount > 0) {
+                    return ((entry.invalidCount / entry.totalCount) * 100).toFixed(2);
                 }
                 return null;
             });
@@ -127,8 +127,8 @@ function updateCharts(days) {
         const displayName = regionHistory.length > 0 ? (regionHistory[0].name || region) : region;
         const dataPoints = labels.map(date => {
             const entry = regionHistory.find(d => d.date === date);
-            if (entry && entry.totalNumbers > 0) {
-                return ((entry.invalidCount / entry.totalNumbers) * 100).toFixed(2);
+            if (entry && entry.totalCount > 0) {
+                return ((entry.invalidCount / entry.totalCount) * 100).toFixed(2);
             }
             return null;
         });

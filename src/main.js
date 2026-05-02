@@ -20,67 +20,67 @@ const BUILD_TYPE = process.env.BUILD_TYPE;
 // (the first found of each, using the countries data file)
 const testMode = BUILD_TYPE === 'simplified';
 
-const CLIENT_KEYS = [
-    'dataSourcedTemplate',
-    'fixInJOSM',
-    'fixable',
-    'website',
-    'fixableNumbersHeader',
-    'fixableNumbersDescription',
-    'invalidNumbersHeader',
-    'invalidNumbersDescription',
-    'foreignNumbersHeader',
-    'foreignNumbersDescription',
-    'noInvalidNumbers',
-    'pageOf',
-    'name',
-    'date',
-    'suggestedFix',
-    'invalidNumber',
-    'next',
-    'previous',
-    'sortBy',
-    "login",
-    "logout",
-    "discard",
-    "keep",
-    "close",
-    "cancel",
-    "upload",
-    "restoreUnsavedEdits",
-    "uploadChanges",
-    "restoreChanges",
-    "applyFix",
-    "enterComment",
-    "noChangesSubmitted",
-    "changesetCreated",
-    "notLoggedIn",
-    "save",
-    "openNote",
-    "createNoteFor",
-    "noteIsClose",
-    "noteCreated",
-    "hasInvalidSingular",
-    "hasInvalidPlural",
-    "phoneNumber",
-];
+// const CLIENT_KEYS = [
+//     'dataSourcedTemplate',
+//     'fixInJOSM',
+//     'fixable',
+//     'website',
+//     'fixableNumbersHeader',
+//     'fixableNumbersDescription',
+//     'invalidNumbersHeader',
+//     'invalidNumbersDescription',
+//     'foreignNumbersHeader',
+//     'foreignNumbersDescription',
+//     'noInvalidNumbers',
+//     'pageOf',
+//     'name',
+//     'date',
+//     'suggestedFix',
+//     'invalidNumber',
+//     'next',
+//     'previous',
+//     'sortBy',
+//     "login",
+//     "logout",
+//     "discard",
+//     "keep",
+//     "close",
+//     "cancel",
+//     "upload",
+//     "restoreUnsavedEdits",
+//     "uploadChanges",
+//     "restoreChanges",
+//     "applyFix",
+//     "enterComment",
+//     "noChangesSubmitted",
+//     "changesetCreated",
+//     "notLoggedIn",
+//     "save",
+//     "openNote",
+//     "createNoteFor",
+//     "noteIsClose",
+//     "noteCreated",
+//     "hasInvalidSingular",
+//     "hasInvalidPlural",
+//     "phoneNumber",
+// ];
 
 
-/**
- * Filters the full translations object to include only keys needed by the client.
- * @param {Object} fullTranslations - The complete dictionary for a locale.
- * @returns {Object} A lightweight dictionary containing only client-side keys.
- */
-function filterClientTranslations(fullTranslations) {
-    const clientTranslations = {};
-    for (const key of CLIENT_KEYS) {
-        // Only include the key if it exists in the source dictionary
-        if (fullTranslations[key] !== undefined) {
-            clientTranslations[key] = fullTranslations[key];
-        }
-    }
-    return clientTranslations;
-}
+// /**
+//  * Filters the full translations object to include only keys needed by the client.
+//  * @param {Object} fullTranslations - The complete dictionary for a locale.
+//  * @returns {Object} A lightweight dictionary containing only client-side keys.
+//  */
+// function filterClientTranslations(fullTranslations) {
+//     const clientTranslations = {};
+//     for (const key of CLIENT_KEYS) {
+//         // Only include the key if it exists in the source dictionary
+//         if (fullTranslations[key] !== undefined) {
+//             clientTranslations[key] = fullTranslations[key];
+//         }
+//     }
+//     return clientTranslations;
+// }
 
 /**
  * Saves the full history for the country to a JSON file to be backed up and used for
@@ -99,7 +99,7 @@ function saveCountryHistory(originalCountryStats) {
     const historyFilePath = path.join(historyCountryDir, `${today}.json`);
 
     const allDivisions = Object.values(countryStats.groupedDivisionStats).flat();
-    const needsFallback = allDivisions.some(div => div.totalNumbers === 0);
+    const needsFallback = allDivisions.some(div => div.totalCount === 0);
 
     if (needsFallback) {
         const files = fs.readdirSync(historyCountryDir)
@@ -120,7 +120,7 @@ function saveCountryHistory(originalCountryStats) {
                 for (const groupName in countryStats.groupedDivisionStats) {
                     countryStats.groupedDivisionStats[groupName] = countryStats.groupedDivisionStats[groupName].map(div => {
                         const compositeKey = `${div.divisionSlug}|${div.slug}`;
-                        if (div.totalNumbers === 0 && historyMap.has(compositeKey)) {
+                        if (div.totalCount === 0 && historyMap.has(compositeKey)) {
                             console.log(`Falling back to previous history for ${div.name}`);
                             return { ...historyMap.get(compositeKey) };
                         }
@@ -137,19 +137,19 @@ function saveCountryHistory(originalCountryStats) {
     let totalInvalid = 0;
     let totalAutoFixable = 0;
     let totalSafeEdit = 0;
-    let totalNumbers = 0;
+    let totalCount = 0;
 
     Object.values(countryStats.groupedDivisionStats).flat().forEach(div => {
         totalInvalid += (div.invalidCount || 0);
         totalAutoFixable += (div.autoFixableCount || 0);
         totalSafeEdit += (div.safeEditCount || 0);
-        totalNumbers += (div.totalNumbers || 0);
+        totalCount += (div.totalCount || 0);
     });
 
     countryStats.invalidCount = totalInvalid;
     countryStats.autoFixableCount = totalAutoFixable;
     countryStats.safeEditCount = totalSafeEdit;
-    countryStats.totalNumbers = totalNumbers;
+    countryStats.totalCount = totalCount;
 
     fs.writeFileSync(historyFilePath, JSON.stringify(countryStats, null, 2));
 }
@@ -283,7 +283,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalCount, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 
@@ -300,7 +300,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
         invalidCount: siteInvalidCount,
         autoFixableCount: siteAutoFixableCount,
         safeEditCount: safeEditCount,
-        totalCount: totalNumbers,
+        totalCount: totalCount,
         lastUpdated: dataTimestamp.toISOString()
     };
 
@@ -342,7 +342,7 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
 
     const tmpFilePath = path.join(os.tmpdir(), `${uuidv4()}.json`);
 
-    const { totalNames, incompleteNames } = await validateNames(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalNames, incompleteNames, missingNames } = await validateNames(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 
@@ -354,6 +354,7 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
         divisionSlug: safeName(rawDivisionName),
         slug: safeName(subdivision.name),
         invalidCount: incompleteNames,
+        missingNamesCount: missingNames,
         totalCount: totalNames,
         lastUpdated: dataTimestamp.toISOString()
     };
@@ -387,13 +388,13 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     if (!subdivisions || subdivisions.length === 0) {
         console.error(`No subdivisions to process for ${divisionName}.`);
-        return { divisionStats: [], divisionTotalNumbers: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0 };
+        return { divisionStats: [], divisionTotalCount: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0 };
     }
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
     const divisionStats = [];
-    let divisionTotalNumbers = 0;
+    let divisiontotalCount = 0;
     let divisionInvalidCount = 0;
     let divisionAutofixableCount = 0;
     let divisionSafeEditCount = 0;
@@ -402,7 +403,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
     for (const subdivision of subdivisions) {
         const stats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations);
         divisionStats.push(stats);
-        divisionTotalNumbers += stats.totalNumbers;
+        divisiontotalCount += stats.totalCount;
         divisionInvalidCount += stats.invalidCount;
         divisionAutofixableCount += stats.autoFixableCount;
         divisionSafeEditCount += stats.safeEditCount;
@@ -416,7 +417,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         // }
     }
 
-    return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
+    return { divisionStats, divisionTotalCount, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
 }
 
 /**
@@ -429,7 +430,8 @@ async function processCountry(countryData) {
     const locale = countryData.locale;
 
     const fullTranslations = getTranslations(locale);
-    const clientTranslations = filterClientTranslations(fullTranslations);
+    // TODO: serve full translations server-side
+    const clientTranslations = fullTranslations;
 
     const divisions = countryData.divisions
         ? { [countryData.name]: countryData.divisions }
@@ -504,14 +506,14 @@ async function processCountry(countryData) {
     let totalInvalidCount = 0;
     let totalAutofixableCount = 0;
     let totalSafeEditCount = 0;
-    let totalTotalNumbers = 0;
+    let totalTotalCount = 0;
     const groupedDivisionStats = {};
 
     let divisionCount = 0;
     for (const rawDivisionName in divisions) {
         const {
             divisionStats,
-            divisionTotalNumbers,
+            divisionTotalCount,
             divisionInvalidCount,
             divisionAutofixableCount,
             divisionSafeEditCount
@@ -522,7 +524,7 @@ async function processCountry(countryData) {
         totalInvalidCount += divisionInvalidCount;
         totalAutofixableCount += divisionAutofixableCount;
         totalSafeEditCount += divisionSafeEditCount;
-        totalTotalNumbers += divisionTotalNumbers;
+        totalTotalCount += divisionTotalCount;
 
         divisionCount++;
         // if (testMode && divisionCount >= 1) {
@@ -540,7 +542,7 @@ async function processCountry(countryData) {
         invalidCount: totalInvalidCount,
         autoFixableCount: totalAutofixableCount,
         safeEditCount: totalSafeEditCount,
-        totalNumbers: totalTotalNumbers,
+        totalCount: totalTotalCount,
         groupedDivisionStats: groupedDivisionStats,
         botEnabled: countryData.safeAutoFixBotEnabled,
         timestamp: dataTimestamp
@@ -602,7 +604,8 @@ async function main() {
 
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
-    const clientDefaultTranslations = filterClientTranslations(fullDefaultTranslations);
+    // TODO: serve the translations server-side
+    const clientDefaultTranslations = fullDefaultTranslations;
 
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];

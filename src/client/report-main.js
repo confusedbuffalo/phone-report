@@ -56,8 +56,6 @@ async function initReportPage() {
     renderNumbers();
 }
 
-commentBox.value = CHANGESET_TAGS['comment'];
-
 enableModalCloseListeners();
 initReportPage();
 initLogin();

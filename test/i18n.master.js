@@ -59,6 +59,12 @@ const MASTER_KEYS = {
     'invalidNumbersDescription': [],
     'foreignNumbersDescription': [],
     'phoneNumber': [],
+    'incompleteNamesReport': [],
+    'totalNames': [],
+    'incompleteNames': [],
+    'missingNames': [],
+    'missingNamesDescription': [],
+    'incompleteNamesDescription': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
@@ -84,9 +90,10 @@ const MASTER_KEYS = {
     "hasInvalidSingular": ['%n'],
     "hasInvalidPlural": ['%n'],
 
-    // Page Titles (uses %s for country name)
+    // Page Titles (uses %c for country name)
     'mainIndexTitle': [], // Static title
-    'countryReportTitle': ['%c']
+    'countryReportTitle': ['%c'],
+    'countryReportTitleNames': ['%c']
 };
 
 module.exports = { MASTER_KEYS };

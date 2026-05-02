@@ -1629,7 +1629,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -1640,7 +1640,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
@@ -1664,7 +1664,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), 'AT', tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
@@ -1688,7 +1688,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1704,7 +1704,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1721,7 +1721,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1738,7 +1738,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1755,7 +1755,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_DE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1772,7 +1772,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), 'BE', tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1794,7 +1794,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(3);
+        expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1840,7 +1840,7 @@ describe('validateNumbers', () => {
         expect(invalidItem.website).toBe(websiteInput);
     });
 
-    test('should correctly calculate totalNumbers across multiple elements', async () => {
+    test('should correctly calculate totalCount across multiple elements', async () => {
         const elements = [
             createGeoJson(7001, { phone: VALID_LANDLINE }, 57.0, 6.0),
             createGeoJson(7002, { 'contact:phone': FIXABLE_LANDLINE_INPUT }, 57.1, 6.1, 'way'),
@@ -1851,7 +1851,7 @@ describe('validateNumbers', () => {
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
         // 1 (7001) + 1 (7002) + 2 (7003) = 4 total numbers checked
-        expect(result.totalNumbers).toBe(4);
+        expect(result.totalCount).toBe(4);
         expect(result.invalidCount).toBe(2); // Elements 7002 and 7003 are invalid
     });
 
@@ -1866,7 +1866,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1887,7 +1887,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(0);
+        expect(result.totalCount).toBe(0);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -1901,7 +1901,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1931,7 +1931,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1961,7 +1961,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -1991,7 +1991,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2020,7 +2020,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), "DE", tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2049,7 +2049,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), "FR", tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2078,7 +2078,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(3);
+        expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2107,7 +2107,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), 'ZA', tmpFilePath);
 
-        expect(result.totalNumbers).toBe(3);
+        expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2135,7 +2135,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2162,7 +2162,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2189,7 +2189,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2216,7 +2216,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2244,7 +2244,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2259,7 +2259,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2274,7 +2274,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
@@ -2305,7 +2305,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2334,7 +2334,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2363,7 +2363,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2393,7 +2393,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2422,7 +2422,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2453,7 +2453,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(3);
+        expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2489,7 +2489,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(4);
+        expect(result.totalCount).toBe(4);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2518,7 +2518,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(5);
+        expect(result.totalCount).toBe(5);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2545,7 +2545,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(3);
+        expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2575,7 +2575,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2589,7 +2589,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2613,7 +2613,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2627,7 +2627,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2642,7 +2642,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2669,7 +2669,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2684,7 +2684,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2710,7 +2710,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         const invalidItem = invalidItems[0];
@@ -2735,7 +2735,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
     });
 
@@ -2746,7 +2746,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(1);
+        expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
@@ -2767,7 +2767,7 @@ describe('validateNumbers', () => {
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
-        expect(result.totalNumbers).toBe(2);
+        expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));

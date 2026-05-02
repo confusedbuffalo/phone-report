@@ -7,7 +7,11 @@ const { getRepresentativeLocation } = require('./data-processor');
  * @param {Array<Object>} elementStream - OSM elements with name tags.
  * @param {string} countryCode - The country code for special handling of multi-lingual names in the name tag.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
- * @returns {{incompleteNames: Array<Object>, totalNames: number}}
+ * @returns {{
+ * totalCount: number,
+ * invalidCount: number,
+ * missingNames: number
+ * }} An object containing the breakdown of record counts.
  */
 async function validateNames(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
@@ -16,6 +20,7 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
     let totalNames = 0;
     let incompleteNames = 0;
+    let missingNames = 0;
 
     for await (const element of elementStream) {
         if (!element.properties) continue;
@@ -73,6 +78,8 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
             !primaryName ||
             (nameEntries.some(([k]) => k.startsWith('name:')) && !nameEntries.some(([_, v]) => v === primaryName));
 
+        if (!primaryName) missingNames++;
+
         if (isInvalid) {
             const currentItem = getOrCreateItem(true);
             currentItem.nameTags = Object.fromEntries(nameEntries);
@@ -101,7 +108,7 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
     await new Promise(resolve => fileStream.on('finish', resolve));
 
-    return { totalNames, incompleteNames };
+    return { totalNames, incompleteNames, missingNames };
 }
 
 module.exports = {

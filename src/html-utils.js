@@ -13,29 +13,80 @@ const themeButton = `<button id="theme-toggle" type="button" class="theme-toggle
 
 /**
  * Creates the HTML box displaying statistics.
+ * @param {'phone' | 'name'} reportType - The type of report being created.
  * @param {number} total - Total values
- * @param {number} invalid - Number of invalid values
- * @param {number} fixable - Number of autofixable values
+ * @param {number} firstStat - First statistic after total to display
+ * @param {number} secondStat - Second statistic to display
+ * @param {number} secondStat - Third statistic to display
  * @param {string} locale - Locale to display stats in
  * @param {boolean} includeProgress - Whether or not to include a link to the progress page
  * @returns {string}
  */
-function createStatsBox(total, invalid, fixable=0, locale, includeProgress = false) {
+function createStatsBox(reportType, data, locale, includeProgress = false) {
     const percentageOptions = {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     };
-    const totalPercentageNumber = total > 0 ? (invalid / total) * 100 : 0;
-    const fixablePercentageNumber = invalid > 0 ? (fixable / invalid) * 100 : 0;
 
-    const formattedTotal = total.toLocaleString(locale);
-    const formattedInvalid = invalid.toLocaleString(locale);
-    const formattedFixable = fixable.toLocaleString(locale);
+    let statsData = [];
 
-    const formattedTotalPercentage = totalPercentageNumber.toLocaleString(locale, percentageOptions);
-    const formattedFixablePercentage = fixablePercentageNumber.toLocaleString(locale, percentageOptions);
+    if (reportType === 'phone') {
+        const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
+        const fixablePercentageNumber = data.invalidCount > 0 ? (data.autoFixableCount / data.invalidCount) * 100 : 0;
 
-    const statsBoxClass = includeProgress ? "stats-box-progress" : "stats-box-no-progress";
+        const formattedInvalidPercentage = invalidPercentageNumber.toLocaleString(locale, percentageOptions);
+        const formattedFixablePercentage = fixablePercentageNumber.toLocaleString(locale, percentageOptions);
+
+        statsData = [
+            {
+                value: data.totalCount.toLocaleString(locale),
+                label: translate('numbersChecked', locale),
+                numberClass: 'stats-box-number',
+                percentage: null
+            },
+            {
+                value: data.invalidCount.toLocaleString(locale),
+                label: translate('invalidNumbers', locale),
+                numberClass: 'stats-box-number-invalid',
+                percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
+            },
+            {
+                value: data.autoFixableCount.toLocaleString(locale),
+                label: translate('potentiallyFixable', locale),
+                numberClass: 'stats-box-number-fixable',
+                percentage: translate('fixablePercentageOfInvalid', locale, [formattedFixablePercentage])
+            }
+        ];
+    } else if (reportType === 'name') {
+        const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
+        const missingPercentageNumber = data.totalCount > 0 ? (data.missingNamesCount / data.totalCount) * 100 : 0;
+
+        const formattedInvalidPercentage = invalidPercentageNumber.toLocaleString(locale, percentageOptions);
+        const formattedMissingPercentage = missingPercentageNumber.toLocaleString(locale, percentageOptions);
+
+        statsData = [
+            {
+                value: data.totalCount.toLocaleString(locale),
+                label: translate('totalNames', locale),
+                numberClass: 'stats-box-number',
+                percentage: null
+            },
+            {
+                value: data.invalidCount.toLocaleString(locale),
+                label: translate('incompleteNames', locale),
+                numberClass: 'stats-box-number-invalid',
+                percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
+            },
+            {
+                value: data.missingNames.toLocaleString(locale),
+                label: translate('missingNames', locale),
+                numberClass: 'stats-box-number-fixable',
+                percentage: translate('invalidPercentageOfTotal', locale, [formattedMissingPercentage])
+            }
+        ];
+    } else {
+        return;
+    }
 
     const progressDiv = includeProgress ? `
         <div>
@@ -48,22 +99,19 @@ function createStatsBox(total, invalid, fixable=0, locale, includeProgress = fal
         </div>
         ` : '';
 
+    const statsBoxClass = includeProgress ? "stats-box-three" : "stats-box-no-four";
+
+    const statsContent = statsData.map(stat => `
+        <div>
+            <p class="${stat.numberClass}">${stat.value}</p>
+            <p class="stats-box-label">${stat.label}</p>
+            ${stat.percentage ? `<p class="stats-box-percentage">${stat.percentage}</p>` : ''}
+        </div>
+    `).join('');
+    
     return `
         <div class="stats-box ${statsBoxClass}">
-            <div>
-                <p class="stats-box-number">${formattedTotal}</p>
-                <p class="stats-box-label">${translate('numbersChecked', locale)}</p>
-            </div>
-            <div>
-                <p class="stats-box-number-invalid">${formattedInvalid}</p>
-                <p class="stats-box-label">${translate('invalidNumbers', locale)}</p>
-                <p class="stats-box-percentage">${translate('invalidPercentageOfTotal', locale, [formattedTotalPercentage])}</p>
-            </div>
-            <div>
-                <p class="stats-box-number-fixable">${formattedFixable}</p>
-                <p class="stats-box-label">${translate('potentiallyFixable', locale)}</p>
-                <p class="stats-box-percentage">${translate('fixablePercentageOfInvalid', locale, [formattedFixablePercentage])}</p>
-            </div>
+            ${statsContent}
             ${progressDiv}
         </div>
     `;

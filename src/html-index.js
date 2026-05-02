@@ -85,7 +85,7 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
     const listContent = countryStats.map(country => {
         const safeCountryName = country.slug;
         const countryPageName = `${safeCountryName}/`;
-        const percentage = country.totalNumbers > 0 ? (country.invalidCount / country.totalNumbers) * 100 : 0;
+        const percentage = country.totalCount > 0 ? (country.invalidCount / country.totalCount) * 100 : 0;
         const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
         // Use the country's specific locale for number formatting and description text
@@ -93,7 +93,7 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
 
         const formattedInvalid = country.invalidCount.toLocaleString(itemLocale);
         const formattedFixable = country.autoFixableCount.toLocaleString(itemLocale);
-        const formattedTotal = country.totalNumbers.toLocaleString(itemLocale);
+        const formattedTotal = country.totalCount.toLocaleString(itemLocale);
 
         const description = translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, formattedFixable, formattedTotal]);
 

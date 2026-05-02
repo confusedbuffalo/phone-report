@@ -39,7 +39,7 @@ describe('generateCountryIndexHtml', () => {
             name: "France",
             slug: 'france',
             locale: 'fr-FR',
-            totalNumbers: 100,
+            totalCount: 100,
             invalidCount: 10,
             autoFixableCount: 5,
             groupedDivisionStats: {
@@ -47,7 +47,7 @@ describe('generateCountryIndexHtml', () => {
                     name: 'Subdivision A',
                     slug: 'subdivision-a',
                     invalidCount: 5,
-                    totalNumbers: 50
+                    totalCount: 50
                 }]
             },
         };

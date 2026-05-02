@@ -49,7 +49,7 @@ function processHistory() {
                 name: stats.name,
                 date: date,
                 invalidCount: stats.invalidCount,
-                totalNumbers: stats.totalNumbers,
+                totalCount: stats.totalCount ?? stats.totalNumbers,
             };
 
             // Add to country-specific history
@@ -57,10 +57,10 @@ function processHistory() {
 
             // Aggregate for overall history
             if (!aggregatedData.overall[date]) {
-                aggregatedData.overall[date] = { invalidCount: 0, totalNumbers: 0 };
+                aggregatedData.overall[date] = { invalidCount: 0, totalCount: 0 };
             }
-            aggregatedData.overall[date].invalidCount += stats.invalidCount;
-            aggregatedData.overall[date].totalNumbers += stats.totalNumbers;
+            aggregatedData.overall[date].invalidCount += record.invalidCount;
+            aggregatedData.overall[date].totalCount += record.totalCount;
 
             if (Object.keys(stats.groupedDivisionStats).length === 1) {
                 const divisionStats = Object.values(stats.groupedDivisionStats)[0];
@@ -71,7 +71,7 @@ function processHistory() {
                     const divisionRecord = {
                         date: date,
                         invalidCount: division.invalidCount,
-                        totalNumbers: division.totalNumbers,
+                        totalCount: division.totalCount,
                     }
 
                     if (!aggregatedDivisionStats[divisionName]) {
@@ -84,14 +84,14 @@ function processHistory() {
                 for (const [divisionName, divisionStats] of Object.entries(stats.groupedDivisionStats)) {
                     const divisionTotals = divisionStats.reduce((accumulator, subdivision) => {
                         accumulator.invalidCount += subdivision.invalidCount;
-                        accumulator.totalNumbers += subdivision.totalNumbers;
+                        accumulator.totalCount += subdivision.totalCount;
                         return accumulator;
-                    }, { invalidCount: 0, totalNumbers: 0 });
+                    }, { invalidCount: 0, totalCount: 0 });
 
                     const divisionRecord = {
                         date: date,
                         invalidCount: divisionTotals.invalidCount,
-                        totalNumbers: divisionTotals.totalNumbers,
+                        totalCount: divisionTotals.totalCount,
                     }
 
                     if (!aggregatedDivisionStats[divisionName]) {
@@ -124,7 +124,7 @@ function processHistory() {
     const overallArray = Object.keys(aggregatedData.overall).map(date => ({
         date: date,
         invalidCount: aggregatedData.overall[date].invalidCount,
-        totalNumbers: aggregatedData.overall[date].totalNumbers,
+        totalCount: aggregatedData.overall[date].totalCount,
     }));
     overallArray.sort((a, b) => new Date(a.date) - new Date(b.date));
     aggregatedData.overall = overallArray;

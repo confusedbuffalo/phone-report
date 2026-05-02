@@ -118,6 +118,7 @@ export function renderNumbers() {
     const fixableContainer = document.getElementById("fixableSection");
     const invalidContainer = document.getElementById("invalidSection");
     const foreignContainer = document.getElementById("foreignSection");
+    const missingContainer = document.getElementById("missingSection");
     const noInvalidContainer = document.getElementById("noInvalidSection");
 
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
@@ -137,25 +138,30 @@ export function renderNumbers() {
         }
     }
 
-    const sortedFixable = getSortedItems('fixable');
-    const sortedInvalid = getSortedItems('invalid');
-    const sortedForeign = getSortedItems('foreign');
+    const sortedItems = {
+        fixable: getSortedItems('fixable'),
+        invalid: getSortedItems('invalid'),
+        foreign: getSortedItems('foreign'),
+        missing: getSortedItems('missing')
+    }
 
-    const anyFixable = sortedFixable.length > 0;
-    const anyInvalid = sortedInvalid.length > 0;
-    const anyForeign = sortedForeign.length > 0;
+    const anyFixable = sortedItems.fixable.length > 0;
+    const anyInvalid = sortedItems.invalid.length > 0;
+    const anyForeign = sortedItems.foreign.length > 0;
+    const anyMissing = sortedItems.missing.length > 0;
 
     // Clear all containers first
     fixableContainer.innerHTML = '';
     invalidContainer.innerHTML = '';
     foreignContainer.innerHTML = '';
+    missingContainer.innerHTML = '';
     noInvalidContainer.innerHTML = '';
 
-    if (anyFixable || anyInvalid || editCount > 0) {
+    if (anyFixable || anyInvalid || anyMissing || editCount > 0) {
         if (anyFixable || editCount > 0) {
             renderPaginatedSection(
                 "fixableSection",
-                sortedFixable,
+                sorted.fixable,
                 translate('fixableNumbersHeader'),
                 translate('fixableNumbersDescription'),
                 currentPage['fixable'],
@@ -167,11 +173,23 @@ export function renderNumbers() {
         if (anyInvalid) {
             renderPaginatedSection(
                 "invalidSection",
-                sortedInvalid,
-                translate('invalidNumbersHeader'),
-                translate('invalidNumbersDescription'),
+                sorted.invalid,
+                reportType === 'phone' ? translate('invalidNumbersHeader') : translate('incompleteNames'),
+                reportType === 'phone' ? translate('invalidNumbersDescription') : translate('incompleteNamesDescription'),
                 currentPage['invalid'],
                 (page) => currentPage['invalid'] = page,
+                'invalid'
+            );
+        }
+
+        if (anyMissing) {
+            renderPaginatedSection(
+                "missingSection",
+                sorted.missing,
+                translate('missingNames'),
+                translate('missingNamesDescription'),
+                currentPage['missing'],
+                (page) => currentPage['missing'] = page,
                 'invalid'
             );
         }
@@ -186,7 +204,7 @@ export function renderNumbers() {
     if (anyForeign) {
         renderPaginatedSection(
             "foreignSection",
-            sortedForeign,
+            sorted.foreign,
             translate('foreignNumbersHeader'),
             translate('foreignNumbersDescription'),
             currentPage['foreign'],
@@ -411,7 +429,7 @@ function openUploadModal() {
 
     commentBox.disabled = false;
     commentBox.classList.remove('cursor-not-allowed');
-    commentBox.value = `${subdivisionName}: ` + CHANGESET_TAGS['comment'];
+    commentBox.value = `${subdivisionName}: ` + CHANGESET_COMMENT;
 
     if (!OSM.isLoggedIn()) {
         uploadBtn.disabled = true;

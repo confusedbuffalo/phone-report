@@ -938,14 +938,19 @@ function isSafeItemEdit(item, countryCode) {
  * @param {Array<Object>} elementStream - OSM elements with phone tags.
  * @param {string} countryCode - The country code for validation.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
- * @returns {{invalidNumbers: Array<Object>, totalNumbers: number}}
+ * @returns {{
+ * totalCount: number,
+ * invalidCount: number,
+ * autoFixableCount: number,
+ * safeEditCount: number
+ * }} An object containing the breakdown of record counts.
  */
 async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
     let isFirstItem = true;
 
-    let totalNumbers = 0;
+    let totalCount = 0;
     let invalidCount = 0;
     let autoFixableCount = 0;
     let safeEditCount = 0;
@@ -1027,7 +1032,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (tag === 'phone' && phoneTagValue === 'no') continue;
 
             const validationResult = validateSingleTag(phoneTagValue, countryCode, tags, tag);
-            totalNumbers += validationResult.numberOfValues;
+            totalCount += validationResult.numberOfValues;
 
             const validatedNumbers = validationResult.validNumbersList;
             let tagShouldBeFlaggedForRemoval = false;
@@ -1238,7 +1243,7 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
     await new Promise(resolve => fileStream.on('finish', resolve));
 
-    return { totalNumbers, invalidCount, autoFixableCount, safeEditCount };
+    return { totalCount, invalidCount, autoFixableCount, safeEditCount };
 }
 
 
