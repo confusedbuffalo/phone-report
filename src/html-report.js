@@ -372,7 +372,7 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
 
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),
-        cache: true,
+        cache: false,
     });
 
     const templateData = {
