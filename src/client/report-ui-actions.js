@@ -69,7 +69,7 @@ export function getItemWithIndex(osmType, osmId, filterType) {
         console.log('No item or too many items found');
         return
     }
-    item = targetItem[0];
+    const item = targetItem[0];
     return {
         'item': item,
         'index': sortedItems.indexOf(item),

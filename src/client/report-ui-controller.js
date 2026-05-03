@@ -1,9 +1,9 @@
 import { addNote, openInJosm, login, logout, checkAndSubmit } from "./report-osm-edit.js";
 import { addNoteBtn, commentBox, editsModal, noteCancelBtn, noteCloseBtnBottom, noteModal, settingsMenu, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, pageSize, currentPage, sortKey, undoData, appState } from "./report-state.js";
 import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from "./report-storage.js";
-import { changePage, handleSort } from "./report-ui-actions.js";
+import { changePage, getItemWithIndex, handleSort } from "./report-ui-actions.js";
 import { createListItem, createSaveRow, decodeHtmlEntities } from "./report-ui-components.js";
-import { getSortedItems } from "./report-utils.js";
+import { getFilterType, getSortedItems } from "./report-utils.js";
 
 let firstLoad = true;
 
@@ -546,7 +546,6 @@ function closeNoteModal() {
     }, 300);
 }
 
-
 /**
  * Hides the upload modal window with a brief transition and clears any displayed messages.
  * @returns {void}
@@ -593,7 +592,6 @@ const handleUploadModalClick = (event) => {
         closeUploadModal();
     }
 };
-
 
 // Close note modal when clicking the semi-transparent backdrop
 const handleNoteModalClick = (event) => {
@@ -796,7 +794,6 @@ function enableGrayBtn(selector) {
     selector.disabled = false;
 }
 
-
 /**
  * Updates the 'Save' button text and state (enabled/disabled) based on
  * the current count of pending local edits in the 'edits' storage.
@@ -839,7 +836,6 @@ export function setUpUndoRedoBtns() {
     }
 }
 
-
 /**
  * Initiates the transition animation for removing a list item (e.g., when a fix is applied or redone).
  * The item collapses and slides out before a full re-render is triggered.
@@ -872,7 +868,6 @@ export function transitionRemoveItem(osmType, osmId) {
     }
 }
 
-
 /**
  * Inserts a newly "undone" item back into the fixable report list with a
  * transition animation, maintaining the current sort order.
@@ -882,8 +877,9 @@ export function transitionRemoveItem(osmType, osmId) {
  * @returns {void}
  */
 export function transitionInsertItem(osmType, osmId) {
-    const sortedItems = getSortedItems('fixable');
-    const { item: newItem, index } = getItemWithIndex(osmType, osmId, true);
+    const filterType = getFilterType(osmType, osmId);
+    const sortedItems = getSortedItems(filterType);
+    const { item: newItem, index } = getItemWithIndex(osmType, osmId, filterType);
 
     const newListItemHtmlString = createListItem(newItem);
 
@@ -892,7 +888,7 @@ export function transitionInsertItem(osmType, osmId) {
     const newListItem = tempDiv.firstChild;
 
     newListItem.classList.add('fade-in-start');
-    const reportList = document.getElementById('report-list-fixable');
+    const reportList = document.getElementById(`report-list-${filterType}`);
 
     if (index === sortedItems.length - 1) {
         // End of the list

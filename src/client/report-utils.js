@@ -202,3 +202,31 @@ export function filterCreatedNotes(createdNotes, reportData) {
 
     return filteredNotes;
 }
+
+ /**
+ * Determines the necessary filter type required to find an item with given type and id.
+ *
+ * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
+ * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @returns {string} The filter type that will find the item.
+ */
+export function getFilterType(osmType, osmId) {
+    const targetItem = appState.reportData.filter(item => {
+        return item.type === osmType && item.id === osmId;
+    });
+    if (targetItem.length !== 1) {
+        console.log('No item or too many items found');
+        return
+    }
+
+    const item = targetItem[0];
+
+    if (item.autoFixable) {
+        return 'fixable';
+    } else if (item.isForeignItem) {
+        return 'foreign'
+    } else if (reportType === 'name' && !item.name) {
+        return 'missing'
+    }
+    return 'invalid'
+}
