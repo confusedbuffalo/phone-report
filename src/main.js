@@ -521,11 +521,6 @@ async function processCountry(countryData) {
         fs.mkdirSync(namesCountryDir, { recursive: true });
     }
 
-    let totalInvalidCount = 0;
-    let totalAutofixableCount = 0;
-    let totalForeignCount = 0;
-    let totalSafeEditCount = 0;
-    let totalTotalCount = 0;
     const groupedDivisionStatsPhone = {};
     const groupedDivisionStatsName = {};
 
@@ -605,7 +600,7 @@ async function processCountry(countryData) {
     await generateCountryIndexHtml('phone', countryStatsPhone);
     await generateCountryIndexHtml('name', countryStatsName);
 
-    return countryStats;
+    return {countryStatsPhone, countryStatsName};
 }
 
 /**
@@ -652,7 +647,10 @@ async function main() {
 
     console.log('Starting full build process...');
 
-    const allCountryStats = [];
+    const allCountryStats = {
+        phone: [],
+        name: [],
+    };
 
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
@@ -662,16 +660,17 @@ async function main() {
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
         countryData.name = countryKey;
-        const stats = await processCountry(countryData);
-        allCountryStats.push(stats);
+        const { countryStatsPhone, countryStatsName } = await processCountry(countryData);
+        allCountryStats.phone.push(countryStatsPhone);
+        allCountryStats.name.push(countryStatsName);
 
         if (testMode) {
             break;
         }
     }
 
-    await generateMainIndexHtml('phone', allCountryStats, defaultLocale, clientDefaultTranslations);
-    await generateMainIndexHtml('name', allCountryStats, defaultLocale, clientDefaultTranslations);
+    await generateMainIndexHtml('phone', allCountryStats.phone, defaultLocale, clientDefaultTranslations);
+    await generateMainIndexHtml('name', allCountryStats.name, defaultLocale, clientDefaultTranslations);
 
     console.log('Full build process completed successfully.');
 }
