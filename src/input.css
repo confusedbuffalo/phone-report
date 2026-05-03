@@ -73,7 +73,7 @@
     transition-[max-height,opacity,margin,padding] 
     duration-300
     ease-in-out
-    max-h-screen opacity-100;
+    opacity-100;
 }
 
 .report-list-item.transition-start {
@@ -452,7 +452,7 @@
 }
 
 @utility list-item-phone-value-container {
-  @apply col-span-1 text-gray-900 dark:text-gray-100 break-all [font-variant-ligatures:no-contextual];
+  @apply col-span-1 text-gray-900 dark:text-gray-100 [font-variant-ligatures:no-contextual];
 }
 
 @utility phone-separator-line {
