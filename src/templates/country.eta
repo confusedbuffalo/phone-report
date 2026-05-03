@@ -21,7 +21,7 @@
                 <%~ it.themeButton %>
             </div>
             <h1 class="page-title"><%= it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', it.locale) %></h1>
-            <p class="report-subtitle"><%= it.translate(it.reportType === 'phone' ? 'reportSubtitleForCountry' : reportSubtitleNamesForCountry, it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
+            <p class="report-subtitle"><%= it.translate(it.reportType === 'phone' ? 'reportSubtitleForCountry' : 'reportSubtitleNamesForCountry', it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
         </header>
         <%~ it.createStatsBox(it.reportType, it.countryData, it.locale, true) %>
         <div class="card">
