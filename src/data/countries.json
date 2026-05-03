@@ -1,4 +1,431 @@
 {
+    "Australia": {
+        "countryCode": "AU",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/australia.osm.pbf",
+        "divisions": {
+            "Australian Capital Territory": 2354197,
+            "Christmas Island": 2177207,
+            "Cocos (Keeling) Islands": 82636,
+            "Heard Island and McDonald Islands": 2177227,
+            "Jervis Bay Territory": 2357330,
+            "New South Wales": 2316593,
+            "Norfolk Island": 2574988,
+            "Northern Territory": 2316594,
+            "Queensland": 2316595,
+            "South Australia": 2316596,
+            "Tasmania": 2369652,
+            "Victoria": 2316741,
+            "Western Australia": 2316598
+        }
+    },
+    "Austria": {
+        "countryCode": "AT",
+        "locale": "de-DE",
+        "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/austria.osm.pbf",
+        "divisions": {
+            "Burgenland": 76909,
+            "Kärnten": 52345,
+            "Niederösterreich": 77189,
+            "Oberösterreich": 102303,
+            "Salzburg": 86539,
+            "Steiermark": 35183,
+            "Tirol": 52343,
+            "Vorarlberg": 74942,
+            "Wien": 109166
+        }
+    },
+    "België / Belgique / Belgien": {
+        "countryCode": "BE",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/belgium.osm.pbf",
+        "divisions": {
+            "Vlaanderen": 53134,
+            "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": 54094,
+            "Wallonie": 90348
+        }
+    },
+    "British Crown Dependencies and Overseas Territories": {
+        "countryCode": "GB",
+        "locale": "en-GB",
+        "safeAutoFixBotEnabled": false,
+        "divisions": {
+            "Akrotiri and Dhekelia": {
+                "relationId": 3263728,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/cyprus.osm.pbf",
+                "countryCode": "CY"
+            },
+            "Anguilla ": {
+                "relationId": 2177161,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/anguilla-latest.osm.pbf",
+                "countryCode": "AI"
+            },
+            "Bermuda": {
+                "relationId": 1993208,
+                "pbfUrl": "https://geo2day.com/north_america/bermuda.pbf",
+                "countryCode": "BM"
+            },
+            "British Indian Ocean Territory": {
+                "relationId": 1993867,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/asia/british_indian_ocean_territory-latest.osm.pbf",
+                "countryCode": "IO"
+            },
+            "British Virgin Islands": {
+                "relationId": 285454,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/british_virgin_islands-latest.osm.pbf",
+                "countryCode": "VG"
+            },
+            "Cayman Islands": {
+                "relationId": 2185366,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/cayman_islands.osm.pbf",
+                "countryCode": "KY"
+            },
+            "Falkland Islands": {
+                "relationId": 2185374,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/south-america/falkland-latest.osm.pbf",
+                "countryCode": "FK"
+            },
+            "Gibraltar": {
+                "relationId": 1278736,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/gibraltar-latest.osm.pbf",
+                "countryCode": "GI"
+            },
+            "Guernsey": {
+                "relationId": 270009,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/guernesey-latest.osm.pbf",
+                "countryCode": "GG"
+            },
+            "Isle of Man": {
+                "relationId": 62269,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/isle-of-man.osm.pbf",
+                "countryCode": "IM"
+            },
+            "Jersey": {
+                "relationId": 367988,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/jersey-latest.osm.pbf",
+                "countryCode": "JE"
+            },
+            "Montserrat ": {
+                "relationId": 537257,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/montserrat-latest.osm.pbf",
+                "countryCode": "MS"
+            },
+            "Pitcairn Islands": {
+                "relationId": 2185375,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/oceania/pitcairn-latest.osm.pbf",
+                "countryCode": "PN"
+            },
+            "Saint Helena, Ascension and Tristan da Cunha": {
+                "relationId": 1964272,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/africa/saint_helena_ascension_tristan_da_cunha-latest.osm.pbf",
+                "countryCode": "SH"
+            },
+            "South Georgia and the South Sandwich Islands": {
+                "relationId": 1983628,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/south-america/south_georgia_and_south_sandwich-latest.osm.pbf",
+                "countryCode": "GS"
+            },
+            "Turks and Caicos Islands": {
+                "relationId": 547479,
+                "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/turks_and_caicos_islands-latest.osm.pbf",
+                "countryCode": "TC"
+            }
+        }
+    },
+    "Canada": {
+        "countryCode": "CA",
+        "locale": "en-CA",
+        "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/canada.osm.pbf",
+        "divisions": {
+            "Alberta": 391186,
+            "British Columbia": 390867,
+            "Manitoba": 390841,
+            "New Brunswick": 68942,
+            "Newfoundland and Labrador": 391196,
+            "Northwest Territories": 391220,
+            "Nova Scotia": 390558,
+            "Nunavut": 390840,
+            "Ontario": 68841,
+            "Prince Edward Island": 391115,
+            "Quebec": 61549,
+            "Saskatchewan": 391178,
+            "Yukon": 391455
+        }
+    },
+    "Danmark": {
+        "countryCode": "DK",
+        "locale": "da-DK",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/denmark.osm.pbf",
+        "divisions": {
+            "Region Nordjylland": 1319936,
+            "Region Midtjylland": 1319935,
+            "Region Syddanmark": 1319978,
+            "Region Sjælland": 1320370,
+            "Region Hovedstaden": 1320608
+        }
+    },
+    "Deutschland": {
+        "countryCode": "DE",
+        "locale": "de-DE",
+        "safeAutoFixBotEnabled": true,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/germany.osm.pbf",
+        "divisionMap": {
+            "Baden-Württemberg": {
+                "Regierungsbezirk Freiburg": 2106112,
+                "Regierungsbezirk Karlsruhe": 22027,
+                "Regierungsbezirk Stuttgart": 22041,
+                "Regierungsbezirk Tübingen": 2811874
+            },
+            "Bayern": {
+                "Mittelfranken": 17614,
+                "Niederbayern": 17593,
+                "Oberbayern": 2145274,
+                "Oberfranken": 17592,
+                "Oberpfalz": 17596,
+                "Schwaben": 17657,
+                "Unterfranken": 17585
+            },
+            "Berlin": {
+                "Berlin": 62422
+            },
+            "Brandenburg": {
+                "Brandenburg": 62504
+            },
+            "Bremen": {
+                "Bremen": 62718
+            },
+            "Hamburg": {
+                "Hamburg": 62782
+            },
+            "Hessen": {
+                "Regierungsbezirk Darmstadt": 286590,
+                "Regierungsbezirk Gießen": 286618,
+                "Regierungsbezirk Kassel": 286675
+            },
+            "Mecklenburg-Vorpommern": {
+                "Mecklenburg-Vorpommern": 28322
+            },
+            "Niedersachsen": {
+                "Niedersachsen": 62771
+            },
+            "Nordrhein-Westfalen": {
+                "Regierungsbezirk Arnsberg": 73340,
+                "Regierungsbezirk Detmold": 73347,
+                "Regierungsbezirk Düsseldorf": 63306,
+                "Regierungsbezirk Köln": 72022,
+                "Regierungsbezirk Münster": 63594
+            },
+            "Rheinland-Pfalz": {
+                "Rheinland-Pfalz": 62341
+            },
+            "Saarland": {
+                "Saarland": 62372
+            },
+            "Sachsen": {
+                "Sachsen": 62467
+            },
+            "Sachsen-Anhalt": {
+                "Sachsen-Anhalt": 62607
+            },
+            "Schleswig-Holstein": {
+                "Schleswig-Holstein": 51529
+            },
+            "Thüringen": {
+                "Thüringen": 62366
+            }
+        }
+    },
+    "España": {
+        "countryCode": "ES",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/spain.osm.pbf",
+        "divisions": {
+            "Andalucía": 349044,
+            "Aragón": 349045,
+            "Asturias": 349033,
+            "Islas Baleares": 348981,
+            "Islas Canarias": {
+                "relationId": 349048,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/canary-islands.osm.pbf"
+            },
+            "Cantabria": 349013,
+            "Castilla-La Mancha": 349052,
+            "Castilla y León": 349041,
+            "Cataluña": 349053,
+            "Comunidad Valenciana": 349043,
+            "Extremadura": 349050,
+            "Galicia": 349036,
+            "La Rioja": 348991,
+            "Comunidad de Madrid": 349055,
+            "Región de Murcia": 349047,
+            "Comunidad Foral de Navarra": 349027,
+            "País Vasco": 349042,
+            "Ceuta": 1154756,
+            "Melilla": 1154757
+        }
+    },
+    "France": {
+        "countryCode": "FR",
+        "locale": "fr-FR",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/france.osm.pbf",
+        "divisions": {
+            "Auvergne-Rhône-Alpes": 3792877,
+            "Bourgogne – Franche-Comté": 3792878,
+            "Brittany": 102740,
+            "Centre-Val de Loire": 8640,
+            "Corsica": 76910,
+            "Grand Est": 3792876,
+            "Hauts-de-France": 4217435,
+            "Ile-de-France": 8649,
+            "Normandy": 3793170,
+            "Nouvelle-Aquitaine": 3792880,
+            "Occitania": 3792883,
+            "Pays de la Loire": 8650,
+            "Provence-Alpes-Côte d'Azur": 8654,
+            "Guadeloupe": {
+                "relationId": 1401835,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/guadeloupe-latest.osm.pbf",
+                "countryCode": "GP"
+            },
+            "Guyane": {
+                "relationId": 2502058,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/guyane-latest.osm.pbf",
+                "countryCode": "GF"
+            },
+            "La Réunion": {
+                "relationId": 1785276,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/reunion-latest.osm.pbf",
+                "countryCode": "RE"
+            },
+            "Martinique": {
+                "relationId": 1891495,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/martinique-latest.osm.pbf",
+                "countryCode": "MQ"
+            },
+            "Mayotte": {
+                "relationId": 1259885,
+                "pbfUrl": "https://download.geofabrik.de/europe/france/mayotte-latest.osm.pbf",
+                "countryCode": "YT"
+            },
+            "Nouvelle-Calédonie": {
+                "relationId": 3407643,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf",
+                "countryCode": "NC"
+            },
+            "Polynésie française": {
+                "relationId": 3412620,
+                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf",
+                "countryCode": "PF"
+            },
+            "Saint-Barthélemy": {
+                "relationId": 537967,
+                "pbfUrl": "https://geo2day.com/central_america/saint_barthelemy.pbf",
+                "countryCode": "BL"
+            },
+            "Saint-Martin": {
+                "relationId": 1891583,
+                "pbfUrl": "https://geo2day.com/central_america/saint_martin.pbf",
+                "countryCode": "MF"
+            },
+            "Saint-Pierre-et-Miquelon": {
+                "relationId": 3406826,
+                "pbfUrl": "https://geo2day.com/north_america/saint_pierre_et_miquelon.pbf",
+                "countryCode": "PM"
+            },
+            "Wallis-et-Futuna": {
+                "relationId": 3412448,
+                "pbfUrl": "https://download.geofabrik.de/australia-oceania/wallis-et-futuna-latest.osm.pbf",
+                "countryCode": "WF"
+            }
+        }
+    },
+    "Ireland": {
+        "countryCode": "IE",
+        "locale": "en-GB",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/ireland-latest.osm.pbf",
+        "divisionMap": {
+            "Connacht": {
+                "County Galway": 335444,
+                "County Leitrim": 284368,
+                "County Mayo": 338539,
+                "County Roscommon": 335443,
+                "County Sligo": 335330
+            },
+            "Leinster": {
+                "County Carlow": 285977,
+                "County Dublin": 282800,
+                "County Kildare": 285833,
+                "County Kilkenny": 285980,
+                "County Laois": 285915,
+                "County Longford": 335445,
+                "County Louth": 1763195,
+                "County Meath": 282818,
+                "County Offaly": 335442,
+                "County Westmeath": 335446,
+                "County Wexford": 285981,
+                "County Wicklow": 282760
+            },
+            "Munster": {
+                "County Clare": 334885,
+                "County Cork": 332631,
+                "County Kerry": 332622,
+                "County Limerick": 334898,
+                "County Tipperary": 334372,
+                "County Waterford": 283426
+            },
+            "Ulster": {
+                "County Cavan": 283679,
+                "County Donegal": 283732,
+                "County Monaghan": 283647
+            }
+        }
+    },
+    "Italia": {
+        "countryCode": "IT",
+        "locale": "it-IT",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/italy.osm.pbf",
+        "divisionMap": {
+            "Centro": {
+                "Lazio": 40784,
+                "Toscana": 41977,
+                "Umbria": 42004,
+                "Marche": 53060
+            },
+            "Isole": {
+                "Sicilia": 39152,
+                "Sardigna/Sardegna": 7361997
+            },
+            "Nord-Est": {
+                "Emilia-Romagna": 42611,
+                "Veneto": 43648,
+                "Trentino-Alto Adige/Südtirol": 45757,
+                "Friuli-Venezia Giulia": 179296
+            },
+            "Nord-Ovest": {
+                "Piemonte": 44874,
+                "Lombardia": 44879,
+                "Valle d'Aosta / Vallée d'Aoste": 45155,
+                "Liguria": 301482
+            },
+            "Sud": {
+                "Puglia": 40095,
+                "Basilicata": 40137,
+                "Campania": 40218,
+                "Molise": 41256,
+                "Abruzzo": 53937,
+                "Calabria": 1783980
+            }
+        }
+    },
     "Lesotho": {
         "countryCode": "LS",
         "locale": "en-ZA",
