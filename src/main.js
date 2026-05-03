@@ -679,7 +679,7 @@ async function main() {
         );
     });
 
-    const officialLanguages = downloadAndParseOfficialLanguages();
+    const officialLanguages = await downloadAndParseOfficialLanguages();
     console.log(officialLanguages);
 
     console.log('Starting full build process...');
