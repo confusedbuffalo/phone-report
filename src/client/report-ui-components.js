@@ -167,6 +167,20 @@ function createButtons(item, clickedClass) {
                 ${nameLanguage}
             </button>`
         }).join('\n')
+    } else if (reportType === 'name' && item.name) {
+        fixButton = OFFICIAL_LANGUAGES.map(language => {
+            const nameExists = (`name:${language}` in item.nameTags);
+            return `<button
+                data-action="complete-name"
+                data-language="${language}"
+                data-item-type="${item.type}"
+                data-item-id="${item.id}"
+                data-editor-id="apply-fix"
+                ${nameExists ? 'disabled' : ''}
+                class="btn ${nameExists ? 'btn-disabled' : clickedClass ? clickedClass + ' cursor-pointer' : 'cursor-pointer btn-josm-fix'}">
+                ${language}
+            </button>`
+        }).join('\n')
     } else {
         fixButton = item.autoFixable ?
             `<button

@@ -173,7 +173,11 @@ function saveChangeToStorage(osmType, osmId, language = null) {
     });
 
     if (language) {
-        edits[subdivisionName][osmType][osmId] = {name: item.nameTags["name:" + language]};
+        if (item.name) {
+            edits[subdivisionName][osmType][osmId] = {[`name:${language}`]: item.name};
+        } else{
+            edits[subdivisionName][osmType][osmId] = {name: item.nameTags["name:" + language]};
+        }
     } else {
         edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
     }

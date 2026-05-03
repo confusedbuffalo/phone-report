@@ -43,6 +43,10 @@ export function handleGlobalClicks(event) {
             applyFix(itemType, itemId, target.dataset.language);
             break;
 
+        case 'complete-name':
+            applyFix(itemType, itemId, target.dataset.language);
+            break;
+
         case 'login':
             login();
             break;
