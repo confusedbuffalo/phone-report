@@ -303,9 +303,6 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
     const locale = countryData.locale;
     const officialLanguages = countryData.officialLanguages;
 
-    console.log(countryData);
-    console.log(officialLanguages);
-
     const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);

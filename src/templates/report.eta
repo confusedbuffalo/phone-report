@@ -149,7 +149,7 @@
         const subdivisionName = <%~ JSON.stringify(it.subdivisionStats.name) %>;
         const CHANGESET_TAGS = <%~ JSON.stringify(it.CHANGESET_TAGS) %>;
         const CHANGESET_COMMENT = '<%~ it.CHANGESET_COMMENTS[it.reportType] %>';
-        <% if (it.officialLanguages) { %>const OFFICIAL_LANGUAGES = <%~ JSON.stringify(it.officialLanguages) %>; <% } %>
+        const OFFICIAL_LANGUAGES = <%~ JSON.stringify(it.officialLanguages) %>;
 
         <%~ it.clientOsmEditorsScript %>
 

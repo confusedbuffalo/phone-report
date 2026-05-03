@@ -629,6 +629,9 @@ async function processCountry(countryData) {
     }
 
     saveCountryHistory('phone', countryStatsPhone);
+
+    console.log('about to make name', groupedDivisionStatsName);
+
     saveCountryHistory('name', countryStatsName);
 
     await generateCountryIndexHtml('phone', countryStatsPhone);
