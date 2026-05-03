@@ -59,7 +59,7 @@ async function filterPbfPhone(inputPath, outputPath) {
  */
 async function filterPbfName(inputPath, outputPath) {
     try {
-        const filterExpression = "name:*";
+        const filterExpression = "name*";
 
         const command = `osmium tags-filter "${inputPath}" ${filterExpression} -o "${outputPath}" --overwrite`;
         await execPromise(command);
