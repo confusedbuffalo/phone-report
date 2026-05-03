@@ -1,5 +1,5 @@
 import { appState, CLICKED_ITEMS_KEY, DEFAULT_EDITORS, undoData, UPLOADED_ITEMS_KEY } from './report-state.js';
-import { enableRedo, disableRedo, renderNumbers, closeEditsModal, setUpSaveBtn, setUpUndoRedoBtns, transitionRemoveItem, transitionInsertItem } from './report-ui-controller.js';
+import { enableRedo, disableRedo, renderNumbers, closeEditsModal, setUpSaveBtn, setUpUndoRedoBtns, transitionRemoveItem, transitionInsertItem, enableUndo, enableSave } from './report-ui-controller.js';
 
 /**
  * Adds an item's ID to localStorage to mark it as clicked.
@@ -159,7 +159,7 @@ export function discardEdits() {
  * @param {number} osmId - The ID of the OpenStreetMap element.
  * @returns {void}
  */
-function saveChangeToStorage(osmType, osmId) {
+function saveChangeToStorage(osmType, osmId, language = null) {
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
     if (!edits[subdivisionName]) {
         edits[subdivisionName] = {};
@@ -172,7 +172,11 @@ function saveChangeToStorage(osmType, osmId) {
         return item.id === osmId && item.type === osmType;
     });
 
-    edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+    if (language) {
+        edits[subdivisionName][osmType][osmId] = {name: item.nameTags["name:" + language]};
+    } else {
+        edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+    }
 
     localStorage.setItem('edits', JSON.stringify(edits));
     addToUndo(osmType, osmId);
@@ -187,12 +191,12 @@ function saveChangeToStorage(osmType, osmId) {
  * @param {number} osmId - The ID of the OpenStreetMap element.
  * @returns {void}
  */
-export function applyFix(osmType, osmId) {
+export function applyFix(osmType, osmId, language = null) {
     const itemIdTypeStr = `${osmType}/${osmId}`;
 
     recordItemClick(itemIdTypeStr);
     setButtonsAsClicked(itemIdTypeStr);
-    saveChangeToStorage(osmType, osmId);
+    saveChangeToStorage(osmType, osmId, language);
     transitionRemoveItem(osmType, osmId);
 }
 

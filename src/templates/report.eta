@@ -64,6 +64,7 @@
                 <section id="fixableSection" class="space-y-8"></section>
                 <section id="foreignSection" class="space-y-8"></section>
             <% } else { %>
+                <div id="save-row" class="sticky top-0"></div>
                 <section id="missingSection" class="space-y-8"></section>
             <% } %>
             <section id="invalidSection" class="space-y-8">

@@ -591,7 +591,7 @@ async function processCountry(countryData) {
         groupedDivisionStatsName[divisionName] = divisionStatsName;
         totals.name.invalidCount += divisionTotalsName.invalidCount;
         totals.name.missingNamesCount += divisionTotalsName.missingNamesCount;
-        totals.name.totalCount += divisionTotalsPhone.totalCount;
+        totals.name.totalCount += divisionTotalsName.totalCount;
 
         divisionCount++;
         // if (testMode && divisionCount >= 1) {

@@ -2,7 +2,7 @@ import { addNote, openInJosm, login, logout, checkAndSubmit } from "./report-osm
 import { addNoteBtn, commentBox, editsModal, noteCancelBtn, noteCloseBtnBottom, noteModal, settingsMenu, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, pageSize, currentPage, sortKey, undoData, appState } from "./report-state.js";
 import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from "./report-storage.js";
 import { changePage, handleSort } from "./report-ui-actions.js";
-import { createListItem, decodeHtmlEntities } from "./report-ui-components.js";
+import { createListItem, createSaveRow, decodeHtmlEntities } from "./report-ui-components.js";
 import { getSortedItems } from "./report-utils.js";
 
 let firstLoad = true;
@@ -16,8 +16,8 @@ export function handleGlobalClicks(event) {
     if (!target) return;
 
     const action = target.dataset.action;
-    const itemType = target.dataset.type;
-    const itemId = target.dataset.id;        
+    const itemType = target.dataset.itemType;
+    const itemId = Number(target.dataset.itemId);
 
     switch (action) {
         case 'fix':
@@ -37,6 +37,10 @@ export function handleGlobalClicks(event) {
         case 'edit':
             recordItemClick(`${itemType}/${itemId}`);
             setButtonsAsClicked(`${itemType}/${itemId}`);
+            break;
+
+        case 'add-name':
+            applyFix(itemType, itemId, target.dataset.language);
             break;
 
         case 'login':
@@ -151,14 +155,14 @@ export function renderNumbers() {
     const anyMissing = sortedItems.missing.length > 0;
 
     // Clear all containers first
-    fixableContainer.innerHTML = '';
-    invalidContainer.innerHTML = '';
-    foreignContainer.innerHTML = '';
-    missingContainer.innerHTML = '';
-    noInvalidContainer.innerHTML = '';
+    fixableContainer && (fixableContainer.innerHTML = '');
+    invalidContainer && (invalidContainer.innerHTML = '');
+    foreignContainer && (foreignContainer.innerHTML = '');
+    missingContainer && (missingContainer.innerHTML = '');
+    noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
     if (anyFixable || anyInvalid || anyMissing || editCount > 0) {
-        if (anyFixable || editCount > 0) {
+        if (anyFixable || (reportType === 'phone' && editCount > 0)) {
             renderPaginatedSection(
                 "fixableSection",
                 sortedItems.fixable,
@@ -192,6 +196,14 @@ export function renderNumbers() {
                 (page) => currentPage['missing'] = page,
                 'invalid'
             );
+        }
+
+        if (reportType === 'name') {
+            const saveRow = document.getElementById('save-row');
+            
+            saveRow.innerHTML = `<div class="page-sort-card"><div class="save-sort-container">
+                ${createSaveRow()}
+                </div></div>`
         }
     } else {
         // No invalid numbers found at all
@@ -285,16 +297,7 @@ function renderPaginatedSection(
             </button>
         </div>` : '<div></div>';
 
-    const saveRow = filterType === 'fixable' ? `
-        <div class="save-undo-row">
-            <span class="flex items-center">
-                <button id="undo-btn" class="btn-undo-redo gray-btn-disabled" data-action="undo" disabled><svg class="icon-svg"><use href="#icon-undo"></use></svg></button>
-                <button id="redo-btn" class="btn-undo-redo gray-btn-disabled" data-action="redo" disabled><svg class="icon-svg"><use href="#icon-redo"></use></svg></button>
-            </span>
-            <div id="save-btn-container">
-                <button id="save-btn" class="btn-squared gray-btn-disabled" data-action="open-upload-modal" disabled>${translate('save')}</button>
-            </div>
-        </div>` : '';
+    const saveRow = createSaveRow();
 
     const pageAndSortControls = `
         ${pageControls}
@@ -327,7 +330,7 @@ function renderPaginatedSection(
         </div>`
 
     const paginationSortCard = `
-        <div class="page-sort-card">
+        <div class="page-sort-card ${reportType === 'name' ? 'top-20' : ''}">
             ${filterType === 'fixable' ? `
                 <div class="save-sort-container">
                     <div>${saveRow}</div>

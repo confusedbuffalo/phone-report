@@ -1,5 +1,18 @@
 import { isItemClicked } from "./report-storage.js";
 
+export function createSaveRow() {
+    return `
+        <div class="save-undo-row">
+            <span class="flex items-center">
+                <button id="undo-btn" class="btn-undo-redo gray-btn-disabled" data-action="undo" disabled><svg class="icon-svg"><use href="#icon-undo"></use></svg></button>
+                <button id="redo-btn" class="btn-undo-redo gray-btn-disabled" data-action="redo" disabled><svg class="icon-svg"><use href="#icon-redo"></use></svg></button>
+            </span>
+            <div id="save-btn-container">
+                <button id="save-btn" class="btn-squared gray-btn-disabled" data-action="open-upload-modal" disabled>${translate('save')}</button>
+            </div>
+        </div>`;
+} 
+
 /**
  * Creates the HTML content for a single invalid number item.
  * @param {Object} item - The invalid number data item.
@@ -140,16 +153,32 @@ function createButtons(item, clickedClass) {
        `;
     }).join('\n');
 
-    const fixButton = item.autoFixable ?
-        `<button
-            data-action="fix"
-            data-item-type="${item.type}"
-            data-item-id="${item.id}"
-            data-editor-id="apply-fix"
-            class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
-            ${translate('applyFix')}
-       </button>` :
-        '';
+    let fixButton;
+    if (reportType === 'name' && !item.name) {
+        fixButton = Object.keys(item.nameTags).map(key => {
+            const nameLanguage = key.slice(5);
+            return `<button
+                data-action="add-name"
+                data-language="${nameLanguage}"
+                data-item-type="${item.type}"
+                data-item-id="${item.id}"
+                data-editor-id="apply-fix"
+                class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
+                ${nameLanguage}
+            </button>`
+        }).join('\n')
+    } else {
+        fixButton = item.autoFixable ?
+            `<button
+                data-action="fix"
+                data-item-type="${item.type}"
+                data-item-id="${item.id}"
+                data-editor-id="apply-fix"
+                class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
+                ${translate('applyFix')}
+        </button>` :
+            '';
+    }
 
     const createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
     const noteClickedClass = createdNotes.includes(`${item.type}/${item.id}`) ? 'btn-clicked' : 'btn-note';
