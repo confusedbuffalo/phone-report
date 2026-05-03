@@ -326,15 +326,16 @@ function renderPaginatedSection(
                     class="sort-btn sort-btn-style ${getSortStyle('foreign')}">
                     ${translate('phoneNumber')}
                 </button>` :
-                `<button data-action="sort" data-section="${suffix}" data-sort-key="invalid"
-                    class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
-                    ${translate('invalidNumber')}
-                </button>`
+                reportType === 'phone' ?
+                    `<button data-action="sort" data-section="${suffix}" data-sort-key="invalid"
+                        class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
+                        ${translate('invalidNumber')}
+                    </button>` : ''
                 }
         </div>`
 
     const paginationSortCard = `
-        <div class="page-sort-card ${reportType === 'name' ? 'top-20' : ''}">
+        <div class="page-sort-card ${reportType === 'name' ? 'top-24' : ''}">
             ${filterType === 'fixable' ? `
                 <div class="save-sort-container">
                     <div>${saveRow}</div>
