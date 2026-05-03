@@ -47,7 +47,7 @@
         </div>
 
         <div class="footer-container">
-            <%= it.createFooter(it.locale, it.translations) %>
+            <%~ it.createFooter(it.locale, it.translations) %>
         </div>
     </div>
     <script>

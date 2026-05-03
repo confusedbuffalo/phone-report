@@ -20,10 +20,10 @@
                 </a>
                 <%~ it.themeButton %>
             </div>
-            <h1 class="page-title"><%= it.translate('osmPhoneNumberValidation', it.locale) %></h1>
-            <p class="report-subtitle"><%= it.translate('reportSubtitleForCountry', it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
+            <h1 class="page-title"><%= it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', it.locale) %></h1>
+            <p class="report-subtitle"><%= it.translate(it.reportType === 'phone' ? 'reportSubtitleForCountry' : reportSubtitleNamesForCountry, it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
         </header>
-        <%= it.createStatsBox(it.reportType, it.countryData, it.locale, true) %>
+        <%~ it.createStatsBox(it.reportType, it.countryData, it.locale, true) %>
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title"><%= it.translate('divisionalReports', it.locale) %></h2>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="footer-container">
-            <%= it.createFooter(it.locale, it.translations, false, it.countryData.timestamp) %>
+            <%~ it.createFooter(it.locale, it.translations, false, it.countryData.timestamp) %>
         </div>
     </div>
     <script src="../background-colour.js"></script>
@@ -52,9 +52,9 @@
         const groupedDivisionStats = <%~ JSON.stringify(it.countryData.groupedDivisionStats) %>;
         const safeCountryName = '<%~ it.safeName(it.countryData.name) %>';
         const T_CLIENT = {
-            invalidNumbersOutOf: \`<%= it.translate('invalidNumbersOutOf', it.locale) %>\`,
-            invalid: \`<%= it.translate('invalid', it.locale) %>\`,
-            noSubdivisionsFound: \`<%= it.translate('noSubdivisionsFound', it.locale) %>\`
+            invalidNumbersOutOf: `<%= it.translate('invalidNumbersOutOf', it.locale) %>`,
+            invalid: `<%= it.translate('invalid', it.locale) %>`,
+            noSubdivisionsFound: `<%= it.translate('noSubdivisionsFound', it.locale) %>`
         };
     </script>
     <script src="../country-page.js"></script>
