@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const readline = require('readline')
+const axios = require('axios');
+const yaml = require('js-yaml');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
 const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME } = require('./constants');
@@ -98,6 +100,19 @@ function createClientTranslations(fullTranslations, fullDefaultTranslations) {
         }
     }
     return clientTranslations;
+}
+
+async function downloadAndParseOfficialLanguages() {
+    const url = 'https://raw.githubusercontent.com/streetcomplete/countrymetadata/refs/heads/master/data/officialLanguages.yml';
+    try {
+        const response = await axios.get(url);
+        const rawYaml = response.data;
+        const dataObject = yaml.load(rawYaml);
+
+        return dataObject;
+    } catch (error) {
+        console.error('Error fetching or parsing YAML:', error.message);
+    }
 }
 
 /**
@@ -446,7 +461,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionTotalsName.totalCount += nameStats.totalCount;
         divisionTotalsName.invalidCount += nameStats.invalidCount;
         divisionTotalsName.missingNamesCount += nameStats.missingNamesCount;
-        
+
         subdivisionCount++;
         // if (testMode && subdivisionCount >= 1) {
         //     break;
@@ -619,7 +634,7 @@ async function processCountry(countryData) {
     await generateCountryIndexHtml('phone', countryStatsPhone);
     await generateCountryIndexHtml('name', countryStatsName);
 
-    return {countryStatsPhone, countryStatsName};
+    return { countryStatsPhone, countryStatsName };
 }
 
 /**
@@ -663,6 +678,9 @@ async function main() {
             path.join(VENDOR_DIR, 'chart.js')
         );
     });
+
+    const officialLanguages = downloadAndParseOfficialLanguages();
+    console.log(officialLanguages);
 
     console.log('Starting full build process...');
 
