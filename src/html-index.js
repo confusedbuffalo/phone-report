@@ -135,7 +135,7 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
                             <div class="w-7 h-7"></div>
                         </div>
                     </div>
-                    <h1 class="page-title">${translate(reportType === 'phone' ? 'osmPhoneNumberValidation' : osmIncompleteNameValidation, locale)}</h1>
+                    <h1 class="page-title">${translate(reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', locale)}</h1>
                     <div class="items-end">${themeButton}</div>
                 </div>
                 <p class="report-subtitle">${translate(reportType === 'phone' ? 'reportSubtitle' : 'reportSubtitleNames', locale)}</p>
