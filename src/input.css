@@ -170,6 +170,10 @@
   @apply bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-100;
 }
 
+@utility label-help {
+  @apply text-gray-800 dark:text-gray-200;
+}
+
 @utility stats-box {
   @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 gap-6 text-center;
 }

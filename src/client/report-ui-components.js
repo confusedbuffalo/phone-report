@@ -11,7 +11,7 @@ export function createSaveRow() {
                 <button id="save-btn" class="btn-squared gray-btn-disabled" data-action="open-upload-modal" disabled>${translate('save')}</button>
             </div>
         </div>`;
-} 
+}
 
 /**
  * Creates the HTML content for a single invalid number item.
@@ -39,6 +39,27 @@ export function createListItem(item) {
             ${itemMetadata}
         </div>` : '';
 
+    const helpLabel = item.name ?
+        `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameTo')}</span>` :
+        `<span data-editor-id="apply-fix" class="label label-help">${translate('correctLanguageForName')}</span>`;
+
+    const buttonLayout = reportType === 'phone'
+        ? [
+            [websiteButton, fixableLabel, fixButton, noteButton],
+            [josmFixButton, editorButtons]
+        ]
+        : [
+            [helpLabel, fixButton],
+            [websiteButton, fixableLabel, noteButton],
+            [josmFixButton, editorButtons]
+        ];
+
+    const actionsContainer = buttonLayout
+        .map(row => `
+              <div class="flex flex-wrap gap-2 justify-end">
+                  ${row.join('')}
+              </div>`).join('');
+
     return `
         <li class="report-list-item" data-item-id="${itemId}">
             <div class="list-item-content-wrapper">
@@ -55,16 +76,7 @@ export function createListItem(item) {
             </div>
 
             <div class="list-item-actions-container">
-                <div class="flex flex-wrap gap-2 justify-end">
-                    ${websiteButton}
-                    ${fixableLabel}
-                    ${fixButton}
-                    ${noteButton}
-                </div>
-                <div class="flex flex-wrap gap-2 justify-end">
-                    ${josmFixButton}
-                    ${editorButtons}
-                </div>
+                ${actionsContainer}
             </div>
             ${metaDataDiv}
         </li>

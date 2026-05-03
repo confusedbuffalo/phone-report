@@ -93,8 +93,10 @@
   "multilingualNames": "Multilingual Names",
   "incompleteNames": "Incomplete Names",
   "missingNames": "Missing Names",
-  "missingNamesDescription": "All of these have a language-specific name, but do not have a main name specified. Probably one of the language-specific names should be used as the primary name.",
-  "incompleteNamesDescription": "All of these have language-specific names, but none of them match the primary name.",
+  "missingNamesDescription": "All of these have a language-specific name, but do not have a main name specified. Probably one of the language-specific names should be used as the primary name, in which case the buttons can be used to add that as the name.",
+  "incompleteNamesDescription": "All of these have language-specific names, but none of them match the primary name. This may be because the specific language tag is missing, in which case the buttons can be used to copy the name to the correct language tag.",
   "incompleteNamesOutOf": "%i incomplete names out of %t",
-  "noIncompleteNames": "No incomplete names found in this subdivision."
-  }
+  "noIncompleteNames": "No incomplete names found in this subdivision.",
+  "copyNameTo": "Copy name to:",
+  "correctLanguageForName": "Correct language for name is:"
+}
