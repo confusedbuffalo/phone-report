@@ -33,10 +33,10 @@ let sortDirection = 'asc'
  */
 function formatNumber(num) {
     if (!num) return '';
-    return num.toLocaleString(locale, { 
-        useGrouping: true, 
-        minimumFractionDigits: 0, 
-        maximumFractionDigits: 0 
+    return num.toLocaleString(locale, {
+        useGrouping: true,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     });
 }
 
@@ -111,7 +111,7 @@ function renderList() {
             const diff = calculatedDivisionTotals[b].invalid - calculatedDivisionTotals[a].invalid;
             return sortDirection === 'asc' ? diff : -1 * diff;
         } else if (currentSort === 'name') {
-            return sortDirection === 'asc' ? a.localeCompare(b): b.localeCompare(a);
+            return sortDirection === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
         }
         return 0;
     });
@@ -151,11 +151,11 @@ function renderList() {
             const groupStats = calculatedDivisionTotals[divisionName];
             const groupInvalidFormatted = formatNumber(groupStats.invalid);
             const groupTotalFormatted = formatNumber(groupStats.total);
-            const groupFixableFormatted = formatNumber(groupStats.fixable); 
+            const groupFixableFormatted = formatNumber(groupStats.fixable);
 
             const groupPercentageNumber = groupStats.total > 0 ? (groupStats.invalid / groupStats.total) * 100 : 0;
             const formattedGroupPercentage = groupPercentageNumber.toLocaleString(locale, percentageOptions);
-            
+
             // Client-side substitution using the embedded template literal
             const groupStatsLine = reportType === 'phone' ?
                 T_CLIENT.invalidNumbersOutOf
@@ -178,7 +178,7 @@ function renderList() {
                     const diff = b.invalidCount - a.invalidCount;
                     return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'name') {
-                    return sortDirection === 'asc' ? a.name.localeCompare(b.name): b.name.localeCompare(a.name);
+                    return sortDirection === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
                 }
             });
 
@@ -186,7 +186,7 @@ function renderList() {
 
             if (isGrouped) {
                 // --- RENDER GROUPED ---
-                let detailsGroup = document.createElement('details'); 
+                let detailsGroup = document.createElement('details');
                 detailsGroup.className = 'details-group group';
 
                 // Restore open state after sort
@@ -203,12 +203,12 @@ function renderList() {
                 const leftSide = document.createElement('div');
                 leftSide.className = 'summary-left-side';
 
-                const iconCircle = document.createElement('div'); 
+                const iconCircle = document.createElement('div');
                 iconCircle.className = 'summary-icon color-indicator';
                 iconCircle.setAttribute('data-percentage', groupPercentageNumber);
 
                 const collapseIcon = createCollapseIcon();
-                iconCircle.appendChild(collapseIcon); 
+                iconCircle.appendChild(collapseIcon);
 
                 const divisionNameContainer = document.createElement('div');
                 divisionNameContainer.className = 'list-item-content';
@@ -224,7 +224,7 @@ function renderList() {
                 divisionNameContainer.appendChild(divisionHeader);
                 divisionNameContainer.appendChild(statsLine);
 
-                leftSide.appendChild(iconCircle); 
+                leftSide.appendChild(iconCircle);
                 leftSide.appendChild(divisionNameContainer);
 
                 const rightSide = document.createElement('div');
@@ -236,7 +236,7 @@ function renderList() {
 
                 const percentageLabel = document.createElement('p');
                 percentageLabel.className = 'summary-percentage-label';
-                percentageLabel.textContent = T_CLIENT.invalid; 
+                percentageLabel.textContent = T_CLIENT.invalid;
 
                 rightSide.appendChild(percentageText);
                 rightSide.appendChild(percentageLabel);
@@ -248,7 +248,7 @@ function renderList() {
 
                 detailsGroup.appendChild(summaryHeader);
 
-                ul = document.createElement('ul'); 
+                ul = document.createElement('ul');
                 ul.className = 'details-content';
 
                 detailsGroup.appendChild(ul);
@@ -256,14 +256,14 @@ function renderList() {
 
             } else {
                 // --- RENDER FLAT LIST ---
-                ul = listContainer; 
+                ul = listContainer;
             }
 
             // --- LIST ITEM RENDERING (Common Logic) ---
             sortedData.forEach(subdivision => {
                 const singleLevelDivision = safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
                 const subdivisionSlug = singleLevelDivision ? subdivision.slug : `${subdivision.divisionSlug}/${subdivision.slug}`;
-    
+
                 const percentage = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
@@ -273,13 +273,16 @@ function renderList() {
 
                 const percentageNumber = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const formattedPercentage = percentageNumber.toLocaleString(locale, percentageOptions);
-                
-                // Client-side substitution using the embedded template literal
-                const itemStatsLine = T_CLIENT.invalidNumbersOutOf
-                    .replace('%i', formattedInvalidCount)
-                    .replace('%f', formattedFixableCount)
-                    .replace('%t', formattedTotalCount);
 
+                // Client-side substitution using the embedded template literal
+                const itemStatsLine = reportType === 'phone' ?
+                    T_CLIENT.invalidNumbersOutOf
+                        .replace('%i', formattedInvalidCount)
+                        .replace('%f', formattedFixableCount)
+                        .replace('%t', formattedTotalCount) :
+                    T_CLIENT.incompleteNamesOutOf
+                        .replace('%i', formattedInvalidCount)
+                        .replace('%t', formattedTotalCount);
 
                 const li = document.createElement('li');
                 li.className = 'subdivision-list-item';
