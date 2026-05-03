@@ -68,6 +68,7 @@ const MASTER_KEYS = {
     'osmIncompleteNameValidation': [],
     'reportSubtitleNames': [],
     'incompleteNamesReport': [],
+    'noIncompleteNames': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
