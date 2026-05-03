@@ -281,7 +281,6 @@ class ItemTransformer extends Transform {
 }
 
 function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSlug) {
-    console.log(countryName, divisionSlug, subdivisionSlug);
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === divisionSlug || divisionSlug === subdivisionSlug;
     const finalSubdivisionSlug = singleLevelDivision ? subdivisionSlug : path.join(divisionSlug, subdivisionSlug);
@@ -300,8 +299,7 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {Date} timestamp - The timestamp of the data
  */
 async function generateHtmlReport(reportType, countryData, subdivisionStats, tmpFilePath, translations, botEnabled, timestamp) {
-    console.log(subdivisionStats);
-    const countryName = countryData.countryName;
+    const countryName = countryData.name;
     const locale = countryData.locale;
     const officialLanguages = countryData.officialLanguages;
 

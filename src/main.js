@@ -300,11 +300,10 @@ function parseOsmTimestamp(timestampStr) {
  * @param {Object} subdivision - The subdivision object (with name and id).
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} rawDivisionName - The unescaped name of the parent division.
- * @param {string} locale - The locale for the report.
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
  */
-async function processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
+async function processSubdivisionPhones(subdivision, countryData, rawDivisionName, clientTranslations) {
     const countryName = countryData.name;
 
     const geojsonPath = path.join(OSM_DIR, 'phone', `${subdivision.id}.geojsonseq`);
@@ -361,11 +360,10 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
  * @param {Object} subdivision - The subdivision object (with name and id).
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} rawDivisionName - The unescaped name of the parent division.
- * @param {string} locale - The locale for the report.
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
  */
-async function processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
+async function processSubdivisionNames(subdivision, countryData, rawDivisionName, clientTranslations) {
     const countryName = countryData.name;
 
     const geojsonPath = path.join(OSM_DIR, 'name', `${subdivision.id}.geojsonseq`);
@@ -413,11 +411,10 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
  * Processes all subdivisions within a single administrative division.
  * @param {string} rawDivisionName - The unescaped name of the division.
  * @param {Object} countryData - The configuration object for the country.
- * @param {string} locale - The locale for the reports.
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise resolving to an object with aggregated stats for the division.
  */
-async function processDivision(rawDivisionName, countryData, locale, clientTranslations) {
+async function processDivision(rawDivisionName, countryData, clientTranslations) {
     const divisionName = rawDivisionName;
     console.log(`Processing subdivisions for ${divisionName}...`);
 
@@ -448,7 +445,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
-        const phoneStats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations);
+        const phoneStats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, clientTranslations);
         divisionStatsPhone.push(phoneStats);
         divisionTotalsPhone.totalCount += phoneStats.totalCount;
         divisionTotalsPhone.invalidCount += phoneStats.invalidCount;
@@ -456,7 +453,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionTotalsPhone.foreignCount += phoneStats.foreignCount;
         divisionTotalsPhone.safeEditCount += phoneStats.safeEditCount;
 
-        const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations);
+        const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, clientTranslations);
         divisionStatsName.push(nameStats);
         divisionTotalsName.totalCount += nameStats.totalCount;
         divisionTotalsName.invalidCount += nameStats.invalidCount;
@@ -577,7 +574,7 @@ async function processCountry(countryData) {
     for (const rawDivisionName in divisions) {
         const {
             divisionStatsPhone, divisionTotalsPhone, divisionStatsName, divisionTotalsName
-        } = await processDivision(rawDivisionName, countryData, locale, clientTranslations);
+        } = await processDivision(rawDivisionName, countryData, clientTranslations);
 
         const divisionName = rawDivisionName;
 
