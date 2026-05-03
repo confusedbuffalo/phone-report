@@ -90,7 +90,7 @@ const testMode = BUILD_TYPE === 'simplified';
  */
 function createClientTranslations(fullTranslations, fullDefaultTranslations) {
     const clientTranslations = {};
-    for (const key of Object.keys(fullTranslations)) {
+    for (const key of Object.keys(fullDefaultTranslations)) {
         if (fullTranslations[key] !== undefined) {
             clientTranslations[key] = fullTranslations[key];
         } else if (fullDefaultTranslations[key] !== undefined) {
@@ -610,7 +610,7 @@ async function processCountry(countryData) {
         invalidCount: totals.name.invalidCount,
         missingNamesCount: totals.name.missingNamesCount,
         totalCount: totals.name.totalCount,
-        groupedDivisionStats: groupedDivisionStatsPhone
+        groupedDivisionStats: groupedDivisionStatsName,
     }
 
     saveCountryHistory('phone', countryStatsPhone);
