@@ -50,11 +50,11 @@
     <script src="../background-colour.js"></script>
     <script>
         const groupedDivisionStats = <%~ JSON.stringify(it.countryData.groupedDivisionStats) %>;
-        const safeCountryName = '<%~ it.safeName(countryData.name) %>';
+        const safeCountryName = '<%~ it.safeName(it.countryData.name) %>';
         const T_CLIENT = {
             invalidNumbersOutOf: \`<%= it.translate('invalidNumbersOutOf', it.locale) %>\`,
-            invalid: \`<%= translate('invalid', locale) %>\`,
-            noSubdivisionsFound: \`<%= translate('noSubdivisionsFound', locale) %>\`
+            invalid: \`<%= it.translate('invalid', it.locale) %>\`,
+            noSubdivisionsFound: \`<%= it.translate('noSubdivisionsFound', it.locale) %>\`
         };
     </script>
     <script src="../country-page.js"></script>

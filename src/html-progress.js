@@ -1,5 +1,6 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { Eta } = require('eta');
 const { translate } = require('./i18n');
 const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
 const { favicon, themeButton, createFooter } = require('./html-utils');
@@ -49,7 +50,7 @@ async function generateProgressPage(reportType, country = null, locale = 'en-GB'
         translations,
     };
 
-    const htmlContent = eta.render("./progress", templateData);
+    const htmlContent = eta.render("progress", templateData);
 
     const outputDir = country ? path.join(rootDir, country) : rootDir;
     const outputPath = path.join(outputDir, 'progress.html')

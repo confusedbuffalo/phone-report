@@ -394,7 +394,7 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
         clientOsmEditorsScript
     };
 
-    const htmlContent = eta.render("./report", templateData);
+    const htmlContent = eta.render("report", templateData);
 
     await fsPromises.writeFile(htmlFilePath, htmlContent);
     console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);

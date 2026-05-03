@@ -3,18 +3,28 @@ const { escapeHTML } = require('../src/html-utils.js');
 const fs = require('fs');
 
 // Mock dependencies
-jest.mock('fs', () => ({
-    promises: {
-        writeFile: jest.fn().mockResolvedValue(),
-    },
-    // Needed because data-processor relies on preset-matcher
-    readFileSync: jest.fn(() => 
-        JSON.stringify({
-            presets: []
-        })
-    ),
-    existsSync: jest.fn(() => true),
-}));
+jest.mock('fs', () => {
+    const actualFs = jest.requireActual('fs');
+    return {
+        ...actualFs,
+        promises: {
+            ...actualFs.promises,
+            writeFile: jest.fn().mockResolvedValue(),
+        },
+        readFileSync: jest.fn((filePath, encoding) => {
+            // data-processor relies on preset-matcher, mock that
+            if (filePath.includes('presets')) {
+                return JSON.stringify({ presets: [] });
+            }
+            
+            // Otherwise, let the real fs read the template for eta
+            return actualFs.readFileSync(filePath, encoding);
+        }),
+        existsSync: jest.fn((filePath) => {
+            return actualFs.existsSync(filePath);
+        }),
+    };
+});
 
 jest.mock('../src/html-utils.js', () => ({
     ...jest.requireActual('../src/html-utils.js'),

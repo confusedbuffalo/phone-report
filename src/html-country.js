@@ -1,5 +1,6 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { Eta } = require('eta');
 const { PUBLIC_DIR, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
 const {favicon, themeButton, createFooter, createStatsBox, escapeHTML} = require('./html-utils');
@@ -13,7 +14,7 @@ const { safeName } = require('./data-processor');
 async function generateCountryIndexHtml(reportType, countryData) {
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),
-        cache: true,
+        cache: false,
     });
 
     const locale = countryData.locale;
@@ -31,7 +32,7 @@ async function generateCountryIndexHtml(reportType, countryData) {
         translate,
     };
 
-    const htmlContent = eta.render("./country", templateData);
+    const htmlContent = eta.render("country", templateData);
 
     const outputDir = reportType === 'name' ? NAMES_BUILD_DIR : PUBLIC_DIR;
     const pageFileName = path.join(outputDir, countryData.slug, 'index.html');
