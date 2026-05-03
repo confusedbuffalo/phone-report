@@ -2,7 +2,7 @@ const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
-const {favicon, themeButton, createFooter} = require('./html-utils');
+const { favicon, themeButton, createFooter } = require('./html-utils');
 const { safeName } = require('./data-processor');
 
 /**
@@ -14,7 +14,7 @@ function buildSearchIndex() {
 
     for (const [countryName, countryObj] of Object.entries(COUNTRIES)) {
         const countrySafe = safeName(countryName);
-        
+
         // Add the Country itself
         index.push({
             name: countryName,
@@ -47,11 +47,11 @@ function buildSearchIndex() {
                         parent: countryName
                     });
                 }
-                
+
                 for (const [subName, relId] of Object.entries(subdivisions)) {
                     // If names match (e.g., Berlin/Berlin), only add the deeper one
                     const isDuplicate = (subName.toLowerCase() === divName.toLowerCase());
-                    
+
                     const item = {
                         name: subName,
                         type: "Subdivision",
@@ -64,7 +64,7 @@ function buildSearchIndex() {
                     } else {
                         item.url = `./${countrySafe}/${divSafe}/${safeName(subName)}.html`;
                     }
-                    
+
                     index.push(item);
                 }
             }
@@ -92,10 +92,11 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
         const itemLocale = country.locale || locale; // Fallback to the main page locale
 
         const formattedInvalid = country.invalidCount.toLocaleString(itemLocale);
-        const formattedFixable = country.autoFixableCount.toLocaleString(itemLocale);
         const formattedTotal = country.totalCount.toLocaleString(itemLocale);
 
-        const description = translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, formattedFixable, formattedTotal]);
+        const description = reportType === 'phone' ?
+            translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal]) :
+            translate('incompleteNamesOutOf', itemLocale, [formattedInvalid, formattedTotal]);
 
         return `
             <a href="./${countryPageName}" class="country-link">

@@ -73,6 +73,7 @@ const MASTER_KEYS = {
     'fixablePercentageOfInvalid': ['%p'],
 
     'invalidNumbersOutOf': ['%i', '%f', '%t'],
+    'incompleteNamesOutOf': ['%i', '%t'],
 
     'numberDetailsNamesDataFrom': ['%o'],
 
