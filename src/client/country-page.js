@@ -19,6 +19,7 @@ function escapeHTML(str) {
     });
 }
 
+const locale = document.documentElement.lang;
 const listContainer = document.getElementById('division-list');
 const sortButtons = document.querySelectorAll('.sort-btn');
 const showEmptyCheckbox = document.getElementById('show-empty');

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="${locale}" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%~ it.translate('countryReportTitle', it.locale, [it.escapeHTML(it.countryData.name)]) %></title>
+    <%~ it.favicon %>
+    <link href="../styles.css" rel="stylesheet">
+    <script src="../theme.js"></script>
+</head>
+<body class="body-styles">
+    <div class="page-container">
+        <header class="page-header">
+            <div class="action-row">
+                <a href="../" class="back-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block align-middle mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span class="align-middle"><%= it.translate('backToAllCountries', it.locale) %></span>
+                </a>
+                <%~ it.themeButton %>
+            </div>
+            <h1 class="page-title"><%= it.translate('osmPhoneNumberValidation', it.locale) %></h1>
+            <p class="report-subtitle"><%= it.translate('reportSubtitleForCountry', it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
+        </header>
+        <%= it.createStatsBox(it.reportType, it.countryData, it.locale, true) %>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><%= it.translate('divisionalReports', it.locale) %></h2>
+                <div class="card-actions">
+                    <div class="sort-controls">
+                        <span class="sort-label"><%= it.translate('sortBy', it.locale) %></span>
+                        <button id="sort-percentage" data-sort="percentage" class="sort-btn sort-btn-style"><%= it.translate('invalidPercentage', it.locale) %></button>
+                        <button id="sort-invalid" data-sort="invalidCount" class="sort-btn sort-btn-style"><%= it.translate('invalidCount', it.locale) %></button>
+                        <button id="sort-name" data-sort="name" class="sort-btn sort-btn-style"><%= it.translate('name', it.locale) %></button>
+                    </div>
+                    <div class="checkbox-container">
+                        <label for="show-empty" class="checkbox-label"><%= it.translate('showEmptyDivisions', it.locale) %></label>
+                        <input type="checkbox" id="show-empty" class="checkbox-input">
+                    </div>
+                </div>
+            </div>
+            <div id="division-list" class="space-y-4">
+            </div>
+        </div>
+        <div class="footer-container">
+            <%= it.createFooter(it.locale, it.translations, false, it.countryData.timestamp) %>
+        </div>
+    </div>
+    <script src="../background-colour.js"></script>
+    <script>
+        const groupedDivisionStats = <%~ JSON.stringify(it.countryData.groupedDivisionStats) %>;
+        const safeCountryName = '<%~ it.safeName(countryData.name) %>';
+        const T_CLIENT = {
+            invalidNumbersOutOf: \`<%= it.translate('invalidNumbersOutOf', it.locale) %>\`,
+            invalid: \`<%= translate('invalid', locale) %>\`,
+            noSubdivisionsFound: \`<%= translate('noSubdivisionsFound', locale) %>\`
+        };
+    </script>
+    <script src="../country-page.js"></script>
+</body>
+</html>

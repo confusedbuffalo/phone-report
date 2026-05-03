@@ -1,8 +1,8 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { translate } = require('./i18n');
-const { PUBLIC_DIR, COUNTRIES } = require('./constants');
-const { favicon, themeButton, createFooter, escapeHTML } = require('./html-utils');
+const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
+const { favicon, themeButton, createFooter } = require('./html-utils');
 const { getTranslations } = require('./i18n');
 const { safeName } = require('./data-processor');
 const BUILD_TYPE = process.env.BUILD_TYPE;
@@ -11,16 +11,13 @@ const testMode = BUILD_TYPE === 'simplified';
 /**
  * Generates the progress.html page, which displays charts visualizing the
  * history of invalid phone number counts over time.
+ * @param {'phone' | 'name'} reportType - The type of report to generate history for.
  * @param {string} country - The slug for the country to create the progress page for (e.g. 'south-africa').
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  */
-async function generateProgressPage(country = null, locale = 'en-GB') {
-    const translations = getTranslations(locale);
-    const REPORT_COUNTRY_KEY = country ? country : 'ALL';
-    const backText = country ? translate('backToCountryPage', locale) : translate('backToAllCountries', locale);
-    const srcPrefix = country ? '../' : './';
-
-    const historyDataPath = path.join(PUBLIC_DIR, 'history-data.json');
+async function generateProgressPage(reportType, country = null, locale = 'en-GB') {
+    const rootDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
+    const historyDataPath = path.join(rootDir, 'history-data.json');
 
     try {
         await fsPromises.access(historyDataPath);   
@@ -34,67 +31,27 @@ async function generateProgressPage(country = null, locale = 'en-GB') {
         throw error;
     }
 
-    const htmlContent = `
-    <!DOCTYPE html>
-    <html lang="${locale}" class="">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${translate('progressHistory', locale)}</title>
-        ${favicon}
-        <link href="${srcPrefix}styles.css" rel="stylesheet">
-        <script src="${srcPrefix}theme.js"></script>
-        <script src="${srcPrefix}vendor/chart.js"></script>
-        <script src="${srcPrefix}chart-generator.js"></script>
-    </head>
-    <body class="body-styles">
-        <div class="page-container">
-            <header class="page-header">
-                <div class="action-row">
-                    <a href="./" class="back-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block align-middle mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        <span class="align-middle">${backText}</span>
-                    </a>
-                    ${themeButton}
-                </div>
-                <h1 class="page-title">${translate('progressHistory', locale)}</h1>
-            </header>
+    const eta = new Eta({
+        views: path.join(process.cwd(), "src", "templates"),
+        cache: true,
+    });
 
-            <div class="card sticky top-0 z-50">
-                <div class="controls-container p-4">
-                    <input id="timeRange" type="range" min="7" max="365" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
-                    <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
-                        <span id="rangeMin"></span>
-                        <span id="rangeValue" class="text-gray-800 dark:text-gray-200"></span>
-                        <span id="rangeMax"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="chart-container">
-                    <canvas id="progressChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <div class="chart-container">
-                    <canvas id="progressChartPercent"></canvas>
-                </div>
-            </div>
+    const translations = getTranslations(locale);
 
-            <div class="footer-container">
-                ${createFooter(locale, translations)}
-            </div>
-        </div>
-        <script>
-            const REPORT_COUNTRY_KEY = '${REPORT_COUNTRY_KEY}';
-        </script>
-    </body>
-    </html>
-    `;
+    const templateData = {
+        reportType,
+        favicon,
+        locale,
+        translate,
+        country,
+        themeButton,
+        createFooter,
+        translations,
+    };
 
-    const outputDir = country ? path.join(PUBLIC_DIR, country) : PUBLIC_DIR;
+    const htmlContent = eta.render("./progress", templateData);
+
+    const outputDir = country ? path.join(rootDir, country) : rootDir;
     const outputPath = path.join(outputDir, 'progress.html')
 
     await fsPromises.mkdir(outputDir, { recursive: true }).catch(err => {
@@ -110,13 +67,15 @@ async function generateProgressPage(country = null, locale = 'en-GB') {
 
 if (require.main === module) {
     (async () => {
-        await generateProgressPage();
+        await generateProgressPage('phone');
+        await generateProgressPage('name');
 
         for (const countryKey in COUNTRIES) {
             const countryData = COUNTRIES[countryKey];
             const locale = countryData.locale;
 
-            await generateProgressPage(safeName(countryKey), locale);
+            await generateProgressPage('phone', safeName(countryKey), locale);
+            await generateProgressPage('name', safeName(countryKey), locale);
             if (testMode) {
                 break;
             }

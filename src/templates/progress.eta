@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="<%= it.locale %>" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%~ it.translate('progressHistory', it.locale) %></title>
+    <%~ it.favicon %>
+    <link href="<%= it.country ? '../' : './' %>styles.css" rel="stylesheet">
+    <script src="<%= it.country ? '../' : './' %>theme.js"></script>
+    <script src="<%= it.country ? '../' : './' %>vendor/chart.js"></script>
+    <script src="<%= it.country ? '../' : './' %>chart-generator.js"></script>
+</head>
+<body class="body-styles">
+    <div class="page-container">
+        <header class="page-header">
+            <div class="action-row">
+                <a href="./" class="back-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block align-middle mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span class="align-middle"><%= it.country ? it.translate('backToCountryPage', it.locale) : it.translate('backToAllCountries', it.locale) %></span>
+                </a>
+                <%~ it.themeButton %>
+            </div>
+            <h1 class="page-title"><%= it.translate('progressHistory', it.locale) %></h1>
+        </header>
+
+        <div class="card sticky top-0 z-50">
+            <div class="controls-container p-4">
+                <input id="timeRange" type="range" min="7" max="365" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    <span id="rangeMin"></span>
+                    <span id="rangeValue" class="text-gray-800 dark:text-gray-200"></span>
+                    <span id="rangeMax"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="chart-container">
+                <canvas id="progressChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <div class="chart-container">
+                <canvas id="progressChartPercent"></canvas>
+            </div>
+        </div>
+
+        <div class="footer-container">
+            <%= ir.createFooter(it.locale, it.translations) %>
+        </div>
+    </div>
+    <script>
+        const REPORT_COUNTRY_KEY = '<%= it.country ? it.country : "ALL" %>';
+    </script>
+</body>
+</html>

@@ -4,7 +4,7 @@ const os = require('os');
 const readline = require('readline')
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, OSM_DIR, NAMES_BUILD_DIR } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME } = require('./constants');
 const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
 const { safeName } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
@@ -85,12 +85,15 @@ const testMode = BUILD_TYPE === 'simplified';
 /**
  * Saves the full history for the country to a JSON file to be backed up and used for
  * history analysis, falling back to previous history for any divisions that failed to fetch.
+ * @param {'phone' | 'name'} reportType - The type of report to generate history for.
  * @param {Object} originalCountryStats - The statistics for the country, included groupedDivisionStats.
  */
-function saveCountryHistory(originalCountryStats) {
+function saveCountryHistory(reportType, originalCountryStats) {
     const countryStats = structuredClone(originalCountryStats);
 
-    const historyCountryDir = path.join(HISTORY_DIR, countryStats.slug);
+    const rootDir = reportType === 'phone' ? HISTORY_DIR_PHONE : HISTORY_DIR_NAME;
+
+    const historyCountryDir = path.join(rootDir, countryStats.slug);
     if (!fs.existsSync(historyCountryDir)) {
         fs.mkdirSync(historyCountryDir, { recursive: true });
     }
@@ -394,32 +397,45 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
-    const divisionStats = [];
-    let divisionTotalCount = 0;
-    let divisionInvalidCount = 0;
-    let divisionAutofixableCount = 0;
-    let divisionForeignCount = 0;
-    let divisionSafeEditCount = 0;
+    const divisionStatsPhone = [];
+    const divisionTotalsPhone = {
+        totalCount: 0,
+        invalidCount: 0,
+        autoFixableCount: 0,
+        foreignCount: 0,
+        safeEditCount: 0,
+    };
+
+    const divisionStatsName = [];
+    const divisionTotalsName = {
+        totalCount: 0,
+        invalidCount: 0,
+        missingNamesCount: 0,
+    };
 
     let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
-        const stats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations);
-        divisionStats.push(stats);
-        divisionTotalCount += stats.totalCount;
-        divisionInvalidCount += stats.invalidCount;
-        divisionAutofixableCount += stats.autoFixableCount;
-        divisionForeignCount += stats.foreignCount;
-        divisionSafeEditCount += stats.safeEditCount;
+        const phoneStats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, locale, clientTranslations);
+        divisionStatsPhone.push(phoneStats);
+        divisionTotalsPhone.totalCount += phoneStats.totalCount;
+        divisionTotalsPhone.invalidCount += phoneStats.invalidCount;
+        divisionTotalsPhone.autoFixableCount += phoneStats.autoFixableCount;
+        divisionTotalsPhone.foreignCount += phoneStats.foreignCount;
+        divisionTotalsPhone.safeEditCount += phoneStats.safeEditCount;
 
         const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations);
-
+        divisionStatsName.push(phoneStats);
+        divisionTotalsName.totalCount += nameStats.totalCount;
+        divisionTotalsName.invalidCount += nameStats.invalidCount;
+        divisionTotalsName.missingNamesCount += nameStats.missingNamesCount;
+        
         subdivisionCount++;
         // if (testMode && subdivisionCount >= 1) {
         //     break;
         // }
     }
 
-    return { divisionStats, divisionTotalCount, divisionInvalidCount, divisionAutofixableCount, divisionForeignCount, divisionSafeEditCount };
+    return { divisionStatsPhone, divisionTotalsPhone, divisionStatsName, divisionTotalsName };
 }
 
 /**
@@ -510,26 +526,43 @@ async function processCountry(countryData) {
     let totalForeignCount = 0;
     let totalSafeEditCount = 0;
     let totalTotalCount = 0;
-    const groupedDivisionStats = {};
+    const groupedDivisionStatsPhone = {};
+    const groupedDivisionStatsName = {};
+
+    const totals = {
+        phone: {
+            invalidCount: 0,
+            autoFixableCount: 0,
+            foreignCount: 0,
+            safeEditCount: 0,
+            totalCount: 0,
+        },
+        name: {
+            invalidCount: 0,
+            missingNamesCount: 0,
+            totalCount: 0,
+        }
+    }
 
     let divisionCount = 0;
     for (const rawDivisionName in divisions) {
         const {
-            divisionStats,
-            divisionTotalCount,
-            divisionInvalidCount,
-            divisionAutofixableCount,
-            divisionForeignCount,
-            divisionSafeEditCount
+            divisionStatsPhone, divisionTotalsPhone, divisionStatsName, divisionTotalsName
         } = await processDivision(rawDivisionName, countryData, locale, clientTranslations);
 
         const divisionName = rawDivisionName;
-        groupedDivisionStats[divisionName] = divisionStats;
-        totalInvalidCount += divisionInvalidCount;
-        totalAutofixableCount += divisionAutofixableCount;
-        totalForeignCount += divisionForeignCount;
-        totalSafeEditCount += divisionSafeEditCount;
-        totalTotalCount += divisionTotalCount;
+
+        groupedDivisionStatsPhone[divisionName] = divisionStatsPhone;
+        totals.phone.invalidCount += divisionTotalsPhone.invalidCount;
+        totals.phone.autoFixableCount += divisionTotalsPhone.autoFixableCount;
+        totals.phone.foreignCount += divisionTotalsPhone.foreignCount;
+        totals.phone.safeEditCount += divisionTotalsPhone.safeEditCount;
+        totals.phone.totalCount += divisionTotalsPhone.totalCount;
+
+        groupedDivisionStatsName[divisionName] = divisionStatsName;
+        totals.name.invalidCount += divisionTotalsName.invalidCount;
+        totals.name.missingNamesCount += divisionTotalsName.missingNamesCount;
+        totals.name.totalCount += divisionTotalsPhone.totalCount;
 
         divisionCount++;
         // if (testMode && divisionCount >= 1) {
@@ -544,20 +577,33 @@ async function processCountry(countryData) {
         name: countryName,
         slug: safeName(countryName),
         locale: locale,
-        invalidCount: totalInvalidCount,
-        autoFixableCount: totalAutofixableCount,
-        foreignCount: totalForeignCount,
-        safeEditCount: totalSafeEditCount,
-        totalCount: totalTotalCount,
-        groupedDivisionStats: groupedDivisionStats,
-        botEnabled: countryData.safeAutoFixBotEnabled,
         timestamp: dataTimestamp
     };
 
-    saveCountryHistory(countryStats);
+    const countryStatsPhone = {
+        ...countryStats,
+        invalidCount: totals.phone.invalidCount,
+        autoFixableCount: totals.phone.autoFixableCount,
+        foreignCount: totals.phone.foreignCount,
+        safeEditCount: totals.phone.safeEditCount,
+        totalCount: totals.phone.totalCount,
+        groupedDivisionStats: groupedDivisionStatsPhone,
+        botEnabled: countryData.safeAutoFixBotEnabled,
+    }
 
-    await generateCountryIndexHtml('phone', countryStats, clientTranslations);
-    await generateCountryIndexHtml('name', countryStats, clientTranslations);
+    const countryStatsName = {
+        ...countryStats,
+        invalidCount: totals.name.invalidCount,
+        missingNamesCount: totals.name.missingNamesCount,
+        totalCount: totals.name.totalCount,
+        groupedDivisionStats: groupedDivisionStatsPhone
+    }
+
+    saveCountryHistory('phone', countryStatsPhone);
+    saveCountryHistory('name', countryStatsName);
+
+    await generateCountryIndexHtml('phone', countryStatsPhone);
+    await generateCountryIndexHtml('name', countryStatsName);
 
     return countryStats;
 }

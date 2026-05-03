@@ -278,7 +278,8 @@ const GITHUB_ICON_PACKS = {
 const ICONS_DIR = path.join(__dirname, '..', 'icons');
 const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 
-const HISTORY_DIR = path.join(__dirname, '..', 'history');
+const HISTORY_DIR_PHONE = path.join(__dirname, '..', 'history_phone');
+const HISTORY_DIR_NAME = path.join(__dirname, '..', 'history_name');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
 const POLY_DIR = path.join(__dirname, '..', 'poly');
 const OSM_DIR = path.join(__dirname, '..', 'osm');
@@ -376,7 +377,8 @@ module.exports = {
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
-    HISTORY_DIR,
+    HISTORY_DIR_NAME,
+    HISTORY_DIR_PHONE,
     SAFE_EDITS_DIR,
     POLY_DIR,
     OSM_DIR,
