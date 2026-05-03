@@ -196,7 +196,7 @@ export function renderNumbers() {
     } else {
         // No invalid numbers found at all
         noInvalidContainer.innerHTML = `
-            <p class="report-list-item-empty">${translate('noInvalidNumbers')}</p>
+            <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : 'noIncompleteNames')}</p>
         `;
     }
 

@@ -95,5 +95,6 @@
   "missingNames": "Missing Names",
   "missingNamesDescription": "All of these have a language-specific name, but do not have a main name specified. Probably one of the language-specific names should be used as the primary name.",
   "incompleteNamesDescription": "All of these have language-specific names, but none of them match the primary name.",
-  "incompleteNamesOutOf": "%i incomplete names out of %t"
-}
+  "incompleteNamesOutOf": "%i incomplete names out of %t",
+  "noIncompleteNames": "No incomplete names found in this subdivision."
+  }
