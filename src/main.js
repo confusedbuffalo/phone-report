@@ -348,7 +348,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
     }
 
     await generateSafeEditFile(countryName, stats, tmpFilePath)
-    await generateHtmlReport('phone', countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
+    await generateHtmlReport('phone', countryData, stats, tmpFilePath, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
 
     fs.unlinkSync(tmpFilePath);
 
@@ -402,7 +402,7 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
         fs.mkdirSync(divisionDir, { recursive: true });
     }
 
-    await generateHtmlReport('name', countryName, stats, tmpFilePath, locale, clientTranslations, false, dataTimestamp);
+    await generateHtmlReport('name', countryData, stats, tmpFilePath, clientTranslations, false, dataTimestamp);
 
     fs.unlinkSync(tmpFilePath);
 
@@ -680,7 +680,6 @@ async function main() {
     });
 
     const officialLanguages = await downloadAndParseOfficialLanguages();
-    console.log(officialLanguages);
 
     console.log('Starting full build process...');
 
@@ -697,6 +696,7 @@ async function main() {
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
         countryData.name = countryKey;
+        countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
         const { countryStatsPhone, countryStatsName } = await processCountry(countryData);
         allCountryStats.phone.push(countryStatsPhone);
         allCountryStats.name.push(countryStatsName);

@@ -291,15 +291,18 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
 /**
  * Generates the HTML report for a single subdivision.
  * @param {'phone' | 'name'} reportType - The type of report being created.
- * @param {string} countryName
+ * @param {string} countryData
  * @param {Object} subdivisionStats - The subdivision statistics object.
  * @param {string} tmpFilePath - Filepath of the json file containing the invalid items.
- * @param {string} locale
  * @param {Object} translations
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {Date} timestamp - The timestamp of the data
  */
-async function generateHtmlReport(reportType, countryName, subdivisionStats, tmpFilePath, locale, translations, botEnabled, timestamp) {
+async function generateHtmlReport(reportType, countryData, subdivisionStats, tmpFilePath, translations, botEnabled, timestamp) {
+    const countryName = countryData.countryName;
+    const locale = countryData.locale;
+    const officialLanguages = countryData.officialLanguages;
+
     const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);
@@ -391,7 +394,8 @@ async function generateHtmlReport(reportType, countryName, subdivisionStats, tmp
         DEFAULT_EDITORS_MOBILE,
         CHANGESET_TAGS,
         CHANGESET_COMMENTS,
-        clientOsmEditorsScript
+        clientOsmEditorsScript,
+        officialLanguages,
     };
 
     const htmlContent = eta.render("report", templateData);
