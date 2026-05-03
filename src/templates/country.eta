@@ -49,9 +49,9 @@
     </div>
     <script src="../background-colour.js"></script>
     <script>
-        const reportType = '<%~ it.reportType %>';
         const groupedDivisionStats = <%~ JSON.stringify(it.countryData.groupedDivisionStats) %>;
         const safeCountryName = '<%~ it.safeName(it.countryData.name) %>';
+        const reportType = '<%~ it.reportType %>';
         const T_CLIENT = {
             invalidNumbersOutOf: `<%= it.translate('invalidNumbersOutOf', it.locale) %>`,
             incompleteNamesOutOf: `<%= it.translate('incompleteNamesOutOf', it.locale) %>`,
