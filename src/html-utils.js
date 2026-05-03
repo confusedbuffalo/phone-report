@@ -77,7 +77,7 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
         statsData = [
             {
                 value: data.totalCount.toLocaleString(locale),
-                label: translate('totalNames', locale),
+                label: translate('multilingualNames', locale),
                 numberClass: 'stats-box-number',
                 percentage: null
             },

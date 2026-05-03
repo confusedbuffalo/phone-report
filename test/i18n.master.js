@@ -60,7 +60,7 @@ const MASTER_KEYS = {
     'foreignNumbersDescription': [],
     'phoneNumber': [],
     'incompleteNamesReport': [],
-    'totalNames': [],
+    'multilingualNames': [],
     'incompleteNames': [],
     'missingNames': [],
     'missingNamesDescription': [],
