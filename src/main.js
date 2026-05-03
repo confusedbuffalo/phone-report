@@ -457,7 +457,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         divisionTotalsPhone.safeEditCount += phoneStats.safeEditCount;
 
         const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, locale, clientTranslations);
-        divisionStatsName.push(phoneStats);
+        divisionStatsName.push(nameStats);
         divisionTotalsName.totalCount += nameStats.totalCount;
         divisionTotalsName.invalidCount += nameStats.invalidCount;
         divisionTotalsName.missingNamesCount += nameStats.missingNamesCount;
@@ -629,9 +629,6 @@ async function processCountry(countryData) {
     }
 
     saveCountryHistory('phone', countryStatsPhone);
-
-    console.log('about to make name', groupedDivisionStatsName);
-
     saveCountryHistory('name', countryStatsName);
 
     await generateCountryIndexHtml('phone', countryStatsPhone);

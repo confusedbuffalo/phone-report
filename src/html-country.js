@@ -12,7 +12,6 @@ const { safeName } = require('./data-processor');
  * @param {Object} countryData
  */
 async function generateCountryIndexHtml(reportType, countryData) {
-    console.log(reportType, countryData.groupedDivisionStats);
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),
         cache: false,
