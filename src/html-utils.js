@@ -209,7 +209,7 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
         const clientFormattedDate = '${formattedDate}';
         const clientFormattedTime = '${formattedTime}';
         const translations = ${JSON.stringify(translations)};
-        
+
         /**
          * A simple client-side translation utility that uses the embedded translations object.
          * @param {string} key - The translation key.

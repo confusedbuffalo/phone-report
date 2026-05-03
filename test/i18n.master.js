@@ -65,6 +65,9 @@ const MASTER_KEYS = {
     'missingNames': [],
     'missingNamesDescription': [],
     'incompleteNamesDescription': [],
+    'osmIncompleteNameValidation': [],
+    'reportSubtitleNames': [],
+    'incompleteNamesReport': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
@@ -78,6 +81,7 @@ const MASTER_KEYS = {
     'numberDetailsNamesDataFrom': ['%o'],
 
     'reportSubtitleForCountry': ['%c'],
+    'reportSubtitleNamesForCountry': ['%c'],
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a'],
 
     "pageOf": ['%n', '%t'],

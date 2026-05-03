@@ -83,6 +83,24 @@ const testMode = BUILD_TYPE === 'simplified';
 // }
 
 /**
+ * Substitute any missing translations with default locale translation.
+ * @param {Object} fullTranslations - The complete dictionary for a locale.
+ * @param {Object} fullDefaultTranslations - The complete dictionary for the default locale.
+ * @returns {Object} A full dictionary containing all keys.
+ */
+function createClientTranslations(fullTranslations, fullDefaultTranslations) {
+    const clientTranslations = {};
+    for (const key of Object.keys(fullTranslations)) {
+        if (fullTranslations[key] !== undefined) {
+            clientTranslations[key] = fullTranslations[key];
+        } else if (fullDefaultTranslations[key] !== undefined) {
+            clientTranslations[key] = fullDefaultTranslations[key];
+        }
+    }
+    return clientTranslations;
+}
+
+/**
  * Saves the full history for the country to a JSON file to be backed up and used for
  * history analysis, falling back to previous history for any divisions that failed to fetch.
  * @param {'phone' | 'name'} reportType - The type of report to generate history for.
@@ -448,8 +466,9 @@ async function processCountry(countryData) {
     const locale = countryData.locale;
 
     const fullTranslations = getTranslations(locale);
+    const fullDefaultTranslations = getTranslations('en');
     // TODO: serve full translations server-side
-    const clientTranslations = fullTranslations;
+    const clientTranslations = createClientTranslations(fullTranslations, fullDefaultTranslations);
 
     const divisions = countryData.divisions
         ? { [countryData.name]: countryData.divisions }
