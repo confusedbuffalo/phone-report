@@ -86,6 +86,9 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Verify Template Content
+        run: cat ./src/templates/report.eta
+
       - name: Run Full Build Process
         run: npm run build
 
