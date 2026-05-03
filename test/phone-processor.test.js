@@ -1633,6 +1633,17 @@ describe('validateNumbers', () => {
         expect(result.invalidCount).toBe(0);
     });
 
+    test('should correctly handle ISO 3166-2 code for country code', async () => {
+        const elements = [
+            createGeoJson(1001, { phone: VALID_LANDLINE, name: 'Valid Shop' }, 51.5, 0.0)
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), "GB-ENG", tmpFilePath);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+    });
+
     test('should identify a single fixable invalid number (no country code) and provide suggested fix', async () => {
         const elements = [
             createGeoJson(2002, { 'contact:phone': FIXABLE_LANDLINE_INPUT, name: 'Fixable Business' }, 52.0, 1.0, 'way')

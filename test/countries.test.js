@@ -47,7 +47,7 @@ describe('Countries file tests', () => {
             } else {
                 expect(value).toEqual({
                     relationId: expect.any(Number),
-                    pbfUrl: expect.any(String),
+                    ...(value.pbfUrl !== undefined && { pbfUrl: expect.any(String) }),
                     ...(value.countryCode !== undefined && { countryCode: expect.any(String) })
                 });
             }

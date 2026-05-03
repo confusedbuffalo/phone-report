@@ -18,7 +18,7 @@ To add a new country to the report, you need to modify [countries.json](/src/dat
 
 1.  **Add a new entry** to the [countries.json](/src/data/countries.json) file. You will need to provide:
     *   `name`: The name of the country.
-    *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code.
+    *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code (regional ISO 3166-2 codes can be used on a division level).
     *   `locale`: The locale for formatting and language of the generated pages.
     *   `pbfUrl`: A url for an OSM pbf file for the country
         *   Alternatively this can be on a per division basis (like USA), or mixed (like France).

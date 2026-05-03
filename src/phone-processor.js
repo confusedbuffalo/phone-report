@@ -947,6 +947,7 @@ function isSafeItemEdit(item, countryCode) {
  * }} An object containing the breakdown of record counts.
  */
 async function validateNumbers(elementStream, countryCode, tmpFilePath) {
+    countryCode = countryCode.split('-')[0]; // In case of ISO 3166-2 region code being used at division level
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
     let isFirstItem = true;

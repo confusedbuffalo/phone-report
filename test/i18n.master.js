@@ -69,6 +69,8 @@ const MASTER_KEYS = {
     'reportSubtitleNames': [],
     'incompleteNamesReport': [],
     'noIncompleteNames': [],
+    'copyNameTo': [],
+    'correctLanguageForName': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
