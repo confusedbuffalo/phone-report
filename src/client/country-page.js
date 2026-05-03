@@ -44,15 +44,18 @@ for (const divisionName in groupedDivisionStats) {
     let groupInvalid = 0;
     let groupTotal = 0;
     let groupFixable = 0;
+    let groupMissing = 0;
     groupedDivisionStats[divisionName].forEach(stat => {
         groupInvalid += stat.invalidCount;
         groupTotal += stat.totalCount;
         groupFixable += stat.autoFixableCount;
+        groupMissing += stat.missingNamesCount;
     });
     calculatedDivisionTotals[divisionName] = {
         invalid: groupInvalid,
         total: groupTotal,
-        fixable: groupFixable
+        fixable: groupFixable,
+        missing: groupMissing,
     };
 }
 
@@ -153,10 +156,14 @@ function renderList() {
             const formattedGroupPercentage = groupPercentageNumber.toLocaleString(locale, percentageOptions);
             
             // Client-side substitution using the embedded template literal
-            const groupStatsLine = T_CLIENT.invalidNumbersOutOf
-                .replace('%i', groupInvalidFormatted)
-                .replace('%f', groupFixableFormatted)
-                .replace('%t', groupTotalFormatted);
+            const groupStatsLine = reportType === 'phone' ?
+                T_CLIENT.invalidNumbersOutOf
+                    .replace('%i', groupInvalidFormatted)
+                    .replace('%f', groupFixableFormatted)
+                    .replace('%t', groupTotalFormatted) :
+                T_CLIENT.incompleteNamesOutOf
+                    .replace('%i', groupInvalidFormatted)
+                    .replace('%t', groupTotalFormatted);
 
             // --- End Group Stats Calculation ---
 
