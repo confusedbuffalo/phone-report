@@ -192,7 +192,7 @@ function createButtons(item, clickedClass) {
                 data-editor-id="apply-fix"
                 ${nameExists ? 'disabled' : ''}
                 class="btn ${nameExists ? 'btn-disabled' : clickedClass ? clickedClass + ' cursor-pointer' : 'cursor-pointer btn-josm-fix'}"
-                title="${languageNames.of(nameLanguage)}">
+                title="${languageNames.of(language)}">
                 ${language}
             </button>`
         }).join('\n')
