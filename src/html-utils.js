@@ -1,10 +1,19 @@
 const { translate } = require('./i18n');
 const { ICON_ATTRIBUTION, GITHUB_LINK } = require('./constants.js')
 
+const icon = {
+    'phone': '📞',
+    'name': '📍',
+}
+
 /**
- * Phone number emoji as the favicon
+ * Returns the full favicon html for the given report type
+ * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @returns {String}
  */
-const favicon = '<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;📞&lt;/text&gt;&lt;/svg&gt;">';
+function getFavicon(reportType) {
+    return `<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;${icon[reportType]}&lt;/text&gt;&lt;/svg&gt;">`;
+}
 
 const themeButton = `<button id="theme-toggle" type="button" class="theme-toggle-button">
                         <svg id="theme-toggle-dark-icon" class="hidden w-7 h-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -293,9 +302,9 @@ function escapeHTML(str) {
 
 module.exports = {
     themeButton,
-    favicon,
     createStatsBox,
     createFooter,
     escapeHTML,
     getIconAttributionHtml,
+    getFavicon,
 };

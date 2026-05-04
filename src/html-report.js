@@ -13,7 +13,7 @@ const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAUL
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
-const { favicon, themeButton, createFooter, createStatsBox, escapeHTML } = require('./html-utils');
+const { themeButton, createFooter, createStatsBox, escapeHTML, getFavicon } = require('./html-utils');
 const { IconManager } = require('./icon-manager');
 const { phoneTagToUse } = require('./phone-processor');
 
@@ -369,6 +369,8 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
         return value;
     }, 4)};
     `;
+
+    const favicon = getFavicon(reportType);
 
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),

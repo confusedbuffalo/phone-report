@@ -3,7 +3,7 @@ const path = require('path');
 const { Eta } = require('eta');
 const { PUBLIC_DIR, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
-const {favicon, themeButton, createFooter, createStatsBox, escapeHTML} = require('./html-utils');
+const {themeButton, createFooter, createStatsBox, escapeHTML, getFavicon} = require('./html-utils');
 const { safeName } = require('./data-processor');
 
 /**
@@ -18,6 +18,7 @@ async function generateCountryIndexHtml(reportType, countryData) {
     });
 
     const locale = countryData.locale;
+    const favicon = getFavicon(reportType);
 
     const templateData = {
         reportType,

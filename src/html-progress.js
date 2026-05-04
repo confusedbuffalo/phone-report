@@ -3,7 +3,7 @@ const path = require('path');
 const { Eta } = require('eta');
 const { translate } = require('./i18n');
 const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
-const { favicon, themeButton, createFooter } = require('./html-utils');
+const { themeButton, createFooter, getFavicon } = require('./html-utils');
 const { getTranslations } = require('./i18n');
 const { safeName } = require('./data-processor');
 const BUILD_TYPE = process.env.BUILD_TYPE;
@@ -38,6 +38,7 @@ async function generateProgressPage(reportType, country = null, locale = 'en-GB'
     });
 
     const translations = getTranslations(locale);
+    const favicon = getFavicon(reportType);
 
     const templateData = {
         reportType,

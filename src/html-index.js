@@ -2,7 +2,7 @@ const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
-const { favicon, themeButton, createFooter } = require('./html-utils');
+const { themeButton, createFooter, getFavicon } = require('./html-utils');
 const { safeName } = require('./data-processor');
 
 /**
@@ -122,7 +122,7 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${translate('mainIndexTitle', locale)}</title>
-        ${favicon}
+        ${getFavicon(reportType)}
         <link href="./styles.css" rel="stylesheet">
         <script src="theme.js"></script>
     </head>
