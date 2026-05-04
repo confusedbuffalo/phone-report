@@ -73,7 +73,7 @@
     transition-[max-height,opacity,margin,padding] 
     duration-300
     ease-in-out
-    max-h-screen opacity-100;
+    opacity-100;
 }
 
 .report-list-item.transition-start {
@@ -150,6 +150,10 @@
   @apply bg-gray-300 text-gray-500 hover:bg-gray-400 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600 cursor-pointer;
 }
 
+@utility btn-disabled {
+  @apply bg-gray-200/50 text-gray-800 dark:bg-gray-700/50 dark:text-gray-200 cursor-not-allowed;
+}
+
 @utility label {
   @apply text-xs font-semibold inline-flex items-center px-2 py-1 rounded-full text-center;
 }
@@ -166,15 +170,19 @@
   @apply bg-red-200 text-red-800 dark:bg-red-600 dark:text-red-100;
 }
 
+@utility label-help {
+  @apply text-gray-800 dark:text-gray-200;
+}
+
 @utility stats-box {
   @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 gap-6 text-center;
 }
 
-@utility stats-box-no-progress {
+@utility stats-box-three {
   @apply grid grid-cols-1 sm:grid-cols-3;
 }
 
-@utility stats-box-progress {
+@utility stats-box-four {
   @apply grid grid-cols-2 sm:grid-cols-4;
 }
 
@@ -444,7 +452,7 @@
 }
 
 @utility list-item-phone-value-container {
-  @apply col-span-1 text-gray-900 dark:text-gray-100 break-all [font-variant-ligatures:no-contextual];
+  @apply col-span-1 text-gray-900 dark:text-gray-100 [font-variant-ligatures:no-contextual];
 }
 
 @utility phone-separator-line {

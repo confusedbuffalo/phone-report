@@ -188,18 +188,23 @@ describe('generateHtmlReport', () => {
     });
 
     it('should correctly escape country and subdivision names with special characters', async () => {
-        const countryName = "St. Kitts & Nevis";
+        const countryData = {
+            countryName: "St. Kitts & Nevis",
+            locale: 'en-US',
+            officialLanguages: ['en'],
+        }
         const subdivisionStats = {
             name: "O'Fallon",
             divisionSlug: 'st-clair-county',
             slug: 'ofallon',
-            totalNumbers: 10,
+            totalCount: 10,
             invalidCount: 0,
             autoFixableCount: 0,
+            foreignCount: 0,
         };
         const tmpFilePath = 'test.json';
 
-        await generateHtmlReport(countryName, subdivisionStats, tmpFilePath, 'en-US', {});
+        await generateHtmlReport('phone', countryData, subdivisionStats, tmpFilePath, {});
 
         await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -213,7 +218,11 @@ describe('generateHtmlReport', () => {
         expect(writtenContent).toContain(expectedTitle);
 
         // Check for the escaped subdivision name in the subtitle
-        const expectedSubtitle = `<h2 class="page-subtitle">O&#039;Fallon</h2>`;
+        const expectedSubtitle = `<h2 class="page-subtitle">O&#39;Fallon</h2>`;
         expect(writtenContent).toContain(expectedSubtitle);
+
+        // Check for the official languages in the file
+        const expectedOfficialLanguages = `const OFFICIAL_LANGUAGES = ["en"];`;
+        expect(writtenContent).toContain(expectedOfficialLanguages);
     });
 });

@@ -1,16 +1,16 @@
-# OpenStreetMap Phone Number Validator
+# OpenStreetMap Phone Number and Names Validator
 
-This project generates a static website that reports invalid phone numbers from OpenStreetMap (OSM) data. The goal is to identify and provide an easy way to fix incorrect phone number data in OSM.
+This project generates static websites that report invalid phone numbers and incomplete names in OpenStreetMap (OSM) data. The goal is to identify and provide an easy way to fix incorrect data in OSM.
 
-The generated site is available at https://confusedbuffalo.github.io/phone-report/ and the data there is usually updated once per day.
+The generated site for invalid phone numbers is available at https://confusedbuffalo.github.io/phone-report/ and for incomplete names at https://names-report.pages.dev/ and the data  is usually updated once per day.
 
 ## How it works
 
-The project fetches data from OSM, validates phone numbers, and generates a static HTML report. The process is as follows:
+The project fetches data from OSM, validates it and generates static HTML reports. The process is as follows:
 
-1.  **Fetch Data**: For each country and/or its subdivisions defined in `src/data/constants.js`, a planet extract is downloaded and filtered to objects with phone number tags.
-2.  **Validate Numbers**: The fetched phone numbers are validated using `libphonenumber-js`. Numbers are checked for correct formatting and validity for the specific country.
-3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers, providing an option to fix the item directly and upload the edits in a batch as well as direct links to edit the data in various OSM editors (iD, JOSM, etc.).
+1.  **Fetch Data**: For each country and/or its subdivisions defined in `src/data/constants.js`, a planet extract is downloaded and filtered to objects with phone number tags and name tags.
+2.  **Validate Numbers and Names**: The fetched phone numbers are validated using `libphonenumber-js`. Numbers are checked for correct formatting and validity for the specific country. The names are checked to see if the main name tag exists and if it matches one of the multi-lingual names, such as `name:en`.
+3.  **Generate Reports**: The results are compiled into HTML reports. A main index page lists all countries, each linking to a country-specific page. The country page, in turn, lists reports for its subdivisions. Each subdivision report details the invalid phone numbers or incomplete names, providing an option to fix the item directly and upload the edits in a batch as well as direct links to edit the data in various OSM editors (iD, JOSM, etc.).
 
 ## How to add a new country
 
@@ -18,7 +18,7 @@ To add a new country to the report, you need to modify [countries.json](/src/dat
 
 1.  **Add a new entry** to the [countries.json](/src/data/countries.json) file. You will need to provide:
     *   `name`: The name of the country.
-    *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code.
+    *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code (regional ISO 3166-2 codes can be used on a division level).
     *   `locale`: The locale for formatting and language of the generated pages.
     *   `pbfUrl`: A url for an OSM pbf file for the country
         *   Alternatively this can be on a per division basis (like USA), or mixed (like France).

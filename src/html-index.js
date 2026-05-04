@@ -1,8 +1,8 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
-const { PUBLIC_DIR, COUNTRIES } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
 const { translate } = require('./i18n');
-const {favicon, themeButton, createFooter} = require('./html-utils');
+const { themeButton, createFooter, getFavicon } = require('./html-utils');
 const { safeName } = require('./data-processor');
 
 /**
@@ -14,7 +14,7 @@ function buildSearchIndex() {
 
     for (const [countryName, countryObj] of Object.entries(COUNTRIES)) {
         const countrySafe = safeName(countryName);
-        
+
         // Add the Country itself
         index.push({
             name: countryName,
@@ -47,11 +47,11 @@ function buildSearchIndex() {
                         parent: countryName
                     });
                 }
-                
+
                 for (const [subName, relId] of Object.entries(subdivisions)) {
                     // If names match (e.g., Berlin/Berlin), only add the deeper one
                     const isDuplicate = (subName.toLowerCase() === divName.toLowerCase());
-                    
+
                     const item = {
                         name: subName,
                         type: "Subdivision",
@@ -64,7 +64,7 @@ function buildSearchIndex() {
                     } else {
                         item.url = `./${countrySafe}/${divSafe}/${safeName(subName)}.html`;
                     }
-                    
+
                     index.push(item);
                 }
             }
@@ -75,26 +75,28 @@ function buildSearchIndex() {
 
 /**
  * Generates the main index.html file listing all country reports.
+ * @param {'phone' | 'name'} reportType - The type of report being created.
  * @param {Array<Object>} countryStats - Array of country statistic objects, including country.locale.
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  * @param {Object} translations
  */
-async function generateMainIndexHtml(countryStats, locale, translations) {
+async function generateMainIndexHtml(reportType, countryStats, locale, translations) {
 
     const listContent = countryStats.map(country => {
         const safeCountryName = country.slug;
         const countryPageName = `${safeCountryName}/`;
-        const percentage = country.totalNumbers > 0 ? (country.invalidCount / country.totalNumbers) * 100 : 0;
+        const percentage = country.totalCount > 0 ? (country.invalidCount / country.totalCount) * 100 : 0;
         const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
         // Use the country's specific locale for number formatting and description text
         const itemLocale = country.locale || locale; // Fallback to the main page locale
 
         const formattedInvalid = country.invalidCount.toLocaleString(itemLocale);
-        const formattedFixable = country.autoFixableCount.toLocaleString(itemLocale);
-        const formattedTotal = country.totalNumbers.toLocaleString(itemLocale);
+        const formattedTotal = country.totalCount.toLocaleString(itemLocale);
 
-        const description = translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, formattedFixable, formattedTotal]);
+        const description = reportType === 'phone' ?
+            translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal]) :
+            translate('incompleteNamesOutOf', itemLocale, [formattedInvalid, formattedTotal]);
 
         return `
             <a href="./${countryPageName}" class="country-link">
@@ -119,8 +121,8 @@ async function generateMainIndexHtml(countryStats, locale, translations) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${translate('mainIndexTitle', locale)}</title>
-        ${favicon}
+        <title>${translate(reportType === 'phone' ? 'mainIndexTitle' : 'osmIncompleteNameValidation', locale)}</title>
+        ${getFavicon(reportType)}
         <link href="./styles.css" rel="stylesheet">
         <script src="theme.js"></script>
     </head>
@@ -133,10 +135,10 @@ async function generateMainIndexHtml(countryStats, locale, translations) {
                             <div class="w-7 h-7"></div>
                         </div>
                     </div>
-                    <h1 class="page-title">${translate('osmPhoneNumberValidation', locale)}</h1>
+                    <h1 class="page-title">${translate(reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', locale)}</h1>
                     <div class="items-end">${themeButton}</div>
                 </div>
-                <p class="report-subtitle">${translate('reportSubtitle', locale)}</p>
+                <p class="report-subtitle">${translate(reportType === 'phone' ? 'reportSubtitle' : 'reportSubtitleNames', locale)}</p>
             </header>
             <div class="card">
                 <div class="card-header">
@@ -175,7 +177,8 @@ async function generateMainIndexHtml(countryStats, locale, translations) {
     </body>
     </html>
     `;
-    await fsPromises.writeFile(path.join(PUBLIC_DIR, 'index.html'), htmlContent);
+    const fileName = reportType === 'name' ? path.join(NAMES_BUILD_DIR, 'index.html') : path.join(PUBLIC_DIR, 'index.html');
+    await fsPromises.writeFile(fileName, htmlContent);
     console.log('Main index.html generated.');
 }
 

@@ -1,20 +1,24 @@
 const fs = require('fs');
 const path = require('path');
-const { HISTORY_DIR, PUBLIC_DIR } = require('./constants');
+const { PUBLIC_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, NAMES_BUILD_DIR } = require('./constants');
 
 /**
  * Reads all historical data snapshots, aggregates them by date, and generates a
  * single JSON file suitable for charting.
  *
  * The process is as follows:
- * 1. It scans the `history/` directory to find all country-specific subdirectories.
+ * 1. It scans the relevant history directory to find all country-specific subdirectories.
  * 2. For each country, it reads all date-stamped JSON snapshot files (e.g., '2025-10-05.json').
  * 3. It aggregates the data, creating a time-series array for each country and an
  *    overall summary across all countries.
- * 4. The final aggregated data is written to `public/history-data.json`.
+ * 4. The final aggregated data is written to the relevant `history-data.json` file.
+ * @param {'phone' | 'name'} reportType - The type of report to generate history for.
  */
-function processHistory() {
-    if (!fs.existsSync(HISTORY_DIR)) {
+function processHistory(reportType) {
+    const historyDir = reportType === 'phone' ? HISTORY_DIR_PHONE : HISTORY_DIR_NAME;
+    const rootOutputDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
+
+    if (!fs.existsSync(historyDir)) {
         console.log('History directory not found. Skipping history processing.');
         return;
     }
@@ -24,10 +28,10 @@ function processHistory() {
         countries: {},
     };
 
-    const countryDirs = fs.readdirSync(HISTORY_DIR);
+    const countryDirs = fs.readdirSync(historyDir);
 
     for (const countryDir of countryDirs) {
-        const countryPath = path.join(HISTORY_DIR, countryDir);
+        const countryPath = path.join(historyDir, countryDir);
         if (!fs.statSync(countryPath).isDirectory()) {
             continue;
         }
@@ -49,7 +53,7 @@ function processHistory() {
                 name: stats.name,
                 date: date,
                 invalidCount: stats.invalidCount,
-                totalNumbers: stats.totalNumbers,
+                totalCount: stats.totalCount ?? stats.totalNumbers,
             };
 
             // Add to country-specific history
@@ -57,10 +61,10 @@ function processHistory() {
 
             // Aggregate for overall history
             if (!aggregatedData.overall[date]) {
-                aggregatedData.overall[date] = { invalidCount: 0, totalNumbers: 0 };
+                aggregatedData.overall[date] = { invalidCount: 0, totalCount: 0 };
             }
-            aggregatedData.overall[date].invalidCount += stats.invalidCount;
-            aggregatedData.overall[date].totalNumbers += stats.totalNumbers;
+            aggregatedData.overall[date].invalidCount += record.invalidCount;
+            aggregatedData.overall[date].totalCount += record.totalCount;
 
             if (Object.keys(stats.groupedDivisionStats).length === 1) {
                 const divisionStats = Object.values(stats.groupedDivisionStats)[0];
@@ -71,7 +75,7 @@ function processHistory() {
                     const divisionRecord = {
                         date: date,
                         invalidCount: division.invalidCount,
-                        totalNumbers: division.totalNumbers,
+                        totalCount: division.totalCount,
                     }
 
                     if (!aggregatedDivisionStats[divisionName]) {
@@ -84,14 +88,14 @@ function processHistory() {
                 for (const [divisionName, divisionStats] of Object.entries(stats.groupedDivisionStats)) {
                     const divisionTotals = divisionStats.reduce((accumulator, subdivision) => {
                         accumulator.invalidCount += subdivision.invalidCount;
-                        accumulator.totalNumbers += subdivision.totalNumbers;
+                        accumulator.totalCount += subdivision.totalCount;
                         return accumulator;
-                    }, { invalidCount: 0, totalNumbers: 0 });
+                    }, { invalidCount: 0, totalCount: 0 });
 
                     const divisionRecord = {
                         date: date,
                         invalidCount: divisionTotals.invalidCount,
-                        totalNumbers: divisionTotals.totalNumbers,
+                        totalCount: divisionTotals.totalCount,
                     }
 
                     if (!aggregatedDivisionStats[divisionName]) {
@@ -112,7 +116,7 @@ function processHistory() {
         aggregatedCountryData['overall'] = aggregatedData.countries[countrySlug];
         aggregatedCountryData['divisions'] = aggregatedDivisionStats;
 
-        const outputDir = path.join(PUBLIC_DIR, countrySlug);
+        const outputDir = path.join(rootOutputDir, countrySlug);
         const outputPath = path.join(outputDir, 'history-data.json');
         fs.mkdirSync(outputDir, { recursive: true });
         fs.writeFileSync(outputPath, JSON.stringify(aggregatedCountryData, null));
@@ -124,12 +128,12 @@ function processHistory() {
     const overallArray = Object.keys(aggregatedData.overall).map(date => ({
         date: date,
         invalidCount: aggregatedData.overall[date].invalidCount,
-        totalNumbers: aggregatedData.overall[date].totalNumbers,
+        totalCount: aggregatedData.overall[date].totalCount,
     }));
     overallArray.sort((a, b) => new Date(a.date) - new Date(b.date));
     aggregatedData.overall = overallArray;
 
-    const outputPath = path.join(PUBLIC_DIR, 'history-data.json');
+    const outputPath = path.join(rootOutputDir, 'history-data.json');
     fs.writeFileSync(outputPath, JSON.stringify(aggregatedData, null));
 
     console.log(`History data processed and saved to ${outputPath}`);
@@ -137,7 +141,8 @@ function processHistory() {
 
 // Execute the function if run directly
 if (require.main === module) {
-    processHistory();
+    processHistory('phone');
+    processHistory('name');
 }
 
 module.exports = { processHistory };

@@ -89,12 +89,19 @@ jobs:
       - name: Run Full Build Process
         run: npm run build
 
-      - name: Upload History Data Artifact
+      - name: Upload Phone History Data Artifact
         if: env.BUILD_TYPE == 'full'
         uses: actions/upload-artifact@v7
         with:
-          name: new-history-data
-          path: history/
+          name: new-history-phone-data
+          path: history_phone/
+
+      - name: Upload Name History Data Artifact
+        if: env.BUILD_TYPE == 'full'
+        uses: actions/upload-artifact@v7
+        with:
+          name: new-history-name-data
+          path: history_name/
 
       - name: Upload Safe Edits Artifact
         if: env.BUILD_TYPE == 'full'
@@ -106,7 +113,7 @@ jobs:
       - name: Run HTML Minifier
         if: env.BUILD_TYPE == 'full'
         run: |
-          find public -name "*.html" -print0 | while IFS= read -r -d $'\0' file; do
+          find public names_build -name "*.html" -print0 | while IFS= read -r -d $'\0' file; do
             npx html-minifier-terser "$file" --output "$file" --collapse-whitespace --remove-comments --minify-css true --minify-js true
           done
         shell: bash
@@ -114,10 +121,24 @@ jobs:
       - name: Run JS Minifier (terser)
         if: env.BUILD_TYPE == 'full'
         run: |
-          find public -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
+          find public names_build -name "*.js" -print0 | while IFS= read -r -d $'\0' file; do
             npx terser "$file" --output "$file" --compress --mangle
           done
         shell: bash
+
+      - name: Upload Names Pages Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: names-build
+          path: names_build/
+
+      - name: Deploy names to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
+          command: pages deploy names_build --project-name=names-report
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
@@ -178,11 +199,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download history artifact
+      - name: Download phone history artifact
         uses: actions/download-artifact@v8
         with:
-          name: new-history-data
-          path: /tmp/new_history
+          name: new-history-phone-data
+          path: /tmp/new_history_phone
+
+      - name: Download name history artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: new-history-name-data
+          path: /tmp/new_history_name
 
       - name: Generate GitHub App Token for Push
         id: app-token-push
@@ -206,10 +233,11 @@ jobs:
           
           # Copy the downloaded history data into the repository's history folder
           mkdir -p history
-          cp -r /tmp/new_history/* history/
+          cp -r /tmp/new_history_phone/* history_phone/
+          cp -r /tmp/new_history_name/* history_name/
           echo "Restored new history data onto main branch working tree."
           
-          git add history || true
+          git add history_phone history_name || true
           
           # Check if there are any changes to commit
           if git diff --cached --exit-code; then

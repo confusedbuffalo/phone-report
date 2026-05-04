@@ -1,10 +1,19 @@
 const { translate } = require('./i18n');
 const { ICON_ATTRIBUTION, GITHUB_LINK } = require('./constants.js')
 
+const icon = {
+    'phone': '📞',
+    'name': '📍',
+}
+
 /**
- * Phone number emoji as the favicon
+ * Returns the full favicon html for the given report type
+ * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @returns {String}
  */
-const favicon = '<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;📞&lt;/text&gt;&lt;/svg&gt;">';
+function getFavicon(reportType) {
+    return `<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;${icon[reportType]}&lt;/text&gt;&lt;/svg&gt;">`;
+}
 
 const themeButton = `<button id="theme-toggle" type="button" class="theme-toggle-button">
                         <svg id="theme-toggle-dark-icon" class="hidden w-7 h-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -13,29 +22,90 @@ const themeButton = `<button id="theme-toggle" type="button" class="theme-toggle
 
 /**
  * Creates the HTML box displaying statistics.
- * @param {number} total - Total phone numbers
- * @param {number} invalid - Number of invalid numbers
- * @param {number} fixable - Number of autofixable numbers
- * @param {string} locale - Locale to display numbers in
+ * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {number} total - Total values
+ * @param {number} firstStat - First statistic after total to display
+ * @param {number} secondStat - Second statistic to display
+ * @param {number} secondStat - Third statistic to display
+ * @param {string} locale - Locale to display stats in
  * @param {boolean} includeProgress - Whether or not to include a link to the progress page
  * @returns {string}
  */
-function createStatsBox(total, invalid, fixable, locale, includeProgress = false) {
+function createStatsBox(reportType, data, locale, includeProgress = false) {
     const percentageOptions = {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     };
-    const totalPercentageNumber = total > 0 ? (invalid / total) * 100 : 0;
-    const fixablePercentageNumber = invalid > 0 ? (fixable / invalid) * 100 : 0;
 
-    const formattedTotal = total.toLocaleString(locale);
-    const formattedInvalid = invalid.toLocaleString(locale);
-    const formattedFixable = fixable.toLocaleString(locale);
+    let statsData = [];
 
-    const formattedTotalPercentage = totalPercentageNumber.toLocaleString(locale, percentageOptions);
-    const formattedFixablePercentage = fixablePercentageNumber.toLocaleString(locale, percentageOptions);
+    if (reportType === 'phone') {
+        const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
+        const fixablePercentageNumber = data.invalidCount > 0 ? (data.autoFixableCount / data.invalidCount) * 100 : 0;
 
-    const statsBoxClass = includeProgress ? "stats-box-progress" : "stats-box-no-progress";
+        const formattedInvalidPercentage = invalidPercentageNumber.toLocaleString(locale, percentageOptions);
+        const formattedFixablePercentage = fixablePercentageNumber.toLocaleString(locale, percentageOptions);
+
+        statsData = [
+            {
+                value: data.totalCount.toLocaleString(locale),
+                label: translate('numbersChecked', locale),
+                numberClass: 'stats-box-number',
+                percentage: null
+            },
+            {
+                value: data.invalidCount.toLocaleString(locale),
+                label: translate('invalidNumbers', locale),
+                numberClass: 'stats-box-number-invalid',
+                percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
+            },
+            {
+                value: data.autoFixableCount.toLocaleString(locale),
+                label: translate('potentiallyFixable', locale),
+                numberClass: 'stats-box-number-fixable',
+                percentage: translate('fixablePercentageOfInvalid', locale, [formattedFixablePercentage])
+            }
+        ];
+        if (!includeProgress) {
+            statsData.push(
+                {
+                    value: data.foreignCount.toLocaleString(locale),
+                    label: translate('foreignNumbersHeader', locale),
+                    numberClass: 'stats-box-number',
+                    percentage: null
+                }
+            )
+        }
+    } else if (reportType === 'name') {
+        const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
+        const missingPercentageNumber = data.totalCount > 0 ? (data.missingNamesCount / data.totalCount) * 100 : 0;
+
+        const formattedInvalidPercentage = invalidPercentageNumber.toLocaleString(locale, percentageOptions);
+        const formattedMissingPercentage = missingPercentageNumber.toLocaleString(locale, percentageOptions);
+
+        statsData = [
+            {
+                value: data.totalCount.toLocaleString(locale),
+                label: translate('multilingualNames', locale),
+                numberClass: 'stats-box-number',
+                percentage: null
+            },
+            {
+                value: data.invalidCount.toLocaleString(locale),
+                label: translate('incompleteNames', locale),
+                numberClass: 'stats-box-number-invalid',
+                percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
+            },
+            {
+                value: data.missingNamesCount.toLocaleString(locale),
+                label: translate('missingNames', locale),
+                numberClass: 'stats-box-number-fixable',
+                percentage: translate('invalidPercentageOfTotal', locale, [formattedMissingPercentage])
+            }
+        ];
+    } else {
+        return;
+    }
 
     const progressDiv = includeProgress ? `
         <div>
@@ -48,22 +118,20 @@ function createStatsBox(total, invalid, fixable, locale, includeProgress = false
         </div>
         ` : '';
 
+    const statsBoxClass = reportType === 'phone' ? "stats-box-four" :
+        includeProgress ? "stats-box-four" : "stats-box-three";
+
+    const statsContent = statsData.map(stat => `
+        <div>
+            <p class="${stat.numberClass}">${stat.value}</p>
+            <p class="stats-box-label">${stat.label}</p>
+            ${stat.percentage ? `<p class="stats-box-percentage">${stat.percentage}</p>` : ''}
+        </div>
+    `).join('');
+
     return `
         <div class="stats-box ${statsBoxClass}">
-            <div>
-                <p class="stats-box-number">${formattedTotal}</p>
-                <p class="stats-box-label">${translate('numbersChecked', locale)}</p>
-            </div>
-            <div>
-                <p class="stats-box-number-invalid">${formattedInvalid}</p>
-                <p class="stats-box-label">${translate('invalidNumbers', locale)}</p>
-                <p class="stats-box-percentage">${translate('invalidPercentageOfTotal', locale, [formattedTotalPercentage])}</p>
-            </div>
-            <div>
-                <p class="stats-box-number-fixable">${formattedFixable}</p>
-                <p class="stats-box-label">${translate('potentiallyFixable', locale)}</p>
-                <p class="stats-box-percentage">${translate('fixablePercentageOfInvalid', locale, [formattedFixablePercentage])}</p>
-            </div>
+            ${statsContent}
             ${progressDiv}
         </div>
     `;
@@ -150,7 +218,7 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
         const clientFormattedDate = '${formattedDate}';
         const clientFormattedTime = '${formattedTime}';
         const translations = ${JSON.stringify(translations)};
-        
+
         /**
          * A simple client-side translation utility that uses the embedded translations object.
          * @param {string} key - The translation key.
@@ -187,7 +255,7 @@ function createFooter(locale = 'en-GB', translations, includeIconAttribution = f
             const now = new Date();
             const millisecondsAgo = now.getTime() - dataDate.getTime();
             const totalMinutes = Math.floor(millisecondsAgo / (1000 * 60));
-            
+
             let timeAgoText;
             const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
             if (totalMinutes < 60) {
@@ -234,9 +302,9 @@ function escapeHTML(str) {
 
 module.exports = {
     themeButton,
-    favicon,
     createStatsBox,
     createFooter,
     escapeHTML,
     getIconAttributionHtml,
+    getFavicon,
 };

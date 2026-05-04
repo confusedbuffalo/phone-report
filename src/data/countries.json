@@ -43,9 +43,18 @@
         "safeAutoFixBotEnabled": false,
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/belgium.osm.pbf",
         "divisions": {
-            "Vlaanderen": 53134,
-            "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": 54094,
-            "Wallonie": 90348
+            "Vlaanderen": {
+                "relationId": 53134,
+                "countryCode": "BE-VLG"
+            },
+            "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest": {
+                "relationId": 54094,
+                "countryCode": "BE-BRU"
+            },
+            "Wallonie": {
+                "relationId": 90348,
+                "countryCode": "BE-WAL"
+            }
         }
     },
     "British Crown Dependencies and Overseas Territories": {
@@ -108,7 +117,7 @@
                 "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/jersey-latest.osm.pbf",
                 "countryCode": "JE"
             },
-            "Montserrat ": {
+            "Montserrat": {
                 "relationId": 537257,
                 "pbfUrl": "https://download.openstreetmap.fr/extracts/central-america/montserrat-latest.osm.pbf",
                 "countryCode": "MS"
@@ -144,14 +153,26 @@
             "Alberta": 391186,
             "British Columbia": 390867,
             "Manitoba": 390841,
-            "New Brunswick": 68942,
+            "New Brunswick": {
+                "relationId": 68942,
+                "countryCode": "CA-NB"
+            },
             "Newfoundland and Labrador": 391196,
-            "Northwest Territories": 391220,
+            "Northwest Territories": {
+                "relationId": 391220,
+                "countryCode": "CA-NT"
+            },
             "Nova Scotia": 390558,
-            "Nunavut": 390840,
+            "Nunavut": {
+                "relationId": 390840,
+                "countryCode": "CA-NU"
+            },
             "Ontario": 68841,
             "Prince Edward Island": 391115,
-            "Quebec": 61549,
+            "Quebec": {
+                "relationId": 61549,
+                "countryCode": "CA-QC"
+            },
             "Saskatchewan": 391178,
             "Yukon": 391455
         }
@@ -247,9 +268,18 @@
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/spain.osm.pbf",
         "divisions": {
             "Andalucía": 349044,
-            "Aragón": 349045,
-            "Asturias": 349033,
-            "Islas Baleares": 348981,
+            "Aragón": {
+                "relationId": 349045,
+                "countryCode": "ES-AR"
+            },
+            "Asturias": {
+                "relationId": 349033,
+                "countryCode": "ES-AS"
+            },
+            "Islas Baleares": {
+                "relationId": 348981,
+                "countryCode": "ES-IB"
+            },
             "Islas Canarias": {
                 "relationId": 349048,
                 "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/canary-islands.osm.pbf"
@@ -257,15 +287,30 @@
             "Cantabria": 349013,
             "Castilla-La Mancha": 349052,
             "Castilla y León": 349041,
-            "Cataluña": 349053,
-            "Comunidad Valenciana": 349043,
+            "Cataluña": {
+                "relationId": 349053,
+                "countryCode": "ES-CT"
+            },
+            "Comunidad Valenciana": {
+                "relationId": 349043,
+                "countryCode": "ES-VC"
+            },
             "Extremadura": 349050,
-            "Galicia": 349036,
+            "Galicia": {
+                "relationId": 349036,
+                "countryCode": "ES-GA"
+            },
             "La Rioja": 348991,
             "Comunidad de Madrid": 349055,
             "Región de Murcia": 349047,
-            "Comunidad Foral de Navarra": 349027,
-            "País Vasco": 349042,
+            "Comunidad Foral de Navarra": {
+                "relationId": 349027,
+                "countryCode": "ES-NC"
+            },
+            "País Vasco": {
+                "relationId": 349042,
+                "countryCode": "ES-PV"
+            },
             "Ceuta": 1154756,
             "Melilla": 1154757
         }
@@ -771,13 +816,22 @@
                 "Yorkshire and the Humber": 151012
             },
             "Northern Ireland": {
-                "Northern Ireland": 156393
+                "Northern Ireland": {
+                    "relationId": 156393,
+                    "countryCode": "GB-NIR"
+                }
             },
             "Scotland": {
-                "Scotland": 58446
+                "Scotland": {
+                    "relationId": 58446,
+                    "countryCode": "GB-SCO"
+                }
             },
             "Wales": {
-                "Wales": 58437
+                "Wales": {
+                    "relationId": 58437,
+                    "countryCode": "GB-WLS"
+                }
             }
         }
     },

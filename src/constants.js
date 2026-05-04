@@ -3,6 +3,7 @@ const { translate } = require('./i18n');
 const packageInfo = require('../package.json');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const NAMES_BUILD_DIR = path.join(__dirname, '..', 'names_build');
 
 const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
@@ -126,6 +127,7 @@ const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
+    'IE', // https://community.openstreetmap.org/t/validating-phone-numbers-in-ireland/143173/4
     'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
     'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
 ]
@@ -277,27 +279,38 @@ const GITHUB_ICON_PACKS = {
 const ICONS_DIR = path.join(__dirname, '..', 'icons');
 const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 
-const HISTORY_DIR = path.join(__dirname, '..', 'history');
+const HISTORY_DIR_PHONE = path.join(__dirname, '..', 'history_phone');
+const HISTORY_DIR_NAME = path.join(__dirname, '..', 'history_name');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
 const POLY_DIR = path.join(__dirname, '..', 'poly');
 const OSM_DIR = path.join(__dirname, '..', 'osm');
 
 const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
-const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
+const HOST_URL = {
+    'phone': 'https://confusedbuffalo.github.io/phone-report/',
+    'name': 'https://names-report.pages.dev/',
+};
 
 const PACKAGE_NAME = packageInfo.name;
 const PACKAGE_VERSION = packageInfo.version;
 const PACKAGE_STRING = `${PACKAGE_NAME}/${PACKAGE_VERSION}`;
 
 const CHANGESET_TAGS = {
-    "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
-    "created_by": PACKAGE_STRING,
-    "host": HOST_URL
+    'phone': {
+        "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
+        "created_by": PACKAGE_STRING,
+        "host": HOST_URL.phone,
+    },
+    "name": {
+        "comment": "Fix incomplete names",
+        "created_by": PACKAGE_STRING,
+        "host": HOST_URL.name,
+    },
 }
 
 const AUTO_CHANGESET_TAGS = {
     "comment": "Automatically fix phone number issues: missing country code, extra punctuation",
-    "created_by": `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
+    "created_by": PACKAGE_STRING,
     "bot": "yes",
     "automatic": "yes",
     "source_code": GITHUB_LINK,
@@ -343,6 +356,7 @@ const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
 
 module.exports = {
     PUBLIC_DIR,
+    NAMES_BUILD_DIR,
     MOBILE_TAGS,
     NON_MOBILE_TAGS,
     PHONE_TAGS,
@@ -370,7 +384,8 @@ module.exports = {
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
-    HISTORY_DIR,
+    HISTORY_DIR_NAME,
+    HISTORY_DIR_PHONE,
     SAFE_EDITS_DIR,
     POLY_DIR,
     OSM_DIR,

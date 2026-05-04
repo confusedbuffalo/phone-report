@@ -2,93 +2,131 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const readline = require('readline')
+const axios = require('axios');
+const yaml = require('js-yaml');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, HISTORY_DIR, OSM_DIR } = require('./constants');
-const { processPbf, splitPbf, getOsmTimestamp } = require('./osm-download');
-const { safeName, validateNumbers } = require('./data-processor');
+const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME } = require('./constants');
+const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
+const { safeName } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
 const { generateMainIndexHtml } = require('./html-index')
 const { generateHtmlReport } = require('./html-report')
 const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
+const { validateNames } = require('./names-processor');
+const { validateNumbers } = require('./phone-processor');
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country
 // (the first found of each, using the countries data file)
 const testMode = BUILD_TYPE === 'simplified';
 
-const CLIENT_KEYS = [
-    'dataSourcedTemplate',
-    'fixInJOSM',
-    'fixable',
-    'website',
-    'fixableNumbersHeader',
-    'fixableNumbersDescription',
-    'invalidNumbersHeader',
-    'invalidNumbersDescription',
-    'foreignNumbersHeader',
-    'foreignNumbersDescription',
-    'noInvalidNumbers',
-    'pageOf',
-    'name',
-    'date',
-    'suggestedFix',
-    'invalidNumber',
-    'next',
-    'previous',
-    'sortBy',
-    "login",
-    "logout",
-    "discard",
-    "keep",
-    "close",
-    "cancel",
-    "upload",
-    "restoreUnsavedEdits",
-    "uploadChanges",
-    "restoreChanges",
-    "applyFix",
-    "enterComment",
-    "noChangesSubmitted",
-    "changesetCreated",
-    "notLoggedIn",
-    "save",
-    "openNote",
-    "createNoteFor",
-    "noteIsClose",
-    "noteCreated",
-    "hasInvalidSingular",
-    "hasInvalidPlural",
-    "phoneNumber",
-];
+// const CLIENT_KEYS = [
+//     'dataSourcedTemplate',
+//     'fixInJOSM',
+//     'fixable',
+//     'website',
+//     'fixableNumbersHeader',
+//     'fixableNumbersDescription',
+//     'invalidNumbersHeader',
+//     'invalidNumbersDescription',
+//     'foreignNumbersHeader',
+//     'foreignNumbersDescription',
+//     'noInvalidNumbers',
+//     'pageOf',
+//     'name',
+//     'date',
+//     'suggestedFix',
+//     'invalidNumber',
+//     'next',
+//     'previous',
+//     'sortBy',
+//     "login",
+//     "logout",
+//     "discard",
+//     "keep",
+//     "close",
+//     "cancel",
+//     "upload",
+//     "restoreUnsavedEdits",
+//     "uploadChanges",
+//     "restoreChanges",
+//     "applyFix",
+//     "enterComment",
+//     "noChangesSubmitted",
+//     "changesetCreated",
+//     "notLoggedIn",
+//     "save",
+//     "openNote",
+//     "createNoteFor",
+//     "noteIsClose",
+//     "noteCreated",
+//     "hasInvalidSingular",
+//     "hasInvalidPlural",
+//     "phoneNumber",
+// ];
 
+
+// /**
+//  * Filters the full translations object to include only keys needed by the client.
+//  * @param {Object} fullTranslations - The complete dictionary for a locale.
+//  * @returns {Object} A lightweight dictionary containing only client-side keys.
+//  */
+// function filterClientTranslations(fullTranslations) {
+//     const clientTranslations = {};
+//     for (const key of CLIENT_KEYS) {
+//         // Only include the key if it exists in the source dictionary
+//         if (fullTranslations[key] !== undefined) {
+//             clientTranslations[key] = fullTranslations[key];
+//         }
+//     }
+//     return clientTranslations;
+// }
 
 /**
- * Filters the full translations object to include only keys needed by the client.
+ * Substitute any missing translations with default locale translation.
  * @param {Object} fullTranslations - The complete dictionary for a locale.
- * @returns {Object} A lightweight dictionary containing only client-side keys.
+ * @param {Object} fullDefaultTranslations - The complete dictionary for the default locale.
+ * @returns {Object} A full dictionary containing all keys.
  */
-function filterClientTranslations(fullTranslations) {
+function createClientTranslations(fullTranslations, fullDefaultTranslations) {
     const clientTranslations = {};
-    for (const key of CLIENT_KEYS) {
-        // Only include the key if it exists in the source dictionary
+    for (const key of Object.keys(fullDefaultTranslations)) {
         if (fullTranslations[key] !== undefined) {
             clientTranslations[key] = fullTranslations[key];
+        } else if (fullDefaultTranslations[key] !== undefined) {
+            clientTranslations[key] = fullDefaultTranslations[key];
         }
     }
     return clientTranslations;
 }
 
+async function downloadAndParseOfficialLanguages() {
+    const url = 'https://raw.githubusercontent.com/streetcomplete/countrymetadata/refs/heads/master/data/officialLanguages.yml';
+    try {
+        const response = await axios.get(url);
+        const rawYaml = response.data;
+        const dataObject = yaml.load(rawYaml);
+
+        return dataObject;
+    } catch (error) {
+        console.error('Error fetching or parsing YAML:', error.message);
+    }
+}
+
 /**
  * Saves the full history for the country to a JSON file to be backed up and used for
  * history analysis, falling back to previous history for any divisions that failed to fetch.
+ * @param {'phone' | 'name'} reportType - The type of report to generate history for.
  * @param {Object} originalCountryStats - The statistics for the country, included groupedDivisionStats.
  */
-function saveCountryHistory(originalCountryStats) {
+function saveCountryHistory(reportType, originalCountryStats) {
     const countryStats = structuredClone(originalCountryStats);
 
-    const historyCountryDir = path.join(HISTORY_DIR, countryStats.slug);
+    const rootDir = reportType === 'phone' ? HISTORY_DIR_PHONE : HISTORY_DIR_NAME;
+
+    const historyCountryDir = path.join(rootDir, countryStats.slug);
     if (!fs.existsSync(historyCountryDir)) {
         fs.mkdirSync(historyCountryDir, { recursive: true });
     }
@@ -97,7 +135,7 @@ function saveCountryHistory(originalCountryStats) {
     const historyFilePath = path.join(historyCountryDir, `${today}.json`);
 
     const allDivisions = Object.values(countryStats.groupedDivisionStats).flat();
-    const needsFallback = allDivisions.some(div => div.totalNumbers === 0);
+    const needsFallback = allDivisions.some(div => div.totalCount === 0);
 
     if (needsFallback) {
         const files = fs.readdirSync(historyCountryDir)
@@ -118,7 +156,7 @@ function saveCountryHistory(originalCountryStats) {
                 for (const groupName in countryStats.groupedDivisionStats) {
                     countryStats.groupedDivisionStats[groupName] = countryStats.groupedDivisionStats[groupName].map(div => {
                         const compositeKey = `${div.divisionSlug}|${div.slug}`;
-                        if (div.totalNumbers === 0 && historyMap.has(compositeKey)) {
+                        if (div.totalCount === 0 && historyMap.has(compositeKey)) {
                             console.log(`Falling back to previous history for ${div.name}`);
                             return { ...historyMap.get(compositeKey) };
                         }
@@ -135,19 +173,19 @@ function saveCountryHistory(originalCountryStats) {
     let totalInvalid = 0;
     let totalAutoFixable = 0;
     let totalSafeEdit = 0;
-    let totalNumbers = 0;
+    let totalCount = 0;
 
     Object.values(countryStats.groupedDivisionStats).flat().forEach(div => {
         totalInvalid += (div.invalidCount || 0);
         totalAutoFixable += (div.autoFixableCount || 0);
         totalSafeEdit += (div.safeEditCount || 0);
-        totalNumbers += (div.totalNumbers || 0);
+        totalCount += (div.totalCount || 0);
     });
 
     countryStats.invalidCount = totalInvalid;
     countryStats.autoFixableCount = totalAutoFixable;
     countryStats.safeEditCount = totalSafeEdit;
-    countryStats.totalNumbers = totalNumbers;
+    countryStats.totalCount = totalCount;
 
     fs.writeFileSync(historyFilePath, JSON.stringify(countryStats, null, 2));
 }
@@ -257,19 +295,18 @@ function parseOsmTimestamp(timestampStr) {
 }
 
 /**
- * Processes a single subdivision: processes OSM data, validates numbers, generates the HTML report,
- * and returns statistics.
+ * Processes a single subdivision for phone numbers: processes OSM data, validates numbers,
+ * generates the HTML report and returns statistics.
  * @param {Object} subdivision - The subdivision object (with name and id).
  * @param {Object} countryData - The configuration object for the country.
  * @param {string} rawDivisionName - The unescaped name of the parent division.
- * @param {string} locale - The locale for the report.
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
  */
-async function processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations) {
+async function processSubdivisionPhones(subdivision, countryData, rawDivisionName, clientTranslations) {
     const countryName = countryData.name;
 
-    const geojsonPath = path.join(OSM_DIR, `${subdivision.id}.geojsonseq`);
+    const geojsonPath = path.join(OSM_DIR, 'phone', `${subdivision.id}.geojsonseq`);
     try {
         await access(geojsonPath);
     } catch (error) {
@@ -281,7 +318,7 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     const tmpFilePath = path.join(os.tmpdir(), `invalid-numbers-${uuidv4()}.json`);
     const botEnabled = countryData.safeAutoFixBotEnabled;
 
-    const { totalNumbers, invalidCount, autoFixableCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
+    const { totalCount, invalidCount, autoFixableCount, foreignCount, safeEditCount } = await validateNumbers(elementStream, subdivision.countryCode, tmpFilePath);
 
     fs.unlinkSync(geojsonPath);
 
@@ -297,8 +334,9 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
         slug: safeName(subdivision.name),
         invalidCount: siteInvalidCount,
         autoFixableCount: siteAutoFixableCount,
+        foreignCount: foreignCount,
         safeEditCount: safeEditCount,
-        totalNumbers: totalNumbers,
+        totalCount: totalCount,
         lastUpdated: dataTimestamp.toISOString()
     };
 
@@ -309,9 +347,62 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
     }
 
     await generateSafeEditFile(countryName, stats, tmpFilePath)
-    await generateHtmlReport(countryName, stats, tmpFilePath, locale, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
+    await generateHtmlReport('phone', countryData, stats, tmpFilePath, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
 
-    fs.unlinkSync(tmpFilePath); // Clean up the temporary file
+    fs.unlinkSync(tmpFilePath);
+
+    return stats;
+}
+
+/**
+ * Processes a single subdivision for names: processes OSM data, generates the HTML report
+ * and returns statistics.
+ * @param {Object} subdivision - The subdivision object (with name and id).
+ * @param {Object} countryData - The configuration object for the country.
+ * @param {string} rawDivisionName - The unescaped name of the parent division.
+ * @param {Object} clientTranslations - The client-side translations.
+ * @returns {Promise<Object>} A promise that resolves to a statistics object for the subdivision.
+ */
+async function processSubdivisionNames(subdivision, countryData, rawDivisionName, clientTranslations) {
+    const countryName = countryData.name;
+
+    const geojsonPath = path.join(OSM_DIR, 'name', `${subdivision.id}.geojsonseq`);
+    try {
+        await access(geojsonPath);
+    } catch (error) {
+        console.error(`Error: File not found at ${geojsonPath}`);
+    }
+
+    const elementStream = createGeoJsonElementStream(geojsonPath);
+
+    const tmpFilePath = path.join(os.tmpdir(), `${uuidv4()}.json`);
+
+    const { totalNames, incompleteNames, missingNames } = await validateNames(elementStream, subdivision.countryCode, tmpFilePath);
+
+    fs.unlinkSync(geojsonPath);
+
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
+
+    const stats = {
+        name: subdivision.name,
+        divisionSlug: safeName(rawDivisionName),
+        slug: safeName(subdivision.name),
+        invalidCount: incompleteNames,
+        missingNamesCount: missingNames,
+        totalCount: totalNames,
+        lastUpdated: dataTimestamp.toISOString()
+    };
+
+    const countryDir = path.join(NAMES_BUILD_DIR, safeName(countryName));
+    const divisionDir = path.join(countryDir, stats.divisionSlug)
+    if (!fs.existsSync(divisionDir)) {
+        fs.mkdirSync(divisionDir, { recursive: true });
+    }
+
+    await generateHtmlReport('name', countryData, stats, tmpFilePath, clientTranslations, false, dataTimestamp);
+
+    fs.unlinkSync(tmpFilePath);
 
     return stats;
 }
@@ -320,11 +411,10 @@ async function processSubdivision(subdivision, countryData, rawDivisionName, loc
  * Processes all subdivisions within a single administrative division.
  * @param {string} rawDivisionName - The unescaped name of the division.
  * @param {Object} countryData - The configuration object for the country.
- * @param {string} locale - The locale for the reports.
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise resolving to an object with aggregated stats for the division.
  */
-async function processDivision(rawDivisionName, countryData, locale, clientTranslations) {
+async function processDivision(rawDivisionName, countryData, clientTranslations) {
     const divisionName = rawDivisionName;
     console.log(`Processing subdivisions for ${divisionName}...`);
 
@@ -332,25 +422,42 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
 
     if (!subdivisions || subdivisions.length === 0) {
         console.error(`No subdivisions to process for ${divisionName}.`);
-        return { divisionStats: [], divisionTotalNumbers: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0 };
+        return { divisionStats: [], divisionTotalCount: 0, divisionInvalidCount: 0, divisionAutofixableCount: 0, divisionForeignCount: 0 };
     }
 
-    console.log(`Processing phone numbers for ${subdivisions.length} subdivisions in ${divisionName}.`);
+    console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
-    const divisionStats = [];
-    let divisionTotalNumbers = 0;
-    let divisionInvalidCount = 0;
-    let divisionAutofixableCount = 0;
-    let divisionSafeEditCount = 0;
+    const divisionStatsPhone = [];
+    const divisionTotalsPhone = {
+        totalCount: 0,
+        invalidCount: 0,
+        autoFixableCount: 0,
+        foreignCount: 0,
+        safeEditCount: 0,
+    };
+
+    const divisionStatsName = [];
+    const divisionTotalsName = {
+        totalCount: 0,
+        invalidCount: 0,
+        missingNamesCount: 0,
+    };
 
     let subdivisionCount = 0;
     for (const subdivision of subdivisions) {
-        const stats = await processSubdivision(subdivision, countryData, rawDivisionName, locale, clientTranslations);
-        divisionStats.push(stats);
-        divisionTotalNumbers += stats.totalNumbers;
-        divisionInvalidCount += stats.invalidCount;
-        divisionAutofixableCount += stats.autoFixableCount;
-        divisionSafeEditCount += stats.safeEditCount;
+        const phoneStats = await processSubdivisionPhones(subdivision, countryData, rawDivisionName, clientTranslations);
+        divisionStatsPhone.push(phoneStats);
+        divisionTotalsPhone.totalCount += phoneStats.totalCount;
+        divisionTotalsPhone.invalidCount += phoneStats.invalidCount;
+        divisionTotalsPhone.autoFixableCount += phoneStats.autoFixableCount;
+        divisionTotalsPhone.foreignCount += phoneStats.foreignCount;
+        divisionTotalsPhone.safeEditCount += phoneStats.safeEditCount;
+
+        const nameStats = await processSubdivisionNames(subdivision, countryData, rawDivisionName, clientTranslations);
+        divisionStatsName.push(nameStats);
+        divisionTotalsName.totalCount += nameStats.totalCount;
+        divisionTotalsName.invalidCount += nameStats.invalidCount;
+        divisionTotalsName.missingNamesCount += nameStats.missingNamesCount;
 
         subdivisionCount++;
         // if (testMode && subdivisionCount >= 1) {
@@ -358,7 +465,7 @@ async function processDivision(rawDivisionName, countryData, locale, clientTrans
         // }
     }
 
-    return { divisionStats, divisionTotalNumbers, divisionInvalidCount, divisionAutofixableCount, divisionSafeEditCount };
+    return { divisionStatsPhone, divisionTotalsPhone, divisionStatsName, divisionTotalsName };
 }
 
 /**
@@ -371,21 +478,31 @@ async function processCountry(countryData) {
     const locale = countryData.locale;
 
     const fullTranslations = getTranslations(locale);
-    const clientTranslations = filterClientTranslations(fullTranslations);
+    const fullDefaultTranslations = getTranslations('en');
+    // TODO: serve full translations server-side
+    const clientTranslations = createClientTranslations(fullTranslations, fullDefaultTranslations);
 
     const divisions = countryData.divisions
         ? { [countryData.name]: countryData.divisions }
         : countryData.divisionMap;
 
     if (countryData.pbfUrl) {
-        const tmpPbfFilePath = path.join(process.cwd(), `filtered-${uuidv4()}.osm.pbf`);
+        const tmpPbfFilePath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+        const tmpPhonePbfFilePath = path.join(process.cwd(), `filtered-phone-${uuidv4()}.osm.pbf`);
+        const tmpNamePbfFilePath = path.join(process.cwd(), `filtered-name-${uuidv4()}.osm.pbf`);
 
-        await processPbf(countryData.pbfUrl, tmpPbfFilePath);
-        await splitPbf(tmpPbfFilePath, countryData);
+        await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
+        await filterPbfPhone(tmpPbfFilePath, tmpPhonePbfFilePath);
+        await filterPbfName(tmpPbfFilePath, tmpNamePbfFilePath);
 
-        if (fs.existsSync(tmpPbfFilePath)) {
-            fs.unlinkSync(tmpPbfFilePath);
-        }
+        fs.rmSync(tmpPbfFilePath, { force: true });
+
+        await splitPbf(tmpPhonePbfFilePath, path.join(OSM_DIR, 'phone'), countryData);
+        await splitPbf(tmpNamePbfFilePath, path.join(OSM_DIR, 'name'), countryData);
+
+        [tmpPhonePbfFilePath, tmpNamePbfFilePath].forEach(file => {
+            fs.rmSync(file, { force: true });
+        });
 
         const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
         countryData.timestamp = dataTimestamp;
@@ -395,14 +512,22 @@ async function processCountry(countryData) {
         for (const [subName, subData] of Object.entries(groupDivisions)) {
             const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
             if (pbfUrl) {
-                const subPbfPath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+                const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+                const subPhonePbfFilePath = path.join(process.cwd(), `sub-filtered-phone-${uuidv4()}.osm.pbf`);
+                const subNamePbfFilePath = path.join(process.cwd(), `sub-filtered-name-${uuidv4()}.osm.pbf`);
 
-                await processPbf(pbfUrl, subPbfPath);
-                await splitPbf(subPbfPath, null, subData);
+                await downloadPbf(countryData.pbfUrl, subPbfFilePath);
+                await filterPbfPhone(subPbfFilePath, subPhonePbfFilePath);
+                await filterPbfName(subPbfFilePath, subNamePbfFilePath);
 
-                if (fs.existsSync(subPbfPath)) {
-                    fs.unlinkSync(subPbfPath);
-                }
+                fs.rmSync(subPbfFilePath, { force: true });
+
+                await splitPbf(subPhonePbfFilePath, path.join(OSM_DIR, 'phone'), null, subData);
+                await splitPbf(subNamePbfFilePath, path.join(OSM_DIR, 'name'), null, subData);
+
+                [subPhonePbfFilePath, subNamePbfFilePath].forEach(file => {
+                    fs.rmSync(file, { force: true });
+                });
 
                 // TODO: store this per subdivision
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);
@@ -422,28 +547,48 @@ async function processCountry(countryData) {
         fs.mkdirSync(countryDir, { recursive: true });
     }
 
-    let totalInvalidCount = 0;
-    let totalAutofixableCount = 0;
-    let totalSafeEditCount = 0;
-    let totalTotalNumbers = 0;
-    const groupedDivisionStats = {};
+    const namesCountryDir = path.join(NAMES_BUILD_DIR, safeName(countryName));
+    if (!fs.existsSync(namesCountryDir)) {
+        fs.mkdirSync(namesCountryDir, { recursive: true });
+    }
+
+    const groupedDivisionStatsPhone = {};
+    const groupedDivisionStatsName = {};
+
+    const totals = {
+        phone: {
+            invalidCount: 0,
+            autoFixableCount: 0,
+            foreignCount: 0,
+            safeEditCount: 0,
+            totalCount: 0,
+        },
+        name: {
+            invalidCount: 0,
+            missingNamesCount: 0,
+            totalCount: 0,
+        }
+    }
 
     let divisionCount = 0;
     for (const rawDivisionName in divisions) {
         const {
-            divisionStats,
-            divisionTotalNumbers,
-            divisionInvalidCount,
-            divisionAutofixableCount,
-            divisionSafeEditCount
-        } = await processDivision(rawDivisionName, countryData, locale, clientTranslations);
+            divisionStatsPhone, divisionTotalsPhone, divisionStatsName, divisionTotalsName
+        } = await processDivision(rawDivisionName, countryData, clientTranslations);
 
         const divisionName = rawDivisionName;
-        groupedDivisionStats[divisionName] = divisionStats;
-        totalInvalidCount += divisionInvalidCount;
-        totalAutofixableCount += divisionAutofixableCount;
-        totalSafeEditCount += divisionSafeEditCount;
-        totalTotalNumbers += divisionTotalNumbers;
+
+        groupedDivisionStatsPhone[divisionName] = divisionStatsPhone;
+        totals.phone.invalidCount += divisionTotalsPhone.invalidCount;
+        totals.phone.autoFixableCount += divisionTotalsPhone.autoFixableCount;
+        totals.phone.foreignCount += divisionTotalsPhone.foreignCount;
+        totals.phone.safeEditCount += divisionTotalsPhone.safeEditCount;
+        totals.phone.totalCount += divisionTotalsPhone.totalCount;
+
+        groupedDivisionStatsName[divisionName] = divisionStatsName;
+        totals.name.invalidCount += divisionTotalsName.invalidCount;
+        totals.name.missingNamesCount += divisionTotalsName.missingNamesCount;
+        totals.name.totalCount += divisionTotalsName.totalCount;
 
         divisionCount++;
         // if (testMode && divisionCount >= 1) {
@@ -458,83 +603,108 @@ async function processCountry(countryData) {
         name: countryName,
         slug: safeName(countryName),
         locale: locale,
-        invalidCount: totalInvalidCount,
-        autoFixableCount: totalAutofixableCount,
-        safeEditCount: totalSafeEditCount,
-        totalNumbers: totalTotalNumbers,
-        groupedDivisionStats: groupedDivisionStats,
-        botEnabled: countryData.safeAutoFixBotEnabled,
         timestamp: dataTimestamp
     };
 
-    saveCountryHistory(countryStats);
+    const countryStatsPhone = {
+        ...countryStats,
+        invalidCount: totals.phone.invalidCount,
+        autoFixableCount: totals.phone.autoFixableCount,
+        foreignCount: totals.phone.foreignCount,
+        safeEditCount: totals.phone.safeEditCount,
+        totalCount: totals.phone.totalCount,
+        groupedDivisionStats: groupedDivisionStatsPhone,
+        botEnabled: countryData.safeAutoFixBotEnabled,
+    }
 
-    await generateCountryIndexHtml(countryStats, clientTranslations);
+    const countryStatsName = {
+        ...countryStats,
+        invalidCount: totals.name.invalidCount,
+        missingNamesCount: totals.name.missingNamesCount,
+        totalCount: totals.name.totalCount,
+        groupedDivisionStats: groupedDivisionStatsName,
+    }
 
-    return countryStats;
+    saveCountryHistory('phone', countryStatsPhone);
+    saveCountryHistory('name', countryStatsName);
+
+    await generateCountryIndexHtml('phone', countryStatsPhone);
+    await generateCountryIndexHtml('name', countryStatsName);
+
+    return { countryStatsPhone, countryStatsName };
 }
 
 /**
  * The main function to orchestrate the entire build process for the validation reports.
  */
 async function main() {
-    if (!fs.existsSync(PUBLIC_DIR)) {
-        fs.mkdirSync(PUBLIC_DIR);
-    }
-
     const CLIENT_DIR = path.join(__dirname, 'client');
-    try {
-        const filesToCopy = fs.readdirSync(CLIENT_DIR);
+    [PUBLIC_DIR, NAMES_BUILD_DIR].forEach((dir) => {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+        try {
+            const filesToCopy = fs.readdirSync(CLIENT_DIR);
 
-        filesToCopy.forEach(file => {
-            const source = path.join(CLIENT_DIR, file);
-            const destination = path.join(PUBLIC_DIR, file);
+            filesToCopy.forEach(file => {
+                const source = path.join(CLIENT_DIR, file);
+                const destination = path.join(dir, file);
 
-            // Only copy files, ignore subdirectories (if any)
-            if (fs.statSync(source).isFile()) {
-                fs.copyFileSync(source, destination);
-            }
-        });
-        console.log('Successfully copied client directory contents to public');
-    } catch (err) {
-        console.error('Error copying files:', err);
-    }
+                // Only copy files, ignore subdirectories (if any)
+                if (fs.statSync(source).isFile()) {
+                    fs.copyFileSync(source, destination);
+                }
+            });
+            console.log(`Successfully copied client directory contents to ${dir}`);
+        } catch (err) {
+            console.error('Error copying files:', err);
+        }
 
-    const VENDOR_DIR = path.join(PUBLIC_DIR, 'vendor')
-    if (!fs.existsSync(VENDOR_DIR)) {
-        fs.mkdirSync(VENDOR_DIR);
-    }
+        const VENDOR_DIR = path.join(dir, 'vendor')
+        if (!fs.existsSync(VENDOR_DIR)) {
+            fs.mkdirSync(VENDOR_DIR);
+        }
 
-    fs.copyFileSync(
-        path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
-        path.join(PUBLIC_DIR, 'vendor', 'osm-api.min.js')
-    );
+        fs.copyFileSync(
+            path.join(__dirname, '..', 'node_modules', 'osm-api', 'dist', 'index.min.js'),
+            path.join(VENDOR_DIR, 'osm-api.min.js')
+        );
 
-    fs.copyFileSync(
-        path.join(__dirname, '..', 'node_modules', 'chart.js', 'dist', 'chart.umd.js'),
-        path.join(PUBLIC_DIR, 'vendor', 'chart.js')
-    );
+        fs.copyFileSync(
+            path.join(__dirname, '..', 'node_modules', 'chart.js', 'dist', 'chart.umd.js'),
+            path.join(VENDOR_DIR, 'chart.js')
+        );
+    });
+
+    const officialLanguages = await downloadAndParseOfficialLanguages();
 
     console.log('Starting full build process...');
 
-    const allCountryStats = [];
+    const allCountryStats = {
+        phone: [],
+        name: [],
+    };
 
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
-    const clientDefaultTranslations = filterClientTranslations(fullDefaultTranslations);
+    // TODO: serve the translations server-side
+    const clientDefaultTranslations = fullDefaultTranslations;
 
     for (const countryKey in COUNTRIES) {
         const countryData = COUNTRIES[countryKey];
         countryData.name = countryKey;
-        const stats = await processCountry(countryData);
-        allCountryStats.push(stats);
+        countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
+        const { countryStatsPhone, countryStatsName } = await processCountry(countryData);
+        allCountryStats.phone.push(countryStatsPhone);
+        allCountryStats.name.push(countryStatsName);
 
         if (testMode) {
             break;
         }
     }
 
-    await generateMainIndexHtml(allCountryStats, defaultLocale, clientDefaultTranslations);
+    await generateMainIndexHtml('phone', allCountryStats.phone, defaultLocale, clientDefaultTranslations);
+    await generateMainIndexHtml('name', allCountryStats.name, defaultLocale, clientDefaultTranslations);
 
     console.log('Full build process completed successfully.');
 }

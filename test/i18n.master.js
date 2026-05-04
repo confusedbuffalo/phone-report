@@ -59,6 +59,18 @@ const MASTER_KEYS = {
     'invalidNumbersDescription': [],
     'foreignNumbersDescription': [],
     'phoneNumber': [],
+    'incompleteNamesReport': [],
+    'multilingualNames': [],
+    'incompleteNames': [],
+    'missingNames': [],
+    'missingNamesDescription': [],
+    'incompleteNamesDescription': [],
+    'osmIncompleteNameValidation': [],
+    'reportSubtitleNames': [],
+    'incompleteNamesReport': [],
+    'noIncompleteNames': [],
+    'copyNameTo': [],
+    'copyNameFrom': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
@@ -67,10 +79,12 @@ const MASTER_KEYS = {
     'fixablePercentageOfInvalid': ['%p'],
 
     'invalidNumbersOutOf': ['%i', '%f', '%t'],
+    'incompleteNamesOutOf': ['%i', '%t'],
 
     'numberDetailsNamesDataFrom': ['%o'],
 
     'reportSubtitleForCountry': ['%c'],
+    'reportSubtitleNamesForCountry': ['%c'],
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a'],
 
     "pageOf": ['%n', '%t'],
@@ -83,10 +97,13 @@ const MASTER_KEYS = {
     "noteCreated": ['%n'],
     "hasInvalidSingular": ['%n'],
     "hasInvalidPlural": ['%n'],
+    "hasIncompleteName": ['%n'],
+    "hasMissingName": ['%n'],
 
-    // Page Titles (uses %s for country name)
+    // Page Titles (uses %c for country name)
     'mainIndexTitle': [], // Static title
-    'countryReportTitle': ['%c']
+    'countryReportTitle': ['%c'],
+    'countryReportTitleNames': ['%c']
 };
 
 module.exports = { MASTER_KEYS };

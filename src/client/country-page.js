@@ -19,6 +19,7 @@ function escapeHTML(str) {
     });
 }
 
+const locale = document.documentElement.lang;
 const listContainer = document.getElementById('division-list');
 const sortButtons = document.querySelectorAll('.sort-btn');
 const showEmptyCheckbox = document.getElementById('show-empty');
@@ -31,10 +32,11 @@ let sortDirection = 'asc'
  * @returns {string} The locale-formatted number string.
  */
 function formatNumber(num) {
-    return num.toLocaleString(locale, { 
-        useGrouping: true, 
-        minimumFractionDigits: 0, 
-        maximumFractionDigits: 0 
+    if (!num) return '';
+    return num.toLocaleString(locale, {
+        useGrouping: true,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     });
 }
 
@@ -43,15 +45,18 @@ for (const divisionName in groupedDivisionStats) {
     let groupInvalid = 0;
     let groupTotal = 0;
     let groupFixable = 0;
+    let groupMissing = 0;
     groupedDivisionStats[divisionName].forEach(stat => {
         groupInvalid += stat.invalidCount;
-        groupTotal += stat.totalNumbers;
+        groupTotal += stat.totalCount;
         groupFixable += stat.autoFixableCount;
+        groupMissing += stat.missingNamesCount;
     });
     calculatedDivisionTotals[divisionName] = {
         invalid: groupInvalid,
         total: groupTotal,
-        fixable: groupFixable
+        fixable: groupFixable,
+        missing: groupMissing,
     };
 }
 
@@ -106,7 +111,7 @@ function renderList() {
             const diff = calculatedDivisionTotals[b].invalid - calculatedDivisionTotals[a].invalid;
             return sortDirection === 'asc' ? diff : -1 * diff;
         } else if (currentSort === 'name') {
-            return sortDirection === 'asc' ? a.localeCompare(b): b.localeCompare(a);
+            return sortDirection === 'asc' ? a.localeCompare(b) : b.localeCompare(a);
         }
         return 0;
     });
@@ -146,30 +151,34 @@ function renderList() {
             const groupStats = calculatedDivisionTotals[divisionName];
             const groupInvalidFormatted = formatNumber(groupStats.invalid);
             const groupTotalFormatted = formatNumber(groupStats.total);
-            const groupFixableFormatted = formatNumber(groupStats.fixable); 
+            const groupFixableFormatted = formatNumber(groupStats.fixable);
 
             const groupPercentageNumber = groupStats.total > 0 ? (groupStats.invalid / groupStats.total) * 100 : 0;
             const formattedGroupPercentage = groupPercentageNumber.toLocaleString(locale, percentageOptions);
-            
+
             // Client-side substitution using the embedded template literal
-            const groupStatsLine = T_CLIENT.invalidNumbersOutOf
-                .replace('%i', groupInvalidFormatted)
-                .replace('%f', groupFixableFormatted)
-                .replace('%t', groupTotalFormatted);
+            const groupStatsLine = reportType === 'phone' ?
+                T_CLIENT.invalidNumbersOutOf
+                    .replace('%i', groupInvalidFormatted)
+                    .replace('%f', groupFixableFormatted)
+                    .replace('%t', groupTotalFormatted) :
+                T_CLIENT.incompleteNamesOutOf
+                    .replace('%i', groupInvalidFormatted)
+                    .replace('%t', groupTotalFormatted);
 
             // --- End Group Stats Calculation ---
 
             sortedData.sort((a, b) => {
                 if (currentSort === 'percentage') {
-                    const percentageA = a.totalNumbers > 0 ? (a.invalidCount / a.totalNumbers) : 0;
-                    const percentageB = b.totalNumbers > 0 ? (b.invalidCount / b.totalNumbers) : 0;
+                    const percentageA = a.totalCount > 0 ? (a.invalidCount / a.totalCount) : 0;
+                    const percentageB = b.totalCount > 0 ? (b.invalidCount / b.totalCount) : 0;
                     const diff = percentageB - percentageA;
                     return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'invalidCount') {
                     const diff = b.invalidCount - a.invalidCount;
                     return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'name') {
-                    return sortDirection === 'asc' ? a.name.localeCompare(b.name): b.name.localeCompare(a.name);
+                    return sortDirection === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
                 }
             });
 
@@ -177,7 +186,7 @@ function renderList() {
 
             if (isGrouped) {
                 // --- RENDER GROUPED ---
-                let detailsGroup = document.createElement('details'); 
+                let detailsGroup = document.createElement('details');
                 detailsGroup.className = 'details-group group';
 
                 // Restore open state after sort
@@ -194,12 +203,12 @@ function renderList() {
                 const leftSide = document.createElement('div');
                 leftSide.className = 'summary-left-side';
 
-                const iconCircle = document.createElement('div'); 
+                const iconCircle = document.createElement('div');
                 iconCircle.className = 'summary-icon color-indicator';
                 iconCircle.setAttribute('data-percentage', groupPercentageNumber);
 
                 const collapseIcon = createCollapseIcon();
-                iconCircle.appendChild(collapseIcon); 
+                iconCircle.appendChild(collapseIcon);
 
                 const divisionNameContainer = document.createElement('div');
                 divisionNameContainer.className = 'list-item-content';
@@ -215,7 +224,7 @@ function renderList() {
                 divisionNameContainer.appendChild(divisionHeader);
                 divisionNameContainer.appendChild(statsLine);
 
-                leftSide.appendChild(iconCircle); 
+                leftSide.appendChild(iconCircle);
                 leftSide.appendChild(divisionNameContainer);
 
                 const rightSide = document.createElement('div');
@@ -227,7 +236,7 @@ function renderList() {
 
                 const percentageLabel = document.createElement('p');
                 percentageLabel.className = 'summary-percentage-label';
-                percentageLabel.textContent = T_CLIENT.invalid; 
+                percentageLabel.textContent = T_CLIENT.invalid;
 
                 rightSide.appendChild(percentageText);
                 rightSide.appendChild(percentageLabel);
@@ -239,7 +248,7 @@ function renderList() {
 
                 detailsGroup.appendChild(summaryHeader);
 
-                ul = document.createElement('ul'); 
+                ul = document.createElement('ul');
                 ul.className = 'details-content';
 
                 detailsGroup.appendChild(ul);
@@ -247,30 +256,33 @@ function renderList() {
 
             } else {
                 // --- RENDER FLAT LIST ---
-                ul = listContainer; 
+                ul = listContainer;
             }
 
             // --- LIST ITEM RENDERING (Common Logic) ---
             sortedData.forEach(subdivision => {
                 const singleLevelDivision = safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
                 const subdivisionSlug = singleLevelDivision ? subdivision.slug : `${subdivision.divisionSlug}/${subdivision.slug}`;
-    
-                const percentage = subdivision.totalNumbers > 0 ? (subdivision.invalidCount / subdivision.totalNumbers) * 100 : 0;
+
+                const percentage = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
                 const formattedInvalidCount = formatNumber(subdivision.invalidCount);
                 const formattedFixableCount = formatNumber(subdivision.autoFixableCount);
-                const formattedTotalCount = formatNumber(subdivision.totalNumbers);
+                const formattedTotalCount = formatNumber(subdivision.totalCount);
 
-                const percentageNumber = subdivision.totalNumbers > 0 ? (subdivision.invalidCount / subdivision.totalNumbers) * 100 : 0;
+                const percentageNumber = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const formattedPercentage = percentageNumber.toLocaleString(locale, percentageOptions);
-                
-                // Client-side substitution using the embedded template literal
-                const itemStatsLine = T_CLIENT.invalidNumbersOutOf
-                    .replace('%i', formattedInvalidCount)
-                    .replace('%f', formattedFixableCount)
-                    .replace('%t', formattedTotalCount);
 
+                // Client-side substitution using the embedded template literal
+                const itemStatsLine = reportType === 'phone' ?
+                    T_CLIENT.invalidNumbersOutOf
+                        .replace('%i', formattedInvalidCount)
+                        .replace('%f', formattedFixableCount)
+                        .replace('%t', formattedTotalCount) :
+                    T_CLIENT.incompleteNamesOutOf
+                        .replace('%i', formattedInvalidCount)
+                        .replace('%t', formattedTotalCount);
 
                 const li = document.createElement('li');
                 li.className = 'subdivision-list-item';

@@ -3,7 +3,7 @@ const { stringSimilarity } = require('string-similarity-js');
 const { diffChars } = require('diff');
 const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } = require('./constants.js');
 const { escapeHTML } = require('./html-utils.js');
-const { isWhatsappUrl, isSlashSpace } = require('./data-processor.js');
+const { isWhatsappUrl, isSlashSpace } = require('./phone-processor.js');
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
 // being added or removed when, semantically, they are just being moved.
