@@ -1,3 +1,4 @@
+import { languageNames } from "./report-state.js";
 import { isItemClicked } from "./report-storage.js";
 
 export function createSaveRow() {
@@ -175,7 +176,8 @@ function createButtons(item, clickedClass) {
                 data-item-type="${item.type}"
                 data-item-id="${item.id}"
                 data-editor-id="apply-fix"
-                class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
+                class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}"
+                title="${languageNames.of(nameLanguage)}">
                 ${nameLanguage}
             </button>`
         }).join('\n')
@@ -189,7 +191,8 @@ function createButtons(item, clickedClass) {
                 data-item-id="${item.id}"
                 data-editor-id="apply-fix"
                 ${nameExists ? 'disabled' : ''}
-                class="btn ${nameExists ? 'btn-disabled' : clickedClass ? clickedClass + ' cursor-pointer' : 'cursor-pointer btn-josm-fix'}">
+                class="btn ${nameExists ? 'btn-disabled' : clickedClass ? clickedClass + ' cursor-pointer' : 'cursor-pointer btn-josm-fix'}"
+                title="${languageNames.of(nameLanguage)}">
                 ${language}
             </button>`
         }).join('\n')

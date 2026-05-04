@@ -53,3 +53,5 @@ export const noteModal = document.getElementById('note-modal-overlay');
 
 const isMobileView = window.matchMedia("(max-width: 767px)").matches;
 export const DEFAULT_EDITORS = isMobileView ? DEFAULT_EDITORS_MOBILE : DEFAULT_EDITORS_DESKTOP;
+
+export const languageNames = new Intl.DisplayNames([document.documentElement.lang], {type: 'language'});
