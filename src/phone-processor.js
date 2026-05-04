@@ -337,7 +337,9 @@ function getNumberAndExtension(numberStr, countryCode) {
  * @param {boolean} tollFreeAsInternational - Whether or not toll free numbers should be formatted with a country code.
  * @returns {string} The formatted number
  */
-function getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational = false) {
+function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
+    countryCode = phoneNumber.country;
+
     const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
     const coreNumberE164 = isPolishPrefixed
@@ -588,7 +590,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 || numberStr.includes('+')
                 || numberStr.startsWith('00')
             );
-            suggestedFix = getFormattedNumber(phoneNumber, countryCode, tollFreeAsInternational);
+            suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
         }
 
         if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed || isItalianMissingZero)) {
@@ -1054,7 +1056,6 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 suggestedFix = uniqueFormattedSet.map((number) => {
                     return getFormattedNumber(
                         parsePhoneNumber(number, countryCode),
-                        countryCode,
                         !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
                     );
                 }).join('; ');
@@ -1069,7 +1070,6 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
                 const normalisedNumber = getFormattedNumber(
                     phoneNumber,
-                    countryCode,
                     !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
                 ).replace(getSpacingRegex(countryCode), '');
 
@@ -1122,7 +1122,6 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         const validatedKeptValue = uniqueFormattedKeptSet.map((number) => {
                             return getFormattedNumber(
                                 parsePhoneNumber(number, countryCode),
-                                countryCode,
                                 !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
                             );
                         }).join('; ');
