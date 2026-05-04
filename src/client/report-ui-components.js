@@ -42,7 +42,7 @@ export function createListItem(item) {
 
     const helpLabel = item.name ?
         `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameTo')}</span>` :
-        `<span data-editor-id="apply-fix" class="label label-help">${translate('correctLanguageForName')}</span>`;
+        `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameFrom')}</span>`;
 
     const buttonLayout = reportType === 'phone'
         ? [

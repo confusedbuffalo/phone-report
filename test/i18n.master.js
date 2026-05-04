@@ -70,7 +70,7 @@ const MASTER_KEYS = {
     'incompleteNamesReport': [],
     'noIncompleteNames': [],
     'copyNameTo': [],
-    'correctLanguageForName': [],
+    'copyNameFrom': [],
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
