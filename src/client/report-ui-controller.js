@@ -524,11 +524,11 @@ export function openNoteModal(item) {
         noteComment = item.name
             ? translate('hasIncompleteName', { '%n': item.featureTypeName })
             : translate('hasMissingName', { '%n': item.featureTypeName });
-        
+
         const namesList = item.fixRows
-            .map(([key, name]) => {
-                return `${key} = ${name}`;
-            })
+            .flatMap(obj =>
+                Object.entries(obj).map(([key, value]) => `${key} = ${value}`)
+            )
             .join('\n');
 
         noteComment += '\n\n';
