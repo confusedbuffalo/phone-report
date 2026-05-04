@@ -204,7 +204,7 @@ export function renderNumbers() {
 
         if (reportType === 'name') {
             const saveRow = document.getElementById('save-row');
-            
+
             saveRow.innerHTML = `<div class="page-sort-card"><div class="save-sort-container">
                 ${createSaveRow()}
                 </div></div>`
@@ -279,12 +279,9 @@ function renderPaginatedSection(
         }
     };
 
-    // Unique ID suffix for this section's controls
-    const suffix = filterType;
-
     const pageControls = totalItems > pageSize ? `
         <div class="page-btns-container">
-            <button id="prevPage${suffix}" data-action="page" data-page-change="-1" data-section="${suffix}"
+            <button id="prevPage${filterType}" data-action="page" data-page-change="-1" data-section="${filterType}"
                     class="page-btn
                             ${currentPage <= 1 ? 'page-btn-disabled' : 'page-btn-active'}"
                     ${currentPage <= 1 ? 'disabled' : ''}>
@@ -293,7 +290,7 @@ function renderPaginatedSection(
             <span class="page-numbers">
                 ${translate('pageOf', { '%n': currentPage, '%t': totalPages })}
             </span>
-            <button id="nextPage${suffix}" data-action="page" data-page-change="1" data-section="${suffix}"
+            <button id="nextPage${filterType}" data-action="page" data-page-change="1" data-section="${filterType}"
                     class="page-btn
                             ${currentPage >= totalPages ? 'page-btn-disabled' : 'page-btn-active'}"
                     ${currentPage >= totalPages ? 'disabled' : ''}>
@@ -303,35 +300,42 @@ function renderPaginatedSection(
 
     const saveRow = createSaveRow();
 
+    const sortButtonLayout = (reportType === 'phone' && filterType === 'fixable')
+        ? [
+            { style: 'name', label: 'name' },
+            { style: 'fixable', label: 'suggestedFix' },
+            { style: 'invalid', label: 'invalidNumber' },
+        ]
+        : (reportType === 'phone' && filterType === 'foreign')
+            ? [
+                { style: 'name', label: 'name' },
+                { style: 'date', label: 'date' },
+                { style: 'foreign', label: 'phoneNumber' },
+            ]
+            : reportType === 'phone' //invalid phone
+                ? [
+                    { style: 'name', label: 'name' },
+                    { style: 'date', label: 'date' },
+                    { style: 'invalid', label: 'invalidNumber' },
+                ]
+                : [ // name
+                    { style: 'name', label: 'name' },
+                    { style: 'date', label: 'date' },
+                ];
+
+    const sortControlContainer = sortButtonLayout
+        .map(row => `
+            <button data-action="sort" data-section="${filterType}" data-sort-key="${getSortStyle(row.name)}"
+                class="sort-btn sort-btn-style ${getSortStyle(row.name)}">
+                ${translate(row.label)}
+            </button>`).join('');
+
     const pageAndSortControls = `
         ${pageControls}
         <div class="sort-controls">
             <span class="sort-label">${translate('sortBy')}</span>
-            <button data-action="sort" data-section="${suffix}" data-sort-key="name"
-                    class="sort-btn sort-btn-style ${getSortStyle('name')}">
-                ${translate('name')}
-            </button>
-            ${filterType === 'fixable' ? `
-                <button data-action="sort" data-section="${suffix}" data-sort-key="fixable"
-                    class="sort-btn sort-btn-style ${getSortStyle('fixable')}">
-                    ${translate('suggestedFix')}
-                </button>` :
-                `<button data-action="sort" data-section="${suffix}" data-sort-key="date"
-                        class="sort-btn sort-btn-style ${getSortStyle('date')}">
-                    ${translate('date')}
-                </button>`
-            }
-            ${filterType === 'foreign' ? `
-                <button data-action="sort" data-section="${suffix}" data-sort-key="foreign"
-                    class="sort-btn sort-btn-style ${getSortStyle('foreign')}">
-                    ${translate('phoneNumber')}
-                </button>` :
-                reportType === 'phone' ?
-                    `<button data-action="sort" data-section="${suffix}" data-sort-key="invalid"
-                        class="sort-btn sort-btn-style ${getSortStyle('invalid')}">
-                        ${translate('invalidNumber')}
-                    </button>` : ''
-                }
+            ${sortButtonLayout.length === 2 ? '<span></span>' : ''}
+            ${sortControlContainer}
         </div>`
 
     const paginationSortCard = `
