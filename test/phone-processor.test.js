@@ -2796,6 +2796,31 @@ describe('validateNumbers', () => {
             },
         });
     });
+
+    // US uses hyphens, UK uses spaces. Fix should have spaces, not brackets.
+    test('should format a foreign number with formatting for that country, not the local country', async () => {
+        const elements = [
+            createGeoJson(2002, { 'phone': '(+44) 0207 9460000' }, 52.0, 1.0, 'way')
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(2); // second is foreign item
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone': '(+44) 0207 9460000',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
+        });
+    });
 });
 
 // =====================================================================
