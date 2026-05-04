@@ -437,7 +437,7 @@ function openUploadModal() {
 
     commentBox.disabled = false;
     commentBox.classList.remove('cursor-not-allowed');
-    commentBox.value = `${subdivisionName}: ` + CHANGESET_COMMENT;
+    commentBox.value = `${subdivisionName}: ` + CHANGESET_TAGS.comment;
 
     if (!OSM.isLoggedIn()) {
         uploadBtn.disabled = true;

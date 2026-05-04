@@ -1,6 +1,6 @@
-import { addNoteBtn, appState, noteCancelBtn, noteCloseBtnBottom, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
+import { addNoteBtn, appState, commentBox, noteCancelBtn, noteCloseBtnBottom, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
 import { moveEditsToUploadedStorage } from "./report-storage.js";
-import { enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
+import { disableModalCloseListeners, enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
 
 const redirectUrl = reportType === 'phone' ? 'https://confusedbuffalo.github.io/phone-report/land.html' : 'https://names-report.pages.dev/land.html';
 
@@ -192,7 +192,7 @@ async function uploadChanges() {
                 }
 
                 for (const feature of allFeatures) {
-                    changed = applyEditsToFeatureTags(feature, editsForType[feature.id])
+                    const changed = applyEditsToFeatureTags(feature, editsForType[feature.id])
                     if (changed) {
                         modifications.push(feature);
                     }
@@ -335,7 +335,6 @@ function checkAndCreateNote(itemId, lat, lon) {
  * @returns {void}
  */
 export function checkAndSubmit() {
-    const commentBox = document.getElementById('changesetComment')
     const comment = commentBox.value.trim();
     const messageBox = document.getElementById('message-box');
 

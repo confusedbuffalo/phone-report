@@ -9,7 +9,7 @@ const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { disassembler } = require('stream-json/disassembler.js');
 const { stringer } = require('stream-json/stringer.js');
 const { Eta } = require('eta');
-const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, CHANGESET_COMMENTS } = require('./constants');
+const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
@@ -393,7 +393,6 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
         DEFAULT_EDITORS_DESKTOP,
         DEFAULT_EDITORS_MOBILE,
         CHANGESET_TAGS,
-        CHANGESET_COMMENTS,
         clientOsmEditorsScript,
         officialLanguages,
     };

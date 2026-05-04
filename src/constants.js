@@ -285,20 +285,26 @@ const POLY_DIR = path.join(__dirname, '..', 'poly');
 const OSM_DIR = path.join(__dirname, '..', 'osm');
 
 const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
-const HOST_URL = 'https://confusedbuffalo.github.io/phone-report/'
+const HOST_URL = {
+    'phone': 'https://confusedbuffalo.github.io/phone-report/',
+    'name': 'https://names-report.pages.dev/',
+};
 
 const PACKAGE_NAME = packageInfo.name;
 const PACKAGE_VERSION = packageInfo.version;
 const PACKAGE_STRING = `${PACKAGE_NAME}/${PACKAGE_VERSION}`;
 
-const CHANGESET_COMMENTS = {
-    phone: "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
-    name: "Fix incomplete names"
-}
-
 const CHANGESET_TAGS = {
-    "created_by": PACKAGE_STRING,
-    "host": HOST_URL
+    'phone': {
+        "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
+        "created_by": PACKAGE_STRING,
+        "host": HOST_URL.phone,
+    },
+    "name": {
+        "comment": "Fix incomplete names",
+        "created_by": PACKAGE_STRING,
+        "host": HOST_URL.name,
+    },
 }
 
 const AUTO_CHANGESET_TAGS = {
@@ -388,7 +394,6 @@ module.exports = {
     ACCEPTABLE_EXTENSION_FORMATS,
     CHANGESET_TAGS,
     AUTO_CHANGESET_TAGS,
-    CHANGESET_COMMENTS,
     GITHUB_LINK,
     HOST_URL,
     NANP_COUNTRY_CODES,
