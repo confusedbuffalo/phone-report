@@ -97,6 +97,8 @@ const MASTER_KEYS = {
     "noteCreated": ['%n'],
     "hasInvalidSingular": ['%n'],
     "hasInvalidPlural": ['%n'],
+    "hasIncompleteName": ['%n'],
+    "hasMissingName": ['%n'],
 
     // Page Titles (uses %c for country name)
     'mainIndexTitle': [], // Static title

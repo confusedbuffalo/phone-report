@@ -98,5 +98,7 @@
   "incompleteNamesOutOf": "%i incomplete names out of %t",
   "noIncompleteNames": "No incomplete names found in this subdivision.",
   "copyNameTo": "Copy name to:",
-  "copyNameFrom": "Copy name from:"
+  "copyNameFrom": "Copy name from:",
+  "hasIncompleteName": "%n has an incomplete multi-lingual name. The name tag should match one of the language specific names, but it doesn&apos;t.",
+  "hasMissingName": "%n is missing a primary name tag, despite having a language specific name set. What is the correct name?"
 }

@@ -499,24 +499,42 @@ export function openNoteModal(item) {
     noteCommentBox.disabled = false;
     noteCommentBox.classList.remove('cursor-not-allowed');
 
-    const invalidWithoutFix = Object.entries(item.invalidNumbers)
-        .filter(([key]) => {
-            const fix = item.suggestedFixes?.[key];
-            return fix === null || fix === undefined;
-        })
+    let noteComment;
 
-    const invalidNumbersList = invalidWithoutFix
-        .map(([key, number]) => {
-            return `${key} = ${number}`;
-        })
-        .join('\n');
+    if (reportType === 'phone') {
+        const invalidWithoutFix = Object.entries(item.invalidNumbers)
+            .filter(([key]) => {
+                const fix = item.suggestedFixes?.[key];
+                return fix === null || fix === undefined;
+            })
 
-    let noteComment = invalidWithoutFix.length > 1
-        ? translate('hasInvalidPlural', { '%n': item.featureTypeName })
-        : translate('hasInvalidSingular', { '%n': item.featureTypeName });
+        const invalidNumbersList = invalidWithoutFix
+            .map(([key, number]) => {
+                return `${key} = ${number}`;
+            })
+            .join('\n');
 
-    noteComment += '\n\n';
-    noteComment += invalidNumbersList;
+        noteComment = invalidWithoutFix.length > 1
+            ? translate('hasInvalidPlural', { '%n': item.featureTypeName })
+            : translate('hasInvalidSingular', { '%n': item.featureTypeName });
+
+        noteComment += '\n\n';
+        noteComment += invalidNumbersList;
+    } else if (reportType === 'name') {
+        noteComment = item.name
+            ? translate('hasIncompleteName', { '%n': item.featureTypeName })
+            : translate('hasMissingName', { '%n': item.featureTypeName });
+        
+        const namesList = item.fixRows
+            .map(([key, name]) => {
+                return `${key} = ${name}`;
+            })
+            .join('\n');
+
+        noteComment += '\n\n';
+        noteComment += namesList;
+    }
+
     noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${item.type}/${item.id}\n`;
     noteComment += `via ${CHANGESET_TAGS['created_by']}`;
 
