@@ -127,6 +127,7 @@ const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
+    'IE', // https://community.openstreetmap.org/t/validating-phone-numbers-in-ireland/143173/4
     'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
     'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
 ]
