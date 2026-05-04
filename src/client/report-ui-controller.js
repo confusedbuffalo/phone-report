@@ -325,8 +325,8 @@ function renderPaginatedSection(
 
     const sortControlContainer = sortButtonLayout
         .map(row => `
-            <button data-action="sort" data-section="${filterType}" data-sort-key="${getSortStyle(row.name)}"
-                class="sort-btn sort-btn-style ${getSortStyle(row.name)}">
+            <button data-action="sort" data-section="${filterType}" data-sort-key="${row.style}"
+                class="sort-btn sort-btn-style ${getSortStyle(row.style)}">
                 ${translate(row.label)}
             </button>`).join('');
 
