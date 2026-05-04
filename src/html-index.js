@@ -121,7 +121,7 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${translate('mainIndexTitle', locale)}</title>
+        <title>${translate(reportType === 'phone' ? 'mainIndexTitle' : osmIncompleteNameValidation, locale)}</title>
         ${getFavicon(reportType)}
         <link href="./styles.css" rel="stylesheet">
         <script src="theme.js"></script>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%~ it.translate('countryReportTitle', it.locale, [it.escapeHTML(it.countryData.name)]) %></title>
+    <title><%~ it.translate(it.reportType === 'phone' ? 'countryReportTitle' : 'countryReportTitleNames', it.locale, [it.escapeHTML(it.countryData.name)]) %></title>
     <%~ it.favicon %>
     <link href="../styles.css" rel="stylesheet">
     <script src="../theme.js"></script>

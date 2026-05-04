@@ -39,7 +39,7 @@ function translate(key, locale, args = []) {
         output = output.replace('%i', args[0]).replace('%t', args[1]);
     } else if ((key === 'invalidPercentageOfTotal' || key === 'fixablePercentageOfInvalid') && args.length === 1) {
         output = output.replace('%p', `${args[0]}%`);
-    } else if ((key === 'reportSubtitleForCountry' || key === 'countryReportTitle') && args.length === 1) {
+    } else if ((key === 'reportSubtitleForCountry' || key === 'reportSubtitleNamesForCountry' || key === 'countryReportTitle' || key === 'countryReportTitleNames') && args.length === 1) {
         // Positional replacement: %c is country name
         output = output.replace('%c', args[0]);
     } else if ((key === 'editIn') && args.length === 1) {
