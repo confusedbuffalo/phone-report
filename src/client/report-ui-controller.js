@@ -166,7 +166,7 @@ export function renderNumbers() {
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
     if (anyFixable || anyInvalid || anyMissing || editCount > 0) {
-        if (anyFixable || (reportType === 'phone' && editCount > 0)) {
+        if (reportType === 'phone' && (anyFixable || editCount > 0)) {
             renderPaginatedSection(
                 "fixableSection",
                 sortedItems.fixable,
@@ -190,7 +190,7 @@ export function renderNumbers() {
             );
         }
 
-        if (anyMissing) {
+        if (reportType === 'name' && anyMissing) {
             renderPaginatedSection(
                 "missingSection",
                 sortedItems.missing,
@@ -217,7 +217,7 @@ export function renderNumbers() {
     }
 
     // Always render foreign items
-    if (anyForeign) {
+    if (reportType === 'phone' && anyForeign) {
         renderPaginatedSection(
             "foreignSection",
             sortedItems.foreign,

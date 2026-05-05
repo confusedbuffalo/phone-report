@@ -53,7 +53,7 @@ function processHistory(reportType) {
                 name: stats.name,
                 date: date,
                 invalidCount: stats.invalidCount,
-                totalCount: stats.totalCount ?? stats.totalNumbers,
+                totalCount: stats.totalCount,
             };
 
             // Add to country-specific history

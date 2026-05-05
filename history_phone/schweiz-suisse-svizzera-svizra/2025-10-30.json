@@ -4,7 +4,7 @@
   "locale": "en",
   "invalidCount": 2831,
   "autoFixableCount": 2451,
-  "totalNumbers": 54483,
+  "totalCount": 54483,
   "groupedDivisionStats": {
     "Switzerland": [
       {
@@ -13,7 +13,7 @@
         "slug": "aargau",
         "invalidCount": 427,
         "autoFixableCount": 402,
-        "totalNumbers": 3652
+        "totalCount": 3652
       },
       {
         "name": "Appenzell Ausserrhoden",
@@ -21,7 +21,7 @@
         "slug": "appenzell-ausserrhoden",
         "invalidCount": 1,
         "autoFixableCount": 0,
-        "totalNumbers": 313
+        "totalCount": 313
       },
       {
         "name": "Appenzell Innerrhoden",
@@ -29,7 +29,7 @@
         "slug": "appenzell-innerrhoden",
         "invalidCount": 0,
         "autoFixableCount": 0,
-        "totalNumbers": 235
+        "totalCount": 235
       },
       {
         "name": "Basel-Landschaft",
@@ -37,7 +37,7 @@
         "slug": "basel-landschaft",
         "invalidCount": 53,
         "autoFixableCount": 47,
-        "totalNumbers": 1173
+        "totalCount": 1173
       },
       {
         "name": "Basel-Stadt",
@@ -45,7 +45,7 @@
         "slug": "basel-stadt",
         "invalidCount": 60,
         "autoFixableCount": 51,
-        "totalNumbers": 1030
+        "totalCount": 1030
       },
       {
         "name": "Bern / Berne",
@@ -53,7 +53,7 @@
         "slug": "bern-berne",
         "invalidCount": 269,
         "autoFixableCount": 209,
-        "totalNumbers": 9665
+        "totalCount": 9665
       },
       {
         "name": "Fribourg / Freiburg",
@@ -61,7 +61,7 @@
         "slug": "fribourg-freiburg",
         "invalidCount": 75,
         "autoFixableCount": 70,
-        "totalNumbers": 1386
+        "totalCount": 1386
       },
       {
         "name": "Genève",
@@ -69,7 +69,7 @@
         "slug": "genève",
         "invalidCount": 150,
         "autoFixableCount": 132,
-        "totalNumbers": 1789
+        "totalCount": 1789
       },
       {
         "name": "Glarus",
@@ -77,7 +77,7 @@
         "slug": "glarus",
         "invalidCount": 21,
         "autoFixableCount": 20,
-        "totalNumbers": 270
+        "totalCount": 270
       },
       {
         "name": "Graubünden / Grischun / Grigioni",
@@ -85,7 +85,7 @@
         "slug": "graubünden-grischun-grigioni",
         "invalidCount": 111,
         "autoFixableCount": 96,
-        "totalNumbers": 2104
+        "totalCount": 2104
       },
       {
         "name": "Jura",
@@ -93,7 +93,7 @@
         "slug": "jura",
         "invalidCount": 39,
         "autoFixableCount": 36,
-        "totalNumbers": 438
+        "totalCount": 438
       },
       {
         "name": "Luzern",
@@ -101,7 +101,7 @@
         "slug": "luzern",
         "invalidCount": 120,
         "autoFixableCount": 74,
-        "totalNumbers": 2497
+        "totalCount": 2497
       },
       {
         "name": "Neuchâtel",
@@ -109,7 +109,7 @@
         "slug": "neuchâtel",
         "invalidCount": 89,
         "autoFixableCount": 85,
-        "totalNumbers": 873
+        "totalCount": 873
       },
       {
         "name": "Nidwalden",
@@ -117,7 +117,7 @@
         "slug": "nidwalden",
         "invalidCount": 31,
         "autoFixableCount": 25,
-        "totalNumbers": 372
+        "totalCount": 372
       },
       {
         "name": "Obwalden",
@@ -125,7 +125,7 @@
         "slug": "obwalden",
         "invalidCount": 24,
         "autoFixableCount": 17,
-        "totalNumbers": 348
+        "totalCount": 348
       },
       {
         "name": "Schaffhausen",
@@ -133,7 +133,7 @@
         "slug": "schaffhausen",
         "invalidCount": 0,
         "autoFixableCount": 0,
-        "totalNumbers": 513
+        "totalCount": 513
       },
       {
         "name": "Schwyz",
@@ -141,7 +141,7 @@
         "slug": "schwyz",
         "invalidCount": 67,
         "autoFixableCount": 55,
-        "totalNumbers": 1144
+        "totalCount": 1144
       },
       {
         "name": "Solothurn",
@@ -149,7 +149,7 @@
         "slug": "solothurn",
         "invalidCount": 108,
         "autoFixableCount": 88,
-        "totalNumbers": 1787
+        "totalCount": 1787
       },
       {
         "name": "St. Gallen",
@@ -157,7 +157,7 @@
         "slug": "st-gallen",
         "invalidCount": 119,
         "autoFixableCount": 107,
-        "totalNumbers": 3017
+        "totalCount": 3017
       },
       {
         "name": "Thurgau",
@@ -165,7 +165,7 @@
         "slug": "thurgau",
         "invalidCount": 80,
         "autoFixableCount": 59,
-        "totalNumbers": 1358
+        "totalCount": 1358
       },
       {
         "name": "Ticino",
@@ -173,7 +173,7 @@
         "slug": "ticino",
         "invalidCount": 103,
         "autoFixableCount": 92,
-        "totalNumbers": 1493
+        "totalCount": 1493
       },
       {
         "name": "Uri",
@@ -181,7 +181,7 @@
         "slug": "uri",
         "invalidCount": 1,
         "autoFixableCount": 1,
-        "totalNumbers": 418
+        "totalCount": 418
       },
       {
         "name": "Valais / Wallis",
@@ -189,7 +189,7 @@
         "slug": "valais-wallis",
         "invalidCount": 199,
         "autoFixableCount": 176,
-        "totalNumbers": 2706
+        "totalCount": 2706
       },
       {
         "name": "Vaud",
@@ -197,7 +197,7 @@
         "slug": "vaud",
         "invalidCount": 291,
         "autoFixableCount": 271,
-        "totalNumbers": 3874
+        "totalCount": 3874
       },
       {
         "name": "Zug",
@@ -205,7 +205,7 @@
         "slug": "zug",
         "invalidCount": 2,
         "autoFixableCount": 0,
-        "totalNumbers": 701
+        "totalCount": 701
       },
       {
         "name": "Zürich",
@@ -213,7 +213,7 @@
         "slug": "zürich",
         "invalidCount": 391,
         "autoFixableCount": 338,
-        "totalNumbers": 11327
+        "totalCount": 11327
       }
     ]
   }

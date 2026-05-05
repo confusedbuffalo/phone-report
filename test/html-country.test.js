@@ -34,6 +34,7 @@ jest.mock('../src/html-utils.js', () => ({
 jest.mock('../src/i18n', () => ({
     translate: (key, locale, args) => {
         if (args) return `${key}: ${args.join(',')}`;
+        if (key === 'osmPhoneNumberValidation' && locale === 'nl-NL') return 'OSM Telefoon&shy;nummer&shy;validatie';
         return key;
     },
 }));
@@ -62,7 +63,7 @@ describe('generateCountryIndexHtml', () => {
             },
         };
 
-        await generateCountryIndexHtml('phone', countryData, {});
+        await generateCountryIndexHtml('phone', countryData);
 
         // Verify the server-side template escapes the country name
         const writtenContent = fs.promises.writeFile.mock.calls[0][1];
@@ -80,5 +81,32 @@ describe('generateCountryIndexHtml', () => {
         // Check that the key is the raw, unescaped name
         expect(parsedStats[divisionName]).toBeDefined();
         expect(Object.keys(parsedStats)[0]).toBe(divisionName);
+    });
+
+    it("should correctly not escape shy hyphens in headings", async () => {
+        const divisionName = "Europees Nederland";
+        const countryData = {
+            name: "Nederland",
+            slug: 'nederland',
+            locale: 'nl-NL',
+            totalCount: 100,
+            invalidCount: 10,
+            autoFixableCount: 5,
+            groupedDivisionStats: {
+                [divisionName]: [{
+                    name: 'Subdivision A',
+                    slug: 'subdivision-a',
+                    invalidCount: 5,
+                    totalCount: 50
+                }]
+            },
+        };
+
+        await generateCountryIndexHtml('phone', countryData);
+
+        // Verify the server-side template escapes the country name
+        const writtenContent = fs.promises.writeFile.mock.calls[0][1];
+        const escapedCountryName = escapeHTML(countryData.name);
+        expect(writtenContent).toContain(`<h1 class="page-title">OSM Telefoon&shy;nummer&shy;validatie</h1>`);
     });
 });
