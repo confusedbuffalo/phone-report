@@ -218,7 +218,7 @@ describe('generateHtmlReport', () => {
         expect(writtenContent).toContain(expectedTitle);
 
         // Check for the escaped subdivision name in the subtitle
-        const expectedSubtitle = `<h2 class="page-subtitle">O&#39;Fallon</h2>`;
+        const expectedSubtitle = `<h2 class="page-subtitle">O&#039;Fallon</h2>`;
         expect(writtenContent).toContain(expectedSubtitle);
 
         // Check for the official languages in the file

@@ -56,7 +56,7 @@
                 </div>
             </div>
             <h1 class="page-title"><%~ it.translate(it.reportType === 'phone' ? 'phoneNumberReport' : 'incompleteNamesReport', it.locale) %></h1>
-            <h2 class="page-subtitle"><%~ it.subdivisionStats.name %></h2>
+            <h2 class="page-subtitle"><%~ it.escapeHTML(it.subdivisionStats.name) %></h2>
         </header>
         <%~ it.createStatsBox(it.reportType, it.subdivisionStats, it.locale) %>
         <div id="reportContainer" class="space-y-8">
