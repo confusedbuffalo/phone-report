@@ -134,6 +134,7 @@ jobs:
 
       - name: Deploy names to Cloudflare
         uses: cloudflare/wrangler-action@v3
+        continue-on-error: true # in case of files being too large, e.g., don't kill the rest of the process
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
