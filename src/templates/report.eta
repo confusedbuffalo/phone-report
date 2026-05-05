@@ -62,7 +62,6 @@
         <div id="reportContainer" class="space-y-8">
             <% if (it.reportType === 'phone') { %>
                 <section id="fixableSection" class="space-y-8"></section>
-                <section id="foreignSection" class="space-y-8"></section>
             <% } else { %>
                 <div id="save-row" class="sticky top-0 z-20"></div>
                 <section id="missingSection" class="space-y-8"></section>
@@ -70,6 +69,9 @@
             <section id="invalidSection" class="space-y-8">
                 <div class="spinner mx-auto"></div>
             </section>
+            <% if (it.reportType === 'phone') { %>
+                <section id="foreignSection" class="space-y-8"></section>
+            <% } %>
             <section id="noInvalidSection"></section>
         </div>
         <div class="footer-container">
