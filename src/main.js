@@ -516,7 +516,7 @@ async function processCountry(countryData) {
                 const subPhonePbfFilePath = path.join(process.cwd(), `sub-filtered-phone-${uuidv4()}.osm.pbf`);
                 const subNamePbfFilePath = path.join(process.cwd(), `sub-filtered-name-${uuidv4()}.osm.pbf`);
 
-                await downloadPbf(countryData.pbfUrl, subPbfFilePath);
+                await downloadPbf(pbfUrl, subPbfFilePath);
                 await filterPbfPhone(subPbfFilePath, subPhonePbfFilePath);
                 await filterPbfName(subPbfFilePath, subNamePbfFilePath);
 
