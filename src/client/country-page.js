@@ -32,7 +32,7 @@ let sortDirection = 'asc'
  * @returns {string} The locale-formatted number string.
  */
 function formatNumber(num) {
-    if (!num) return '';
+    if (!num && num !== 0) return '';
     return num.toLocaleString(locale, {
         useGrouping: true,
         minimumFractionDigits: 0,
