@@ -4,7 +4,7 @@
   "locale": "en-GB",
   "invalidCount": 503,
   "autoFixableCount": 164,
-  "totalNumbers": 160684,
+  "totalCount": 160684,
   "groupedDivisionStats": {
     "England": [
       {
@@ -13,7 +13,7 @@
         "slug": "east-midlands",
         "invalidCount": 42,
         "autoFixableCount": 18,
-        "totalNumbers": 8650
+        "totalCount": 8650
       },
       {
         "name": "East of England",
@@ -21,7 +21,7 @@
         "slug": "east-of-england",
         "invalidCount": 41,
         "autoFixableCount": 12,
-        "totalNumbers": 16050
+        "totalCount": 16050
       },
       {
         "name": "Greater London",
@@ -29,7 +29,7 @@
         "slug": "greater-london",
         "invalidCount": 50,
         "autoFixableCount": 5,
-        "totalNumbers": 23818
+        "totalCount": 23818
       },
       {
         "name": "North East England",
@@ -37,7 +37,7 @@
         "slug": "north-east-england",
         "invalidCount": 19,
         "autoFixableCount": 2,
-        "totalNumbers": 7489
+        "totalCount": 7489
       },
       {
         "name": "North West England",
@@ -45,7 +45,7 @@
         "slug": "north-west-england",
         "invalidCount": 41,
         "autoFixableCount": 11,
-        "totalNumbers": 16592
+        "totalCount": 16592
       },
       {
         "name": "South East England",
@@ -53,7 +53,7 @@
         "slug": "south-east-england",
         "invalidCount": 81,
         "autoFixableCount": 22,
-        "totalNumbers": 25284
+        "totalCount": 25284
       },
       {
         "name": "South West England",
@@ -61,7 +61,7 @@
         "slug": "south-west-england",
         "invalidCount": 36,
         "autoFixableCount": 18,
-        "totalNumbers": 13794
+        "totalCount": 13794
       },
       {
         "name": "West Midlands",
@@ -69,7 +69,7 @@
         "slug": "west-midlands",
         "invalidCount": 55,
         "autoFixableCount": 31,
-        "totalNumbers": 9664
+        "totalCount": 9664
       },
       {
         "name": "Yorkshire and the Humber",
@@ -77,7 +77,7 @@
         "slug": "yorkshire-and-the-humber",
         "invalidCount": 37,
         "autoFixableCount": 12,
-        "totalNumbers": 10104
+        "totalCount": 10104
       }
     ],
     "Northern Ireland": [
@@ -87,7 +87,7 @@
         "slug": "northern-ireland",
         "invalidCount": 18,
         "autoFixableCount": 10,
-        "totalNumbers": 2277
+        "totalCount": 2277
       }
     ],
     "Scotland": [
@@ -97,7 +97,7 @@
         "slug": "scotland",
         "invalidCount": 40,
         "autoFixableCount": 12,
-        "totalNumbers": 16171
+        "totalCount": 16171
       }
     ],
     "Wales": [
@@ -107,7 +107,7 @@
         "slug": "wales",
         "invalidCount": 43,
         "autoFixableCount": 11,
-        "totalNumbers": 10791
+        "totalCount": 10791
       }
     ]
   }
