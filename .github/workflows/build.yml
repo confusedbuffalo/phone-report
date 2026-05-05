@@ -134,6 +134,7 @@ jobs:
 
       - name: Deploy names to Cloudflare
         uses: cloudflare/wrangler-action@v3
+        continue-on-error: true # in case of files being too large, e.g., don't kill the rest of the process
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
@@ -232,7 +233,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Copy the downloaded history data into the repository's history folder
-          mkdir -p history
+          mkdir -p history_phone && mkdir -p history_name
           cp -r /tmp/new_history_phone/* history_phone/
           cp -r /tmp/new_history_name/* history_name/
           echo "Restored new history data onto main branch working tree."
