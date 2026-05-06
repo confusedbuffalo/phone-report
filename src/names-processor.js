@@ -33,7 +33,7 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
         if (Object.keys(nameEntries).length === 0 && !primaryName) continue;
 
         totalNames++;
-        
+
         let item = null;
 
         const getOrCreateItem = () => {
@@ -45,7 +45,7 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
             }
 
             const { lat, lon } = getRepresentativeLocation(element.geometry);
-            
+
             const { type: geometryType, coordinates: c } = element.geometry;
             // Many areas are returned as LineString due to osmium export
             const couldBeArea = ['Polygon', 'MultiPolygon'].includes(geometryType)
@@ -73,9 +73,18 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         // Condition 1: There is no 'name' tag
         // Condition 2: There are localised names (name:*) and none of them match the primary name
-        const isInvalid =
+        let isInvalid =
             !primaryName ||
             (nameEntries.some(([k]) => k.startsWith('name:')) && !nameEntries.some(([_, v]) => v === primaryName));
+
+        if (isInvalid && countryCode === 'BE-BRU') {
+            if (
+                nameEntries.includes('name:fr') && nameEntries.includes('name:nl') &&
+                `${nameEntries['name:fr']} - ${nameEntries['name:nl']}` === primaryName.split(' - ')
+            ) {
+                isInvalid = false;
+            }
+        }
 
         if (!primaryName) missingNames++;
 
@@ -86,11 +95,11 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         if (item) {
             incompleteNames++;
-            
+
             if (!isFirstItem) {
                 fileStream.write(',\n');
             }
-            
+
             // Convert Maps and nested Maps
             fileStream.write(JSON.stringify(item, (key, value) => {
                 if (value instanceof Map) {
