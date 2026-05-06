@@ -60,6 +60,7 @@
         </header>
         <%~ it.createStatsBox(it.reportType, it.subdivisionStats, it.locale) %>
         <div id="reportContainer" class="space-y-8">
+            <section id="noInvalidSection"></section>
             <% if (it.reportType === 'phone') { %>
                 <section id="fixableSection" class="space-y-8"></section>
             <% } else { %>
@@ -72,7 +73,6 @@
             <% if (it.reportType === 'phone') { %>
                 <section id="foreignSection" class="space-y-8"></section>
             <% } %>
-            <section id="noInvalidSection"></section>
         </div>
         <div class="footer-container">
             <%~ it.createFooter(it.locale, it.translations, true, it.timestamp) %>
