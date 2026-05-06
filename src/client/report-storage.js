@@ -36,7 +36,7 @@ function clearItemClick(itemId) {
 export function setButtonsAsClicked(itemId) {
     const listItem = document.querySelector(`li[data-item-id="${itemId}"]`);
     if (listItem) {
-        const buttons = listItem.querySelectorAll(':not(input)[data-editor-id]');
+        const buttons = listItem.querySelectorAll(':not(input):not(.label-help)[data-editor-id]');
         buttons.forEach(button => {
             button.classList.remove('btn-josm-fix');
             button.classList.remove('btn-editor');

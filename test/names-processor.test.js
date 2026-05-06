@@ -121,24 +121,113 @@ describe('validateNames', () => {
         })
     });
 
-    test('No name but name subtag is invalid', async () => {
+    test('name and different names with no matching is invalid', async () => {
         const elements = [
-            createGeoJson(1001, { 'name:en': 'Test' })
+            createGeoJson(1001, { name: 'Test', 'name:fr': 'Le Test', 'name:de': 'Das Test' })
         ];
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
         expect(result.totalNames).toBe(1);
         expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(1);
+        expect(result.missingNames).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(1001);
+
+        expect(invalidItem.name).toBe('Test');
+        expect(invalidItem.nameTags).toEqual({
+            'name:fr': 'Le Test',
+            'name:de': 'Das Test',
+        })
+    });
+
+    test('French and Dutch names separated by hyphen with both languages tagged is valid in Brussels', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
         const invalidItem = invalidItems[0];
 
-        expect(invalidItem.name).toBeUndefined();
+        expect(invalidItem.name).toEqual('French - Dutch');
         expect(invalidItem.nameTags).toEqual({
-            'name:en': 'Test',
+            'name:fr': 'French',
+            'name:nl': 'Dutch',
+        })
+    });
+
+    test('French and Dutch names separated by hyphen with one language missing is invalid in Brussels', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French - Dutch', 'name:fr': 'French' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.name).toEqual('French - Dutch');
+        expect(invalidItem.nameTags).toEqual({
+            'name:fr': 'French',
+        })
+    });
+
+    test('French and Dutch names badly separated (slash) is invalid in Brussels', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French / Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.name).toEqual('French / Dutch');
+        expect(invalidItem.nameTags).toEqual({
+            'name:fr': 'French',
+            'name:nl': 'Dutch',
+        })
+    });test('French and Dutch names badly separated (no spaces) is invalid in Brussels', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French-Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.name).toEqual('French-Dutch');
+        expect(invalidItem.nameTags).toEqual({
+            'name:fr': 'French',
+            'name:nl': 'Dutch',
         })
     });
 

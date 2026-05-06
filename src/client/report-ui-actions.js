@@ -28,7 +28,7 @@ export function changePage(section, delta) {
  * Handles the user request to sort a report section. It toggles the sort direction
  * if the same key is clicked, or sets a new key and resets the direction to ascending.
  * It also resets the current page to 1 and triggers a full UI re-render and a smooth scroll.
- * @param {('fixable'|'invalid'|'foreign')} section - The section being sorted.
+ * @param {('fixable'|'invalid'|'foreign'|'missing')} section - The section being sorted.
  * @param {('name'|'invalid'|'fixable')} newKey - The column key requested for sorting.
  */
 export function handleSort(section, newKey) {
