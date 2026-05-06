@@ -198,7 +198,7 @@ export function renderNumbers() {
                 translate('missingNamesDescription'),
                 currentPage['missing'],
                 (page) => currentPage['missing'] = page,
-                'invalid'
+                'missing'
             );
         }
 
