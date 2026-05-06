@@ -1,0 +1,93 @@
+{
+  "name": "Türkiye",
+  "slug": "türkiye",
+  "locale": "en",
+  "timestamp": "2026-05-06T00:00:00.000Z",
+  "invalidCount": 7738,
+  "autoFixableCount": 7144,
+  "foreignCount": 26,
+  "safeEditCount": 6962,
+  "totalCount": 48587,
+  "groupedDivisionStats": {
+    "Türkiye": [
+      {
+        "name": "Ege Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "ege-bölgesi",
+        "invalidCount": 727,
+        "autoFixableCount": 686,
+        "foreignCount": 4,
+        "safeEditCount": 642,
+        "totalCount": 5682,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Karadeniz Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "karadeniz-bölgesi",
+        "invalidCount": 43,
+        "autoFixableCount": 10,
+        "foreignCount": 3,
+        "safeEditCount": 8,
+        "totalCount": 3310,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "İç Anadolu Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "i-ç-anadolu-bölgesi",
+        "invalidCount": 44,
+        "autoFixableCount": 6,
+        "foreignCount": 1,
+        "safeEditCount": 2,
+        "totalCount": 7222,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Doğu Anadolu Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "doğu-anadolu-bölgesi",
+        "invalidCount": 24,
+        "autoFixableCount": 5,
+        "foreignCount": 0,
+        "safeEditCount": 4,
+        "totalCount": 1708,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Marmara Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "marmara-bölgesi",
+        "invalidCount": 6015,
+        "autoFixableCount": 5629,
+        "foreignCount": 10,
+        "safeEditCount": 5554,
+        "totalCount": 19185,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Akdeniz Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "akdeniz-bölgesi",
+        "invalidCount": 869,
+        "autoFixableCount": 807,
+        "foreignCount": 8,
+        "safeEditCount": 752,
+        "totalCount": 7448,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Güneydoğu Anadolu Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "güneydoğu-anadolu-bölgesi",
+        "invalidCount": 16,
+        "autoFixableCount": 1,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 4032,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}

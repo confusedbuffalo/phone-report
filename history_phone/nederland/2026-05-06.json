@@ -1,0 +1,222 @@
+{
+  "name": "Nederland",
+  "slug": "nederland",
+  "locale": "nl-NL",
+  "timestamp": "2026-05-06T00:00:00.000Z",
+  "invalidCount": 33,
+  "autoFixableCount": 1,
+  "foreignCount": 69,
+  "safeEditCount": 1,
+  "totalCount": 81284,
+  "groupedDivisionStats": {
+    "Europees Nederland": [
+      {
+        "name": "Drenthe",
+        "divisionSlug": "europees-nederland",
+        "slug": "drenthe",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 2710,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Flevoland",
+        "divisionSlug": "europees-nederland",
+        "slug": "flevoland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 1484,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Fryslân (Friesland)",
+        "divisionSlug": "europees-nederland",
+        "slug": "fryslân-friesland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 10,
+        "safeEditCount": 0,
+        "totalCount": 3169,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Gelderland",
+        "divisionSlug": "europees-nederland",
+        "slug": "gelderland",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 0,
+        "totalCount": 10290,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Groningen",
+        "divisionSlug": "europees-nederland",
+        "slug": "groningen",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 2726,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Limburg",
+        "divisionSlug": "europees-nederland",
+        "slug": "limburg",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 23,
+        "safeEditCount": 0,
+        "totalCount": 4192,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Noord-Brabant",
+        "divisionSlug": "europees-nederland",
+        "slug": "noord-brabant",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 4,
+        "safeEditCount": 0,
+        "totalCount": 11995,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Noord-Holland",
+        "divisionSlug": "europees-nederland",
+        "slug": "noord-holland",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 0,
+        "totalCount": 13050,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Overijssel",
+        "divisionSlug": "europees-nederland",
+        "slug": "overijssel",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "foreignCount": 1,
+        "safeEditCount": 1,
+        "totalCount": 4539,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Zuid-Holland",
+        "divisionSlug": "europees-nederland",
+        "slug": "zuid-holland",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 0,
+        "totalCount": 14112,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Utrecht",
+        "divisionSlug": "europees-nederland",
+        "slug": "utrecht",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 6,
+        "safeEditCount": 0,
+        "totalCount": 7927,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Zeeland",
+        "divisionSlug": "europees-nederland",
+        "slug": "zeeland",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 0,
+        "totalCount": 3501,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      }
+    ],
+    "Aruba": [
+      {
+        "name": "Aruba",
+        "divisionSlug": "aruba",
+        "slug": "aruba",
+        "invalidCount": 8,
+        "autoFixableCount": 0,
+        "foreignCount": 4,
+        "safeEditCount": 0,
+        "totalCount": 372,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      }
+    ],
+    "Curaçao": [
+      {
+        "name": "Curaçao",
+        "divisionSlug": "curaçao",
+        "slug": "curaçao",
+        "invalidCount": 17,
+        "autoFixableCount": 0,
+        "foreignCount": 11,
+        "safeEditCount": 0,
+        "totalCount": 825,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      }
+    ],
+    "Sint Maarten": [
+      {
+        "name": "Sint Maarten",
+        "divisionSlug": "sint-maarten",
+        "slug": "sint-maarten",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 0,
+        "totalCount": 128,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      }
+    ],
+    "Caribisch Nederland": [
+      {
+        "name": "Bonaire",
+        "divisionSlug": "caribisch-nederland",
+        "slug": "bonaire",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 0,
+        "totalCount": 210,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Saba",
+        "divisionSlug": "caribisch-nederland",
+        "slug": "saba",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 28,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      },
+      {
+        "name": "Sint Eustatius",
+        "divisionSlug": "caribisch-nederland",
+        "slug": "sint-eustatius",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 0,
+        "totalCount": 26,
+        "lastUpdated": "2026-05-06T00:00:00.000Z"
+      }
+    ]
+  },
+  "botEnabled": false
+}
