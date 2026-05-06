@@ -178,7 +178,7 @@ export function renderNumbers() {
             );
         }
 
-        if (anyInvalid) {
+        if (anyInvalid || (reportType === 'name' && editCount > 0)) {
             renderPaginatedSection(
                 "invalidSection",
                 sortedItems.invalid,
@@ -190,7 +190,7 @@ export function renderNumbers() {
             );
         }
 
-        if (reportType === 'name' && anyMissing) {
+        if (reportType === 'name' && (anyMissing || editCount > 0)) {
             renderPaginatedSection(
                 "missingSection",
                 sortedItems.missing,
