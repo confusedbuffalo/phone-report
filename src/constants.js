@@ -302,7 +302,7 @@ const CHANGESET_TAGS = {
         "host": HOST_URL.phone,
     },
     "name": {
-        "comment": "Fix incomplete names",
+        "comment": "Fix incomplete multilingual names: no multilingual name matching name tag or no name tag",
         "created_by": PACKAGE_STRING,
         "host": HOST_URL.name,
     },
