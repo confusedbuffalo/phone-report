@@ -4,7 +4,7 @@
   "locale": "de-DE",
   "invalidCount": 20962,
   "autoFixableCount": 19723,
-  "totalNumbers": 573424,
+  "totalCount": 573424,
   "groupedDivisionStats": {
     "Baden-Württemberg": [
       {
@@ -13,7 +13,7 @@
         "slug": "regierungsbezirk-freiburg",
         "invalidCount": 41,
         "autoFixableCount": 10,
-        "totalNumbers": 16664,
+        "totalCount": 16664,
         "lastUpdated": "2025-11-15T01:51:32.216Z"
       },
       {
@@ -22,7 +22,7 @@
         "slug": "regierungsbezirk-karlsruhe",
         "invalidCount": 827,
         "autoFixableCount": 779,
-        "totalNumbers": 23269,
+        "totalCount": 23269,
         "lastUpdated": "2025-11-15T01:51:48.578Z"
       },
       {
@@ -31,7 +31,7 @@
         "slug": "regierungsbezirk-stuttgart",
         "invalidCount": 1716,
         "autoFixableCount": 1655,
-        "totalNumbers": 23318,
+        "totalCount": 23318,
         "lastUpdated": "2025-11-15T01:52:13.855Z"
       },
       {
@@ -40,7 +40,7 @@
         "slug": "regierungsbezirk-tübingen",
         "invalidCount": 13,
         "autoFixableCount": 9,
-        "totalNumbers": 14540,
+        "totalCount": 14540,
         "lastUpdated": "2025-11-15T01:52:28.711Z"
       }
     ],
@@ -51,7 +51,7 @@
         "slug": "mittelfranken",
         "invalidCount": 1221,
         "autoFixableCount": 1183,
-        "totalNumbers": 12228,
+        "totalCount": 12228,
         "lastUpdated": "2025-11-15T01:52:39.563Z"
       },
       {
@@ -60,7 +60,7 @@
         "slug": "niederbayern",
         "invalidCount": 10,
         "autoFixableCount": 4,
-        "totalNumbers": 8047,
+        "totalCount": 8047,
         "lastUpdated": "2025-11-15T01:52:54.089Z"
       },
       {
@@ -69,7 +69,7 @@
         "slug": "oberbayern",
         "invalidCount": 97,
         "autoFixableCount": 75,
-        "totalNumbers": 36008,
+        "totalCount": 36008,
         "lastUpdated": "2025-11-15T01:53:27.750Z"
       },
       {
@@ -78,7 +78,7 @@
         "slug": "oberfranken",
         "invalidCount": 94,
         "autoFixableCount": 78,
-        "totalNumbers": 7723,
+        "totalCount": 7723,
         "lastUpdated": "2025-11-15T01:53:38.815Z"
       },
       {
@@ -87,7 +87,7 @@
         "slug": "oberpfalz",
         "invalidCount": 12,
         "autoFixableCount": 10,
-        "totalNumbers": 7369,
+        "totalCount": 7369,
         "lastUpdated": "2025-11-15T01:53:47.782Z"
       },
       {
@@ -96,7 +96,7 @@
         "slug": "schwaben",
         "invalidCount": 975,
         "autoFixableCount": 940,
-        "totalNumbers": 12980,
+        "totalCount": 12980,
         "lastUpdated": "2025-11-15T01:54:01.505Z"
       },
       {
@@ -105,7 +105,7 @@
         "slug": "unterfranken",
         "invalidCount": 676,
         "autoFixableCount": 653,
-        "totalNumbers": 10740,
+        "totalCount": 10740,
         "lastUpdated": "2025-11-15T01:54:15.966Z"
       }
     ],
@@ -116,7 +116,7 @@
         "slug": "berlin",
         "invalidCount": 1482,
         "autoFixableCount": 1453,
-        "totalNumbers": 22323,
+        "totalCount": 22323,
         "lastUpdated": "2025-11-15T01:54:37.658Z"
       }
     ],
@@ -127,7 +127,7 @@
         "slug": "brandenburg",
         "invalidCount": 1134,
         "autoFixableCount": 1067,
-        "totalNumbers": 18490,
+        "totalCount": 18490,
         "lastUpdated": "2025-11-15T01:55:00.182Z"
       }
     ],
@@ -138,7 +138,7 @@
         "slug": "bremen",
         "invalidCount": 19,
         "autoFixableCount": 8,
-        "totalNumbers": 4712,
+        "totalCount": 4712,
         "lastUpdated": "2025-11-15T01:55:05.764Z"
       }
     ],
@@ -149,7 +149,7 @@
         "slug": "hamburg",
         "invalidCount": 548,
         "autoFixableCount": 514,
-        "totalNumbers": 10930,
+        "totalCount": 10930,
         "lastUpdated": "2025-11-15T01:55:13.138Z"
       }
     ],
@@ -160,7 +160,7 @@
         "slug": "regierungsbezirk-darmstadt",
         "invalidCount": 1536,
         "autoFixableCount": 1454,
-        "totalNumbers": 24145,
+        "totalCount": 24145,
         "lastUpdated": "2025-11-15T01:55:33.761Z"
       },
       {
@@ -169,7 +169,7 @@
         "slug": "regierungsbezirk-gießen",
         "invalidCount": 639,
         "autoFixableCount": 625,
-        "totalNumbers": 7610,
+        "totalCount": 7610,
         "lastUpdated": "2025-11-15T01:55:43.318Z"
       },
       {
@@ -178,7 +178,7 @@
         "slug": "regierungsbezirk-kassel",
         "invalidCount": 698,
         "autoFixableCount": 672,
-        "totalNumbers": 10015,
+        "totalCount": 10015,
         "lastUpdated": "2025-11-15T01:55:55.162Z"
       }
     ],
@@ -189,7 +189,7 @@
         "slug": "mecklenburg-vorpommern",
         "invalidCount": 51,
         "autoFixableCount": 12,
-        "totalNumbers": 13312,
+        "totalCount": 13312,
         "lastUpdated": "2025-11-15T01:56:12.019Z"
       }
     ],
@@ -200,7 +200,7 @@
         "slug": "niedersachsen",
         "invalidCount": 4231,
         "autoFixableCount": 4004,
-        "totalNumbers": 58247,
+        "totalCount": 58247,
         "lastUpdated": "2025-11-15T01:56:59.023Z"
       }
     ],
@@ -211,7 +211,7 @@
         "slug": "regierungsbezirk-arnsberg",
         "invalidCount": 71,
         "autoFixableCount": 31,
-        "totalNumbers": 21475,
+        "totalCount": 21475,
         "lastUpdated": "2025-11-15T01:57:21.519Z"
       },
       {
@@ -220,7 +220,7 @@
         "slug": "regierungsbezirk-detmold",
         "invalidCount": 34,
         "autoFixableCount": 26,
-        "totalNumbers": 12219,
+        "totalCount": 12219,
         "lastUpdated": "2025-11-15T01:57:35.285Z"
       },
       {
@@ -229,7 +229,7 @@
         "slug": "regierungsbezirk-düsseldorf",
         "invalidCount": 63,
         "autoFixableCount": 41,
-        "totalNumbers": 23966,
+        "totalCount": 23966,
         "lastUpdated": "2025-11-15T01:57:56.939Z"
       },
       {
@@ -238,7 +238,7 @@
         "slug": "regierungsbezirk-köln",
         "invalidCount": 79,
         "autoFixableCount": 34,
-        "totalNumbers": 29718,
+        "totalCount": 29718,
         "lastUpdated": "2025-11-15T01:58:25.258Z"
       },
       {
@@ -247,7 +247,7 @@
         "slug": "regierungsbezirk-münster",
         "invalidCount": 22,
         "autoFixableCount": 12,
-        "totalNumbers": 11739,
+        "totalCount": 11739,
         "lastUpdated": "2025-11-15T01:58:43.906Z"
       }
     ],
@@ -258,7 +258,7 @@
         "slug": "rheinland-pfalz",
         "invalidCount": 59,
         "autoFixableCount": 25,
-        "totalNumbers": 27558,
+        "totalCount": 27558,
         "lastUpdated": "2025-11-15T01:59:08.309Z"
       }
     ],
@@ -269,7 +269,7 @@
         "slug": "saarland",
         "invalidCount": 7,
         "autoFixableCount": 4,
-        "totalNumbers": 4787,
+        "totalCount": 4787,
         "lastUpdated": "2025-11-15T01:59:14.549Z"
       }
     ],
@@ -280,7 +280,7 @@
         "slug": "sachsen",
         "invalidCount": 2282,
         "autoFixableCount": 2174,
-        "totalNumbers": 41837,
+        "totalCount": 41837,
         "lastUpdated": "2025-11-15T01:59:51.121Z"
       }
     ],
@@ -291,7 +291,7 @@
         "slug": "sachsen-anhalt",
         "invalidCount": 1033,
         "autoFixableCount": 979,
-        "totalNumbers": 19120,
+        "totalCount": 19120,
         "lastUpdated": "2025-11-15T02:00:16.028Z"
       }
     ],
@@ -302,7 +302,7 @@
         "slug": "schleswig-holstein",
         "invalidCount": 55,
         "autoFixableCount": 13,
-        "totalNumbers": 17917,
+        "totalCount": 17917,
         "lastUpdated": "2025-11-15T02:00:40.014Z"
       }
     ],
@@ -313,7 +313,7 @@
         "slug": "thüringen",
         "invalidCount": 1237,
         "autoFixableCount": 1179,
-        "totalNumbers": 20418,
+        "totalCount": 20418,
         "lastUpdated": "2025-11-15T02:01:05.062Z"
       }
     ]

@@ -4,7 +4,7 @@
   "locale": "it-IT",
   "invalidCount": 6968,
   "autoFixableCount": 5191,
-  "totalNumbers": 162469,
+  "totalCount": 162469,
   "groupedDivisionStats": {
     "Centro": [
       {
@@ -13,7 +13,7 @@
         "slug": "lazio",
         "invalidCount": 1028,
         "autoFixableCount": 829,
-        "totalNumbers": 13642
+        "totalCount": 13642
       },
       {
         "name": "Toscana",
@@ -21,7 +21,7 @@
         "slug": "toscana",
         "invalidCount": 390,
         "autoFixableCount": 306,
-        "totalNumbers": 11496
+        "totalCount": 11496
       },
       {
         "name": "Umbria",
@@ -29,7 +29,7 @@
         "slug": "umbria",
         "invalidCount": 211,
         "autoFixableCount": 120,
-        "totalNumbers": 2195
+        "totalCount": 2195
       },
       {
         "name": "Marche",
@@ -37,7 +37,7 @@
         "slug": "marche",
         "invalidCount": 344,
         "autoFixableCount": 334,
-        "totalNumbers": 5669
+        "totalCount": 5669
       }
     ],
     "Isole": [
@@ -47,7 +47,7 @@
         "slug": "sicilia",
         "invalidCount": 76,
         "autoFixableCount": 6,
-        "totalNumbers": 7725
+        "totalCount": 7725
       },
       {
         "name": "Sardigna/Sardegna",
@@ -55,7 +55,7 @@
         "slug": "sardigna-sardegna",
         "invalidCount": 70,
         "autoFixableCount": 6,
-        "totalNumbers": 3752
+        "totalCount": 3752
       }
     ],
     "Nord-Est": [
@@ -65,7 +65,7 @@
         "slug": "emilia-romagna",
         "invalidCount": 568,
         "autoFixableCount": 442,
-        "totalNumbers": 9991
+        "totalCount": 9991
       },
       {
         "name": "Veneto",
@@ -73,7 +73,7 @@
         "slug": "veneto",
         "invalidCount": 567,
         "autoFixableCount": 416,
-        "totalNumbers": 13993
+        "totalCount": 13993
       },
       {
         "name": "Trentino-Alto Adige/Südtirol",
@@ -81,7 +81,7 @@
         "slug": "trentino-alto-adige-südtirol",
         "invalidCount": 219,
         "autoFixableCount": 16,
-        "totalNumbers": 12848
+        "totalCount": 12848
       },
       {
         "name": "Friuli-Venezia Giulia",
@@ -89,7 +89,7 @@
         "slug": "friuli-venezia-giulia",
         "invalidCount": 321,
         "autoFixableCount": 261,
-        "totalNumbers": 5875
+        "totalCount": 5875
       }
     ],
     "Nord-Ovest": [
@@ -99,7 +99,7 @@
         "slug": "piemonte",
         "invalidCount": 624,
         "autoFixableCount": 507,
-        "totalNumbers": 14313
+        "totalCount": 14313
       },
       {
         "name": "Lombardia",
@@ -107,7 +107,7 @@
         "slug": "lombardia",
         "invalidCount": 1944,
         "autoFixableCount": 1673,
-        "totalNumbers": 30732
+        "totalCount": 30732
       },
       {
         "name": "Valle d'Aosta / Vallée d'Aoste",
@@ -115,7 +115,7 @@
         "slug": "valle-d-aosta-vallée-d-aoste",
         "invalidCount": 22,
         "autoFixableCount": 0,
-        "totalNumbers": 742
+        "totalCount": 742
       },
       {
         "name": "Liguria",
@@ -123,7 +123,7 @@
         "slug": "liguria",
         "invalidCount": 28,
         "autoFixableCount": 0,
-        "totalNumbers": 5800
+        "totalCount": 5800
       }
     ],
     "Sud": [
@@ -133,7 +133,7 @@
         "slug": "puglia",
         "invalidCount": 292,
         "autoFixableCount": 215,
-        "totalNumbers": 6607
+        "totalCount": 6607
       },
       {
         "name": "Basilicata",
@@ -141,7 +141,7 @@
         "slug": "basilicata",
         "invalidCount": 14,
         "autoFixableCount": 1,
-        "totalNumbers": 1265
+        "totalCount": 1265
       },
       {
         "name": "Campania",
@@ -149,7 +149,7 @@
         "slug": "campania",
         "invalidCount": 190,
         "autoFixableCount": 34,
-        "totalNumbers": 6004
+        "totalCount": 6004
       },
       {
         "name": "Molise",
@@ -157,7 +157,7 @@
         "slug": "molise",
         "invalidCount": 12,
         "autoFixableCount": 0,
-        "totalNumbers": 661
+        "totalCount": 661
       },
       {
         "name": "Abruzzo",
@@ -165,7 +165,7 @@
         "slug": "abruzzo",
         "invalidCount": 16,
         "autoFixableCount": 7,
-        "totalNumbers": 7412
+        "totalCount": 7412
       },
       {
         "name": "Calabria",
@@ -173,7 +173,7 @@
         "slug": "calabria",
         "invalidCount": 32,
         "autoFixableCount": 18,
-        "totalNumbers": 1747
+        "totalCount": 1747
       }
     ]
   }
