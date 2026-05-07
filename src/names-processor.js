@@ -27,10 +27,16 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
-        const nameEntries = Object.entries(tags).filter(([key]) => key.match(/^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/));
+        const nameTags = Object.keys(tags).reduce((acc, key) => {
+            if (key.match(/^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/)) {
+                acc[key] = tags[key];
+            }
+            return acc;
+        }, {});
+
         const primaryName = tags['name'];
 
-        if (Object.keys(nameEntries).length === 0 && !primaryName) continue;
+        if (Object.keys(nameTags).length === 0) continue;
 
         totalNames++;
 
@@ -73,14 +79,13 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         // Condition 1: There is no 'name' tag
         // Condition 2: There are localised names (name:*) and none of them match the primary name
-        let isInvalid =
-            !primaryName ||
-            (nameEntries.some(([k]) => k.startsWith('name:')) && !nameEntries.some(([_, v]) => v === primaryName));
+        let isInvalid = !primaryName || !Object.values(nameTags).includes(primaryName);
 
         if (isInvalid && countryCode === 'BE-BRU') {
+            const nameKeys = Object.keys(nameTags);
             if (
-                nameEntries.includes('name:fr') && nameEntries.includes('name:nl') &&
-                `${nameEntries['name:fr']} - ${nameEntries['name:nl']}` === primaryName.split(' - ')
+                nameKeys.includes('name:fr') && nameKeys.includes('name:nl') &&
+                `${nameTags['name:fr']} - ${nameTags['name:nl']}` === primaryName
             ) {
                 isInvalid = false;
             }
@@ -90,7 +95,7 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         if (isInvalid) {
             const currentItem = getOrCreateItem(true);
-            currentItem.nameTags = Object.fromEntries(nameEntries);
+            currentItem.nameTags = nameTags;
         }
 
         if (item) {
