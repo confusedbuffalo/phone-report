@@ -26,11 +26,6 @@ jest.mock('fs', () => {
     };
 });
 
-jest.mock('../src/html-utils.js', () => ({
-    ...jest.requireActual('../src/html-utils.js'),
-    createFooter: () => '<p>mock-footer</p>',
-}));
-
 jest.mock('../src/i18n', () => ({
     translate: (key, locale, args) => {
         if (args) return `${key}: ${args.join(',')}`;

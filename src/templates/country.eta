@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%~ it.translate(it.reportType === 'phone' ? 'countryReportTitle' : 'countryReportTitleNames', it.locale, [it.escapeHTML(it.countryData.name)]) %></title>
-    <%~ it.favicon %>
+    <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="../styles.css" rel="stylesheet">
     <script src="../theme.js"></script>
 </head>
@@ -18,7 +18,7 @@
                     </svg>
                     <span class="align-middle"><%= it.translate('backToAllCountries', it.locale) %></span>
                 </a>
-                <%~ it.themeButton %>
+                <%~ include("./partials/theme-button") %>
             </div>
             <h1 class="page-title"><%~ it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', it.locale) %></h1>
             <p class="report-subtitle"><%~ it.translate(it.reportType === 'phone' ? 'reportSubtitleForCountry' : 'reportSubtitleNamesForCountry', it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="footer-container">
-            <%~ it.createFooter(it.locale, it.translations, false, it.countryData.timestamp) %>
+            <%~ include("./partials/footer", { ...it, includeIconAttribution: false, timestamp: it.countryData.timestamp }) %>
         </div>
     </div>
     <script src="../background-colour.js"></script>

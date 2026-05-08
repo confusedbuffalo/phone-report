@@ -9,11 +9,11 @@ const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { disassembler } = require('stream-json/disassembler.js');
 const { stringer } = require('stream-json/stringer.js');
 const { Eta } = require('eta');
-const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR } = require('./constants');
+const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, GITHUB_LINK } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
-const { themeButton, createFooter, createStatsBox, escapeHTML, getFavicon } = require('./html-utils');
+const { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } = require('./html-utils');
 const { IconManager } = require('./icon-manager');
 const { phoneTagToUse } = require('./phone-processor');
 
@@ -370,8 +370,6 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
     }, 4)};
     `;
 
-    const favicon = getFavicon(reportType);
-
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),
         cache: true,
@@ -384,11 +382,11 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
         translate,
         escapeHTML,
         createStatsBox,
-        createFooter,
-        favicon,
+        getFooterData,
+        getIconAttributionHtml,
+        GITHUB_LINK,
         singleLevelDivision,
         svgSprite,
-        themeButton,
         translations,
         timestamp,
         ALL_EDITOR_IDS,

@@ -2,8 +2,8 @@ const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { Eta } = require('eta');
 const { translate } = require('./i18n');
-const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR } = require('./constants');
-const { themeButton, createFooter, getFavicon } = require('./html-utils');
+const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK } = require('./constants');
+const { getFooterData, getIconAttributionHtml } = require('./html-utils');
 const { getTranslations } = require('./i18n');
 const { safeName } = require('./data-processor');
 const BUILD_TYPE = process.env.BUILD_TYPE;
@@ -38,17 +38,16 @@ async function generateProgressPage(reportType, country = null, locale = 'en-GB'
     });
 
     const translations = getTranslations(locale);
-    const favicon = getFavicon(reportType);
 
     const templateData = {
         reportType,
-        favicon,
         locale,
         translate,
         country,
-        themeButton,
-        createFooter,
+        getFooterData,
         translations,
+        getIconAttributionHtml,
+        GITHUB_LINK,
     };
 
     const htmlContent = eta.render("progress", templateData);

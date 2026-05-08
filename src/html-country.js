@@ -1,9 +1,9 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { Eta } = require('eta');
-const { PUBLIC_DIR, NAMES_BUILD_DIR } = require('./constants');
+const { PUBLIC_DIR, NAMES_BUILD_DIR, GITHUB_LINK } = require('./constants');
 const { translate } = require('./i18n');
-const {themeButton, createFooter, createStatsBox, escapeHTML, getFavicon} = require('./html-utils');
+const { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml} = require('./html-utils');
 const { safeName } = require('./data-processor');
 
 /**
@@ -18,19 +18,18 @@ async function generateCountryIndexHtml(reportType, countryData) {
     });
 
     const locale = countryData.locale;
-    const favicon = getFavicon(reportType);
 
     const templateData = {
         reportType,
-        favicon,
-        themeButton,
         createStatsBox,
-        createFooter,
+        getFooterData,
         locale,
         escapeHTML,
         countryData,
         safeName,
         translate,
+        getIconAttributionHtml,
+        GITHUB_LINK,
     };
 
     const htmlContent = eta.render("country", templateData);
