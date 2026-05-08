@@ -22,68 +22,6 @@ const BUILD_TYPE = process.env.BUILD_TYPE;
 // (the first found of each, using the countries data file)
 const testMode = BUILD_TYPE === 'simplified';
 
-// const CLIENT_KEYS = [
-//     'dataSourcedTemplate',
-//     'fixInJOSM',
-//     'fixable',
-//     'website',
-//     'fixableNumbersHeader',
-//     'fixableNumbersDescription',
-//     'invalidNumbersHeader',
-//     'invalidNumbersDescription',
-//     'foreignNumbersHeader',
-//     'foreignNumbersDescription',
-//     'noInvalidNumbers',
-//     'pageOf',
-//     'name',
-//     'date',
-//     'suggestedFix',
-//     'invalidNumber',
-//     'next',
-//     'previous',
-//     'sortBy',
-//     "login",
-//     "logout",
-//     "discard",
-//     "keep",
-//     "close",
-//     "cancel",
-//     "upload",
-//     "restoreUnsavedEdits",
-//     "uploadChanges",
-//     "restoreChanges",
-//     "applyFix",
-//     "enterComment",
-//     "noChangesSubmitted",
-//     "changesetCreated",
-//     "notLoggedIn",
-//     "save",
-//     "openNote",
-//     "createNoteFor",
-//     "noteIsClose",
-//     "noteCreated",
-//     "hasInvalidSingular",
-//     "hasInvalidPlural",
-//     "phoneNumber",
-// ];
-
-
-// /**
-//  * Filters the full translations object to include only keys needed by the client.
-//  * @param {Object} fullTranslations - The complete dictionary for a locale.
-//  * @returns {Object} A lightweight dictionary containing only client-side keys.
-//  */
-// function filterClientTranslations(fullTranslations) {
-//     const clientTranslations = {};
-//     for (const key of CLIENT_KEYS) {
-//         // Only include the key if it exists in the source dictionary
-//         if (fullTranslations[key] !== undefined) {
-//             clientTranslations[key] = fullTranslations[key];
-//         }
-//     }
-//     return clientTranslations;
-// }
-
 /**
  * Substitute any missing translations with default locale translation.
  * @param {Object} fullTranslations - The complete dictionary for a locale.
