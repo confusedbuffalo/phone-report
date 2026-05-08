@@ -1,7 +1,8 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { Eta } = require('eta');
-const { PUBLIC_DIR, NAMES_BUILD_DIR, GITHUB_LINK } = require('./constants');
+const { minify } = require('html-minifier-terser');
+const { PUBLIC_DIR, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } = require('./constants');
 const { translate } = require('./i18n');
 const { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml} = require('./html-utils');
 const { safeName } = require('./data-processor');
@@ -34,9 +35,20 @@ async function generateCountryIndexHtml(reportType, countryData) {
 
     const htmlContent = eta.render("country", templateData);
 
+    let finalHtml = htmlContent;
+
+    if (!IS_TEST_MODE) {
+        try {
+            finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
+        } catch (err) {
+            console.error(`Minification failed for ${outputPath}:`, err);
+            // Fallback to unminified content
+        }
+    }
+
     const outputDir = reportType === 'name' ? NAMES_BUILD_DIR : PUBLIC_DIR;
     const pageFileName = path.join(outputDir, countryData.slug, 'index.html');
-    await fsPromises.writeFile(pageFileName, htmlContent);
+    await fsPromises.writeFile(pageFileName, finalHtml);
     console.log(`Report for ${countryData.name} generated at ${pageFileName}.`);
 }
 

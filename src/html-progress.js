@@ -1,8 +1,9 @@
 const { promises: fsPromises } = require('fs');
 const path = require('path');
 const { Eta } = require('eta');
+const { minify } = require('html-minifier-terser');
 const { translate } = require('./i18n');
-const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } = require('./constants');
 const { getFooterData, getIconAttributionHtml } = require('./html-utils');
 const { getTranslations } = require('./i18n');
 const { safeName } = require('./data-processor');
@@ -52,6 +53,17 @@ async function generateProgressPage(reportType, country = null, locale = 'en-GB'
 
     const htmlContent = eta.render("progress", templateData);
 
+    let finalHtml = htmlContent;
+
+    if (!IS_TEST_MODE) {
+        try {
+            finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
+        } catch (err) {
+            console.error(`Minification failed for ${outputPath}:`, err);
+            // Fallback to unminified content
+        }
+    }
+
     const outputDir = country ? path.join(rootDir, country) : rootDir;
     const outputPath = path.join(outputDir, 'progress.html')
 
@@ -60,7 +72,7 @@ async function generateProgressPage(reportType, country = null, locale = 'en-GB'
         if (err.code !== 'EEXIST') throw err;
     });
 
-    await fsPromises.writeFile(outputPath, htmlContent);
+    await fsPromises.writeFile(outputPath, finalHtml);
 
     console.log(`Progress page generated at ${outputPath}`);
 }
