@@ -89,19 +89,12 @@ jobs:
       - name: Run Full Build Process
         run: npm run build
 
-      - name: Upload Phone History Data Artifact
+      - name: Upload History Data Artifact
         if: env.BUILD_TYPE == 'full'
         uses: actions/upload-artifact@v7
         with:
-          name: new-history-phone-data
-          path: history_phone/
-
-      - name: Upload Name History Data Artifact
-        if: env.BUILD_TYPE == 'full'
-        uses: actions/upload-artifact@v7
-        with:
-          name: new-history-name-data
-          path: history_name/
+          name: new-history-data
+          path: history/
 
       - name: Upload Safe Edits Artifact
         if: env.BUILD_TYPE == 'full'
@@ -184,17 +177,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download phone history artifact
+      - name: Download history artifact
         uses: actions/download-artifact@v8
         with:
-          name: new-history-phone-data
-          path: /tmp/new_history_phone
-
-      - name: Download name history artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: new-history-name-data
-          path: /tmp/new_history_name
+          name: new-history-data
+          path: /tmp/new_history
 
       - name: Generate GitHub App Token for Push
         id: app-token-push
@@ -217,12 +204,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Copy the downloaded history data into the repository's history folder
-          mkdir -p history_phone && mkdir -p history_name
-          cp -r /tmp/new_history_phone/* history_phone/
-          cp -r /tmp/new_history_name/* history_name/
+          mkdir -p history
+          cp -r /tmp/new_history/* history/
           echo "Restored new history data onto main branch working tree."
           
-          git add history_phone history_name || true
+          git add history || true
           
           # Check if there are any changes to commit
           if git diff --cached --exit-code; then

@@ -6,7 +6,7 @@ const axios = require('axios');
 const yaml = require('js-yaml');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, IS_TEST_MODE } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR, IS_TEST_MODE } = require('./constants');
 const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
 const { safeName } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
@@ -63,7 +63,7 @@ async function downloadAndParseOfficialLanguages() {
 function saveCountryHistory(reportType, originalCountryStats) {
     const countryStats = structuredClone(originalCountryStats);
 
-    const rootDir = reportType === 'phone' ? HISTORY_DIR_PHONE : HISTORY_DIR_NAME;
+    const rootDir = reportType === path.join(HISTORY_DIR, reportType);
 
     const historyCountryDir = path.join(rootDir, countryStats.slug);
     if (!fs.existsSync(historyCountryDir)) {
