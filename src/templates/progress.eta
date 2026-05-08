@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%~ it.translate('progressHistory', it.locale) %></title>
-    <%~ it.favicon %>
+    <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="<%= it.country ? '../' : './' %>styles.css" rel="stylesheet">
     <script src="<%= it.country ? '../' : './' %>theme.js"></script>
     <script src="<%= it.country ? '../' : './' %>vendor/chart.js"></script>
@@ -20,7 +20,7 @@
                     </svg>
                     <span class="align-middle"><%= it.country ? it.translate('backToCountryPage', it.locale) : it.translate('backToAllCountries', it.locale) %></span>
                 </a>
-                <%~ it.themeButton %>
+                <%~ include("./partials/theme-button") %>
             </div>
             <h1 class="page-title"><%= it.translate('progressHistory', it.locale) %></h1>
         </header>
@@ -47,7 +47,7 @@
         </div>
 
         <div class="footer-container">
-            <%~ it.createFooter(it.locale, it.translations) %>
+            <%~ include("./partials/footer", { ...it, includeIconAttribution: false }) %>
         </div>
     </div>
     <script>

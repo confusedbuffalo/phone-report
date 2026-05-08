@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { promises: fsPromises } = require('fs');
 const path = require('path');
+const { minify } = require('html-minifier-terser');
 const { pipeline } = require('stream/promises');
 const { Transform } = require('stream');
 const { chain } = require('stream-chain');
@@ -9,11 +10,11 @@ const { streamArray } = require('stream-json/streamers/stream-array.js');
 const { disassembler } = require('stream-json/disassembler.js');
 const { stringer } = require('stream-json/stringer.js');
 const { Eta } = require('eta');
-const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR } = require('./constants');
+const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE } = require('./constants');
 const { safeName, getFeatureTypeName, getFeatureIcon, isDisused } = require('./data-processor');
 const { translate } = require('./i18n');
 const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
-const { themeButton, createFooter, createStatsBox, escapeHTML, getFavicon } = require('./html-utils');
+const { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } = require('./html-utils');
 const { IconManager } = require('./icon-manager');
 const { phoneTagToUse } = require('./phone-processor');
 
@@ -370,8 +371,6 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
     }, 4)};
     `;
 
-    const favicon = getFavicon(reportType);
-
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),
         cache: true,
@@ -384,11 +383,11 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
         translate,
         escapeHTML,
         createStatsBox,
-        createFooter,
-        favicon,
+        getFooterData,
+        getIconAttributionHtml,
+        GITHUB_LINK,
         singleLevelDivision,
         svgSprite,
-        themeButton,
         translations,
         timestamp,
         ALL_EDITOR_IDS,
@@ -401,7 +400,18 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
 
     const htmlContent = eta.render("report", templateData);
 
-    await fsPromises.writeFile(htmlFilePath, htmlContent);
+    let finalHtml = htmlContent;
+
+    if (!IS_TEST_MODE) {
+        try {
+            finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
+        } catch (err) {
+            console.error(`Minification failed for ${outputPath}:`, err);
+            // Fallback to unminified content
+        }
+    }
+
+    await fsPromises.writeFile(htmlFilePath, finalHtml);
     console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
 }
 

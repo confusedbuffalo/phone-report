@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%~ it.translate(it.reportType === 'phone' ? 'countryReportTitle' : 'countryReportTitleNames', it.locale, [it.escapeHTML(it.subdivisionStats.name)]) %></title>
-    <%~ it.favicon %>
+    <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="<%= it.singleLevelDivision ? '' : '../' %>../styles.css" rel="stylesheet">
     <script src="<%= it.singleLevelDivision ? '' : '../' %>../theme.js"></script>
     <% if (it.subdivisionStats.invalidCount === 0) { %>
@@ -52,7 +52,7 @@
                         </svg>
                     </button>
                     <div id="editor-settings-menu" class="settings-menu hidden"></div>
-                    <%~ it.themeButton %>
+                    <%~ include("./partials/theme-button") %>
                 </div>
             </div>
             <h1 class="page-title"><%~ it.translate(it.reportType === 'phone' ? 'phoneNumberReport' : 'incompleteNamesReport', it.locale) %></h1>
@@ -63,20 +63,20 @@
             <section id="noInvalidSection"></section>
             <% if (it.reportType === 'phone') { %>
                 <section id="fixableSection" class="space-y-8"></section>
-            <% } else { %>
-                <div id="save-row" class="sticky top-0 z-20"></div>
-            <% } %>
-            <section id="invalidSection" class="space-y-8">
-                <div class="spinner mx-auto"></div>
-            </section>
-            <% if (it.reportType === 'phone') { %>
+                <section id="invalidSection" class="space-y-8">
+                    <div class="spinner mx-auto"></div>
+                </section>
                 <section id="foreignSection" class="space-y-8"></section>
             <% } else { %>
+                <div id="save-row" class="sticky top-0 z-20"></div>
+                <section id="invalidSection" class="space-y-8">
+                    <div class="spinner mx-auto"></div>
+                </section>
                 <section id="missingSection" class="space-y-8"></section>
-            <% }%>
+            <% } %>
         </div>
         <div class="footer-container">
-            <%~ it.createFooter(it.locale, it.translations, true, it.timestamp) %>
+            <%~ include("./partials/footer", { ...it, includeIconAttribution: true }) %>
         </div>
     </div>
 

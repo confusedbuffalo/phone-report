@@ -1,8 +1,6 @@
 const {
     escapeHTML,
     createStatsBox,
-    createFooter,
-    getIconAttributionHtml
 } = require('../src/html-utils.js');
 
 // Mock i18n
@@ -104,42 +102,6 @@ describe('html-utils', () => {
             const html = getIconAttributionHtml('en-US');
             expect(html).not.toContain('<a href');
             expect(html).toContain('Test Icons by Me');
-        });
-    });
-
-    describe('createFooter', () => {
-        beforeAll(() => {
-            // Mock Date for consistent output
-            const mockDate = new Date('2023-10-27T10:00:00Z');
-            jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
-        });
-
-        afterAll(() => {
-            jest.restoreAllMocks();
-        });
-
-        test('should generate footer with timestamp and GitHub link', () => {
-            const footer = createFooter('en-GB', {});
-            expect(footer).toContain('dataSourcedTemplate');
-            expect(footer).toContain('https://github.com/confusedbuffalo/phone-report/');
-            expect(footer).toContain('letMeKnowOnGitHub');
-        });
-
-        test('should include icon attribution when requested', () => {
-            const footer = createFooter('en-GB', {}, true);
-            expect(footer).toContain('iconsSourcedFrom');
-        });
-
-        test('should not include icon attribution when not requested', () => {
-            const footer = createFooter('en-GB', {}, false);
-            expect(footer).not.toContain('iconsSourcedFrom');
-        });
-
-        test('should embed client-side script for time updates', () => {
-            const footer = createFooter('en-GB', { 'timeAgoJustNow': 'just now' });
-            expect(footer).toContain('<script>');
-            expect(footer).toContain('function updateTimeAgo()');
-            expect(footer).toContain('const translations = {"timeAgoJustNow":"just now"};');
         });
     });
 });

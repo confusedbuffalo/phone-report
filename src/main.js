@@ -6,7 +6,7 @@ const axios = require('axios');
 const yaml = require('js-yaml');
 const { access } = require('fs/promises');
 const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME } = require('./constants');
+const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR, IS_TEST_MODE } = require('./constants');
 const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
 const { safeName } = require('./data-processor');
 const { generateCountryIndexHtml } = require('./html-country')
@@ -16,73 +16,12 @@ const { getTranslations } = require('./i18n');
 const { generateSafeEditFile } = require('./osm-safe-edits');
 const { validateNames } = require('./names-processor');
 const { validateNumbers } = require('./phone-processor');
+const { minify } = require('terser');
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country
 // (the first found of each, using the countries data file)
 const testMode = BUILD_TYPE === 'simplified';
-
-// const CLIENT_KEYS = [
-//     'dataSourcedTemplate',
-//     'fixInJOSM',
-//     'fixable',
-//     'website',
-//     'fixableNumbersHeader',
-//     'fixableNumbersDescription',
-//     'invalidNumbersHeader',
-//     'invalidNumbersDescription',
-//     'foreignNumbersHeader',
-//     'foreignNumbersDescription',
-//     'noInvalidNumbers',
-//     'pageOf',
-//     'name',
-//     'date',
-//     'suggestedFix',
-//     'invalidNumber',
-//     'next',
-//     'previous',
-//     'sortBy',
-//     "login",
-//     "logout",
-//     "discard",
-//     "keep",
-//     "close",
-//     "cancel",
-//     "upload",
-//     "restoreUnsavedEdits",
-//     "uploadChanges",
-//     "restoreChanges",
-//     "applyFix",
-//     "enterComment",
-//     "noChangesSubmitted",
-//     "changesetCreated",
-//     "notLoggedIn",
-//     "save",
-//     "openNote",
-//     "createNoteFor",
-//     "noteIsClose",
-//     "noteCreated",
-//     "hasInvalidSingular",
-//     "hasInvalidPlural",
-//     "phoneNumber",
-// ];
-
-
-// /**
-//  * Filters the full translations object to include only keys needed by the client.
-//  * @param {Object} fullTranslations - The complete dictionary for a locale.
-//  * @returns {Object} A lightweight dictionary containing only client-side keys.
-//  */
-// function filterClientTranslations(fullTranslations) {
-//     const clientTranslations = {};
-//     for (const key of CLIENT_KEYS) {
-//         // Only include the key if it exists in the source dictionary
-//         if (fullTranslations[key] !== undefined) {
-//             clientTranslations[key] = fullTranslations[key];
-//         }
-//     }
-//     return clientTranslations;
-// }
 
 /**
  * Substitute any missing translations with default locale translation.
@@ -124,7 +63,7 @@ async function downloadAndParseOfficialLanguages() {
 function saveCountryHistory(reportType, originalCountryStats) {
     const countryStats = structuredClone(originalCountryStats);
 
-    const rootDir = reportType === 'phone' ? HISTORY_DIR_PHONE : HISTORY_DIR_NAME;
+    const rootDir = reportType === path.join(HISTORY_DIR, reportType);
 
     const historyCountryDir = path.join(rootDir, countryStats.slug);
     if (!fs.existsSync(historyCountryDir)) {
@@ -635,11 +574,46 @@ async function processCountry(countryData) {
 }
 
 /**
+ * Minifies all .js files in the directory, including subdirectories.
+ * @param {string} directory - The directory in which to minify.
+ */
+async function minifyJsFiles(directory) {
+    // Skip entirely if in test mode
+    if (IS_TEST_MODE) return;
+
+    const entries = await fs.readdir(directory, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const fullPath = path.join(directory, entry.name);
+
+        if (entry.isDirectory()) {
+            // Recursive call for subdirectories
+            await minifyJsFiles(fullPath);
+        } else if (entry.name.endsWith('.js')) {
+            try {
+                const code = await fs.readFile(fullPath, 'utf8');
+
+                const result = await minify(code, {
+                    compress: true,
+                    mangle: true
+                });
+
+                if (result.code) {
+                    await fs.writeFile(fullPath, result.code);
+                }
+            } catch (err) {
+                console.error(`Failed to minify JS: ${fullPath}`, err);
+            }
+        }
+    }
+}
+
+/**
  * The main function to orchestrate the entire build process for the validation reports.
  */
 async function main() {
     const CLIENT_DIR = path.join(__dirname, 'client');
-    [PUBLIC_DIR, NAMES_BUILD_DIR].forEach((dir) => {
+    [PUBLIC_DIR, NAMES_BUILD_DIR].forEach(async (dir) => {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
@@ -674,6 +648,8 @@ async function main() {
             path.join(__dirname, '..', 'node_modules', 'chart.js', 'dist', 'chart.umd.js'),
             path.join(VENDOR_DIR, 'chart.js')
         );
+
+        await minifyJsFiles(dir);
     });
 
     const officialLanguages = await downloadAndParseOfficialLanguages();

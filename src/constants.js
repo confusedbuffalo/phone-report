@@ -103,7 +103,7 @@ const EXCLUSIONS = {
         '115': {
             'office': 'government',
         },
-    },'FR': { // France
+    }, 'FR': { // France
         '3631': { // The phone number to check (must be the core number, no country code or spaces)
             'amenity': 'post_office',
         },
@@ -199,11 +199,11 @@ const UNIVERSAL_SPLIT_CAPTURE_REGEX = new RegExp(ALL_SEPARATOR_GROUPS, 'gi');
 const UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN = new RegExp(allGroupsDe, 'gi');
 
 const UNIVERSAL_SPLIT_REGEX = new RegExp(
-    ALL_SEPARATOR_GROUPS.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
+    ALL_SEPARATOR_GROUPS.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'),
     'gi'
 );
 const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
-    allGroupsDe.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'), 
+    allGroupsDe.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'),
     'gi'
 );
 
@@ -279,8 +279,7 @@ const GITHUB_ICON_PACKS = {
 const ICONS_DIR = path.join(__dirname, '..', 'icons');
 const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 
-const HISTORY_DIR_PHONE = path.join(__dirname, '..', 'history_phone');
-const HISTORY_DIR_NAME = path.join(__dirname, '..', 'history_name');
+const HISTORY_DIR = path.join(__dirname, '..', 'history');
 const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
 const POLY_DIR = path.join(__dirname, '..', 'poly');
 const OSM_DIR = path.join(__dirname, '..', 'osm');
@@ -354,6 +353,19 @@ const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
     'MA', // https://github.com/confusedbuffalo/phone-report/issues/234#issuecomment-4230467314
 ]
 
+const BUILD_TYPE = process.env.BUILD_TYPE;
+const IS_TEST_MODE =
+    BUILD_TYPE === 'simplified' ||
+    process.env.NODE_ENV === 'test' ||
+    typeof jest !== 'undefined';
+
+const MINIFY_OPTIONS = {
+    collapseWhitespace: true,
+    removeComments: true,
+    minifyCSS: true,
+    minifyJS: true
+};
+
 module.exports = {
     PUBLIC_DIR,
     NAMES_BUILD_DIR,
@@ -384,8 +396,7 @@ module.exports = {
     GITHUB_API_BASE_URL,
     GITHUB_ICON_PACKS,
     ICON_ATTRIBUTION,
-    HISTORY_DIR_NAME,
-    HISTORY_DIR_PHONE,
+    HISTORY_DIR,
     SAFE_EDITS_DIR,
     POLY_DIR,
     OSM_DIR,
@@ -406,5 +417,7 @@ module.exports = {
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     COUNTRIES_WITH_PHONEWORDS,
     DIN_FORMAT_COUNTRIES,
-    CAN_REFORMAT_NUMBER_WITHOUT_SPACES
+    CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
+    IS_TEST_MODE,
+    MINIFY_OPTIONS,
 };

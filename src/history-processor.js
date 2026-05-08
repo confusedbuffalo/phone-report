@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { PUBLIC_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, NAMES_BUILD_DIR } = require('./constants');
+const { PUBLIC_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, NAMES_BUILD_DIR, HISTORY_DIR } = require('./constants');
 
 /**
  * Reads all historical data snapshots, aggregates them by date, and generates a
@@ -15,7 +15,7 @@ const { PUBLIC_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, NAMES_BUILD_DIR } = req
  * @param {'phone' | 'name'} reportType - The type of report to generate history for.
  */
 function processHistory(reportType) {
-    const historyDir = reportType === 'phone' ? HISTORY_DIR_PHONE : HISTORY_DIR_NAME;
+    const historyDir = path.join(HISTORY_DIR, reportType);
     const rootOutputDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
 
     if (!fs.existsSync(historyDir)) {

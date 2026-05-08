@@ -1,25 +1,6 @@
 const { translate } = require('./i18n');
 const { ICON_ATTRIBUTION, GITHUB_LINK } = require('./constants.js')
 
-const icon = {
-    'phone': '📞',
-    'name': '📍',
-}
-
-/**
- * Returns the full favicon html for the given report type
- * @param {'phone' | 'name'} reportType - The type of report being created.
- * @returns {String}
- */
-function getFavicon(reportType) {
-    return `<link rel="icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;text y=%22.9em%22 font-size=%2290%22&gt;${icon[reportType]}&lt;/text&gt;&lt;/svg&gt;">`;
-}
-
-const themeButton = `<button id="theme-toggle" type="button" class="theme-toggle-button">
-                        <svg id="theme-toggle-dark-icon" class="hidden w-7 h-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                        <svg id="theme-toggle-light-icon" class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5"/><line x1="12" y1="3" x2="12" y2="5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="12" x2="5" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="19" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="5.64" y1="5.64" x2="6.8" y2="6.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17.2" y1="17.2" x2="18.36" y2="18.36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="5.64" y1="18.36" x2="6.8" y2="17.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="17.2" y1="6.8" x2="18.36" y2="5.64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    </button>`;
-
 /**
  * Creates the HTML box displaying statistics.
  * @param {'phone' | 'name'} reportType - The type of report being created.
@@ -170,113 +151,21 @@ function getIconAttributionHtml(locale) {
         : '';
 }
 
-
 /**
- * Creates the HTML footer with data timestamp and GitHub link.
- * @param {string} locale - Locale to format the date in
- * @param {Object} translations - The translations dictionary for the current locale
- * @param {boolean} includeIconAttribution - Whether or not to include the icon attribution message
- * @param {Date} timestamp - The timestamp of the data
- * @returns {string}
+ * Prepares the localized date and time strings for the footer.
  */
-function createFooter(locale = 'en-GB', translations, includeIconAttribution = false, timestamp = null) {
-    translations = translations || {};
-
-    const dataTimestamp = timestamp ? timestamp : new Date();
-
-    // Formatting the date and time
-    const formattedDate = dataTimestamp.toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    const formattedTime = dataTimestamp.toLocaleTimeString(locale, {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'UTC'
-    });
-
-    // Use translation keys for static text, with fallbacks to hardcoded text
-    const dataSourcedTemplate = translate('dataSourcedTemplate', locale, [formattedDate, formattedTime, 'UTC', translate('timeAgoJustNow', locale)]);
-    const suggestionIssueLink = translate('suggestionIssueLink', locale);
-    const letMeKnowOnGitHub = translate('letMeKnowOnGitHub', locale);
-
-    const openStreetMapLinkHtml = `<a href="https://www.openstreetmap.org/copyright/" target="_blank" rel="noopener noreferrer" class="footer-link">OpenStreetMap</a>`;
-    const dataAttribution = `<p class="footer-text">${translate('numberDetailsNamesDataFrom', locale, [openStreetMapLinkHtml])}</p>`;
-    const iconAttribution = includeIconAttribution ? getIconAttributionHtml(locale) : '';
-
-    return `
-    <p id="data-timestamp-container" 
-       class="footer-text"
-       data-timestamp="${dataTimestamp.getTime()}">
-        ${dataSourcedTemplate}
-    </p>
-    <p class="footer-text">${suggestionIssueLink} <a href="${GITHUB_LINK}" target="_blank" rel="noopener noreferrer" class="footer-link">${letMeKnowOnGitHub}</a>.</p>
-    ${dataAttribution}
-    ${iconAttribution}
-    <script>
-        const clientFormattedDate = '${formattedDate}';
-        const clientFormattedTime = '${formattedTime}';
-        const translations = ${JSON.stringify(translations)};
-
-        /**
-         * A simple client-side translation utility that uses the embedded translations object.
-         * @param {string} key - The translation key.
-         * @param {Object} [substitutions={}] - An object with values for placeholders.
-         * @returns {string} The translated string.
-         */
-        function translate(key, substitutions = {}) {
-            let str = translations[key] || 'MISSING_KEY:' + key;
-            if (str.includes('%n') && substitutions['%n'] !== undefined) {
-                str = str.replace('%n', substitutions['%n']);
-            }
-            if (str.includes('%t') && substitutions['%t'] !== undefined) {
-                str = str.replace('%t', substitutions['%t']);
-            }
-            return str;
-        }
-
-        /**
-         * Updates the 'time ago' part of the data timestamp on the page.
-         * It calculates the difference between the current time and the data's timestamp
-         * and displays a human-readable relative time (e.g., "just now", "5 minutes ago").
-         */
-        function updateTimeAgo() {
-            const container = document.getElementById('data-timestamp-container');
-            if (!container) return;
-
-            const dataTimestampMs = parseInt(container.getAttribute('data-timestamp'), 10);
-            if (isNaN(dataTimestampMs)) {
-                container.textContent = 'error in time calculation';
-                return;
-            }
-
-            const dataDate = new Date(dataTimestampMs);
-            const now = new Date();
-            const millisecondsAgo = now.getTime() - dataDate.getTime();
-            const totalMinutes = Math.floor(millisecondsAgo / (1000 * 60));
-
-            let timeAgoText;
-            const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
-            if (totalMinutes < 60) {
-                timeAgoText = timeFormatter.format(-1 * totalMinutes, 'minute')
-            } else {
-                const hours = Math.floor(totalMinutes / 60);
-                timeAgoText = timeFormatter.format(-1 * hours, 'hour')
-            }
-
-            const dataSourcedTemplate = translations['dataSourcedTemplate'] || 'Data sourced on %d at %t %z (%a)';
-            container.innerHTML = dataSourcedTemplate
-                .replace('%d', clientFormattedDate)
-                .replace('%t', clientFormattedTime)
-                .replace('%z', 'UTC')
-                .replace('%a', timeAgoText); 
-        }
-
-        updateTimeAgo();
-        setInterval(updateTimeAgo, 60000);
-    </script>
-    `
+function getFooterData(locale, timestamp) {
+    const dataTimestamp = timestamp ? new Date(timestamp) : new Date();
+    
+    return {
+        timestampMs: dataTimestamp.getTime(),
+        formattedDate: dataTimestamp.toLocaleDateString(locale, {
+            year: 'numeric', month: 'long', day: 'numeric'
+        }),
+        formattedTime: dataTimestamp.toLocaleTimeString(locale, {
+            hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
+        })
+    };
 }
 
 /**
@@ -301,10 +190,8 @@ function escapeHTML(str) {
 }
 
 module.exports = {
-    themeButton,
     createStatsBox,
-    createFooter,
+    getFooterData,
     escapeHTML,
     getIconAttributionHtml,
-    getFavicon,
 };

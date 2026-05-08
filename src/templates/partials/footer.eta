@@ -1,0 +1,64 @@
+<% 
+  const { timestampMs, formattedDate, formattedTime } = it.getFooterData(it.locale, it.timestamp);
+  const osmLink = `<a href="https://www.openstreetmap.org/copyright/" target="_blank" rel="noopener noreferrer" class="footer-link">OpenStreetMap</a>`;
+%>
+
+<p id="data-timestamp-container" 
+   class="footer-text"
+   data-timestamp="<%= timestampMs %>">
+    <%~ it.translate('dataSourcedTemplate', it.locale, [formattedDate, formattedTime, 'UTC', it.translate('timeAgoJustNow', it.locale)]) %>
+</p>
+
+<p class="footer-text">
+    <%= it.translate('suggestionIssueLink', it.locale) %> 
+    <a href="<%= it.GITHUB_LINK %>" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <%= it.translate('letMeKnowOnGitHub', it.locale) %>
+    </a>.
+</p>
+
+<p class="footer-text">
+    <%~ it.translate('numberDetailsNamesDataFrom', it.locale, [osmLink]) %>
+</p>
+
+<% if (it.includeIconAttribution) { %>
+    <%~ it.getIconAttributionHtml(it.locale) %>
+<% } %>
+
+<script>
+    (function() {
+        const clientFormattedDate = '<%= formattedDate %>';
+        const clientFormattedTime = '<%= formattedTime %>';
+        const footerTranslations = <%~ JSON.stringify(it.translations) %>;
+
+        function translate(key, substitutions = {}) {
+            let str = footerTranslations[key] || 'MISSING_KEY:' + key;
+            if (str.includes('%n') && substitutions['%n'] !== undefined) str = str.replace('%n', substitutions['%n']);
+            if (str.includes('%t') && substitutions['%t'] !== undefined) str = str.replace('%t', substitutions['%t']);
+            return str;
+        }
+
+        function updateTimeAgo() {
+            const container = document.getElementById('data-timestamp-container');
+            if (!container) return;
+
+            const dataTimestampMs = parseInt(container.getAttribute('data-timestamp'), 10);
+            const dataDate = new Date(dataTimestampMs);
+            const totalMinutes = Math.floor((new Date() - dataDate) / (1000 * 60));
+
+            const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
+            const timeAgoText = totalMinutes < 60 
+                ? timeFormatter.format(-totalMinutes, 'minute') 
+                : timeFormatter.format(-Math.floor(totalMinutes / 60), 'hour');
+
+            const template = footerTranslations['dataSourcedTemplate'] || 'Data sourced on %d at %t %z (%a)';
+            container.innerHTML = template
+                .replace('%d', clientFormattedDate)
+                .replace('%t', clientFormattedTime)
+                .replace('%z', 'UTC')
+                .replace('%a', timeAgoText);
+        }
+
+        updateTimeAgo();
+        setInterval(updateTimeAgo, 60000);
+    })();
+</script>
