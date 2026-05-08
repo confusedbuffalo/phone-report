@@ -183,7 +183,7 @@ function saveChangeToStorage(osmType, osmId, language = null) {
     }
 
     localStorage.setItem('edits', JSON.stringify(edits));
-    addToUndo(osmType, osmId);
+    addToUndo(osmType, osmId, language);
     setUpSaveBtn();
 }
 
@@ -210,14 +210,15 @@ export function applyFix(osmType, osmId, language = null) {
  *
  * @param {string} osmType - The OpenStreetMap element type.
  * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @param {string | null} language - The language selected for the edit.
  * @returns {void}
  */
-function addToUndo(osmType, osmId) {
+function addToUndo(osmType, osmId, language) {
     const undoBtn = document.getElementById('undo-btn');
     if (undoData.stack.length !== undoData.position) {
         undoData.stack = undoData.stack.slice(0, undoData.position);
     }
-    undoData.stack.push([osmType, osmId]);
+    undoData.stack.push([osmType, osmId, language]);
     undoData.position = undoData.stack.length;
     if (undoData.stack.length > 0 && undoBtn.disabled) {
         enableUndo();
@@ -279,6 +280,7 @@ export function redoChange() {
     const undoneElement = undoData.stack[undoData.position];
     const osmType = undoneElement[0];
     const osmId = undoneElement[1];
+    const language = undoneElement[2];
 
     const item = appState.reportData.find(item => {
         return item.id === osmId && item.type === osmType;
@@ -286,7 +288,16 @@ export function redoChange() {
 
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
 
-    edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+    if (reportType === 'name') {
+        if (item.name) {
+            edits[subdivisionName][osmType][osmId] = {[`name:${language}`]: item.name};
+        } else{
+            edits[subdivisionName][osmType][osmId] = {name: item.nameTags["name:" + language]};
+        }
+    } else {
+        edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+    }
+
     recordItemClick(`${osmType}/${osmId}`);
 
     undoData.position += 1;
