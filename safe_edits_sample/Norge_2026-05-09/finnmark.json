@@ -1,0 +1,121 @@
+{
+  "countryName": "Norge",
+  "subdivisionName": "Finnmark",
+  "divisionSlug": "norge",
+  "subdivisionSlug": "finnmark",
+  "totalOriginalItems": 17,
+  "totalSuggestedEdits": 15,
+  "totalSafeEdits": 11,
+  "edits": [
+    {
+      "type": "node",
+      "id": 1356458520,
+      "invalidNumbers": {
+        "contact:mobile": "+ 47 48 10 60 03"
+      },
+      "suggestedFixes": {
+        "contact:mobile": "+47 48 10 60 03"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2888649224,
+      "invalidNumbers": {
+        "phone": "97608926"
+      },
+      "suggestedFixes": {
+        "phone": "+47 97 60 89 26"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8260193447,
+      "invalidNumbers": {
+        "phone": "78990925"
+      },
+      "suggestedFixes": {
+        "phone": "+47 78 99 09 25"
+      }
+    },
+    {
+      "type": "node",
+      "id": 8879671025,
+      "invalidNumbers": {
+        "phone": "78928072"
+      },
+      "suggestedFixes": {
+        "phone": "+47 78 92 80 72"
+      }
+    },
+    {
+      "type": "node",
+      "id": 9299071075,
+      "invalidNumbers": {
+        "phone": "78 94 24 47"
+      },
+      "suggestedFixes": {
+        "phone": "+47 78 94 24 47"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11160660798,
+      "invalidNumbers": {
+        "phone": "99435945"
+      },
+      "suggestedFixes": {
+        "phone": "+47 99 43 59 45"
+      }
+    },
+    {
+      "type": "node",
+      "id": 11610581284,
+      "invalidNumbers": {
+        "phone": "78 94 24 47"
+      },
+      "suggestedFixes": {
+        "phone": "+47 78 94 24 47"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13026337009,
+      "invalidNumbers": {
+        "contact:phone": "78983400"
+      },
+      "suggestedFixes": {
+        "contact:phone": "+47 78 98 34 00"
+      }
+    },
+    {
+      "type": "node",
+      "id": 13747671701,
+      "invalidNumbers": {
+        "phone": "90704505"
+      },
+      "suggestedFixes": {
+        "phone": "+47 90 70 45 05"
+      }
+    },
+    {
+      "type": "way",
+      "id": 343288851,
+      "invalidNumbers": {
+        "phone": "08125"
+      },
+      "suggestedFixes": {
+        "phone": "+47 08125"
+      }
+    },
+    {
+      "type": "way",
+      "id": 1417502730,
+      "invalidNumbers": {
+        "contact:phone": "78983400"
+      },
+      "suggestedFixes": {
+        "contact:phone": "+47 78 98 34 00"
+      }
+    }
+  ]
+}
