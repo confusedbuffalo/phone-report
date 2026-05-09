@@ -156,6 +156,28 @@ describe('validateNames', () => {
         expect(result.missingNames).toBe(0);
     });
 
+    test('French and Dutch names separated by hyphen but the wrong way round is invalid in Brussels', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'Dutch - French', 'name:fr': 'French', 'name:nl': 'Dutch' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.name).toEqual('Dutch - French');
+        expect(invalidItem.nameTags).toEqual({
+            'name:fr': 'French',
+            'name:nl': 'Dutch',
+        })
+    });
+
     test('French and Dutch names separated by hyphen with one language missing is invalid in Brussels', async () => {
         const elements = [
             createGeoJson(1001, { 'name': 'French - Dutch', 'name:fr': 'French' })
@@ -197,7 +219,9 @@ describe('validateNames', () => {
             'name:fr': 'French',
             'name:nl': 'Dutch',
         })
-    });test('French and Dutch names badly separated (no spaces) is invalid in Brussels', async () => {
+    });
+    
+    test('French and Dutch names badly separated (no spaces) is invalid in Brussels', async () => {
         const elements = [
             createGeoJson(1001, { 'name': 'French-Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })
         ];
@@ -217,6 +241,54 @@ describe('validateNames', () => {
             'name:fr': 'French',
             'name:nl': 'Dutch',
         })
+    });
+
+    test('French and Dutch names separated by hyphen with both languages tagged is valid in Wallonia', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
+    });
+
+    test('French and Dutch names separated by hyphen with both languages tagged is valid in Flanders', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
+    });
+
+    test('French and German names separated by hyphen with both languages tagged is valid in Wallonia', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French - German', 'name:fr': 'French', 'name:de': 'German' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(0);
+        expect(result.missingNames).toBe(0);
+    });
+
+    test('French and German names separated by hyphen with both languages tagged is invalid in Flanders', async () => {
+        const elements = [
+            createGeoJson(1001, { 'name': 'French - German', 'name:fr': 'French', 'name:de': 'German' })
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath);
+
+        expect(result.totalNames).toBe(1);
+        expect(result.incompleteNames).toBe(1);
+        expect(result.missingNames).toBe(0);
     });
 
     test('name:signed is not a name', async () => {
