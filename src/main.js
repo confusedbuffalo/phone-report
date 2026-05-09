@@ -589,7 +589,7 @@ async function minifyJsFiles(directory) {
         if (entry.isDirectory()) {
             // Recursive call for subdirectories
             await minifyJsFiles(fullPath);
-        } else if (entry.name.endsWith('.js')) {
+        } else if (entry.name.endsWith('.js') && !entry.name.endsWith('.min.js')) {
             try {
                 const code = await fs.readFile(fullPath, 'utf8');
 
@@ -613,7 +613,7 @@ async function minifyJsFiles(directory) {
  */
 async function main() {
     const CLIENT_DIR = path.join(__dirname, 'client');
-    [PUBLIC_DIR, NAMES_BUILD_DIR].forEach(async (dir) => {
+    for (const dir of [PUBLIC_DIR, NAMES_BUILD_DIR]) {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir);
         }
@@ -650,7 +650,7 @@ async function main() {
         );
 
         await minifyJsFiles(dir);
-    });
+    };
 
     const officialLanguages = await downloadAndParseOfficialLanguages();
 
