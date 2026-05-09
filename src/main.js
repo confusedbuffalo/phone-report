@@ -63,7 +63,7 @@ async function downloadAndParseOfficialLanguages() {
 function saveCountryHistory(reportType, originalCountryStats) {
     const countryStats = structuredClone(originalCountryStats);
 
-    const rootDir = reportType === path.join(HISTORY_DIR, reportType);
+    const rootDir = path.join(HISTORY_DIR, reportType);
 
     const historyCountryDir = path.join(rootDir, countryStats.slug);
     if (!fs.existsSync(historyCountryDir)) {
