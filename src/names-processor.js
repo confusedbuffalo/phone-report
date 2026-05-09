@@ -81,14 +81,23 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
         // Condition 2: There are localised names (name:*) and none of them match the primary name
         let isInvalid = !primaryName || !Object.values(nameTags).includes(primaryName);
 
-        if (isInvalid && countryCode === 'BE-BRU') {
-            const nameKeys = Object.keys(nameTags);
-            if (
-                nameKeys.includes('name:fr') && nameKeys.includes('name:nl') &&
-                `${nameTags['name:fr']} - ${nameTags['name:nl']}` === primaryName
-            ) {
-                isInvalid = false;
-            }
+        if (isInvalid) {
+            const langMap = {
+                'BE-BRU': [['fr', 'nl']], // Strict: Only FR - NL
+                'BE-VLG': [['nl', 'fr'], ['fr', 'nl']], // Flexible
+                'BE-WAL': [['fr', 'nl'], ['nl', 'fr'], ['fr', 'de'], ['de', 'fr']] // Flexible
+            };
+
+            const validPairs = langMap[countryCode] || [];
+
+            // Check if primaryName matches any allowed joined pair for the region
+            const isValidCombo = validPairs.some(([langA, langB]) => {
+                const valA = nameTags[`name:${langA}`];
+                const valB = nameTags[`name:${langB}`];
+                return valA && valB && primaryName === `${valA} - ${valB}`;
+            });
+
+            if (isValidCombo) isInvalid = false;
         }
 
         if (!primaryName) missingNames++;
