@@ -363,7 +363,7 @@ const MINIFY_OPTIONS = {
     collapseWhitespace: true,
     removeComments: true,
     minifyCSS: true,
-    minifyJS: true
+    minifyJS: false
 };
 
 module.exports = {
