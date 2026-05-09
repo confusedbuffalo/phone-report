@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # Don't run on PRs for now, first file is large to download
-    if: github.event_name != 'pull_request'
+    # if: github.event_name != 'pull_request'
 
     outputs:
       is-full-build: ${{ env.BUILD_TYPE == 'full' }}
