@@ -581,7 +581,7 @@ async function minifyJsFiles(directory) {
     // Skip entirely if in test mode
     if (IS_TEST_MODE) return;
 
-    const entries = await fs.readdir(directory, { withFileTypes: true });
+    const entries = await fs.readdirSync(directory, { withFileTypes: true });
 
     for (const entry of entries) {
         const fullPath = path.join(directory, entry.name);
