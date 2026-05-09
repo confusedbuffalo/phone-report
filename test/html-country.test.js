@@ -32,6 +32,12 @@ jest.mock('../src/i18n', () => ({
         if (key === 'osmPhoneNumberValidation' && locale === 'nl-NL') return 'OSM Telefoon&shy;nummer&shy;validatie';
         return key;
     },
+    getTranslations: (locale) => {
+        return {
+            exampleKey: 'Example Translation',
+            currentLocale: locale,
+        };
+    },
 }));
 
 describe('generateCountryIndexHtml', () => {

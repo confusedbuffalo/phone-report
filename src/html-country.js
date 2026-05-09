@@ -3,7 +3,7 @@ const path = require('path');
 const { Eta } = require('eta');
 const { minify } = require('html-minifier-terser');
 const { PUBLIC_DIR, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } = require('./constants');
-const { translate } = require('./i18n');
+const { translate, getTranslations } = require('./i18n');
 const { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml} = require('./html-utils');
 const { safeName } = require('./data-processor');
 
@@ -31,6 +31,7 @@ async function generateCountryIndexHtml(reportType, countryData) {
         translate,
         getIconAttributionHtml,
         GITHUB_LINK,
+        translations: getTranslations(locale),
     };
 
     const htmlContent = eta.render("country", templateData);
