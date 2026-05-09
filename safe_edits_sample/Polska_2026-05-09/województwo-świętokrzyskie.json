@@ -1,0 +1,31 @@
+{
+  "countryName": "Polska",
+  "subdivisionName": "województwo świętokrzyskie",
+  "divisionSlug": "polska",
+  "subdivisionSlug": "województwo-świętokrzyskie",
+  "totalOriginalItems": 16,
+  "totalSuggestedEdits": 8,
+  "totalSafeEdits": 2,
+  "edits": [
+    {
+      "type": "node",
+      "id": 13805631801,
+      "invalidNumbers": {
+        "phone": "+ (48) 15 832 22 58"
+      },
+      "suggestedFixes": {
+        "phone": "+48 15 832 22 58"
+      }
+    },
+    {
+      "type": "way",
+      "id": 257333242,
+      "invalidNumbers": {
+        "phone": "41 254 37 02"
+      },
+      "suggestedFixes": {
+        "phone": "+48 41 254 37 02"
+      }
+    }
+  ]
+}

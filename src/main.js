@@ -591,7 +591,7 @@ async function minifyJsFiles(directory) {
             await minifyJsFiles(fullPath);
         } else if (entry.name.endsWith('.js') && !entry.name.endsWith('.min.js')) {
             try {
-                const code = await fs.readFile(fullPath, 'utf8');
+                const code = await fs.readFileSync(fullPath, 'utf8');
 
                 const result = await minify(code, {
                     compress: true,
@@ -599,7 +599,7 @@ async function minifyJsFiles(directory) {
                 });
 
                 if (result.code) {
-                    await fs.writeFile(fullPath, result.code);
+                    await fs.writeFileSync(fullPath, result.code);
                 }
             } catch (err) {
                 console.error(`Failed to minify JS: ${fullPath}`, err);
