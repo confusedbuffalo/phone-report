@@ -222,7 +222,7 @@ describe('generateHtmlReport', () => {
         expect(writtenContent).toContain(expectedSubtitle);
 
         // Check for the official languages in the file
-        // const expectedOfficialLanguages = `const OFFICIAL_LANGUAGES = ["en"];`;
-        // expect(writtenContent).toContain(expectedOfficialLanguages);
+        const expectedOfficialLanguages = `const OFFICIAL_LANGUAGES = ["en"];`;
+        expect(writtenContent).toContain(expectedOfficialLanguages);
     });
 });

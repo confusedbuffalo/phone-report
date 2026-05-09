@@ -402,14 +402,14 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
 
     let finalHtml = htmlContent;
 
-    // if (!IS_TEST_MODE) {
+    if (!IS_TEST_MODE) {
         try {
             finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
         } catch (err) {
             console.error(`Minification failed for ${outputPath}:`, err);
             // Fallback to unminified content
         }
-    // }
+    }
 
     await fsPromises.writeFile(htmlFilePath, finalHtml);
     console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
