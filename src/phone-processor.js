@@ -383,6 +383,7 @@ function isPolishPrefixedNumber(phoneNumber, countryCode) {
         && !phoneNumber.isValid()
         && phoneNumber.isPossible()
         && phoneNumber.nationalNumber.startsWith('0')
+        && parsePhoneNumber(phoneNumber.nationalNumber.slice(1), countryCode).isValid()
     )
 }
 
