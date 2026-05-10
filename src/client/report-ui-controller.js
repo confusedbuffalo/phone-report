@@ -131,15 +131,23 @@ export function renderNumbers() {
 
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
 
-    let editCount = 0;
+    let editCount = {
+        total: 0,
+        invalid: 0,
+        missing: 0,
+    };
     if (edits && edits[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
-            editCount += Object.keys(edits[subdivisionName][type]).length;
+            editCount.total += Object.keys(edits[subdivisionName][type]).length;
+            for (const edit in edits[subdivisionName][type]) {
+                editCount.invalid += edit.name === undefined;
+                editCount.missing += edit.name !== undefined;
+            }
         }
     }
     if (firstLoad) {
-        if (editCount > 0) {
-            openEditsModal(editCount);
+        if (editCount.total > 0) {
+            openEditsModal(editCount.total);
         } else {
             undoData.position = 0;
             undoData.stack = [];
@@ -165,7 +173,7 @@ export function renderNumbers() {
     missingContainer && (missingContainer.innerHTML = '');
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
-    if (anyFixable || anyInvalid || anyMissing || editCount > 0) {
+    if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
         if (reportType === 'phone' && (anyFixable || editCount > 0)) {
             renderPaginatedSection(
                 "fixableSection",
@@ -178,7 +186,7 @@ export function renderNumbers() {
             );
         }
 
-        if (anyInvalid || (reportType === 'name' && editCount > 0)) {
+        if (anyInvalid || (reportType === 'name' && editCount.invalid > 0)) {
             renderPaginatedSection(
                 "invalidSection",
                 sortedItems.invalid,
@@ -190,7 +198,7 @@ export function renderNumbers() {
             );
         }
 
-        if (reportType === 'name' && (anyMissing || editCount > 0)) {
+        if (reportType === 'name' && (anyMissing || editCount.missing > 0)) {
             renderPaginatedSection(
                 "missingSection",
                 sortedItems.missing,
