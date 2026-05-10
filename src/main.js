@@ -179,40 +179,54 @@ function getSubdivisions(countryData, divisionName) {
  */
 async function* createGeoJsonElementStream(filePath) {
     const fileStream = fs.createReadStream(filePath);
-
-    // Track unique combinations of type + id
     const seenElements = new Set();
 
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
+    // Custom transformer to split by the Record Separator (\x1e)
+    const rsSplitter = new Transform({
+        readableObjectMode: true,
+        transform(chunk, encoding, callback) {
+            let data = (this._buffer || '') + chunk.toString();
+            const parts = data.split('\x1e');
+            
+            // Keep the last partial part in the buffer
+            this._buffer = parts.pop();
+
+            for (const part of parts) {
+                const trimmed = part.trim();
+                if (trimmed) this.push(trimmed);
+            }
+            callback();
+        },
+        flush(callback) {
+            if (this._buffer && this._buffer.trim()) {
+                this.push(this._buffer.trim());
+            }
+            callback();
+        }
     });
 
-    for await (const line of rl) {
-        // Remove record separator
-        const cleanLine = line.replace(/^\x1e/, '').trim();
+    const pipeline = fileStream.pipe(rsSplitter);
 
-        if (cleanLine) {
-            try {
-                const feature = JSON.parse(cleanLine);
-                const props = feature.properties;
+    for await (const cleanLine of pipeline) {
+        try {
+            const feature = JSON.parse(cleanLine);
+            const props = feature.properties;
 
-                if (props && props['@id'] && props['@type']) {
-                    // Create a composite key, e.g., "way/10432"
-                    const compositeKey = `${props['@type']}/${props['@id']}`;
+            if (props && props['@id'] && props['@type']) {
+                // Create a composite key, e.g., "way/10432"
+                const compositeKey = `${props['@type']}/${props['@id']}`;
 
-                    if (!seenElements.has(compositeKey)) {
-                        seenElements.add(compositeKey);
-                        yield feature;
-                    }
-                } else {
-                    // If metadata is missing, yield anyway to avoid data loss
+                if (!seenElements.has(compositeKey)) {
+                    seenElements.add(compositeKey);
                     yield feature;
                 }
-            } catch (err) {
-                console.error('Error parsing JSON line:', err);
-                console.log(cleanLine);
+            } else {
+                // If metadata is missing, yield anyway to avoid data loss
+                yield feature;
             }
+        } catch (err) {
+            console.error('Error parsing JSON line:', err);
+            console.log(cleanLine);
         }
     }
 
