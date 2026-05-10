@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const readline = require('readline')
 const axios = require('axios');
 const yaml = require('js-yaml');
 const { access } = require('fs/promises');
@@ -17,6 +16,7 @@ const { generateSafeEditFile } = require('./osm-safe-edits');
 const { validateNames } = require('./names-processor');
 const { validateNumbers } = require('./phone-processor');
 const { minify } = require('terser');
+const { Transform } = require('stream');
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country
