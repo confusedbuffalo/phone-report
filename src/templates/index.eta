@@ -37,7 +37,9 @@
                 <div class="search-wrapper">
                     <div class="relative">
                         <input type="text" id="region-search" class="search-input" 
-                               placeholder="Search countries or regions..." autocomplete="off">
+                               placeholder="<%= it.translate('searchPlaceholder', it.locale) %>"
+                               aria-label="<%= it.translate('searchPlaceholder', it.locale) %>"
+                               autocomplete="off">
                         <div class="search-icon-container">
                             <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
