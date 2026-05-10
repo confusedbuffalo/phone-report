@@ -195,13 +195,16 @@ function isStandardExtension(numberStr) {
     return null;
 }
 
+const SPACING_REGEX_NANP = /[\s-]/g;
+const SPACING_REGEX_DEFAULT = /\s/g;
+
 /**
  * Gets the relevant regex for valid spacing in the given country code.
  * @param {string} countryCode - The country code.
  * @returns {RegExp} The regular expression to use for spacing validation.
  */
 function getSpacingRegex(countryCode) {
-    return NANP_COUNTRY_CODES.includes(countryCode) ? /[\s-]/g : /\s/g;
+    return NANP_COUNTRY_CODES.includes(countryCode) ? SPACING_REGEX_NANP : SPACING_REGEX_DEFAULT;
 }
 
 /**
@@ -338,12 +341,12 @@ function getNumberAndExtension(numberStr, countryCode) {
  * @returns {string} The formatted number
  */
 function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
-    countryCode = phoneNumber.country;
+    const countryCode = phoneNumber.country;
 
     const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
 
     const coreNumberE164 = isPolishPrefixed
-        ? `+48 ${phoneNumber.nationalNumber.slice(1)}`
+        ? `+48 ${phoneNumber.number.slice(4)}`
         : phoneNumber.number;
 
     const internationalNumber = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL')

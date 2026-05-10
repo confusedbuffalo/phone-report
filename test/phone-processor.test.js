@@ -971,6 +971,13 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+48 58 677 44 78');
     });
 
+    test('PL: leading 0 is invaid but fixable with country code and extension', () => {
+        const result = processSingleNumber('+48 0586774478 ext. 3', SAMPLE_COUNTRY_CODE_PL);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('+48 58 677 44 78 x3');
+    });
+
     test('PL: all 0s is invalid ("possible" number, but not "valid" number)', () => {
         const result = processSingleNumber('0000000000', SAMPLE_COUNTRY_CODE_PL);
         expect(result.isInvalid).toBe(true);
