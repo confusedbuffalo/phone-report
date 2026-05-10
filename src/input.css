@@ -223,7 +223,13 @@
 }
 
 @utility settings-button {
-  @apply hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg p-2 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors cursor-pointer;
+  @apply
+    hover:bg-gray-300 dark:hover:bg-gray-700
+    rounded-lg p-2
+    text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100
+    transition-colors
+    cursor-pointer
+    focus-visible:ring-2 focus-visible:ring-blue-500 outline-none;
 }
 
 @utility settings-menu {
