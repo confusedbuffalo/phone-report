@@ -1,32 +1,37 @@
-const { generateCountryIndexHtml } = require('../src/html-country.js');
-const { escapeHTML } = require('../src/html-utils.js');
-const fs = require('fs');
+import { jest } from '@jest/globals';
+import { escapeHTML } from '../src/html-utils.js';
 
 // Mock dependencies
-jest.mock('fs', () => {
+jest.unstable_mockModule('fs', () => {
     const actualFs = jest.requireActual('fs');
+    const promises = {
+        writeFile: jest.fn().mockResolvedValue(),
+    };
     return {
         ...actualFs,
-        promises: {
-            ...actualFs.promises,
-            writeFile: jest.fn().mockResolvedValue(),
-        },
-        readFileSync: jest.fn((filePath, encoding) => {
-            // data-processor relies on preset-matcher, mock that
-            if (filePath.includes('presets')) {
-                return JSON.stringify({ presets: [] });
-            }
-            
-            // Otherwise, let the real fs read the template for eta
-            return actualFs.readFileSync(filePath, encoding);
-        }),
-        existsSync: jest.fn((filePath) => {
-            return actualFs.existsSync(filePath);
-        }),
+        promises: promises,
+        default: {
+            ...actualFs,
+            promises: promises,
+            readFileSync: jest.fn((filePath, encoding) => {
+                // data-processor relies on preset-matcher, mock that
+                if (filePath.includes('presets')) {
+                    return JSON.stringify({ presets: [] });
+                }
+
+                // Otherwise, let the real fs read the template for eta
+                return actualFs.readFileSync(filePath, encoding);
+            }),
+            existsSync: jest.fn((filePath) => {
+                return actualFs.existsSync(filePath);
+            }),
+        }
     };
 });
 
-jest.mock('../src/i18n', () => ({
+const fs = (await import('fs')).default;
+
+jest.unstable_mockModule('../src/i18n.js', () => ({
     translate: (key, locale, args) => {
         if (args) return `${key}: ${args.join(',')}`;
         if (key === 'osmPhoneNumberValidation' && locale === 'nl-NL') return 'OSM Telefoon&shy;nummer&shy;validatie';
@@ -39,6 +44,8 @@ jest.mock('../src/i18n', () => ({
         };
     },
 }));
+
+const { generateCountryIndexHtml } = await import('../src/html-country.js');
 
 describe('generateCountryIndexHtml', () => {
     afterEach(() => {

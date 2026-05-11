@@ -1,6 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { PUBLIC_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, NAMES_BUILD_DIR, HISTORY_DIR } = require('./constants');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { PUBLIC_DIR, NAMES_BUILD_DIR, HISTORY_DIR } from './constants.js';
 
 /**
  * Reads all historical data snapshots, aggregates them by date, and generates a
@@ -14,7 +15,7 @@ const { PUBLIC_DIR, HISTORY_DIR_PHONE, HISTORY_DIR_NAME, NAMES_BUILD_DIR, HISTOR
  * 4. The final aggregated data is written to the relevant `history-data.json` file.
  * @param {'phone' | 'name'} reportType - The type of report to generate history for.
  */
-function processHistory(reportType) {
+export function processHistory(reportType) {
     const historyDir = path.join(HISTORY_DIR, reportType);
     const rootOutputDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
 
@@ -69,7 +70,7 @@ function processHistory(reportType) {
             if (Object.keys(stats.groupedDivisionStats).length === 1) {
                 const divisionStats = Object.values(stats.groupedDivisionStats)[0];
 
-                for (division of divisionStats) {
+                for (const division of divisionStats) {
                     const divisionName = division.name;
 
                     const divisionRecord = {
@@ -140,9 +141,9 @@ function processHistory(reportType) {
 }
 
 // Execute the function if run directly
-if (require.main === module) {
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
     processHistory('phone');
     processHistory('name');
 }
 
-module.exports = { processHistory };

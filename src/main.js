@@ -1,22 +1,26 @@
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const axios = require('axios');
-const yaml = require('js-yaml');
-const { access } = require('fs/promises');
-const { v4: uuidv4 } = require('uuid');
-const { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR, IS_TEST_MODE } = require('./constants');
-const { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } = require('./osm-download');
-const { safeName } = require('./data-processor');
-const { generateCountryIndexHtml } = require('./html-country')
-const { generateMainIndexHtml } = require('./html-index')
-const { generateHtmlReport } = require('./html-report')
-const { getTranslations } = require('./i18n');
-const { generateSafeEditFile } = require('./osm-safe-edits');
-const { validateNames } = require('./names-processor');
-const { validateNumbers } = require('./phone-processor');
-const { minify } = require('terser');
-const { Transform } = require('stream');
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import axios from 'axios';
+import yaml from 'js-yaml';
+import { access } from 'fs/promises';
+import { v4 as uuidv4 } from 'uuid';
+import { fileURLToPath } from 'url';
+import { PUBLIC_DIR, COUNTRIES, OSM_DIR, NAMES_BUILD_DIR, HISTORY_DIR, IS_TEST_MODE } from './constants.js';
+import { splitPbf, getOsmTimestamp, downloadPbf, filterPbfPhone, filterPbfName } from './osm-download.js';
+import { safeName } from './data-processor.js';
+import { generateCountryIndexHtml } from './html-country.js'
+import { generateMainIndexHtml } from './html-index.js'
+import { generateHtmlReport } from './html-report.js'
+import { getTranslations } from './i18n.js';
+import { generateSafeEditFile } from './osm-safe-edits.js';
+import { validateNames } from './names-processor.js';
+import { validateNumbers } from './phone-processor.js';
+import { minify } from 'terser';
+import { Transform } from 'stream';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country

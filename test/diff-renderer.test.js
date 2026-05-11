@@ -1,5 +1,5 @@
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN } = require('../src/constants');
-const {
+import { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN } from '../src/constants.js';
+import {
     normalise,
     consolidatePlusSigns,
     replaceInvisibleChars,
@@ -7,7 +7,7 @@ const {
     mergeDiffs,
     getDiffHtml,
     getDiffTagsHtml,
-} = require('../src/diff-renderer');
+} from '../src/diff-renderer.js';
 
 // --- Test Suites ---
 

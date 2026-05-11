@@ -1,9 +1,10 @@
-const { parsePhoneNumber } = require('libphonenumber-js/max');
-const { stringSimilarity } = require('string-similarity-js');
-const { diffChars } = require('diff');
-const { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } = require('./constants.js');
-const { escapeHTML } = require('./html-utils.js');
-const { isWhatsappUrl, isSlashSpace } = require('./phone-processor.js');
+import { parsePhoneNumber } from 'libphonenumber-js/max';
+import { stringSimilarity } from 'string-similarity-js';
+import * as pkgDiff from 'diff';
+const { diffChars } = pkgDiff.default || pkgDiff;
+import { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } from './constants.js';
+import { escapeHTML } from './html-utils.js';
+import { isWhatsappUrl, isSlashSpace } from './phone-processor.js';
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
 // being added or removed when, semantically, they are just being moved.
@@ -24,7 +25,7 @@ const NEW_SPLIT_CAPTURE_REGEX = /(; ?)/g;
  * @param {string} str - The phone number string.
  * @returns {string} The normalised string (digits only).
  */
-const normalise = (str) => str.replace(/[^\d]/g, '');
+export const normalise = (str) => str.replace(/[^\d]/g, '');
 
 /**
  * Helper function to consolidate lone '+' signs with the following segment, 
@@ -32,7 +33,7 @@ const normalise = (str) => str.replace(/[^\d]/g, '');
  * @param {Array<string>} parts - Array of segments from a split operation.
  * @returns {Array<string>} Consolidated array.
  */
-function consolidatePlusSigns(parts) {
+export function consolidatePlusSigns(parts) {
     let consolidated = [];
     for (let i = 0; i < parts.length; i++) {
         const part = parts[i];
@@ -62,7 +63,7 @@ function consolidatePlusSigns(parts) {
  * @param {string} text The input string potentially containing invisible Unicode characters.
  * @returns {string} The string with all specified invisible characters replaced by '␣'.
  */
-function replaceInvisibleChars(text) {
+export function replaceInvisibleChars(text) {
     if (!text) {
         "";
     }
@@ -83,7 +84,7 @@ function replaceInvisibleChars(text) {
  * suggestedDiff: Array<{value: string, added: boolean, removed: boolean}>
  * }} The diff objects for rendering two separate lines.
  */
-function diffPhoneNumbers(original, suggested) {
+export function diffPhoneNumbers(original, suggested) {
     let originalDiff = [];
     let suggestedDiff = [];
 
@@ -341,7 +342,7 @@ function diffPhoneNumbers(original, suggested) {
  * @param {Array<Object>} diffResult - An array of diff objects from `diffPhoneNumbers`.
  * @returns {Array<Object>} The merged array of diff objects.
  */
-function mergeDiffs(diffResult) {
+export function mergeDiffs(diffResult) {
     let mergedDiff = [];
     if (!diffResult[0]) {
         return mergedDiff;
@@ -368,7 +369,7 @@ function mergeDiffs(diffResult) {
  * @param {string} newTag - The new phone tag.
  * @returns {{oldTagDiff: string, newTagDiff: string}} - An object containing the HTML for both diffs.
  */
-function getDiffTagsHtml(oldTag, newTag) {
+export function getDiffTagsHtml(oldTag, newTag) {
     // Yes, phone and mobile share an e at the end, but rather show the whole old tag as removed and the new one as added
     if (oldTag.startsWith('contact:') && newTag.startsWith('contact:')) {
         const actualOldTag = oldTag.slice(8);
@@ -440,7 +441,7 @@ function mergeConsecutiveSeparators(inputArray, useDeSeparators) {
  * @param {string} newString - The suggested phone number string(s).
  * @returns {{oldDiff: string, newDiff: string}} - An object containing the HTML for both diffs.
  */
-function getDiffHtml(oldString, newString) {
+export function getDiffHtml(oldString, newString) {
     if (!oldString) {
         return { oldDiff: null, newDiff: `<span class="diff-added">${escapeHTML(newString).replace(/ /g, '&nbsp;')}</span>` };
     }
@@ -586,4 +587,3 @@ function getDiffHtml(oldString, newString) {
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
 }
 
-module.exports = { normalise, consolidatePlusSigns, replaceInvisibleChars, diffPhoneNumbers, getDiffHtml, mergeDiffs, getDiffTagsHtml };

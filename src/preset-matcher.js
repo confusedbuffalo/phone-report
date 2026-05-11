@@ -1,5 +1,9 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // --- Global Data Setup ---
 
@@ -72,7 +76,7 @@ loadTranslation('en');
  * @param {object} item - The OSM item object (must have 'type' and 'allTags').
  * @returns {('point'|'line'|'area'|'relation')} The determined geometry type.
  */
-function getGeometry(item) {
+export function getGeometry(item) {
     if (item.type === 'node') return 'point'; // TODO: could also be vertex, but is there anything that can only be a vertex and have a phone number?
 
     // For ways and relations, determine if it's an area based on 'area' tag
@@ -114,7 +118,7 @@ function getGeometry(item) {
  * @param {string} geometry - The target OSM feature's geometry type.
  * @returns {number} The match score. Higher scores indicate a better, more specific match.
  */
-function getMatchScore(preset, tags, geometry) {
+export function getMatchScore(preset, tags, geometry) {
     // Check geometry compatibility
     if (preset.geometry && !preset.geometry.includes(geometry)) {
         return -1;
@@ -161,7 +165,7 @@ function getMatchScore(preset, tags, geometry) {
  * @param {string} [locale='en'] - The desired language locale for the preset name translation.
  * @returns {object|null} A copy of the best matching preset with its name translated, or null if no match is found.
  */
-function getBestPreset(item, locale = 'en') {
+export function getBestPreset(item, locale = 'en') {
     const geometry = getGeometry(item);
     let bestPreset = null;
     let maxScore = -1;
@@ -200,9 +204,3 @@ function getBestPreset(item, locale = 'en') {
 
     return null;
 }
-
-module.exports = {
-    getBestPreset,
-    getGeometry,
-    getMatchScore
-};

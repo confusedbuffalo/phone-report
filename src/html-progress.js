@@ -1,12 +1,13 @@
-const { promises: fsPromises } = require('fs');
-const path = require('path');
-const { Eta } = require('eta');
-const { minify } = require('html-minifier-terser');
-const { translate } = require('./i18n');
-const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } = require('./constants');
-const { getFooterData, getIconAttributionHtml } = require('./html-utils');
-const { getTranslations } = require('./i18n');
-const { safeName } = require('./data-processor');
+import { promises as fsPromises } from 'fs';
+import path from 'path';
+import { Eta } from 'eta';
+import { minify } from 'html-minifier-terser';
+import { translate } from './i18n.js';
+import { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } from './constants.js';
+import { getFooterData, getIconAttributionHtml } from './html-utils.js';
+import { getTranslations } from './i18n.js';
+import { safeName } from './data-processor.js';
+import { fileURLToPath } from 'url';
 const BUILD_TYPE = process.env.BUILD_TYPE;
 const testMode = BUILD_TYPE === 'simplified';
 
@@ -17,7 +18,7 @@ const testMode = BUILD_TYPE === 'simplified';
  * @param {string} country - The slug for the country to create the progress page for (e.g. 'south-africa').
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  */
-async function generateProgressPage(reportType, country = null, locale = 'en-GB') {
+export async function generateProgressPage(reportType, country = null, locale = 'en-GB') {
     const rootDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
     const historyDataPath = path.join(rootDir, 'history-data.json');
 
@@ -78,7 +79,8 @@ async function generateProgressPage(reportType, country = null, locale = 'en-GB'
 }
 
 
-if (require.main === module) {
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
     (async () => {
         await generateProgressPage('phone');
         await generateProgressPage('name');
@@ -94,6 +96,5 @@ if (require.main === module) {
             }
         }
     })();
-}   
+}
 
-module.exports = { generateProgressPage };

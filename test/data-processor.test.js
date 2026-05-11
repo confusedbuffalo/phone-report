@@ -1,7 +1,7 @@
-const {
+import {
     safeName,
     isDisused,
-} = require('../src/data-processor');
+} from '../src/data-processor.js';
 
 describe('safeName', () => {
     // Array of tests: [input_name, expected_safe_name]

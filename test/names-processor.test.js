@@ -1,8 +1,8 @@
-const { Readable } = require('stream');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const { validateNames } = require("../src/names-processor");
+import { Readable } from 'stream';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import { validateNames } from "../src/names-processor.js";
 
 describe('validateNames', () => {
     let testCounter = 0;

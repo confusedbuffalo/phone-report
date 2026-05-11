@@ -1,5 +1,5 @@
-const { translate } = require('./i18n');
-const { ICON_ATTRIBUTION, GITHUB_LINK } = require('./constants.js')
+import { translate } from './i18n.js';
+import { ICON_ATTRIBUTION, GITHUB_LINK } from './constants.js';
 
 /**
  * Creates the HTML box displaying statistics.
@@ -12,7 +12,7 @@ const { ICON_ATTRIBUTION, GITHUB_LINK } = require('./constants.js')
  * @param {boolean} includeProgress - Whether or not to include a link to the progress page
  * @returns {string}
  */
-function createStatsBox(reportType, data, locale, includeProgress = false) {
+export function createStatsBox(reportType, data, locale, includeProgress = false) {
     const percentageOptions = {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -125,7 +125,7 @@ function createStatsBox(reportType, data, locale, includeProgress = false) {
  * @param {string} locale - The locale for translating the introductory text.
  * @returns {string} The HTML string for the icon attributions.
  */
-function getIconAttributionHtml(locale) {
+export function getIconAttributionHtml(locale) {
     const attributionSections = ICON_ATTRIBUTION.map(iconPack => {
         const nameElement = (iconPack.name && iconPack.link)
             ? `<a href="${iconPack.link}" target="_blank" rel="noopener noreferrer" class="footer-link">${iconPack.name}</a>`
@@ -154,7 +154,7 @@ function getIconAttributionHtml(locale) {
 /**
  * Prepares the localized date and time strings for the footer.
  */
-function getFooterData(locale, timestamp) {
+export function getFooterData(locale, timestamp) {
     const dataTimestamp = timestamp ? new Date(timestamp) : new Date();
     
     return {
@@ -173,7 +173,7 @@ function getFooterData(locale, timestamp) {
  * @param {string} str - The string to escape.
  * @returns {string} The escaped string.
  */
-function escapeHTML(str) {
+export function escapeHTML(str) {
     if (!str) {
         return '';
     }
@@ -189,9 +189,3 @@ function escapeHTML(str) {
     });
 }
 
-module.exports = {
-    createStatsBox,
-    getFooterData,
-    escapeHTML,
-    getIconAttributionHtml,
-};

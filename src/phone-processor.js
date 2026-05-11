@@ -1,6 +1,6 @@
-const fs = require('fs');
-const { parsePhoneNumber } = require('libphonenumber-js/max');
-const {
+import fs from 'fs';
+import { parsePhoneNumber } from 'libphonenumber-js/max';
+import {
     EXCLUSIONS,
     MOBILE_TAGS,
     WEBSITE_TAGS,
@@ -23,9 +23,8 @@ const {
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
     INVALID_SPACING_CHARACTERS_REGEX_TW,
-} = require('./constants');
-const { PhoneNumber } = require('libphonenumber-js');
-const { getRepresentativeLocation } = require('./data-processor');
+} from './constants.js';
+import { getRepresentativeLocation } from './data-processor.js';
 
 const MobileStatus = {
     MOBILE: 'mobile',
@@ -58,7 +57,7 @@ function checkMobileStatus(phoneNumber) {
  * @param {Object} tags The tags of the the OSM element
  * @returns {('phone'|'contact:phone')}
  */
-function phoneTagToUse(tags) {
+export function phoneTagToUse(tags) {
     const phoneTagPresent = 'phone' in tags;
     const contactTagPresent = 'contact:phone' in tags;
 
@@ -81,7 +80,7 @@ function phoneTagToUse(tags) {
  * @param {string} key2 The second OSM key.
  * @returns {string} The key that should be removed.
  */
-function keyToRemove(key1, key2) {
+export function keyToRemove(key1, key2) {
     // Look up the score. If a key is unknown, it's given a very low preference 
     // (Infinity), prioritizing its removal.
     const score1 = PHONE_TAG_PREFERENCE_ORDER[key1] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key1] : Infinity;
@@ -108,7 +107,7 @@ function keyToRemove(key1, key2) {
  * @param {string} countryCode - The country code.
  * @returns {boolean}
  */
-function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
+export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     if (!originalNumberStr || !newNumberStr) return false;
 
     // Digits, spaces, plus, dash and hyphens and invisible spacing characters
@@ -155,7 +154,7 @@ function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
  * @param {string} numberStr 
  * @returns {string} The core number string without the extension.
  */
-function stripStandardExtension(numberStr) {
+export function stripStandardExtension(numberStr) {
     const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
     if (match && match[1]) {
         return match[1].trim();
@@ -168,7 +167,7 @@ function stripStandardExtension(numberStr) {
  * @param {string} numberStr 
  * @returns {string} The core number string without the extension.
  */
-function getStandardExtension(numberStr) {
+export function getStandardExtension(numberStr) {
     const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
     if (match && match[3]) {
         return match[3].replace(/[^\d]/g, '');
@@ -181,7 +180,7 @@ function getStandardExtension(numberStr) {
  * @param {string} numberStr 
  * @returns {boolean|null} If the extension is in a standard format or null if there is no extension
  */
-function isStandardExtension(numberStr) {
+export function isStandardExtension(numberStr) {
     if (!numberStr) return null;
     const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
     const originalCaseMatch = numberStr.match(EXTENSION_REGEX);
@@ -217,7 +216,7 @@ function getSpacingRegex(countryCode) {
  * @returns {Object|null} - Returns an object with { isInvalid: false, autoFixable: true, suggestedFix } 
  * if an exclusion is matched, otherwise returns null.
  */
-function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
+export function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
     if (!phoneNumber || !numberStr) {
         return null;
     }
@@ -277,7 +276,7 @@ function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
  * hasStandardExtension: boolean
  * }} An object containing the core number, the extension and whether the extension is in a standard format.
  */
-function getNumberAndExtension(numberStr, countryCode) {
+export function getNumberAndExtension(numberStr, countryCode) {
     // DIN format has hyphen extension
     if (DIN_FORMAT_COUNTRIES.includes(countryCode)) {
         const match = numberStr.match(DIN_EXTENSION_REGEX);
@@ -408,7 +407,7 @@ function insertMissingItalianZero(numberStr) {
     return numberStr;
 }
 
-function isItalianMissingZeroNumber(phoneNumber, countryCode) {
+export function isItalianMissingZeroNumber(phoneNumber, countryCode) {
     if (countryCode !== 'IT' || phoneNumber.isValid()) return false;
     return phoneNumber.number !== insertMissingItalianZero(phoneNumber.number);
 }
@@ -418,7 +417,7 @@ function isItalianMissingZeroNumber(phoneNumber, countryCode) {
  * @param {string} urlString The URL string to check.
  * @returns {boolean} True if the host is valid.
  */
-const isWhatsappUrl = (urlString) => {
+export const isWhatsappUrl = (urlString) => {
     const validWhatsappHosts = ['wa.me', 'whatsapp.com'];
 
     let fullUrlString = urlString;
@@ -458,7 +457,7 @@ const isWhatsappUrl = (urlString) => {
  * @param {string} countryCode - The country code being checked against
  * @returns {boolean}
  */
-function getWhatsappNumber(numberStr) {
+export function getWhatsappNumber(numberStr) {
     let isValidWhatsappUrl = false;
     let cleanNumberStr = numberStr;
 
@@ -526,7 +525,7 @@ function convertPhonewordToDigits(phoneword) {
  * @param {string} tag - The OSM phone tag being used for this number
  * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean, validPhonewords: boolean, foreign: string|null}}
  */
-function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
+export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     let suggestedFix = null, phoneNumber = null, foreign = null;
     let autoFixable = true;
     let isInvalid = false, typeMismatch = false, validPhonewords = false;
@@ -680,7 +679,7 @@ function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
  * @param {string} tag - The OSM phone tag being used for this number
  * @returns {boolean} - Whether forward slash should be treated as a space character.
  */
-function isSlashSpace(tagValue, countryCode, osmTags, tag) {
+export function isSlashSpace(tagValue, countryCode, osmTags, tag) {
     const validationResult = processSingleNumber(tagValue, countryCode, osmTags, tag);
     return (!validationResult.isInvalid || validationResult.autoFixable);
 }
@@ -734,7 +733,7 @@ function expandSlashEnding(tagValue, countryCode, osmTags, tag) {
  * @property {Array<phoneNumber>} validNumbersList - A list of all valid phone numbers found in the tag.
  * @property {Map<string, string>} validForeignNumbersMap - A map of all valid but foreign phone numbers found in the tag, phone string to country code.
  */
-function validateSingleTag(tagValue, countryCode, osmTags, tag) {
+export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const originalTagValue = tagValue.trim();
 
     // Check if a bad separator was used
@@ -900,7 +899,7 @@ function processMismatches(item, countryCode) {
  * @param {string} countryCode - The country code for validation.
  * @returns {boolean}
  */
-function isSafeItemEdit(item, countryCode) {
+export function isSafeItemEdit(item, countryCode) {
     // Not safe if there are any mismatch type numbers or duplicate numbers
     if (
         !item.autoFixable
@@ -952,7 +951,7 @@ function isSafeItemEdit(item, countryCode) {
  * safeEditCount: number
  * }} An object containing the breakdown of record counts.
  */
-async function validateNumbers(elementStream, countryCode, tmpFilePath) {
+export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
     countryCode = countryCode.split('-')[0]; // In case of ISO 3166-2 region code being used at division level
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
@@ -1254,21 +1253,3 @@ async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 }
 
 
-module.exports = {
-    validateNumbers,
-    phoneTagToUse,
-    stripStandardExtension,
-    getStandardExtension,
-    isStandardExtension,
-    getNumberAndExtension,
-    processSingleNumber,
-    validateSingleTag,
-    checkExclusions,
-    keyToRemove,
-    isSafeEdit,
-    isSafeItemEdit,
-    getWhatsappNumber,
-    isWhatsappUrl,
-    isItalianMissingZeroNumber,
-    isSlashSpace,
-};
