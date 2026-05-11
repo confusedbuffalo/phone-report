@@ -1,6 +1,6 @@
-const fs = require('fs');
-const { WEBSITE_TAGS } = require('./constants');
-const { getRepresentativeLocation } = require('./data-processor');
+import fs from 'fs';
+import { WEBSITE_TAGS } from './constants.js';
+import { getRepresentativeLocation } from './data-processor.js';
 
 /**
  * Validates names.
@@ -13,7 +13,7 @@ const { getRepresentativeLocation } = require('./data-processor');
  * missingNames: number
  * }} An object containing the breakdown of record counts.
  */
-async function validateNames(elementStream, countryCode, tmpFilePath) {
+export async function validateNames(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
     let isFirstItem = true;
@@ -133,6 +133,3 @@ async function validateNames(elementStream, countryCode, tmpFilePath) {
     return { totalNames, incompleteNames, missingNames };
 }
 
-module.exports = {
-    validateNames,
-};

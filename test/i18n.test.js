@@ -1,8 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const { MASTER_KEYS } = require('./i18n.master');
-const { translate, getTranslations } = require('../src/i18n.js');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { MASTER_KEYS } from './i18n.master.js';
+import { translate, getTranslations } from '../src/i18n.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Helper to load all translation files
 const localesDir = path.join(__dirname, '../locales');
@@ -10,7 +13,7 @@ const translationFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.json'))
     .map(file => ({
         locale: file.replace('.json', ''),
-        content: require(path.join(localesDir, file))
+        content: JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8'))
     }));
 
 // List of all expected keys
@@ -153,28 +156,28 @@ describe('i18n Module Functionality', () => {
 
         test('should handle simple single-argument substitution for %c', () => {
             const expected = 'OSM Phone Number Validation Report - Testland';
-            const master = require('../locales/en.json').countryReportTitle;
+            const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).countryReportTitle;
             expect(master).toContain('%c'); // Ensure master key is correct
             expect(translate('countryReportTitle', 'en', ['Testland'])).toBe(expected);
         });
 
         test('should handle single-argument substitution for %e', () => {
             const expected = 'Edit in JOSM';
-            const master = require('../locales/en.json').editIn;
+            const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).editIn;
             expect(master).toContain('%e'); // Ensure master key is correct
             expect(translate('editIn', 'en', ['JOSM'])).toBe(expected);
         });
 
         test('should handle single-argument substitution for %p', () => {
             const expected = '12.34% of total';
-            const master = require('../locales/en.json').invalidPercentageOfTotal;
+            const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).invalidPercentageOfTotal;
             expect(master).toContain('%p'); // Ensure master key is correct
             expect(translate('invalidPercentageOfTotal', 'en', ['12.34'])).toBe(expected);
         });
 
         test('should handle multi-argument substitution for invalidNumbersOutOf', () => {
             const expected = '10 invalid numbers (5 potentially fixable) out of 100';
-            const master = require('../locales/en.json').invalidNumbersOutOf;
+            const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).invalidNumbersOutOf;
             expect(master).toContain('%i');
             expect(master).toContain('%f');
             expect(master).toContain('%t');
@@ -183,7 +186,7 @@ describe('i18n Module Functionality', () => {
 
         test('should handle multi-argument substitution for dataSourcedTemplate', () => {
             const expected = 'Data sourced on Date at Time UTC (Now)';
-            const master = require('../locales/en.json').dataSourcedTemplate;
+            const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).dataSourcedTemplate;
             expect(master).toContain('%d');
             expect(master).toContain('%t');
             expect(master).toContain('%z');

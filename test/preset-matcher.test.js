@@ -1,10 +1,14 @@
-const { getBestPreset, getMatchScore, getGeometry } = require('../src/preset-matcher.js');
+import { jest } from '@jest/globals';
 
 // 1. Mock the file system to prevent errors when requiring the main file
-jest.mock('fs', () => ({
-    readFileSync: jest.fn(() => JSON.stringify({})),
-    existsSync: jest.fn(() => false)
+jest.unstable_mockModule('fs', () => ({
+    default: {
+        readFileSync: jest.fn(() => JSON.stringify({})),
+        existsSync: jest.fn(() => false)
+    }
 }));
+
+const { getBestPreset, getMatchScore, getGeometry } = await import('../src/preset-matcher.js');
 
 // --- Test Data ---
 

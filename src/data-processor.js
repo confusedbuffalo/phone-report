@@ -1,6 +1,6 @@
-const pointOnFeature = require('@turf/point-on-feature').default;
-const { getBestPreset, getGeometry } = require('./preset-matcher');
-const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES } = require('./constants');
+import { pointOnFeature } from '@turf/turf';
+import { getBestPreset, getGeometry } from './preset-matcher.js';
+import { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES } from './constants.js';
 
 
 /**
@@ -14,7 +14,7 @@ const { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES } = require('./constants');
  * @param {string} name - The country or region name to convert.
  * @returns {string} The safe, slugified string.
  */
-function safeName(name) {
+export function safeName(name) {
     if (!name) {
         return '';
     }
@@ -55,7 +55,7 @@ function safeName(name) {
  * @param {object} item - An OSM object including allTags.
  * @returns {boolean} True if the feature is considered disused.
  */
-function isDisused(item) {
+export function isDisused(item) {
     const featureType = getFeatureType(item);
     if (featureType) {
         return false
@@ -94,7 +94,7 @@ function getFeatureType(item) {
  * @param {string} locale - The locale for translating preset names.
  * @returns {string} A displayable name for the feature.
  */
-function getFeatureTypeName(item, locale) {
+export function getFeatureTypeName(item, locale) {
     if (item.name) {
         return `${item.name}`;
     }
@@ -116,7 +116,7 @@ function getFeatureTypeName(item, locale) {
  * @param {string} locale - The locale used for preset matching.
  * @returns {string} The icon name (e.g., 'iD-icon-point', 'maki-restaurant').
  */
-function getFeatureIcon(item, locale) {
+export function getFeatureIcon(item, locale) {
     const preset = getBestPreset(item, locale);
     if (preset && preset.icon) {
         return preset.icon;
@@ -139,7 +139,7 @@ function getFeatureIcon(item, locale) {
  * * @param {Object} geometry - A GeoJSON geometry object (Polygon, MultiPolygon, etc.)
  * @returns {Object} An object containing lat and lng.
  */
-function getRepresentativeLocation(geometry) {
+export function getRepresentativeLocation(geometry) {
     if (!geometry) return null;
 
     const representativePoint = pointOnFeature(geometry);
@@ -152,10 +152,3 @@ function getRepresentativeLocation(geometry) {
 }
 
 
-module.exports = {
-    safeName,
-    isDisused,
-    getFeatureTypeName,
-    getFeatureIcon,
-    getRepresentativeLocation,
-};

@@ -1,9 +1,9 @@
-const { Readable } = require('stream');
-const os = require('os');
-const path = require('path');
-const fs = require('fs');
+import { Readable } from 'stream';
+import os from 'os';
+import path from 'path';
+import fs from 'fs';
 
-const {
+import {
     stripStandardExtension,
     checkExclusions,
     processSingleNumber,
@@ -17,7 +17,7 @@ const {
     isSafeItemEdit,
     isStandardExtension,
     getWhatsappNumber,
-} = require('../src/phone-processor');
+} from '../src/phone-processor.js';
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
 const SAMPLE_COUNTRY_CODE_DE = 'DE';

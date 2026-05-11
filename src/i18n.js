@@ -1,6 +1,10 @@
 // i18n.js
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const locales = {};
 const LOCALE_DIR = path.join(__dirname, '../locales');
@@ -26,7 +30,7 @@ try {
  * @param {Array<string>} [args=[]] - Array of strings for positional placeholders.
  * @returns {string} The translated string.
  */
-function translate(key, locale, args = []) {
+export function translate(key, locale, args = []) {
     const translation = locales[locale]?.[key] || locales[DEFAULT_LOCALE]?.[key] || `MISSING_KEY:${key}`;
 
     let output = translation;
@@ -67,9 +71,7 @@ function translate(key, locale, args = []) {
  * @param {string} locale - The target locale (e.g., 'fr-FR').
  * @returns {Object} The translation dictionary or an empty object.
  */
-function getTranslations(locale) {
+export function getTranslations(locale) {
     // Fallback to the default locale if the specific one is missing
     return locales[locale] || locales[DEFAULT_LOCALE] || {};
 }
-
-module.exports = { translate, getTranslations };

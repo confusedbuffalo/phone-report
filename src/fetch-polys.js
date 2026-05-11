@@ -1,7 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const axios = require('axios');
-const { COUNTRIES, POLY_DIR } = require('./constants');
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import { fileURLToPath } from 'url';
+import { COUNTRIES, POLY_DIR } from './constants.js';
 
 const BASE_URL = 'https://polygons.openstreetmap.fr/get_poly.py?id=';
 
@@ -11,7 +12,7 @@ const isRefresh = process.argv.includes('--refresh');
  * Extracts all unique subdivision IDs from a country object.
  * Handles flat 'divisions', nested 'divisionMap' and both primitive IDs or Object structures.
  */
-function getSubdivisionIds(country) {
+export function getSubdivisionIds(country) {
     // Helper to extract the ID regardless of whether the value is a number or an object
     const extractId = (val) => (typeof val === 'object' && val !== null ? val.relationId : val);
 
@@ -104,10 +105,8 @@ async function run() {
     console.log('Done!');
 }
 
-if (require.main === module) {
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
     run();
 }
 
-module.exports = {
-    getSubdivisionIds,
-};

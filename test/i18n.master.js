@@ -1,4 +1,4 @@
-const MASTER_KEYS = {
+export const MASTER_KEYS = {
     // --- Basic Keys (No Placeholders Required) ---
     'numbersChecked': [],
     'invalidNumbers': [],
@@ -106,5 +106,3 @@ const MASTER_KEYS = {
     'countryReportTitle': ['%c'],
     'countryReportTitleNames': ['%c']
 };
-
-module.exports = { MASTER_KEYS };

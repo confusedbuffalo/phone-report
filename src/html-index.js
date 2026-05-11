@@ -1,11 +1,11 @@
-const { promises: fsPromises } = require('fs');
-const path = require('path');
-const { Eta } = require('eta');
-const { minify } = require('html-minifier-terser');
-const { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } = require('./constants');
-const { translate } = require('./i18n');
-const { getFooterData, getIconAttributionHtml } = require('./html-utils');
-const { safeName } = require('./data-processor');
+import { promises as fsPromises } from 'fs';
+import path from 'path';
+import { Eta } from 'eta';
+import { minify } from 'html-minifier-terser';
+import { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } from './constants.js';
+import { translate } from './i18n.js';
+import { getFooterData, getIconAttributionHtml } from './html-utils.js';
+import { safeName } from './data-processor.js';
 
 /**
  * Flattens the countries JSON into a searchable array.
@@ -82,7 +82,7 @@ function buildSearchIndex() {
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  * @param {Object} translations
  */
-async function generateMainIndexHtml(reportType, countryStats, locale, translations) {
+export async function generateMainIndexHtml(reportType, countryStats, locale, translations) {
 
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),
@@ -119,6 +119,3 @@ async function generateMainIndexHtml(reportType, countryStats, locale, translati
     console.log('Main index.html generated.');
 }
 
-module.exports = {
-    generateMainIndexHtml,
-};

@@ -1,7 +1,8 @@
-const fs = require('fs/promises');
-const path = require('path');
-const { ICONS_DIR, GITHUB_ICON_PACKS, GITHUB_API_BASE_URL } = require('./constants.js')
-const AdmZip = require('adm-zip');
+import fs from 'fs/promises';
+import path from 'path';
+import { ICONS_DIR, GITHUB_ICON_PACKS, GITHUB_API_BASE_URL } from './constants.js'
+import AdmZip from 'adm-zip';
+import fetch from 'node-fetch';
 
 
 /**
@@ -15,9 +16,6 @@ async function downloadSinglePack(packName, packDetails) {
     const FINAL_OUTPUT_DIR = path.join(ICONS_DIR, packDetails.output_sub_dir);
     console.log(`\n--- Processing Pack: ${packName} ---`);
     console.log(`  Source: ${owner}/${repo}/${folder_path}`);
-
-    // Use dynamic import for fetch
-    const { default: fetch } = await import('node-fetch');
 
     const headers = {
         'Authorization': `token ${process.env.GITHUB_TOKEN}`,
@@ -89,8 +87,6 @@ async function downloadFlagpediaIcons() {
 
     console.log(`\n--- Processing Pack: Flagpedia ---`);
     console.log(`  Source: ${FLAG_URL}`);
-
-    const { default: fetch } = await import('node-fetch');
 
     try {
         // 1. Ensure icons directory exists

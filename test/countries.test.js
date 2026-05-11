@@ -1,14 +1,17 @@
-const fs = require('fs');
-const path = require('path');
-const { COUNTRIES } = require('../src/constants.js');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { COUNTRIES } from '../src/constants.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const localesDir = path.join(__dirname, '../locales');
 const translationFiles = fs.readdirSync(localesDir)
     .filter(file => file.endsWith('.json'))
     .map(file => ({
         locale: file.replace('.json', ''),
-        content: require(path.join(localesDir, file))
+        content: JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8'))
     }));
 
 describe('Countries file tests', () => {

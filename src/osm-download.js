@@ -1,11 +1,11 @@
-const os = require('os');
-const axios = require('axios');
-const fs = require('fs');
-const { exec } = require('child_process');
-const path = require('path');
-const { promisify } = require('util');
-const { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } = require('./constants');
-const { getSubdivisionIds } = require('./fetch-polys');
+import os from 'os';
+import axios from 'axios';
+import fs from 'fs';
+import { exec } from 'child_process';
+import path from 'path';
+import { promisify } from 'util';
+import { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } from './constants.js';
+import { getSubdivisionIds } from './fetch-polys.js';
 
 const execPromise = promisify(exec);
 
@@ -15,7 +15,7 @@ const execPromise = promisify(exec);
  * @param {string} url - The URL of the .osm.pbf file.
  * @param {string} outputPath - Where to save the file.
  */
-async function downloadPbf(url, outputPath) {
+export async function downloadPbf(url, outputPath) {
     try {
         console.log(`Downloading: ${url}`);
         const response = await axios({
@@ -41,7 +41,7 @@ async function downloadPbf(url, outputPath) {
  * @param {string} inputPath - The filename of the .osm.pbf file.
  * @param {string} outputPath - Where to save the filtered file.
  */
-async function filterPbfPhone(inputPath, outputPath) {
+export async function filterPbfPhone(inputPath, outputPath) {
     try {
         const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
 
@@ -57,7 +57,7 @@ async function filterPbfPhone(inputPath, outputPath) {
  * @param {string} inputPath - The filename of the .osm.pbf file.
  * @param {string} outputPath - Where to save the filtered file.
  */
-async function filterPbfName(inputPath, outputPath) {
+export async function filterPbfName(inputPath, outputPath) {
     try {
         const filterExpression = "name:*";
 
@@ -82,7 +82,7 @@ async function filterPbfName(inputPath, outputPath) {
  * @returns {Promise<void>} Resolves when the extraction process is complete for all IDs.
  * @throws {Error} Logs an error if the `osmium` command fails for a specific division.
  */
-async function splitPbf(filteredFilePath, outputDir, country = null, division = null) {
+export async function splitPbf(filteredFilePath, outputDir, country = null, division = null) {
     const ids = division ? [division.relationId] : getSubdivisionIds(country);
 
     if (!fs.existsSync(outputDir)) {
@@ -118,7 +118,7 @@ async function splitPbf(filteredFilePath, outputDir, country = null, division = 
  * @param {string} pbfUrl - The URL to the .osm.pbf file
  * @returns {Promise<string|null>} The ISO timestamp string
  */
-async function getOsmTimestamp(pbfUrl) {
+export async function getOsmTimestamp(pbfUrl) {
     try {
         // Handle Geofabrik and geo2day via HTTP Headers
         if (pbfUrl.includes('geofabrik.de') || pbfUrl.includes('geo2day.com')) {
@@ -165,10 +165,3 @@ async function getOsmTimestamp(pbfUrl) {
     }
 }
 
-module.exports = {
-    downloadPbf,
-    filterPbfPhone,
-    filterPbfName,
-    splitPbf,
-    getOsmTimestamp,
-};

@@ -1,16 +1,22 @@
-const path = require('path');
-const { translate } = require('./i18n');
-const packageInfo = require('../package.json');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import { translate } from './i18n.js';
 
-const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-const NAMES_BUILD_DIR = path.join(__dirname, '..', 'names_build');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
-const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
-const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
-const FAX_TAGS = ['fax', 'contact:fax'];
-const OTHER_TAGS = ['contact:whatsapp'];
-const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
+const packageInfo = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+
+export const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+export const NAMES_BUILD_DIR = path.join(__dirname, '..', 'names_build');
+
+export const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
+export const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
+export const PHONE_TAGS = [...MOBILE_TAGS, ...NON_MOBILE_TAGS];
+export const FAX_TAGS = ['fax', 'contact:fax'];
+export const OTHER_TAGS = ['contact:whatsapp'];
+export const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
 
 /**
  * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
@@ -26,7 +32,7 @@ const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
  * 6. fax (5)
  * 7. contact:fax (6)
  */
-const PHONE_TAG_PREFERENCE_ORDER = {
+export const PHONE_TAG_PREFERENCE_ORDER = {
     'phone': 0,
     'contact:phone': 1,
     'mobile': 2,
@@ -36,23 +42,23 @@ const PHONE_TAG_PREFERENCE_ORDER = {
     'contact:fax': 6,
 };
 
-const WEBSITE_TAGS = ['website', 'contact:website'];
+export const WEBSITE_TAGS = ['website', 'contact:website'];
 
-const COUNTRIES = require(path.join(__dirname, 'data', 'countries.json'));
+export const COUNTRIES = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'countries.json'), 'utf8'));
 
 // Order matters: first found one is preferred
 // These are only used if the element has no name
-const FEATURE_TAGS = [
+export const FEATURE_TAGS = [
     'amenity', 'shop', 'tourism', 'leisure', 'emergency', 'building',
     'craft', 'aeroway', 'railway', 'healthcare', 'highway', 'military',
     'man_made', 'public_transport', 'landuse', 'natural', 'barrier', 'historic'
 ];
 
-const HISTORIC_AND_DISUSED_PREFIXES = [
+export const HISTORIC_AND_DISUSED_PREFIXES = [
     'disused', 'historic', 'was', 'abandoned'
 ]
 
-const OSM_EDITORS = {
+export const OSM_EDITORS = {
     "JOSM": {
         getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
@@ -93,12 +99,12 @@ const OSM_EDITORS = {
     },
 };
 
-const ALL_EDITOR_IDS = Object.keys(OSM_EDITORS);
+export const ALL_EDITOR_IDS = Object.keys(OSM_EDITORS);
 
-const DEFAULT_EDITORS_DESKTOP = ["JOSM"];
-const DEFAULT_EDITORS_MOBILE = ["Geo", "Level0"];
+export const DEFAULT_EDITORS_DESKTOP = ["JOSM"];
+export const DEFAULT_EDITORS_MOBILE = ["Geo", "Level0"];
 
-const EXCLUSIONS = {
+export const EXCLUSIONS = {
     'DE': {
         '115': {
             'office': 'government',
@@ -116,15 +122,15 @@ const EXCLUSIONS = {
 // PL: wew, wewn
 // It captures each of everything before the extension marker and everything after
 // strings are lowercased before checking against this
-const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|poste|wewn?\.?)\s*)(\d*)\)?$/;
-const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x']
+export const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|poste|wewn?\.?)\s*)(\d*)\)?$/;
+export const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x']
 
-const DIN_FORMAT_COUNTRIES = ['AT', 'DE']
+export const DIN_FORMAT_COUNTRIES = ['AT', 'DE']
 
 // DIN format has hyphen then extension
-const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
+export const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 
-const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
+export const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
     'IE', // https://community.openstreetmap.org/t/validating-phone-numbers-in-ireland/143173/4
@@ -132,21 +138,21 @@ const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
 ]
 
-const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
+export const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE']
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
 const goodSeparator = [';'];
 const badSeparatorOptionalSpace = [',', '/', '|'];
 
-const SEPARATOR_OPTIONAL_SPACE = [...goodSeparator, ...badSeparatorOptionalSpace];
-const SEPARATOR_OPTIONAL_SPACE_DIN = [';', ',', '|'];
-const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y', 'ou'];
+export const SEPARATOR_OPTIONAL_SPACE = [...goodSeparator, ...badSeparatorOptionalSpace];
+export const SEPARATOR_OPTIONAL_SPACE_DIN = [';', ',', '|'];
+export const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y', 'ou'];
 
 const escapeRegex = (string) => {
     return string.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&');
 };
 
-const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
+export const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
     const escapedSep = escapeRegex(sep);
 
     if (sep === ';') {
@@ -161,7 +167,7 @@ const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
 
-const spaceOptionalGroupsDin = SEPARATOR_OPTIONAL_SPACE_DIN.map(sep => {
+export const spaceOptionalGroupsDin = SEPARATOR_OPTIONAL_SPACE_DIN.map(sep => {
     const escapedSep = escapeRegex(sep);
 
     if (sep === ';') {
@@ -176,7 +182,7 @@ const spaceOptionalGroupsDin = SEPARATOR_OPTIONAL_SPACE_DIN.map(sep => {
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
 
-const needSpacesGroups = SEPARATOR_NEED_SPACE.map(sep => {
+export const needSpacesGroups = SEPARATOR_NEED_SPACE.map(sep => {
     const escapedSep = escapeRegex(sep);
     return `(\\s+${escapedSep}\\s+)`;
 }).join('|');
@@ -186,23 +192,23 @@ const badSeparatorOptionalSpaceGroups = badSeparatorOptionalSpace.map(sep => {
     return `(\\s*${escapedSep}\\s*)`;
 }).join('|');
 
-const BAD_SEPARATOR_REGEX = new RegExp(`${badSeparatorOptionalSpaceGroups}|${needSpacesGroups}`, 'gi');
+export const BAD_SEPARATOR_REGEX = new RegExp(`${badSeparatorOptionalSpaceGroups}|${needSpacesGroups}`, 'gi');
 
-const ALL_SEPARATOR_GROUPS = `${spaceOptionalGroups}|${needSpacesGroups}`;
+export const ALL_SEPARATOR_GROUPS = `${spaceOptionalGroups}|${needSpacesGroups}`;
 const allGroupsDe = `${spaceOptionalGroupsDin}|${needSpacesGroups}`;
 
 const CAPTURING_GROUP_TO_NON_CAPTURING_REGEX = /\((?!\?)(.*?)\)/g;
 
 // Includes capturing groups to get the separators back
 // When used in diff, the groups need to be capturing
-const UNIVERSAL_SPLIT_CAPTURE_REGEX = new RegExp(ALL_SEPARATOR_GROUPS, 'gi');
-const UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN = new RegExp(allGroupsDe, 'gi');
+export const UNIVERSAL_SPLIT_CAPTURE_REGEX = new RegExp(ALL_SEPARATOR_GROUPS, 'gi');
+export const UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN = new RegExp(allGroupsDe, 'gi');
 
-const UNIVERSAL_SPLIT_REGEX = new RegExp(
+export const UNIVERSAL_SPLIT_REGEX = new RegExp(
     ALL_SEPARATOR_GROUPS.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'),
     'gi'
 );
-const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
+export const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
     allGroupsDe.replace(CAPTURING_GROUP_TO_NON_CAPTURING_REGEX, '(?:$1)'),
     'gi'
 );
@@ -210,12 +216,12 @@ const UNIVERSAL_SPLIT_REGEX_DIN = new RegExp(
 // Characters that libphonenumbers does not parse but may be used instead of spaces
 // Includes all other spacing characters, such as thin space
 // also directional isolates
-const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g;
+export const INVALID_SPACING_CHARACTERS_REGEX = /_|·|~|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g;
 
 // TW: tilde is used for denoting an extension
-const INVALID_SPACING_CHARACTERS_REGEX_TW = /_|·|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g;
+export const INVALID_SPACING_CHARACTERS_REGEX_TW = /_|·|•|\u2068|\u2069|[\u202A-\u202E]|(?![ ])\s/g;
 
-const ICON_ATTRIBUTION = [
+export const ICON_ATTRIBUTION = [
     {
         name: 'Font Awesome Icons',
         license: '(CC BY 4.0)',
@@ -255,7 +261,7 @@ const ICON_ATTRIBUTION = [
     },
 ]
 
-const GITHUB_ICON_PACKS = {
+export const GITHUB_ICON_PACKS = {
     'roentgen': {
         owner: 'enzet',
         repo: 'Roentgen',
@@ -276,16 +282,16 @@ const GITHUB_ICON_PACKS = {
     }
 }
 
-const ICONS_DIR = path.join(__dirname, '..', 'icons');
-const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
+export const ICONS_DIR = path.join(__dirname, '..', 'icons');
+export const GITHUB_API_BASE_URL = 'https://api.github.com/repos';
 
-const HISTORY_DIR = path.join(__dirname, '..', 'history');
-const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
-const POLY_DIR = path.join(__dirname, '..', 'poly');
-const OSM_DIR = path.join(__dirname, '..', 'osm');
+export const HISTORY_DIR = path.join(__dirname, '..', 'history');
+export const SAFE_EDITS_DIR = path.join(__dirname, '..', 'safe_edits');
+export const POLY_DIR = path.join(__dirname, '..', 'poly');
+export const OSM_DIR = path.join(__dirname, '..', 'osm');
 
-const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
-const HOST_URL = {
+export const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
+export const HOST_URL = {
     'phone': 'https://confusedbuffalo.github.io/phone-report/',
     'name': 'https://names-report.pages.dev/',
 };
@@ -294,7 +300,7 @@ const PACKAGE_NAME = packageInfo.name;
 const PACKAGE_VERSION = packageInfo.version;
 const PACKAGE_STRING = `${PACKAGE_NAME}/${PACKAGE_VERSION}`;
 
-const CHANGESET_TAGS = {
+export const CHANGESET_TAGS = {
     'phone': {
         "comment": "Fix phone number issues: missing country code, incorrect separators, extra characters, duplicate phone numbers",
         "created_by": PACKAGE_STRING,
@@ -307,7 +313,7 @@ const CHANGESET_TAGS = {
     },
 }
 
-const AUTO_CHANGESET_TAGS = {
+export const AUTO_CHANGESET_TAGS = {
     "comment": "Automatically fix phone number issues: missing country code, extra punctuation",
     "created_by": PACKAGE_STRING,
     "bot": "yes",
@@ -316,7 +322,7 @@ const AUTO_CHANGESET_TAGS = {
     "osm_wiki_documentation_page": "https://wiki.openstreetmap.org/wiki/Automated_edits/confusedbuffalo/Fix_basic_phone_number_issues",
 }
 
-const NANP_COUNTRY_CODES = [
+export const NANP_COUNTRY_CODES = [
     'US', // United States
     'CA', // Canada
     'AG', // Antigua and Barbuda
@@ -344,80 +350,25 @@ const NANP_COUNTRY_CODES = [
     'VI', // U.S. Virgin Islands
 ];
 
-const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'BL', 'GB', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT', 'ZA'];
-const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT'];
+export const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [...NANP_COUNTRY_CODES, 'BL', 'GB', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT', 'ZA'];
+export const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT'];
 
-const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
+export const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG']
 
-const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
+export const CAN_REFORMAT_NUMBER_WITHOUT_SPACES = [
     'MA', // https://github.com/confusedbuffalo/phone-report/issues/234#issuecomment-4230467314
 ]
 
 const BUILD_TYPE = process.env.BUILD_TYPE;
-const IS_TEST_MODE =
+export const IS_TEST_MODE =
     BUILD_TYPE === 'simplified' ||
     process.env.NODE_ENV === 'test' ||
     typeof jest !== 'undefined';
 
-const MINIFY_OPTIONS = {
+export const MINIFY_OPTIONS = {
     collapseWhitespace: true,
     removeComments: true,
     minifyCSS: true,
     minifyJS: true,
 };
 
-module.exports = {
-    PUBLIC_DIR,
-    NAMES_BUILD_DIR,
-    MOBILE_TAGS,
-    NON_MOBILE_TAGS,
-    PHONE_TAGS,
-    FAX_TAGS,
-    ALL_NUMBER_TAGS,
-    WEBSITE_TAGS,
-    COUNTRIES,
-    FEATURE_TAGS,
-    HISTORIC_AND_DISUSED_PREFIXES,
-    OSM_EDITORS,
-    ALL_EDITOR_IDS,
-    DEFAULT_EDITORS_DESKTOP,
-    DEFAULT_EDITORS_MOBILE,
-    EXCLUSIONS,
-    BAD_SEPARATOR_REGEX,
-    UNIVERSAL_SPLIT_REGEX,
-    UNIVERSAL_SPLIT_REGEX_DIN,
-    UNIVERSAL_SPLIT_CAPTURE_REGEX,
-    UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN,
-    ALL_SEPARATOR_GROUPS,
-    SEPARATOR_NEED_SPACE,
-    SEPARATOR_OPTIONAL_SPACE,
-    SEPARATOR_OPTIONAL_SPACE_DIN,
-    ICONS_DIR,
-    GITHUB_API_BASE_URL,
-    GITHUB_ICON_PACKS,
-    ICON_ATTRIBUTION,
-    HISTORY_DIR,
-    SAFE_EDITS_DIR,
-    POLY_DIR,
-    OSM_DIR,
-    PHONE_TAG_PREFERENCE_ORDER,
-    EXTENSION_REGEX,
-    DIN_EXTENSION_REGEX,
-    ACCEPTABLE_EXTENSION_FORMATS,
-    CHANGESET_TAGS,
-    AUTO_CHANGESET_TAGS,
-    GITHUB_LINK,
-    HOST_URL,
-    NANP_COUNTRY_CODES,
-    TOLL_FREE_AS_NATIONAL_COUNTRIES,
-    NON_STANDARD_COST_TYPES,
-    INVALID_SPACING_CHARACTERS_REGEX,
-    INVALID_SPACING_CHARACTERS_REGEX_TW,
-    CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS,
-    INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
-    COUNTRIES_WITH_PHONEWORDS,
-    DIN_FORMAT_COUNTRIES,
-    CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
-    IS_TEST_MODE,
-    MINIFY_OPTIONS,
-};

@@ -1,63 +1,72 @@
-const { createJosmFixUrl, generateHtmlReport } = require('../src/html-report.js');
-const fs = require('fs');
-const Stream = require('stream');
+import { jest } from '@jest/globals';
 
 // Mock fs module
-jest.mock('fs', () => {
+jest.unstable_mockModule('fs', () => {
     const originalFs = jest.requireActual('fs');
-    const Stream = require('stream');
+    const Stream = jest.requireActual('stream');
+    const promises = {
+        writeFile: jest.fn().mockResolvedValue(),
+    };
 
     return {
         ...originalFs,
-        promises: {
-            ...originalFs.promises,
-            writeFile: jest.fn().mockResolvedValue(), 
-        },
-        createReadStream: jest.fn().mockImplementation(() => {
-            const readable = new Stream.Readable();
-            readable.push('[]');
-            readable.push(null);
-            return readable;
-        }),
-        createWriteStream: jest.fn().mockImplementation(() => {
-            const writable = new Stream.Writable({
-                highWaterMark: 16 
-            });
-
-            writable._write = (chunk, encoding, callback) => {
-                callback();
-            };
-
-            const originalEnd = writable.end;
-            writable.end = function(...args) {
-                originalEnd.apply(this, args);
-                
-                process.nextTick(() => {
-                    writable.emit('finish');
+        promises: promises,
+        default: {
+            ...originalFs,
+            promises: promises,
+            createReadStream: jest.fn().mockImplementation(() => {
+                const readable = new Stream.Readable();
+                readable.push('[]');
+                readable.push(null);
+                return readable;
+            }),
+            createWriteStream: jest.fn().mockImplementation(() => {
+                const writable = new Stream.Writable({
+                    highWaterMark: 16
                 });
-            };
 
-            return writable;
-        }),
+                writable._write = (chunk, encoding, callback) => {
+                    callback();
+                };
+
+                const originalEnd = writable.end;
+                writable.end = function(...args) {
+                    originalEnd.apply(this, args);
+
+                    process.nextTick(() => {
+                        writable.emit('finish');
+                    });
+                };
+
+                return writable;
+            }),
+        }
     };
 });
 
+const fs = (await import('fs')).default;
+const Stream = (await import('stream')).default;
 
-jest.mock('../src/i18n', () => ({
+jest.unstable_mockModule('../src/i18n.js', () => ({
     translate: (key, locale, args) => {
         if (args) return `${key}: ${args.join(',')}`;
         return key;
     },
+    getTranslations: (locale) => ({}),
 }));
 
-jest.mock('../src/diff-renderer.js', () => ({
+jest.unstable_mockModule('../src/diff-renderer.js', () => ({
     getDiffHtml: (original, suggested) => ({
         oldDiff: original,
         newDiff: suggested,
     }),
+    getDiffTagsHtml: (oldTag, newTag) => ({
+        oldTagDiff: oldTag,
+        newTagDiff: newTag,
+    }),
 }));
 
-jest.mock('../src/icon-manager.js', () => ({
+jest.unstable_mockModule('../src/icon-manager.js', () => ({
     IconManager: jest.fn().mockImplementation(() => {
         return {
             getIconHtml: () => '<i>icon</i>',
@@ -67,12 +76,15 @@ jest.mock('../src/icon-manager.js', () => ({
     }),
 }));
 
-jest.mock('../src/data-processor.js', () => ({
-    ...jest.requireActual('../src/data-processor.js'),
+const actualDataProcessor = await import('../src/data-processor.js');
+jest.unstable_mockModule('../src/data-processor.js', () => ({
+    ...actualDataProcessor,
     getFeatureTypeName: (item) => item.name || 'Unknown Feature',
     getFeatureIcon: () => 'iD-icon-point',
     isDisused: () => false,
 }));
+
+const { createJosmFixUrl, generateHtmlReport } = await import('../src/html-report.js');
 
 describe('createJosmFixUrl', () => {
     const UNFIXABLE_ITEM = {

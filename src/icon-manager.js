@@ -1,8 +1,12 @@
-const path = require('path');
-const { readFileSync, existsSync } = require('fs');
-const { ICONS_DIR } = require('./constants');
+import path from 'path';
+import { readFileSync, existsSync } from 'fs';
+import { ICONS_DIR } from './constants.js';
+import { fileURLToPath } from 'url';
 
-class IconManager {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export class IconManager {
     constructor() {
         this.iconSvgData = new Map();
     }
@@ -166,6 +170,3 @@ class IconManager {
     }
 }
 
-module.exports = {
-    IconManager
-};

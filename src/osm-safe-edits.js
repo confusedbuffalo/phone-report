@@ -1,15 +1,18 @@
-const fs = require('fs');
-const fsp = require('fs/promises');
-const path = require('path');
-const OSM = require("osm-api");
-const { pipeline } = require('stream/promises');
-const { chain } = require('stream-chain');
-const { parser } = require('stream-json/parser.js');
-const { streamArray } = require('stream-json/streamers/stream-array.js');
-const { Transform } = require('stream');
-const { safeName } = require('./data-processor');
-const { SAFE_EDITS_DIR, HOST_URL, AUTO_CHANGESET_TAGS, COUNTRIES } = require('./constants');
-const { getSubdivisionRelativeFilePath } = require('./html-report');
+import fs from 'fs';
+import fsp from 'fs/promises';
+import path from 'path';
+import OSM from "osm-api";
+import { pipeline } from 'stream/promises';
+import { chain } from 'stream-chain';
+import pkgParser from 'stream-json/parser.js';
+const { parser } = pkgParser;
+import pkgStreamArray from 'stream-json/streamers/stream-array.js';
+const { streamArray } = pkgStreamArray;
+import { Transform } from 'stream';
+import { safeName } from './data-processor.js';
+import { SAFE_EDITS_DIR, HOST_URL, AUTO_CHANGESET_TAGS, COUNTRIES } from './constants.js';
+import { getSubdivisionRelativeFilePath } from './html-report.js';
+import { fileURLToPath } from 'url';
 
 /**
  * @type {string}
@@ -56,7 +59,7 @@ class StringifyTransform extends Transform {
  * @param {string} tmpFilePath The path to the temporary input file containing all potential edits.
  * @returns {Promise<void>} A promise that resolves when the safe edits file has been written.
  */
-async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) {
+export async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) {
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
     const subdivisionSlug = singleLevelDivision ? subdivisionStats.slug : path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
@@ -71,7 +74,7 @@ async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) 
 
     const dataFilePath = path.join(safeCountryDir, `${subdivisionSlug}.json`);
 
-    const FilterStream = require('stream').Transform;
+    const FilterStream = Transform;
 
     /**
      * A custom stream transform that filters JSON array objects, keeping only those
@@ -325,7 +328,7 @@ async function processFeatures(groupedData) {
  * @param {string} filePath The path to the safe edits JSON file (created by generateSafeEditFile).
  * @returns {Promise<void>} A promise that resolves after the changes have been uploaded or skipped.
  */
-async function uploadSafeChanges(filePath) {
+export async function uploadSafeChanges(filePath) {
     const content = await fsp.readFile(filePath, 'utf-8');
     const subdivisionData = JSON.parse(content);
 
@@ -495,11 +498,8 @@ async function main() {
     await processSafeEdits();
 }
 
-if (require.main === module) {
+const __filename = fileURLToPath(import.meta.url);
+if (process.argv[1] === __filename) {
     main();
 }
 
-module.exports = {
-    generateSafeEditFile,
-    uploadSafeChanges,
-};

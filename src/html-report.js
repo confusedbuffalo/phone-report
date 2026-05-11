@@ -1,22 +1,26 @@
-const fs = require('fs');
-const { promises: fsPromises } = require('fs');
-const path = require('path');
-const { minify } = require('html-minifier-terser');
-const { pipeline } = require('stream/promises');
-const { Transform } = require('stream');
-const { chain } = require('stream-chain');
-const { parser } = require('stream-json/parser.js');
-const { streamArray } = require('stream-json/streamers/stream-array.js');
-const { disassembler } = require('stream-json/disassembler.js');
-const { stringer } = require('stream-json/stringer.js');
-const { Eta } = require('eta');
-const { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE } = require('./constants');
-const { safeName, getFeatureTypeName, getFeatureIcon, isDisused } = require('./data-processor');
-const { translate } = require('./i18n');
-const { getDiffHtml, getDiffTagsHtml } = require('./diff-renderer');
-const { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } = require('./html-utils');
-const { IconManager } = require('./icon-manager');
-const { phoneTagToUse } = require('./phone-processor');
+import fs from 'fs';
+import { promises as fsPromises } from 'fs';
+import path from 'path';
+import { minify } from 'html-minifier-terser';
+import { pipeline } from 'stream/promises';
+import { Transform } from 'stream';
+import { chain } from 'stream-chain';
+import pkgParser from 'stream-json/parser.js';
+const { parser } = pkgParser;
+import pkgStreamArray from 'stream-json/streamers/stream-array.js';
+const { streamArray } = pkgStreamArray;
+import pkgDisassembler from 'stream-json/disassembler.js';
+const { disassembler } = pkgDisassembler;
+import pkgStringer from 'stream-json/stringer.js';
+const { stringer } = pkgStringer;
+import { Eta } from 'eta';
+import { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE } from './constants.js';
+import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
+import { translate } from './i18n.js';
+import { getDiffHtml, getDiffTagsHtml } from './diff-renderer.js';
+import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
+import { IconManager } from './icon-manager.js';
+import { phoneTagToUse } from './phone-processor.js';
 
 
 /**
@@ -24,7 +28,7 @@ const { phoneTagToUse } = require('./phone-processor');
  * @param {Object} item - The invalid number data item.
  * @returns {string | null}
 */
-function createJosmFixUrl(item) {
+export function createJosmFixUrl(item) {
     if (!item.autoFixable) {
         return null;
     }
@@ -281,7 +285,7 @@ class ItemTransformer extends Transform {
     }
 }
 
-function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSlug) {
+export function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSlug) {
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === divisionSlug || divisionSlug === subdivisionSlug;
     const finalSubdivisionSlug = singleLevelDivision ? subdivisionSlug : path.join(divisionSlug, subdivisionSlug);
@@ -299,7 +303,7 @@ function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSl
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {Date} timestamp - The timestamp of the data
  */
-async function generateHtmlReport(reportType, countryData, subdivisionStats, tmpFilePath, translations, botEnabled, timestamp) {
+export async function generateHtmlReport(reportType, countryData, subdivisionStats, tmpFilePath, translations, botEnabled, timestamp) {
     const countryName = countryData.name;
     const locale = countryData.locale;
     const officialLanguages = countryData.officialLanguages;
@@ -415,8 +419,3 @@ async function generateHtmlReport(reportType, countryData, subdivisionStats, tmp
     console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
 }
 
-module.exports = {
-    generateHtmlReport,
-    createJosmFixUrl,
-    getSubdivisionRelativeFilePath,
-};
