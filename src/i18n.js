@@ -6,13 +6,37 @@ const locales = {};
 const LOCALE_DIR = path.join(__dirname, '../locales');
 const DEFAULT_LOCALE = 'en';
 
+/**
+ * A mapping of translation keys to their expected placeholder tokens.
+ * This is used by the `translate` function to perform positional replacements.
+ * @type {Object.<string, string[]>}
+ */
+const KEY_PLACEHOLDERS = {
+    'invalidNumbersOutOf': ['%i', '%f', '%t'],
+    'incompleteNamesOutOf': ['%i', '%t'],
+    'invalidPercentageOfTotal': ['%p'],
+    'fixablePercentageOfInvalid': ['%p'],
+    'reportSubtitleForCountry': ['%c'],
+    'reportSubtitleNamesForCountry': ['%c'],
+    'countryReportTitle': ['%c'],
+    'countryReportTitleNames': ['%c'],
+    'editIn': ['%e'],
+    'numberDetailsNamesDataFrom': ['%o'],
+    'dataSourcedTemplate': ['%d', '%t', '%z', '%a']
+};
+
 // Load all translation files
 try {
     const files = fs.readdirSync(LOCALE_DIR);
     files.forEach(file => {
         if (file.endsWith('.json')) {
             const locale = file.replace('.json', '');
-            locales[locale] = JSON.parse(fs.readFileSync(path.join(LOCALE_DIR, file), 'utf8'));
+            try {
+                const content = fs.readFileSync(path.join(LOCALE_DIR, file), 'utf8');
+                locales[locale] = JSON.parse(content);
+            } catch (parseError) {
+                console.error(`Error parsing translation file ${file}:`, parseError);
+            }
         }
     });
 } catch (error) {
@@ -28,36 +52,26 @@ try {
  */
 function translate(key, locale, args = []) {
     const translation = locales[locale]?.[key] || locales[DEFAULT_LOCALE]?.[key] || `MISSING_KEY:${key}`;
+    const placeholders = KEY_PLACEHOLDERS[key];
+
+    // If no placeholders are defined for this key or the number of arguments doesn't match, return the raw translation.
+    if (!placeholders || args.length !== placeholders.length) {
+        return translation;
+    }
 
     let output = translation;
 
-    if (key === 'invalidNumbersOutOf' && args.length === 3) {
-        // Positional replacement: %i is invalid, %f is fixable, %t is total
-        output = output.replace('%i', args[0]).replace('%f', args[1]).replace('%t', args[2]);
-    } else if (key === 'incompleteNamesOutOf' && args.length === 2) {
-        // Positional replacement: %i is invalid, %t is total
-        output = output.replace('%i', args[0]).replace('%t', args[1]);
-    } else if ((key === 'invalidPercentageOfTotal' || key === 'fixablePercentageOfInvalid') && args.length === 1) {
-        output = output.replace('%p', `${args[0]}%`);
-    } else if ((key === 'reportSubtitleForCountry' || key === 'reportSubtitleNamesForCountry' || key === 'countryReportTitle' || key === 'countryReportTitleNames') && args.length === 1) {
-        // Positional replacement: %c is country name
-        output = output.replace('%c', args[0]);
-    } else if ((key === 'editIn') && args.length === 1) {
-        output = output.replace('%e', args[0]);
-    } else if ((key === 'numberDetailsNamesDataFrom') && args.length === 1) {
-        output = output.replace('%o', args[0]);
-    }
-
-    // Handle Time Ago templates (using %n)
-    if (key === 'dataSourcedTemplate' && args.length === 4) {
-        // Positional replacement: %d=Date, %t=Time, %z=Timezone, %a=TimeAgo (the <span> element)
-        output = output.replace('%d', args[0])
-            .replace('%t', args[1])
-            .replace('%z', args[2])
-            .replace('%a', args[3]);
-    }
-
-    // Note: All other keys do not use positional args.
+    // Perform positional replacement based on the defined placeholders.
+    placeholders.forEach((placeholder, index) => {
+        if (args[index] !== undefined) {
+            let value = args[index];
+            // Special handling for percentage keys that expect a '%' suffix.
+            if (placeholder === '%p') {
+                value = `${value}%`;
+            }
+            output = output.replace(placeholder, value);
+        }
+    });
 
     return output;
 }
