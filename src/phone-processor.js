@@ -500,7 +500,7 @@ export function getWhatsappNumber(numberStr) {
  * @param {string} phoneword - The input string (e.g., "1-800-FLOWERS")
  * @returns {string} - The converted numeric string (e.g., "1-800-3569377")
  */
-function convertPhonewordToDigits(phoneword) {
+export function convertPhonewordToDigits(phoneword) {
     const mapping = {
       'A': '2', 'B': '2', 'C': '2',
       'D': '3', 'E': '3', 'F': '3',
@@ -1167,6 +1167,10 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (isInvalid || tagShouldBeFlaggedForRemoval) {
                 const currentItem = getOrCreateItem(autoFixable);
                 currentItem.invalidNumbers.set(tag, phoneTagValue);
+
+                if (validationResult.validPhonewords) {
+                    currentItem.validPhonewords = true;
+                }
 
                 if (tagShouldBeFlaggedForRemoval) {
                     currentItem.suggestedFixes.set(tag, suggestedFix ?? null);

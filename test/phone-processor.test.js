@@ -17,6 +17,7 @@ import {
     isSafeItemEdit,
     isStandardExtension,
     getWhatsappNumber,
+    convertPhonewordToDigits,
 } from '../src/phone-processor.js';
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -689,6 +690,31 @@ describe('getWhatsappNumber', () => {
 
 
 // =====================================================================
+// convertPhonewordToDigits Tests
+// =====================================================================
+describe('convertPhonewordToDigits', () => {
+    test('should convert uppercase phonewords to digits', () => {
+        expect(convertPhonewordToDigits('1-800-FLOWERS')).toBe('1-800-3569377');
+    });
+
+    test('should convert lowercase phonewords to digits', () => {
+        expect(convertPhonewordToDigits('1-800-flowers')).toBe('1-800-3569377');
+    });
+
+    test('should handle mixed case phonewords', () => {
+        expect(convertPhonewordToDigits('1-800-Flowers')).toBe('1-800-3569377');
+    });
+
+    test('should leave non-alphabetic characters unchanged', () => {
+        expect(convertPhonewordToDigits('1-800-4-YOU!')).toBe('1-800-4-968!');
+    });
+
+    test('should convert the entire alphabet correctly', () => {
+        expect(convertPhonewordToDigits('ABCDEFGHIJKLMNOPQRSTUVWXYZ')).toBe('22233344455566677778889999');
+    });
+});
+
+// =====================================================================
 // processSingleNumber Tests
 // =====================================================================
 describe('processSingleNumber', () => {
@@ -947,6 +973,32 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('1-870-kak-3769', SAMPLE_COUNTRY_CODE_US);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(false);
+    });
+
+    test('AU: fix a phonewords number', () => {
+        const result = processSingleNumber('1300-TICKET', 'AU');
+        expect(result.isInvalid).toBe(true);
+        // AU SHARED_COST is NOT in TOLL_FREE_AS_NATIONAL_COUNTRIES, so it gets +61 prefix
+        expect(result.autoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        expect(result.suggestedFix).toBe('+61 1300 842 538');
+    });
+
+    test('NZ: fix a phonewords number', () => {
+        const result = processSingleNumber('0800-PHONES', 'NZ');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        expect(result.suggestedFix).toBe('0800 746 637');
+    });
+
+    test('SG: fix a phonewords number', () => {
+        const result = processSingleNumber('1800-SINGAPO', 'SG'); // 7 letters
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        // SG is not in TOLL_FREE_AS_NATIONAL_COUNTRIES, so it should have +65 prefix
+        expect(result.suggestedFix).toBe('+65 1800 746 4276');
     });
 
     // --- PL Tests ---
@@ -1501,6 +1553,14 @@ describe('validateSingleTag', () => {
         expect(result.isAutoFixable).toBe(true);
         expect(result.validPhonewords).toBe(true);
         expect(result.suggestedNumbersList).toEqual(["+1-870-525-3769"]);
+    });
+
+    test('AU: phonewords is fixable', () => {
+        const result = validateSingleTag('1300-TICKET', 'AU');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.validPhonewords).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(["+61 1300 842 538"]);
     });
 
     test('US: give up with multiple phonewords in a single tag', () => {
@@ -2747,6 +2807,30 @@ describe('validateNumbers', () => {
         expect(invalidItem.suggestedFixes).toEqual({
             'phone:mnemonic': "1-870-KAKESNY",
             'phone': "+1-870-525-3769",
+        });
+    });
+
+    test('AU phonewords is invalid and fixable and adds phone:mnemonic', async () => {
+        const elements = [
+            createGeoJson(123456, { 'phone': "1300-TICKET" }, 55.0, 4.0)
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), 'AU', tmpFilePath);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.validPhonewords).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            'phone:mnemonic': null,
+            'phone': "1300-TICKET",
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            'phone:mnemonic': "1300-TICKET",
+            'phone': "+61 1300 842 538",
         });
     });
 
