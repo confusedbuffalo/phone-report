@@ -135,6 +135,7 @@ export const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
     'IE', // https://community.openstreetmap.org/t/validating-phone-numbers-in-ireland/143173/4
     'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
+    'NL', // https://github.com/confusedbuffalo/phone-report/issues/315
     'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
 ]
 
