@@ -174,7 +174,7 @@ export function renderNumbers() {
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
     if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
-        if (reportType === 'phone' && (anyFixable || editCount > 0)) {
+        if (reportType === 'phone' && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
                 "fixableSection",
                 sortedItems.fixable,
