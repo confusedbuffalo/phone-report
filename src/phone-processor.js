@@ -546,7 +546,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     const couldBePhonewords = COUNTRIES_WITH_PHONEWORDS.includes(countryCode) && numberStr.match(/.*[a-z]$/i);
 
     if (tag === 'contact:whatsapp') {
-        ({ cleanNumberStr, validNonNumber } = getWhatsappNumber(numberStr));
+        const { cleanNumberStr, validNonNumber } = getWhatsappNumber(numberStr);
         if (validNonNumber) {
             return {
                 isInvalid: false
