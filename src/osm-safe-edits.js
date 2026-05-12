@@ -303,7 +303,7 @@ async function processFeatures(groupedData) {
                     const suggestedFixes = fixes.get(featureId);
                     const invalidNumbers = invalid.get(featureId);
                     if (suggestedFixes) {
-                        changed = applyEditsToFeatureTags(feature, suggestedFixes, invalidNumbers);
+                        const changed = applyEditsToFeatureTags(feature, suggestedFixes, invalidNumbers);
                         if (changed) {
                             modifications.push(feature);
                         } else {
