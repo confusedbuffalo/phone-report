@@ -1,32 +1,35 @@
 import { translate } from './i18n.js';
 import { ICON_ATTRIBUTION, GITHUB_LINK } from './constants.js';
 
+const PERCENTAGE_OPTIONS = {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+};
+
+/**
+ * Calculates and formats a percentage.
+ * @param {number} numerator
+ * @param {number} denominator
+ * @param {string} locale
+ * @returns {string}
+ */
+function getFormattedPercentage(numerator, denominator, locale) {
+    const percentage = denominator > 0 ? (numerator / denominator) * 100 : 0;
+    return percentage.toLocaleString(locale, PERCENTAGE_OPTIONS);
+}
+
 /**
  * Creates the HTML box displaying statistics.
  * @param {'phone' | 'name'} reportType - The type of report being created.
- * @param {number} total - Total values
- * @param {number} firstStat - First statistic after total to display
- * @param {number} secondStat - Second statistic to display
- * @param {number} secondStat - Third statistic to display
- * @param {string} locale - Locale to display stats in
- * @param {boolean} includeProgress - Whether or not to include a link to the progress page
+ * @param {Object} data - The statistics data.
+ * @param {string} locale - Locale to display stats in.
+ * @param {boolean} [includeProgress=false] - Whether or not to include a link to the progress page.
  * @returns {string}
  */
 export function createStatsBox(reportType, data, locale, includeProgress = false) {
-    const percentageOptions = {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    };
-
     let statsData = [];
 
     if (reportType === 'phone') {
-        const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
-        const fixablePercentageNumber = data.invalidCount > 0 ? (data.autoFixableCount / data.invalidCount) * 100 : 0;
-
-        const formattedInvalidPercentage = invalidPercentageNumber.toLocaleString(locale, percentageOptions);
-        const formattedFixablePercentage = fixablePercentageNumber.toLocaleString(locale, percentageOptions);
-
         statsData = [
             {
                 value: data.totalCount.toLocaleString(locale),
@@ -38,32 +41,24 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('invalidNumbers', locale),
                 numberClass: 'stats-box-number-invalid',
-                percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)])
             },
             {
                 value: data.autoFixableCount.toLocaleString(locale),
                 label: translate('potentiallyFixable', locale),
                 numberClass: 'stats-box-number-fixable',
-                percentage: translate('fixablePercentageOfInvalid', locale, [formattedFixablePercentage])
+                percentage: translate('fixablePercentageOfInvalid', locale, [getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale)])
             }
         ];
         if (!includeProgress) {
-            statsData.push(
-                {
-                    value: data.foreignCount.toLocaleString(locale),
-                    label: translate('foreignNumbersHeader', locale),
-                    numberClass: 'stats-box-number',
-                    percentage: null
-                }
-            )
+            statsData.push({
+                value: data.foreignCount.toLocaleString(locale),
+                label: translate('foreignNumbersHeader', locale),
+                numberClass: 'stats-box-number',
+                percentage: null
+            });
         }
     } else if (reportType === 'name') {
-        const invalidPercentageNumber = data.totalCount > 0 ? (data.invalidCount / data.totalCount) * 100 : 0;
-        const missingPercentageNumber = data.totalCount > 0 ? (data.missingNamesCount / data.totalCount) * 100 : 0;
-
-        const formattedInvalidPercentage = invalidPercentageNumber.toLocaleString(locale, percentageOptions);
-        const formattedMissingPercentage = missingPercentageNumber.toLocaleString(locale, percentageOptions);
-
         statsData = [
             {
                 value: data.totalCount.toLocaleString(locale),
@@ -75,13 +70,13 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('incompleteNames', locale),
                 numberClass: 'stats-box-number-invalid',
-                percentage: translate('invalidPercentageOfTotal', locale, [formattedInvalidPercentage])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)])
             },
             {
                 value: data.missingNamesCount.toLocaleString(locale),
                 label: translate('missingNames', locale),
                 numberClass: 'stats-box-number-fixable',
-                percentage: translate('invalidPercentageOfTotal', locale, [formattedMissingPercentage])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.missingNamesCount, data.totalCount, locale)])
             }
         ];
     } else {
@@ -156,7 +151,7 @@ export function getIconAttributionHtml(locale) {
  */
 export function getFooterData(locale, timestamp) {
     const dataTimestamp = timestamp ? new Date(timestamp) : new Date();
-    
+
     return {
         timestampMs: dataTimestamp.getTime(),
         formattedDate: dataTimestamp.toLocaleDateString(locale, {
