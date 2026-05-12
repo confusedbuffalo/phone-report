@@ -120,7 +120,7 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
     if (!hasOnlySafeChars) return false;
 
-    processedOriginal = processSingleNumber(originalNumberStr, countryCode);
+    const processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
     // Double check that the original number parses to the new number
     if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
@@ -420,11 +420,7 @@ export function isItalianMissingZeroNumber(phoneNumber, countryCode) {
 export const isWhatsappUrl = (urlString) => {
     const validWhatsappHosts = ['wa.me', 'whatsapp.com'];
 
-    let fullUrlString = urlString;
-
-    if (!urlString.includes(':')) {
-        fullUrlString = `https://${urlString}`;
-    }
+    const fullUrlString = !urlString.includes(':') ? `https://${urlString}` : urlString;
 
     try {
         const url = new URL(fullUrlString);
@@ -500,7 +496,7 @@ export function getWhatsappNumber(numberStr) {
  * @param {string} phoneword - The input string (e.g., "1-800-FLOWERS")
  * @returns {string} - The converted numeric string (e.g., "1-800-3569377")
  */
-function convertPhonewordToDigits(phoneword) {
+export function convertPhonewordToDigits(phoneword) {
     const mapping = {
       'A': '2', 'B': '2', 'C': '2',
       'D': '3', 'E': '3', 'F': '3',
@@ -547,7 +543,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    couldBePhonewords = COUNTRIES_WITH_PHONEWORDS.includes(countryCode) && numberStr.match(/.*[a-z]$/i);
+    const couldBePhonewords = COUNTRIES_WITH_PHONEWORDS.includes(countryCode) && numberStr.match(/.*[a-z]$/i);
 
     if (tag === 'contact:whatsapp') {
         ({ cleanNumberStr, validNonNumber } = getWhatsappNumber(numberStr));
@@ -743,7 +739,7 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const slashAsSpace = isSlashSpace(tagValue, countryCode, osmTags, tag);
     const slashForMultipleEndings = expandSlashEnding(tagValue, countryCode, osmTags, tag);
 
-    splitRegex = slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
+    const splitRegex = slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
     const numberList = tag === 'contact:whatsapp'
@@ -952,7 +948,7 @@ export function isSafeItemEdit(item, countryCode) {
  * }} An object containing the breakdown of record counts.
  */
 export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
-    countryCode = countryCode.split('-')[0]; // In case of ISO 3166-2 region code being used at division level
+    const baseCountryCode = countryCode.split('-')[0]; // In case of ISO 3166-2 region code being used at division level
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
     let isFirstItem = true;
@@ -1013,7 +1009,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         const getOrCreateItem = (autoFixable) => {
             if (item) return item;
 
-            baseItem = createItem();
+            const baseItem = createItem();
             item = { ...baseItem, autoFixable }
             return item
         };
@@ -1039,7 +1035,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (tag === 'mobile' && phoneTagValue === 'yes') continue;
             if (tag === 'phone' && phoneTagValue === 'no') continue;
 
-            const validationResult = validateSingleTag(phoneTagValue, countryCode, tags, tag);
+            const validationResult = validateSingleTag(phoneTagValue, baseCountryCode, tags, tag);
             totalCount += validationResult.numberOfValues;
 
             const validatedNumbers = validationResult.validNumbersList;
@@ -1058,8 +1054,8 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 hasInternalDuplicate = true;
                 suggestedFix = uniqueFormattedSet.map((number) => {
                     return getFormattedNumber(
-                        parsePhoneNumber(number, countryCode),
-                        !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                        parsePhoneNumber(number, baseCountryCode),
+                        !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
                     );
                 }).join('; ');
             }
@@ -1073,12 +1069,12 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
                 const normalisedNumber = getFormattedNumber(
                     phoneNumber,
-                    !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
-                ).replace(getSpacingRegex(countryCode), '');
+                    !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
+                ).replace(getSpacingRegex(baseCountryCode), '');
 
                 // Correct the tag of a mismatch type number early
                 const normalisedMismatch = validationResult.mismatchTypeNumbers.map(number =>
-                    number.replace(getSpacingRegex(countryCode), '')
+                    number.replace(getSpacingRegex(baseCountryCode), '')
                 );
                 const isMismatchNumber = validationResult.mismatchTypeNumbers && normalisedMismatch.includes(normalisedNumber);
                 if (isMismatchNumber && allNormalisedNumbers.get(normalisedNumber)) {
@@ -1097,15 +1093,15 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
                     // Get fixes for tagToRemove and only mark null if there are no other values
                     const removeTagToValidate = currentItem.suggestedFixes.get(tagToRemove) ? currentItem.suggestedFixes.get(tagToRemove) : tags[tagToRemove];
-                    const validatedRemoved = validateSingleTag(removeTagToValidate, countryCode, tags, tagToRemove);
+                    const validatedRemoved = validateSingleTag(removeTagToValidate, baseCountryCode, tags, tagToRemove);
                     if (validatedRemoved.suggestedNumbersList) {
                         const normalisedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
-                            number.replace(getSpacingRegex(countryCode), '')
+                            number.replace(getSpacingRegex(baseCountryCode), '')
                         );
                         let removedValue = null;
                         const deduplicatedRemoved = normalisedRemoved.filter(item => item !== normalisedNumber);
                         if (deduplicatedRemoved) {
-                            const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), countryCode, tags, tagToRemove);
+                            const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), baseCountryCode, tags, tagToRemove);
                             removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
                         }
                         if (removedValue && !hasInternalDuplicate) {
@@ -1118,14 +1114,14 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     }
 
                     // Validate the kept tag in case of bad separator or duplicates and also to fix formatting while here
-                    const validatedKept = validateSingleTag(tags[keptTag], countryCode, tags, keptTag);
+                    const validatedKept = validateSingleTag(tags[keptTag], baseCountryCode, tags, keptTag);
                     if (validatedKept.suggestedNumbersList) {
                         const formattedKeptNumbers = validatedKept.validNumbersList.map(n => n.format('INTERNATIONAL'));
                         const uniqueFormattedKeptSet = [...new Set(formattedKeptNumbers)];
                         const validatedKeptValue = uniqueFormattedKeptSet.map((number) => {
                             return getFormattedNumber(
-                                parsePhoneNumber(number, countryCode),
-                                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                                parsePhoneNumber(number, baseCountryCode),
+                                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
                             );
                         }).join('; ');
 
@@ -1168,6 +1164,10 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 const currentItem = getOrCreateItem(autoFixable);
                 currentItem.invalidNumbers.set(tag, phoneTagValue);
 
+                if (validationResult.validPhonewords) {
+                    currentItem.validPhonewords = true;
+                }
+
                 if (tagShouldBeFlaggedForRemoval) {
                     currentItem.suggestedFixes.set(tag, suggestedFix ?? null);
                 } else {
@@ -1202,12 +1202,12 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
         }
 
         if (item) {
-            const safeEdit = isSafeItemEdit(item, countryCode);
+            const safeEdit = isSafeItemEdit(item, baseCountryCode);
             invalidCount++;
             autoFixableCount += item.autoFixable;
             safeEditCount += safeEdit;
 
-            processMismatches(item, countryCode);
+            processMismatches(item, baseCountryCode);
 
             const finalItem = {
                 ...item,
