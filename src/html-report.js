@@ -183,9 +183,12 @@ function createPhoneFixRows(item, locale, iconManager) {
  * @returns {Object}
  */
 function createNameFixRows(item, locale, iconManager) {
+    const escapedNameTags = Object.fromEntries(
+        Object.entries(item.nameTags).map(([key, value]) => [key, escapeHTML(value)])
+    );
     return [{
-        ...(item.name && { name: item.name }),
-        ...item.nameTags
+        ...(item.name && { name: escapeHTML(item.name) }),
+        ...escapedNameTags
     }];
 }
 
