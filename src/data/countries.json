@@ -6,12 +6,24 @@
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/australia.osm.pbf",
         "divisions": {
             "Australian Capital Territory": 2354197,
-            "Christmas Island": 2177207,
-            "Cocos (Keeling) Islands": 82636,
-            "Heard Island and McDonald Islands": 2177227,
+            "Christmas Island":  {
+                "relationId": 2177207,
+                "countryCode": "CX"
+            },
+            "Cocos (Keeling) Islands": {
+                "relationId": 82636,
+                "countryCode": "CC"
+            },
+            "Heard Island and McDonald Islands": {
+                "relationId": 2177227,
+                "countryCode": "HM"
+            },
             "Jervis Bay Territory": 2357330,
             "New South Wales": 2316593,
-            "Norfolk Island": 2574988,
+            "Norfolk Island": {
+                "relationId": 2574988,
+                "countryCode": "NF"
+            },
             "Northern Territory": 2316594,
             "Queensland": 2316595,
             "South Australia": 2316596,
