@@ -18,8 +18,34 @@ const presetsData = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'no
  * @type {Object<string, object>}
  */
 const allPresets = {};
+
+/**
+ * An index of presets grouped by the tag keys they require.
+ * @type {Object<string, Set<object>>}
+ */
+const presetsByTagKey = {};
+
+/**
+ * A list of presets that have no required tags.
+ * @type {object[]}
+ */
+const universalPresets = [];
+
 for (const key in presetsData) {
-    allPresets[key] = { ...presetsData[key], id: key };
+    const preset = { ...presetsData[key], id: key };
+    allPresets[key] = preset;
+
+    const tagKeys = Object.keys(preset.tags || {});
+    if (tagKeys.length === 0) {
+        universalPresets.push(preset);
+    } else {
+        for (const tagKey of tagKeys) {
+            if (!presetsByTagKey[tagKey]) {
+                presetsByTagKey[tagKey] = new Set();
+            }
+            presetsByTagKey[tagKey].add(preset);
+        }
+    }
 }
 
 /**
@@ -171,13 +197,26 @@ export function getBestPreset(item, locale = 'en') {
     let maxScore = -1;
 
     // Use globally injected mock presets for testing, or the real presets otherwise.
-    const presetsToTest = (typeof global !== 'undefined' && typeof global.getMockPresets === 'function')
-        ? global.getMockPresets()
-        : allPresets;
+    const isMocking = (typeof global !== 'undefined' && typeof global.getMockPresets === 'function');
+    let presetsToTest;
 
-    for (const id in presetsToTest) {
-        const preset = presetsToTest[id];
+    if (isMocking) {
+        presetsToTest = Object.values(global.getMockPresets());
+    } else {
+        // Optimization: Only test presets that have at least one matching tag key
+        // plus any universal presets that have no required tags.
+        const candidatePresets = new Set(universalPresets);
+        for (const tagKey in item.allTags) {
+            if (presetsByTagKey[tagKey]) {
+                for (const preset of presetsByTagKey[tagKey]) {
+                    candidatePresets.add(preset);
+                }
+            }
+        }
+        presetsToTest = candidatePresets;
+    }
 
+    for (const preset of presetsToTest) {
         const score = getMatchScore(preset, item.allTags, geometry);
         if (score > maxScore) {
             maxScore = score;

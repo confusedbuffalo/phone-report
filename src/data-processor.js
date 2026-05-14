@@ -1,6 +1,6 @@
 import { pointOnFeature } from '@turf/turf';
 import { getBestPreset, getGeometry } from './preset-matcher.js';
-import { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES } from './constants.js';
+import { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, WEBSITE_TAGS } from './constants.js';
 
 
 /**
@@ -151,4 +151,46 @@ export function getRepresentativeLocation(geometry) {
     };
 }
 
+/**
+ * Determines if a GeoJSON geometry represents an area.
+ * @param {Object} geometry - A GeoJSON geometry object.
+ * @returns {boolean} True if the geometry is a Polygon, MultiPolygon, or a closed LineString.
+ */
+export function isArea(geometry) {
+    if (!geometry) return false;
+    const { type: geometryType, coordinates: c } = geometry;
+    return ['Polygon', 'MultiPolygon'].includes(geometryType)
+        || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
+}
 
+/**
+ * Creates a base OSM item object with shared properties and normalized data.
+ * @param {Object} element - The OSM element from the GeoJSON stream.
+ * @returns {Object} A base item object.
+ */
+export function createBaseItem(element) {
+    const tags = element.properties;
+
+    let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
+    if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
+        website = `http://${website}`;
+    }
+
+    const { lat, lon } = getRepresentativeLocation(element.geometry);
+    const couldBeArea = isArea(element.geometry);
+    const elementTimestamp = tags["@timestamp"] ? new Date(tags["@timestamp"] * 1000).toISOString() : 0;
+
+    return {
+        type: tags["@type"],
+        id: tags["@id"],
+        user: tags["@user"],
+        timestamp: elementTimestamp,
+        changeset: tags["@changeset"],
+        website,
+        lat,
+        lon,
+        couldBeArea,
+        name: tags.name,
+        allTags: tags,
+    };
+}
