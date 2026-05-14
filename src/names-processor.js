@@ -1,6 +1,5 @@
 import fs from 'fs';
-import { WEBSITE_TAGS } from './constants.js';
-import { getRepresentativeLocation } from './data-processor.js';
+import { createBaseItem } from './data-processor.js';
 
 /**
  * Validates names.
@@ -45,35 +44,10 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
         const getOrCreateItem = () => {
             if (item) return item;
 
-            let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
-            if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
-                website = `http://${website}`;
-            }
-
-            const { lat, lon } = getRepresentativeLocation(element.geometry);
-
-            const { type: geometryType, coordinates: c } = element.geometry;
-            // Many areas are returned as LineString due to osmium export
-            const couldBeArea = ['Polygon', 'MultiPolygon'].includes(geometryType)
-                || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
-
-            const elementTimestamp = element.properties["@timestamp"] ? new Date(element.properties["@timestamp"] * 1000).toISOString() : 0;
-
-            const baseItem = {
-                type: element.properties["@type"],
-                id: element.properties["@id"],
-                user: element.properties["@user"],
-                timestamp: elementTimestamp,
-                changeset: element.properties["@changeset"],
-                website,
-                lat,
-                lon,
-                couldBeArea,
-                name: tags.name,
-                allTags: tags,
+            item = {
+                ...createBaseItem(element),
                 nameTags: new Map(),
             };
-            item = baseItem
             return item;
         };
 
