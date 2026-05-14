@@ -1,5 +1,6 @@
 import { languageNames } from "./report-state.js";
 import { isItemClicked } from "./report-storage.js";
+import { escapeHTML } from "./report-utils.js";
 
 export function createSaveRow() {
     return `
@@ -31,7 +32,7 @@ export function createListItem(item) {
 
     const itemMetadata = item.user ? `
         <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
-        <a href="https://www.openstreetmap.org/user/${item.user}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${item.user}</a>`
+        <a href="https://www.openstreetmap.org/user/${encodeURIComponent(item.user)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${escapeHTML(item.user)}</a>`
         : item.timestamp ? `<span>${relativeTime}</span>` : '';
 
     const metaDataDiv = itemMetadata ? `
@@ -155,7 +156,7 @@ function createButtons(item, clickedClass) {
         return `
             <a
                 href="${editor.getEditLink(item)}"
-                ${editorId === 'Geo' ? '' : 'target="_blank"'}
+                ${editorId === 'Geo' ? '' : 'target="_blank" rel="noopener noreferrer"'}
                 data-action="edit"
                 data-item-type="${item.type}"
                 data-item-id="${item.id}"
@@ -237,7 +238,7 @@ function createButtons(item, clickedClass) {
         '';
 
     const websiteButton = item.website ?
-        `<a href="${item.website}" class="btn btn-website" target="_blank">${translate('website')}</a>` :
+        `<a href="${item.website}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>` :
         '';
 
     return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton };

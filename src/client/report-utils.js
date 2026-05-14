@@ -108,6 +108,28 @@ function sortItems(items, key, direction) {
 }
 
 /**
+ * Escapes special HTML characters in a string.
+ * @param {string} str - The string to escape.
+ * @returns {string} The escaped string.
+ */
+export function escapeHTML(str) {
+    if (!str) {
+        return '';
+    }
+    str = String(str);
+    return str.replace(/[&<>"']/g, (match) => {
+        switch (match) {
+            case '&': return '&amp;';
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '"': return '&quot;';
+            case "'": return '&#039;';
+            default: return match;
+        }
+    });
+}
+
+/**
  * Calculates a bounding box around a central point with a given buffer distance.
  * @param {number} lat - The central latitude.
  * @param {number} lon - The central longitude.
