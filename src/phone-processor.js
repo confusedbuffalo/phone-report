@@ -57,14 +57,10 @@ function checkMobileStatus(phoneNumber) {
  * @returns {('phone'|'contact:phone')}
  */
 export function phoneTagToUse(tags) {
-    const phoneTagPresent = 'phone' in tags;
-    const contactTagPresent = 'contact:phone' in tags;
-
-    if (phoneTagPresent && contactTagPresent) {
+    if ('phone' in tags) {
         return 'phone';
-    } else if (phoneTagPresent) {
-        return 'phone';
-    } else if (contactTagPresent) {
+    }
+    if ('contact:phone' in tags) {
         return 'contact:phone';
     }
     return 'phone';
@@ -80,22 +76,22 @@ export function phoneTagToUse(tags) {
  * @returns {string} The key that should be removed.
  */
 export function keyToRemove(key1, key2) {
-    // Look up the score. If a key is unknown, it's given a very low preference 
+    // Look up the score. If a key is unknown, it's given a very low preference
     // (Infinity), prioritizing its removal.
-    const score1 = PHONE_TAG_PREFERENCE_ORDER[key1] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key1] : Infinity;
-    const score2 = PHONE_TAG_PREFERENCE_ORDER[key2] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key2] : Infinity;
+    const score1 = PHONE_TAG_PREFERENCE_ORDER[key1] ?? Infinity;
+    const score2 = PHONE_TAG_PREFERENCE_ORDER[key2] ?? Infinity;
 
     // The key to REMOVE is the one with the higher score (lower preference).
 
     if (score1 > score2) {
         return key1;
-    } else if (score2 > score1) {
-        return key2;
-    } else {
-        // If scores are equal (e.g., both keys are 'phone', or both are unrecognized),
-        // we must choose one deterministically. We'll default to removing key2.
+    }
+    if (score2 > score1) {
         return key2;
     }
+    // If scores are equal (e.g., both keys are 'phone', or both are unrecognized),
+    // we must choose one deterministically. We'll default to removing key2.
+    return key2;
 }
 
 /**
@@ -113,16 +109,15 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX =
         DIN_FORMAT_COUNTRIES.includes(countryCode)
-            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/g
-            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/g;
+            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/
+            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/;
 
-    const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
-    if (!hasOnlySafeChars) return false;
+    if (!SAFE_CHARACTER_REGEX.test(originalNumberStr)) return false;
 
     const processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
     // Double check that the original number parses to the new number
-    if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
+    if (!processedOriginal.autoFixable || processedOriginal.suggestedFix !== newNumberStr) return false;
 
     // Confirm that the number is in the same country
     try {
@@ -340,34 +335,61 @@ export function getNumberAndExtension(numberStr, countryCode) {
  */
 function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
     const countryCode = phoneNumber.country;
+    const originalExt = phoneNumber.ext;
 
-    const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
-
-    const coreNumberE164 = isPolishPrefixed
-        ? `+48 ${phoneNumber.number.slice(4)}`
-        : phoneNumber.number;
-
-    const internationalNumber = parsePhoneNumber(coreNumberE164).format('INTERNATIONAL')
-
-    const coreFormatted = NANP_COUNTRY_CODES.includes(countryCode)
-        ? internationalNumber.replace(/\s/g, '-').replace('-ext.-', ' x')
-        : internationalNumber;
+    // Temporarily clear the extension to get the core number without libphonenumber's formatting
+    if (originalExt) {
+        phoneNumber.setExt(undefined);
+    }
+    let internationalNumber = NANP_COUNTRY_CODES.includes(countryCode)
+        ? phoneNumber.format('INTERNATIONAL').replace(/\s/g, '-')
+        : phoneNumber.format('INTERNATIONAL');
 
     // Append the extension in the standard format (' x{ext}', DIN format or with hash for TW)
-    const extension = phoneNumber.ext ?
+    const extension = originalExt ?
         (
-            DIN_FORMAT_COUNTRIES.includes(countryCode) ? `-${phoneNumber.ext}`
-            : countryCode === 'TW' ? `#${phoneNumber.ext}`
-            : ` x${phoneNumber.ext}`
+            DIN_FORMAT_COUNTRIES.includes(countryCode) ? `-${originalExt}`
+            : countryCode === 'TW' ? `#${originalExt}`
+            : ` x${originalExt}`
         )
         : '';
 
+    let result;
+
     if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) && !tollFreeAsInternational) {
-        const coreFormattedNational = parsePhoneNumber(coreNumberE164).format('NATIONAL');
-        return coreFormattedNational + extension;
+        const coreFormattedNational = phoneNumber.format('NATIONAL');
+        result = coreFormattedNational + extension;
+    } else {
+        result = internationalNumber + extension;
     }
 
-    return coreFormatted + extension;
+    // Restore extension
+    if (originalExt) {
+        phoneNumber.setExt(originalExt);
+    }
+
+    return result;
+}
+
+/**
+ * Fix a Polish number incorrectly prefixed with a 0
+ * @param {PhoneNumber} phoneNumber - The phone number object
+ * @param {string} countryCode - The country code being checked against
+ * @returns {PhoneNumber}
+ */
+function fixPolishPrefixedNumber(phoneNumber, countryCode) {
+    if (
+        countryCode !== 'PL'
+        || !phoneNumber
+        || phoneNumber.isValid()
+        || !phoneNumber.isPossible()
+        || !phoneNumber.nationalNumber.startsWith('0')
+    ) {
+        return phoneNumber
+    }
+    const prefixRemovedNumber = parsePhoneNumber(phoneNumber.nationalNumber.slice(1), countryCode);
+    if (phoneNumber.ext) prefixRemovedNumber.setExt(phoneNumber.ext);
+    return prefixRemovedNumber.isValid() ? prefixRemovedNumber : phoneNumber;
 }
 
 /**
@@ -378,14 +400,7 @@ function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
  */
 function isPolishPrefixedNumber(phoneNumber, countryCode) {
     // See https://github.com/confusedbuffalo/phone-report/issues/15
-    return (
-        countryCode === 'PL'
-        && phoneNumber
-        && !phoneNumber.isValid()
-        && phoneNumber.isPossible()
-        && phoneNumber.nationalNumber.startsWith('0')
-        && parsePhoneNumber(phoneNumber.nationalNumber.slice(1), countryCode).isValid()
-    )
+    return (phoneNumber.number !== fixPolishPrefixedNumber(phoneNumber, countryCode).number);
 }
 
 function insertMissingItalianZero(numberStr) {
@@ -577,9 +592,14 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         let normalisedParsed = '';
 
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
+        if (isPolishPrefixed) {
+            phoneNumber = fixPolishPrefixedNumber(phoneNumber, countryCode);
+            isInvalid = true;
+        }
         const isItalianMissingZero = isItalianMissingZeroNumber(phoneNumber, countryCode);
         if (isItalianMissingZero) {
             phoneNumber = parsePhoneNumber(insertMissingItalianZero(numberStr));
+            isInvalid = true;
         }
 
         if (phoneNumber) {
@@ -591,7 +611,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
         }
 
-        if (phoneNumber && (phoneNumber.isValid() || isPolishPrefixed || isItalianMissingZero)) {
+        if (phoneNumber && phoneNumber.isValid()) {
             normalisedParsed = phoneNumber.number.replace(spacingRegex, '');
 
             if (couldBePhonewords) {
@@ -622,7 +642,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             // Bad spacing: space after plus, multiple consecutive spaces/dashes
             isInvalid = isInvalid || /^\+\s.*$/.test(numberStr) || /\s{2,}/.test(numberStr) || /\-{2,}/.test(numberStr);
 
-            isInvalid = isInvalid || !numbersMatch || isPolishPrefixed || isItalianMissingZero;
+            isInvalid = isInvalid || !numbersMatch;
 
             if (phoneNumber.ext && !hasStandardExtension) {
                 isInvalid = true;
@@ -1106,7 +1126,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     // Mark the kept one as invalid to display the duplicate to the user
                     currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
 
-                    if (tagToRemove in item.mismatchTypeNumbers) {
+                    if (item.mismatchTypeNumbers.has(tagToRemove)) {
                         currentItem.hasTypeMismatch = false;
                         currentItem.mismatchTypeNumbers.delete(tagToRemove);
                     }
