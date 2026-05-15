@@ -31,7 +31,7 @@ export function createListItem(item) {
     const iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
 
     const itemMetadata = item.user ? `
-        <a href="https://www.openstreetmap.org/changeset/${item.changeset}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
+        <a href="https://www.openstreetmap.org/changeset/${escapeHTML(item.changeset)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
         <a href="https://www.openstreetmap.org/user/${encodeURIComponent(item.user)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${escapeHTML(item.user)}</a>`
         : item.timestamp ? `<span>${relativeTime}</span>` : '';
 
@@ -238,7 +238,7 @@ function createButtons(item, clickedClass) {
         '';
 
     const websiteButton = item.website ?
-        `<a href="${item.website}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>` :
+        `<a href="${escapeHTML(item.website)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>` :
         '';
 
     return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton };
@@ -278,7 +278,6 @@ function getRelativeTime(timestamp) {
  * @returns {string}
  */
 export function decodeHtmlEntities(encodedString) {
-    const textArea = document.createElement('textarea');
-    textArea.innerHTML = encodedString;
-    return textArea.value;
+    const doc = new DOMParser().parseFromString(encodedString, 'text/html');
+    return doc.documentElement.textContent;
 }
