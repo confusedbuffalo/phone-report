@@ -57,14 +57,10 @@ function checkMobileStatus(phoneNumber) {
  * @returns {('phone'|'contact:phone')}
  */
 export function phoneTagToUse(tags) {
-    const phoneTagPresent = 'phone' in tags;
-    const contactTagPresent = 'contact:phone' in tags;
-
-    if (phoneTagPresent && contactTagPresent) {
+    if ('phone' in tags) {
         return 'phone';
-    } else if (phoneTagPresent) {
-        return 'phone';
-    } else if (contactTagPresent) {
+    }
+    if ('contact:phone' in tags) {
         return 'contact:phone';
     }
     return 'phone';
@@ -80,22 +76,22 @@ export function phoneTagToUse(tags) {
  * @returns {string} The key that should be removed.
  */
 export function keyToRemove(key1, key2) {
-    // Look up the score. If a key is unknown, it's given a very low preference 
+    // Look up the score. If a key is unknown, it's given a very low preference
     // (Infinity), prioritizing its removal.
-    const score1 = PHONE_TAG_PREFERENCE_ORDER[key1] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key1] : Infinity;
-    const score2 = PHONE_TAG_PREFERENCE_ORDER[key2] !== undefined ? PHONE_TAG_PREFERENCE_ORDER[key2] : Infinity;
+    const score1 = PHONE_TAG_PREFERENCE_ORDER[key1] ?? Infinity;
+    const score2 = PHONE_TAG_PREFERENCE_ORDER[key2] ?? Infinity;
 
     // The key to REMOVE is the one with the higher score (lower preference).
 
     if (score1 > score2) {
         return key1;
-    } else if (score2 > score1) {
-        return key2;
-    } else {
-        // If scores are equal (e.g., both keys are 'phone', or both are unrecognized),
-        // we must choose one deterministically. We'll default to removing key2.
+    }
+    if (score2 > score1) {
         return key2;
     }
+    // If scores are equal (e.g., both keys are 'phone', or both are unrecognized),
+    // we must choose one deterministically. We'll default to removing key2.
+    return key2;
 }
 
 /**
@@ -113,16 +109,15 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX =
         DIN_FORMAT_COUNTRIES.includes(countryCode)
-            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/g
-            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/g;
+            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/
+            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/;
 
-    const hasOnlySafeChars = originalNumberStr.match(SAFE_CHARACTER_REGEX);
-    if (!hasOnlySafeChars) return false;
+    if (!SAFE_CHARACTER_REGEX.test(originalNumberStr)) return false;
 
     const processedOriginal = processSingleNumber(originalNumberStr, countryCode);
 
     // Double check that the original number parses to the new number
-    if (!processedOriginal.autoFixable || processedOriginal.suggestedFix != newNumberStr) return false;
+    if (!processedOriginal.autoFixable || processedOriginal.suggestedFix !== newNumberStr) return false;
 
     // Confirm that the number is in the same country
     try {
@@ -1106,7 +1101,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     // Mark the kept one as invalid to display the duplicate to the user
                     currentItem.invalidNumbers.set(keptTag, tags[keptTag]);
 
-                    if (tagToRemove in item.mismatchTypeNumbers) {
+                    if (item.mismatchTypeNumbers.has(tagToRemove)) {
                         currentItem.hasTypeMismatch = false;
                         currentItem.mismatchTypeNumbers.delete(tagToRemove);
                     }
