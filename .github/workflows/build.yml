@@ -118,6 +118,15 @@ jobs:
           command: pages deploy names_build --project-name=names-report
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Deploy opening hours to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true # in case of files being too large, e.g., don't kill the rest of the process
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
+          command: pages deploy hour_build --project-name=opening-hours
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
