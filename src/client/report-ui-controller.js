@@ -475,7 +475,7 @@ function openUploadModal() {
 
         const messageBox = document.getElementById('message-box');
         messageBox.className = 'message-box-error';
-        messageBox.innerHTML = translate('notLoggedIn');
+        messageBox.textContent = translate('notLoggedIn');
         messageBox.classList.remove('hidden');
     }
 
@@ -497,7 +497,7 @@ function disableCreateNoteWithMessage(message) {
 
     const messageBox = document.getElementById('note-message-box');
     messageBox.className = 'message-box-error';
-    messageBox.innerHTML = message;
+    messageBox.textContent = message;
     messageBox.classList.remove('hidden');
 }
 

@@ -143,49 +143,36 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
 }
 
 /**
- * Strips phone number extensions (x, ext, etc.) and non-dialable characters 
- * to isolate the core number for comparison.
- * @param {string} numberStr 
- * @returns {string} The core number string without the extension.
+ * Parses a phone number string to extract standard extension information.
+ * This helper consolidates logic for regex matching to avoid redundant operations.
+ * @param {string} numberStr - The phone number string to parse.
+ * @returns {{coreNumber: string, extension: string|null, hasStandardExtension: boolean|null}}
  */
-export function stripStandardExtension(numberStr) {
-    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
-    if (match && match[1]) {
-        return match[1].trim();
+export function parseStandardExtension(numberStr) {
+    const res = { coreNumber: numberStr, extension: null, hasStandardExtension: null };
+    if (!numberStr) {
+        res.coreNumber = '';
+        return res;
     }
-    return numberStr;
-}
 
-/**
- * Gets the extension from a phone number if it is in a recognisable format.
- * @param {string} numberStr 
- * @returns {string} The core number string without the extension.
- */
-export function getStandardExtension(numberStr) {
     const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
-    if (match && match[3]) {
-        return match[3].replace(/[^\d]/g, '');
-    }
-    return null;
-}
-
-/**
- * Determines if the extension is in a standard format.
- * @param {string} numberStr 
- * @returns {boolean|null} If the extension is in a standard format or null if there is no extension
- */
-export function isStandardExtension(numberStr) {
-    if (!numberStr) return null;
-    const match = numberStr.toLowerCase().match(EXTENSION_REGEX);
-    const originalCaseMatch = numberStr.match(EXTENSION_REGEX);
-    if (!match || (match && !match[3])) return null
-    if (match && match[2]) {
-        if (originalCaseMatch && originalCaseMatch[2]) {
-            return ACCEPTABLE_EXTENSION_FORMATS.includes(originalCaseMatch[2]);
+    if (match) {
+        if (match[1]) {
+            res.coreNumber = match[1].trim();
         }
-        return false;
+        if (match[3]) {
+            res.extension = match[3].replace(/[^\d]/g, '');
+
+            if (match[2]) {
+                res.hasStandardExtension = false;
+                const originalCaseMatch = numberStr.match(EXTENSION_REGEX);
+                if (originalCaseMatch && originalCaseMatch[2]) {
+                    res.hasStandardExtension = ACCEPTABLE_EXTENSION_FORMATS.includes(originalCaseMatch[2]);
+                }
+            }
+        }
     }
-    return null;
+    return res;
 }
 
 const SPACING_REGEX_NANP = /[\s-]/g;
@@ -319,11 +306,12 @@ export function getNumberAndExtension(numberStr, countryCode) {
             }
         }
     }
+    const { coreNumber, extension, hasStandardExtension } = parseStandardExtension(numberStr);
     return {
-        coreNumber: stripStandardExtension(numberStr),
-        extension: getStandardExtension(numberStr),
-        hasStandardExtension: isStandardExtension(numberStr),
-    }
+        coreNumber,
+        extension,
+        hasStandardExtension,
+    };
 }
 
 /**

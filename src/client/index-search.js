@@ -44,12 +44,28 @@ searchInput.addEventListener('input', (e) => {
     currentMatches = getAutocompleteResults(query);
 
     if (currentMatches.length > 0) {
-        resultsContainer.innerHTML = currentMatches.map((match, index) => `
-            <div class="autocomplete-row" data-index="${index}" onclick="window.location.href='${match.url}'">
-                <span class="autocomplete-name">${match.name}</span>
-                ${match.parent ? `<span class="autocomplete-meta">${match.parent}</span>` : ''}
-            </div>
-        `).join('');
+        resultsContainer.innerHTML = '';
+        currentMatches.forEach((match, index) => {
+            const row = document.createElement('div');
+            row.className = 'autocomplete-row';
+            row.dataset.index = index;
+            row.addEventListener('click', () => {
+                window.location.href = match.url;
+            });
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'autocomplete-name';
+            nameSpan.textContent = match.name;
+            row.appendChild(nameSpan);
+
+            if (match.parent) {
+                const metaSpan = document.createElement('span');
+                metaSpan.className = 'autocomplete-meta';
+                metaSpan.textContent = match.parent;
+                row.appendChild(metaSpan);
+            }
+            resultsContainer.appendChild(row);
+        });
         resultsContainer.classList.remove('hidden');
     } else {
         resultsContainer.classList.add('hidden');

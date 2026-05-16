@@ -418,6 +418,7 @@ async function processCountry(countryData) {
 
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);
                 subData.timestamp = dataTimestamp;
+                subData.timestamp = dataTimestamp;
                 if (!countryData.timestamp) {
                     countryData.timestamp = dataTimestamp;
                 }
