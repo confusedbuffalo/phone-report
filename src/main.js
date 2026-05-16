@@ -290,6 +290,8 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     const validationResult = await validate(elementStream, subdivision.countryCode, tmpFilePath);
 
+    console.log(reportType, subdivision.name, validationResult);
+
     if (reportType === 'phone' && botEnabled) {
         validationResult.invalidCount -= validationResult.safeEditCount;
         validationResult.autoFixableCount -= validationResult.safeEditCount;
@@ -320,7 +322,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     fs.unlinkSync(tmpFilePath);
 
-    console.log(reportType, stats)
+    console.log(reportType, subdivision.name, stats)
 
     return stats;
 }
