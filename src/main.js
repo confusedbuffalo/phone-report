@@ -345,8 +345,11 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
 
     const divisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
     const divisionTotals = Object.fromEntries(
-        Object.fromEntries(COUNT_TYPES).map((reportType, countTypes) => {
-            [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))]
+        Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
+            return [
+                reportType,
+                Object.fromEntries(countTypes.map(t => [t, 0]))
+            ];
         })
     );
 
@@ -386,12 +389,12 @@ async function processCountry(countryData) {
 
         await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
 
-        REPORT_TYPES.forEach(async reportType => {
+        for (const reportType of REPORT_TYPES) {
             const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
             await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
             await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
             fs.rmSync(tmpReportPbfFilePath, { force: true });
-        });
+        };
 
         fs.rmSync(tmpPbfFilePath, { force: true });
 
@@ -442,7 +445,7 @@ async function processCountry(countryData) {
     const totals = Object.fromEntries(
         Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
             return [
-                reportType, 
+                reportType,
                 Object.fromEntries(countTypes.map(t => [t, 0]))
             ];
         })
