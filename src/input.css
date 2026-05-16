@@ -8,6 +8,12 @@
   --font-sans: Inter, sans-serif;
 }
 
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 @utility body-styles {
   @apply p-8 bg-gray-100 dark:bg-gray-900;
 }
@@ -50,6 +56,10 @@
 
 @utility section-header {
   @apply text-2xl font-semibold text-gray-900 dark:text-gray-100;
+}
+
+section {
+  scroll-margin-top: 110px;
 }
 
 @utility section-description {
@@ -208,6 +218,10 @@
 
 @utility stats-box-percentage {
   @apply text-sm text-gray-400 dark:text-gray-500;
+}
+
+@utility stats-box-link {
+  @apply block transition-colors hover:text-blue-600 dark:hover:text-blue-400;
 }
 
 @utility theme-toggle-button {

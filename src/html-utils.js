@@ -35,19 +35,22 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('numbersChecked', locale),
                 numberClass: 'stats-box-number',
-                percentage: null
+                percentage: null,
+                href: null,
             },
             {
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('invalidNumbers', locale),
                 numberClass: 'stats-box-number-invalid',
-                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)]),
+                href: (!includeProgress && data.invalidCount > 0) ? '#invalidSection' : null,
             },
             {
                 value: data.autoFixableCount.toLocaleString(locale),
                 label: translate('potentiallyFixable', locale),
                 numberClass: 'stats-box-number-fixable',
-                percentage: translate('fixablePercentageOfInvalid', locale, [getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale)])
+                percentage: translate('fixablePercentageOfInvalid', locale, [getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale)]),
+                href: (!includeProgress && data.autoFixableCount > 0) ? '#fixableSection' : null,
             }
         ];
         if (!includeProgress) {
@@ -55,7 +58,8 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.foreignCount.toLocaleString(locale),
                 label: translate('foreignNumbersHeader', locale),
                 numberClass: 'stats-box-number',
-                percentage: null
+                percentage: null,
+                href: data.foreignCount > 0 ? '#foreignSection' : null,
             });
         }
     } else if (reportType === 'name') {
@@ -64,19 +68,22 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('multilingualNames', locale),
                 numberClass: 'stats-box-number',
-                percentage: null
+                percentage: null,
+                href: null,
             },
             {
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('incompleteNames', locale),
                 numberClass: 'stats-box-number-invalid',
-                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)]),
+                href: (!includeProgress && data.invalidCount > 0) ? '#invalidSection' : null,
             },
             {
                 value: data.missingNamesCount.toLocaleString(locale),
                 label: translate('missingNames', locale),
                 numberClass: 'stats-box-number-fixable',
-                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.missingNamesCount, data.totalCount, locale)])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.missingNamesCount, data.totalCount, locale)]),
+                href: (!includeProgress && data.missingNamesCount > 0) ? '#missingSection' : null,
             }
         ];
     } else {
@@ -97,13 +104,27 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
     const statsBoxClass = reportType === 'phone' ? "stats-box-four" :
         includeProgress ? "stats-box-four" : "stats-box-three";
 
-    const statsContent = statsData.map(stat => `
-        <div>
+    const statsContent = statsData.map(stat => {
+        const content = `
             <p class="${stat.numberClass}">${stat.value}</p>
-            <p class="stats-box-label">${stat.label}</p>
+            <p class="stats-box-label ${stat.href ? 'underline decoration-1 underline-offset-4' : ''}">${stat.label}</p>
             ${stat.percentage ? `<p class="stats-box-percentage">${stat.percentage}</p>` : ''}
-        </div>
-    `).join('');
+        `;
+
+        if (stat.href) {
+            return `
+                <a href="${stat.href}" class="stats-box-link">
+                    ${content}
+                </a>
+            `;
+        }
+
+        return `
+            <div>
+                ${content}
+            </div>
+        `;
+    }).join('');
 
     return `
         <div class="stats-box ${statsBoxClass}">
