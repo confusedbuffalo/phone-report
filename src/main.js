@@ -459,7 +459,7 @@ async function processCountry(countryData) {
         const divisionName = rawDivisionName;
 
         REPORT_TYPES.forEach(reportType => {
-            groupedDivisionStats[reportType] = divisionStats[reportType][divisionName];
+            groupedDivisionStats[reportType][divisionName] = divisionStats[reportType];
 
             Object.keys(totals[reportType]).forEach(countType => {
                 totals[reportType][countType] += divisionTotals[reportType][countType];
