@@ -130,7 +130,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
-          command: pages deploy hour_build --project-name=opening-hours
+          command: pages deploy hours_build --project-name=opening-hours
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Pages artifact
