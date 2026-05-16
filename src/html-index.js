@@ -83,6 +83,7 @@ function buildSearchIndex() {
  * @param {Object} translations
  */
 export async function generateMainIndexHtml(reportType, countryStats, locale, translations) {
+    console.log(countryStats)
 
     const eta = new Eta({
         views: path.join(process.cwd(), "src", "templates"),

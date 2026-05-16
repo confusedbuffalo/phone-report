@@ -52,7 +52,7 @@ async function downloadAndParseOfficialLanguages() {
 
         return dataObject;
     } catch (error) {
-        console.error('Error fetching or parsing YAML:', error.message);
+        console.error('Error fetching or parsing YAML:', error);
     }
 }
 
@@ -603,6 +603,8 @@ async function main() {
             break;
         }
     }
+
+    console.log(allCountryStats)
 
     REPORT_TYPES.forEach(async reportType => {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);
