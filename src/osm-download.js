@@ -52,7 +52,7 @@ export async function filterPbf(inputPath, outputPath, reportType) {
     try {
         const filterExpression = FILTER_EXPRESSIONS[reportType];
 
-        const command = `osmium tags-filter "${inputPath}" ${filterExpression} -o "${outputPath}" --overwrite`;
+        const command = `osmium tags-filter "${inputPath}" "${filterExpression}" -o "${outputPath}" --overwrite`;
         await execPromise(command);
     } catch (error) {
         console.error('Error processing OSM data:', error.message);

@@ -440,8 +440,11 @@ async function processCountry(countryData) {
     const groupedDivisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, {}]));
 
     const totals = Object.fromEntries(
-        Object.fromEntries(COUNT_TYPES).map((reportType, countTypes) => {
-            [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))]
+        Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
+            return [
+                reportType, 
+                Object.fromEntries(countTypes.map(t => [t, 0]))
+            ];
         })
     );
 
