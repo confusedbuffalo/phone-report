@@ -18,12 +18,15 @@ const DEFAULT_LOCALE = 'en';
 const KEY_PLACEHOLDERS = {
     'invalidNumbersOutOf': ['%i', '%f', '%t'],
     'incompleteNamesOutOf': ['%i', '%t'],
+    'invalidHoursOutOf': ['%i', '%f', '%t'],
     'invalidPercentageOfTotal': ['%p'],
     'fixablePercentageOfInvalid': ['%p'],
     'reportSubtitleForCountry': ['%c'],
     'reportSubtitleNamesForCountry': ['%c'],
+    'reportSubtitleHoursForCountry': ['%c'],
     'countryReportTitle': ['%c'],
     'countryReportTitleNames': ['%c'],
+    'countryReportTitleHours': ['%c'],
     'editIn': ['%e'],
     'numberDetailsNamesDataFrom': ['%o'],
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a']

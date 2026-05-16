@@ -55,6 +55,7 @@
         const T_CLIENT = {
             invalidNumbersOutOf: `<%= it.translate('invalidNumbersOutOf', it.locale) %>`,
             incompleteNamesOutOf: `<%= it.translate('incompleteNamesOutOf', it.locale) %>`,
+            invalidHoursOutOf: `<%= it.translate('invalidHoursOutOf', it.locale) %>`,
             invalid: `<%= it.translate('invalid', it.locale) %>`,
             noSubdivisionsFound: `<%= it.translate('noSubdivisionsFound', it.locale) %>`
         };
