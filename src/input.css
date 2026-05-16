@@ -221,7 +221,7 @@ section {
 }
 
 @utility stats-box-link {
-  @apply block transition-colors hover:text-blue-600 dark:hover:text-blue-400;
+  @apply block transition-colors rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600;
 }
 
 @utility theme-toggle-button {
