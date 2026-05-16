@@ -356,12 +356,15 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
     for (const subdivision of subdivisions) {
         REPORT_TYPES.forEach(async reportType => {
             const reportStats = await processSubdivision(subdivision, reportType, countryData, rawDivisionName, clientTranslations);
+            console.log('report stats', reportType, reportStats)
             divisionStats[reportType].push(reportStats);
             Object.keys(divisionTotals[reportType]).forEach(countType => {
                 divisionTotals[reportType][countType] += divisionStats[countType];
             });
         });
     }
+
+    console.log(divisionStats, divisionTotals)
 
     return { divisionStats, divisionTotals };
 }
