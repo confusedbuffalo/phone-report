@@ -290,8 +290,6 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     const validationResult = await validate(elementStream, subdivision.countryCode, tmpFilePath);
 
-    console.log(reportType, subdivision.name, validationResult);
-
     if (reportType === 'phone' && botEnabled) {
         validationResult.invalidCount -= validationResult.safeEditCount;
         validationResult.autoFixableCount -= validationResult.safeEditCount;
@@ -321,8 +319,6 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
     await generateHtmlReport(reportType, countryData, stats, tmpFilePath, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
 
     fs.unlinkSync(tmpFilePath);
-
-    console.log(reportType, subdivision.name, stats)
 
     return stats;
 }
@@ -457,9 +453,6 @@ async function processCountry(countryData) {
 
     for (const rawDivisionName in divisions) {
         const { divisionStats, divisionTotals } = await processDivision(rawDivisionName, countryData, clientTranslations);
-
-        console.log(divisionStats)
-        console.log(divisionTotals)
 
         REPORT_TYPES.forEach(reportType => {
             groupedDivisionStats[reportType][rawDivisionName] = divisionStats[reportType];
