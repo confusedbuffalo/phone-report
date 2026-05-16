@@ -358,9 +358,9 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
             const reportStats = await processSubdivision(subdivision, reportType, countryData, rawDivisionName, clientTranslations);
             divisionStats[reportType].push(reportStats);
             Object.keys(divisionTotals[reportType]).forEach(countType => {
-                divisionTotals[reportType][countType] += divisionStats[countType];
+                divisionTotals[reportType][countType] += reportStats[countType];
             });
-        };
+        }
     }
 
     console.log('division stats', divisionStats, divisionTotals)
