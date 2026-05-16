@@ -9,7 +9,7 @@ import { createBaseItem } from './data-processor.js';
  * @returns {{
  * totalCount: number,
  * invalidCount: number,
- * missingNames: number
+ * missingNamesCount: number
  * }} An object containing the breakdown of record counts.
  */
 export async function validateNames(elementStream, countryCode, tmpFilePath) {
@@ -17,9 +17,9 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
     fileStream.write('[\n');
     let isFirstItem = true;
 
-    let totalNames = 0;
+    let totalCount = 0;
     let incompleteNames = 0;
-    let missingNames = 0;
+    let missingNamesCount = 0;
 
     for await (const element of elementStream) {
         if (!element.properties) continue;
@@ -37,7 +37,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         if (Object.keys(nameTags).length === 0) continue;
 
-        totalNames++;
+        totalCount++;
 
         let item = null;
 
@@ -74,7 +74,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             if (isValidCombo) isInvalid = false;
         }
 
-        if (!primaryName) missingNames++;
+        if (!primaryName) missingNamesCount++;
 
         if (isInvalid) {
             const currentItem = getOrCreateItem(true);
@@ -104,5 +104,5 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
     await new Promise(resolve => fileStream.on('finish', resolve));
 
-    return { totalNames, incompleteNames, missingNames };
+    return { totalCount, invalidCount: incompleteNames, missingNamesCount };
 }

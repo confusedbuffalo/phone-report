@@ -2,14 +2,50 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { translate } from './i18n.js';
+import { validateNumbers } from './phone-processor.js';
+import { validateNames } from './names-processor.js';
+import { validateOpeningHours } from './opening-hours-processor.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const packageInfo = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
 
+export const REPORT_TYPES = ['phone', 'name', 'hours'];
+
+export const BUILD_DIR = {
+    phone: path.join(__dirname, '..', 'public'),
+    name: path.join(__dirname, '..', 'names_build'),
+    hours: path.join(__dirname, '..', 'hours_build'),
+};
+
+export const COUNT_TYPES = {
+    phone: [
+        'invalidCount',
+        'autoFixableCount',
+        'foreignCount',
+        'safeEditCount',
+        'totalCount',
+    ],
+    name: [
+        'invalidCount',
+        'missingNamesCount',
+        'totalCount',
+    ],
+    hours: [
+        'invalidCount',
+        'autoFixableCount',
+        'totalCount',
+    ]
+};
+
+export const VALIDATORS = {
+    phone: validateNumbers,
+    name: validateNames,
+    hours: validateOpeningHours,
+};
+
 export const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-export const NAMES_BUILD_DIR = path.join(__dirname, '..', 'names_build');
 
 export const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 export const NON_MOBILE_TAGS = ['phone', 'contact:phone'];
@@ -299,6 +335,7 @@ export const GITHUB_LINK = "https://github.com/confusedbuffalo/phone-report/";
 export const HOST_URL = {
     'phone': 'https://confusedbuffalo.github.io/phone-report/',
     'name': 'https://names-report.pages.dev/',
+    'hours': 'https://opening-hours-report.pages.dev/',
 };
 
 const PACKAGE_NAME = packageInfo.name;
@@ -311,8 +348,13 @@ export const CHANGESET_TAGS = {
         "created_by": PACKAGE_STRING,
         "host": HOST_URL.phone,
     },
-    "name": {
+    'name': {
         "comment": "Fix incomplete multilingual names: no multilingual name matching name tag or no name tag",
+        "created_by": PACKAGE_STRING,
+        "host": HOST_URL.name,
+    },
+    'hours': {
+        "comment": "Fix opening hours issues",
         "created_by": PACKAGE_STRING,
         "host": HOST_URL.name,
     },

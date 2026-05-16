@@ -162,9 +162,14 @@ function renderList() {
                     .replace('%i', groupInvalidFormatted)
                     .replace('%f', groupFixableFormatted)
                     .replace('%t', groupTotalFormatted) :
-                T_CLIENT.incompleteNamesOutOf
-                    .replace('%i', groupInvalidFormatted)
-                    .replace('%t', groupTotalFormatted);
+                reportType === 'names' ?
+                    T_CLIENT.incompleteNamesOutOf
+                        .replace('%i', groupInvalidFormatted)
+                        .replace('%t', groupTotalFormatted) :
+                    T_CLIENT.invalidHoursOutOf
+                        .replace('%i', groupInvalidFormatted)
+                        .replace('%f', groupFixableFormatted)
+                        .replace('%t', groupTotalFormatted);
 
             // --- End Group Stats Calculation ---
 
@@ -280,9 +285,14 @@ function renderList() {
                         .replace('%i', formattedInvalidCount)
                         .replace('%f', formattedFixableCount)
                         .replace('%t', formattedTotalCount) :
-                    T_CLIENT.incompleteNamesOutOf
-                        .replace('%i', formattedInvalidCount)
-                        .replace('%t', formattedTotalCount);
+                    reportType === 'name' ?
+                        T_CLIENT.incompleteNamesOutOf
+                            .replace('%i', formattedInvalidCount)
+                            .replace('%t', formattedTotalCount) :
+                        T_CLIENT.invalidHoursOutOf
+                            .replace('%i', formattedInvalidCount)
+                            .replace('%f', formattedFixableCount)
+                            .replace('%t', formattedTotalCount);
 
                 const li = document.createElement('li');
                 li.className = 'subdivision-list-item';

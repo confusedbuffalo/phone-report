@@ -2,7 +2,7 @@ import { addNoteBtn, appState, commentBox, noteCancelBtn, noteCloseBtnBottom, un
 import { moveEditsToUploadedStorage } from "./report-storage.js";
 import { disableModalCloseListeners, enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
 
-const redirectUrl = reportType === 'phone' ? 'https://confusedbuffalo.github.io/phone-report/land.html' : 'https://names-report.pages.dev/land.html';
+const redirectUrl = `${CHANGESET_TAGS[reportType]}land.html`;
 
 /**
  * Sends a command to the JOSM Remote Control API.

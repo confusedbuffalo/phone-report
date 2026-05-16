@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        <%= it.translate(it.reportType === 'phone' ? 'mainIndexTitle' : 'osmIncompleteNameValidation', it.locale) %>
+        <%= it.translate(it.reportType === 'phone' ? 'mainIndexTitle' : it.reportType === 'name' ? 'osmIncompleteNamesValidation' : 'osmOpeningHoursValidation', it.locale) %>
     </title>
     <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="./styles.css" rel="stylesheet">
@@ -20,14 +20,14 @@
                     </div>
                 </div>
                 <h1 class="page-title">
-                    <%= it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', it.locale) %>
+                    <%= it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : it.reportType === 'name' ? 'osmIncompleteNamesValidation' : 'osmOpeningHoursValidation', it.locale) %>
                 </h1>
                 <div class="items-end">
                     <%~ include("./partials/theme-button") %>
                 </div>
             </div>
             <p class="report-subtitle">
-                <%= it.translate(it.reportType === 'phone' ? 'reportSubtitle' : 'reportSubtitleNames', it.locale) %>
+                <%= it.translate(it.reportType === 'phone' ? 'reportSubtitle' : it.reportType === 'name' ? 'reportSubtitleNames' : 'reportSubtitleHours', it.locale) %>
             </p>
         </header>
 
@@ -71,8 +71,9 @@
                     const formattedTotal = country.totalCount.toLocaleString(itemLocale);
 
                     const description = it.reportType === 'phone' ?
-                        it.translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal]) :
-                        it.translate('incompleteNamesOutOf', itemLocale, [formattedInvalid, formattedTotal]);
+                        it.translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal])
+                            : it.reportType === 'name' ? it.translate('incompleteNamesOutOf', itemLocale, [formattedInvalid, formattedTotal])
+                                : it.translate('invalidHoursOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal]);
                 %>
                     <a href="./<%= countryPageName %>" class="country-link">
                         <div class="country-link-content">

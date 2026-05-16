@@ -66,12 +66,21 @@ export const MASTER_KEYS = {
     'missingNames': [],
     'missingNamesDescription': [],
     'incompleteNamesDescription': [],
-    'osmIncompleteNameValidation': [],
+    'osmIncompleteNamesValidation': [],
     'reportSubtitleNames': [],
     'incompleteNamesReport': [],
     'noIncompleteNames': [],
     'copyNameTo': [],
     'copyNameFrom': [],
+    'osmOpeningHoursValidation': [],
+    'reportSubtitleHours': [],
+    'openingHoursReport': [],
+    'hoursChecked': [],
+    'invalidHours': [],
+    'fixableHoursHeader': [],
+    'fixableHoursDescription': [],
+    'invalidHoursDescription': [],
+
 
     // --- Keys with Required Placeholders ---
     'editIn': ['%e'],
@@ -81,11 +90,13 @@ export const MASTER_KEYS = {
 
     'invalidNumbersOutOf': ['%i', '%f', '%t'],
     'incompleteNamesOutOf': ['%i', '%t'],
+    'invalidHoursOutOf': ['%i', '%f', '%t'],
 
     'numberDetailsNamesDataFrom': ['%o'],
 
     'reportSubtitleForCountry': ['%c'],
     'reportSubtitleNamesForCountry': ['%c'],
+    'reportSubtitleHoursForCountry': ['%c'],
     'dataSourcedTemplate': ['%d', '%t', '%z', '%a'],
 
     "pageOf": ['%n', '%t'],
@@ -100,9 +111,11 @@ export const MASTER_KEYS = {
     "hasInvalidPlural": ['%n'],
     "hasIncompleteName": ['%n'],
     "hasMissingName": ['%n'],
+    'hasInvalidHours': ['%n'],
 
     // Page Titles (uses %c for country name)
     'mainIndexTitle': [], // Static title
     'countryReportTitle': ['%c'],
-    'countryReportTitleNames': ['%c']
+    'countryReportTitleNames': ['%c'],
+    'countryReportTitleHours': ['%c']
 };

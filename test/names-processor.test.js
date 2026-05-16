@@ -43,7 +43,7 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(0);
+        expect(result.totalCount).toBe(0);
     });
 
     test('no name tags is not counted', async () => {
@@ -53,9 +53,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(0);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(0);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name and matching name in subtag is valid', async () => {
@@ -65,9 +65,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name and matching name in subtag is valid with other different names', async () => {
@@ -77,9 +77,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('multiple matching names is valid', async () => {
@@ -89,9 +89,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name and different names with no matching is invalid', async () => {
@@ -101,9 +101,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
 
@@ -126,9 +126,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
 
@@ -151,9 +151,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('French and Dutch names separated by hyphen but the wrong way round is invalid in Brussels', async () => {
@@ -163,9 +163,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
@@ -185,9 +185,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
@@ -206,9 +206,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
@@ -228,9 +228,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
 
         const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
         expect(invalidItems).toHaveLength(1);
@@ -250,9 +250,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('French and Dutch names separated by hyphen with both languages tagged is valid in Flanders', async () => {
@@ -262,9 +262,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('French and German names separated by hyphen with both languages tagged is valid in Wallonia', async () => {
@@ -274,9 +274,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(0);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('French and German names separated by hyphen with both languages tagged is invalid in Flanders', async () => {
@@ -286,9 +286,9 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath);
 
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name:signed is not a name', async () => {
@@ -298,7 +298,7 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(0);
+        expect(result.totalCount).toBe(0);
     });
 
     test('name:signed without a name is not a name', async () => {
@@ -308,7 +308,7 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(0);
+        expect(result.totalCount).toBe(0);
     });
 
     test('name:etymology is not a name', async () => {
@@ -318,7 +318,7 @@ describe('validateNames', () => {
 
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
-        expect(result.totalNames).toBe(0);
+        expect(result.totalCount).toBe(0);
     });
 
     test('name:zh-Hant is a name', async () => {
@@ -329,9 +329,9 @@ describe('validateNames', () => {
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
         
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name:zh-Latn-pinyin is a name', async () => {
@@ -342,9 +342,9 @@ describe('validateNames', () => {
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
         
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name:be-tarask is a name', async () => {
@@ -355,9 +355,9 @@ describe('validateNames', () => {
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
         
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
     });
 
     test('name:ja-Latn is a name', async () => {
@@ -368,8 +368,8 @@ describe('validateNames', () => {
         const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
 
         
-        expect(result.totalNames).toBe(1);
-        expect(result.incompleteNames).toBe(1);
-        expect(result.missingNames).toBe(0);
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
     });
 });

@@ -2,7 +2,7 @@ import { promises as fsPromises } from 'fs';
 import path from 'path';
 import { Eta } from 'eta';
 import { minify } from 'html-minifier-terser';
-import { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } from './constants.js';
+import { COUNTRIES, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS, BUILD_DIR } from './constants.js';
 import { translate } from './i18n.js';
 import { getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { safeName } from './data-processor.js';
@@ -77,7 +77,7 @@ function buildSearchIndex() {
 
 /**
  * Generates the main index.html file listing all country reports.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {Array<Object>} countryStats - Array of country statistic objects, including country.locale.
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  * @param {Object} translations
@@ -114,7 +114,7 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
         }
     }
 
-    const fileName = reportType === 'name' ? path.join(NAMES_BUILD_DIR, 'index.html') : path.join(PUBLIC_DIR, 'index.html');
+    const fileName = path.join(BUILD_DIR[reportType], 'index.html');
     await fsPromises.writeFile(fileName, finalHtml);
     console.log('Main index.html generated.');
 }

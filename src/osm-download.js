@@ -4,7 +4,7 @@ import fs from 'fs';
 import { exec } from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
-import { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS } from './constants.js';
+import { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS } from './constants.js';
 import { getSubdivisionIds } from './fetch-polys.js';
 
 const execPromise = promisify(exec);
@@ -36,30 +36,21 @@ export async function downloadPbf(url, outputPath) {
     }
 }
 
-/**
- * Filters an OSM PBF file by phone related tags.
- * @param {string} inputPath - The filename of the .osm.pbf file.
- * @param {string} outputPath - Where to save the filtered file.
- */
-export async function filterPbfPhone(inputPath, outputPath) {
-    try {
-        const filterExpression = `nwr/${ALL_NUMBER_TAGS.join(',')}`;
-
-        const command = `osmium tags-filter "${inputPath}" ${filterExpression} -o "${outputPath}" --overwrite`;
-        await execPromise(command);
-    } catch (error) {
-        console.error('Error processing OSM data:', error.message);
-    }
+const FILTER_EXPRESSIONS = {
+    phone: `nwr/${ALL_NUMBER_TAGS.join(',')}`,
+    name: 'name:*',
+    hours: `nwr/${ALL_HOURS_TAGS.join(',')}`,
 }
 
 /**
- * Filters an OSM PBF file by name tags.
+ * Filters an OSM PBF file by tags appropriate for the specified report type.
  * @param {string} inputPath - The filename of the .osm.pbf file.
  * @param {string} outputPath - Where to save the filtered file.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report to filter for.
  */
-export async function filterPbfName(inputPath, outputPath) {
+export async function filterPbf(inputPath, outputPath, reportType) {
     try {
-        const filterExpression = "name:*";
+        const filterExpression = FILTER_EXPRESSIONS[reportType];
 
         const command = `osmium tags-filter "${inputPath}" ${filterExpression} -o "${outputPath}" --overwrite`;
         await execPromise(command);

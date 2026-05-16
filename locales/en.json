@@ -86,7 +86,7 @@
   "hasInvalidPlural": "%n has invalid phone numbers, what should they be?",
   "phoneNumber": "Number",
 
-  "osmIncompleteNameValidation": "OSM Incomplete Names Validation",
+  "osmIncompleteNamesValidation": "OSM Incomplete Names Validation",
   "reportSubtitleNames": "A report on incomplete names in OpenStreetMap data for various countries.",
   "reportSubtitleNamesForCountry": "A report on incomplete names in OpenStreetMap data for %c.",
   "countryReportTitleNames": "OSM Incomplete Names Report - %c",
@@ -101,5 +101,18 @@
   "copyNameTo": "Copy name to:",
   "copyNameFrom": "Copy name from:",
   "hasIncompleteName": "%n has an incomplete multi-lingual name. The name tag should match one of the language specific names, but it doesn&apos;t.",
-  "hasMissingName": "%n is missing a primary name tag, despite having a language specific name set. What is the correct name?"
+  "hasMissingName": "%n is missing a primary name tag, despite having a language specific name set. What is the correct name?",
+
+  "osmOpeningHoursValidation": "OSM Opening Hours Validation",
+  "reportSubtitleHours": "A report on invalid opening hours in OpenStreetMap data for various countries.",
+  "reportSubtitleHoursForCountry": "A report on invalid opening hours in OpenStreetMap data for %c.",
+  "countryReportTitleHours": "OSM Opening Hours Validation Report - %c",
+  "openingHoursReport": "Opening Hours Report",
+  "hoursChecked": "Hours checked",
+  "invalidHours": "Invalid Hours",
+  "fixableHoursHeader": "Fixable Opening Hours",
+  "fixableHoursDescription": "These opening hours are essentially valid but are not in the standard format in some way. The suggested fix is how the hours are interpretted by a standard processor. Not all &apos;auto&apos; fixes are necessarily valid, so please do not blindly click on all the fix links without first verifying the change.",
+  "invalidHoursDescription": "These opening hours are all invalid and cannot be understood. The website could be used to check for the correct hours, or a survey may be necessary.",
+  "hasInvalidHours": "%n has invalid opening hours, what should they be?",
+  "invalidHoursOutOf": "%i invalid opening hours (%f potentially fixable) out of %t"
 }

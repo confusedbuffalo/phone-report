@@ -45,7 +45,7 @@ export function createListItem(item) {
         `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameTo')}</span>` :
         `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameFrom')}</span>`;
 
-    const buttonLayout = reportType === 'phone'
+    const buttonLayout = ['phone', 'hours'].includes(reportType)
         ? [
             [websiteButton, fixableLabel, fixButton, noteButton],
             [josmFixButton, editorButtons]
@@ -95,7 +95,7 @@ function createDetailsRow(label, number) {
     return `<div class="list-item-phone-label-container">
                 <span class="list-item-phone-label">${label}</span>
             </div>
-            <div class="list-item-phone-value-container ${reportType === 'phone' ? 'break-all' : 'wrap-break-word'}">
+            <div class="list-item-phone-value-container ${['phone', 'hours'].includes(reportType) ? 'break-all' : 'wrap-break-word'}">
                 ${number}
             </div>`
 }

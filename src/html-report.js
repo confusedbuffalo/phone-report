@@ -14,7 +14,7 @@ const { disassembler } = pkgDisassembler;
 import pkgStringer from 'stream-json/stringer.js';
 const { stringer } = pkgStringer;
 import { Eta } from 'eta';
-import { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE } from './constants.js';
+import { OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE, BUILD_DIR } from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
 import { translate } from './i18n.js';
 import { getDiffHtml, getDiffTagsHtml } from './diff-renderer.js';
@@ -86,10 +86,9 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
  * Creates the fix rows for an invalid phone number item.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
- * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {Object}
  */
-function createPhoneFixRows(item, locale, iconManager) {
+function createPhoneFixRows(item, locale) {
     return Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
@@ -179,10 +178,9 @@ function createPhoneFixRows(item, locale, iconManager) {
  * Creates the fix rows for an invalid name item.
  * @param {Object} item - The invalid data item.
  * @param {string} locale - The locale for the text
- * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {Object}
  */
-function createNameFixRows(item, locale, iconManager) {
+function createNameFixRows(item, locale) {
     const escapedNameTags = Object.fromEntries(
         Object.entries(item.nameTags).map(([key, value]) => [key, escapeHTML(value)])
     );
@@ -193,8 +191,32 @@ function createNameFixRows(item, locale, iconManager) {
 }
 
 /**
+ * Creates the fix rows for an invalid opening hours item.
+ * @param {Object} item - The invalid data item.
+ * @param {string} locale - The locale for the text
+ * @returns {Object}
+ */
+function createHoursFixRows(item, locale) {
+    return Object.keys(item.invalidHours).map(key => {
+        const suggestedFix = item.suggestedFixes[key];
+        const suggestedRowKey = translate('suggestedFix', locale);
+
+        if (suggestedFix) {
+            return {
+                [key]: escapeHTML(originalRowValue),
+                [suggestedRowKey]: suggestedFix
+            };
+        } else {
+            return {
+                [key]: escapeHTML(originalRowValue),
+            };
+        }
+    }).filter(Boolean);
+}
+
+/**
  * Creates the items for client side injection, with extra content.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
@@ -228,7 +250,16 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
         return clientItem;
     }
 
-    item.fixRows = reportType === 'phone' ? createPhoneFixRows(item, locale, iconManager) : createNameFixRows(item, locale, iconManager);
+    const fixRowsFunctions = {
+        phone: createPhoneFixRows,
+        name: createNameFixRows,
+        hours: createHoursFixRows,
+    };
+
+    const fixer = fixRowsFunctions[reportType];
+    if (!fixer) throw new Error(`Unsupported report type: ${reportType}`);
+
+    item.fixRows = fixer(item, locale);
 
     item.josmFixUrl = createJosmFixUrl(item);
 
@@ -298,7 +329,7 @@ export function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdiv
 
 /**
  * Generates the HTML report for a single subdivision.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {string} countryData
  * @param {Object} subdivisionStats - The subdivision statistics object.
  * @param {string} tmpFilePath - Filepath of the json file containing the invalid items.
@@ -316,8 +347,8 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
     const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug);
-    const htmlFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.html` : `${path.join(PUBLIC_DIR, relativeFilePath)}.html`;
-    const dataFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.json` : `${path.join(PUBLIC_DIR, relativeFilePath)}.json`;
+    const htmlFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.html`;
+    const dataFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.json`;
 
     const stringerOptions = { makeArray: true };
 

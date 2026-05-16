@@ -10,12 +10,6 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(false);
     });
 
-    test('What happens with unknown tag', () => {
-        const result = validateHoursTag('Mo-Fr 08:00-17:00', 'made_up_tag', 'en');
-        console.log(result);
-        expect(result.isInvalid).toBe(false);
-    });
-
     test('Opening hours with capitalised days is invalid but fixable', () => {
         const result = validateHoursTag('MO-FR 08:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
@@ -99,7 +93,6 @@ describe('validateOpeningHours', () => {
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
 
-        console.log(result);
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
         expect(result.autoFixableCount).toBe(0);
@@ -116,7 +109,6 @@ describe('validateOpeningHours', () => {
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
 
-        console.log(result);
         expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(0);
         expect(result.autoFixableCount).toBe(0);
@@ -129,7 +121,6 @@ describe('validateOpeningHours', () => {
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
 
-        console.log(result);
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
         expect(result.autoFixableCount).toBe(1);
@@ -158,7 +149,6 @@ describe('validateOpeningHours', () => {
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
 
-        console.log(result);
         expect(result.totalCount).toBe(3);
         expect(result.invalidCount).toBe(3);
         expect(result.autoFixableCount).toBe(3);

@@ -21,7 +21,6 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
             tagValidationResult.warnings = oh.getWarnings();
         }
     } catch (error) {
-        console.log('got an error')
         // Totally invalid in some way
         tagValidationResult.isInvalid = true;
         tagValidationResult.isAutoFixable = false;
