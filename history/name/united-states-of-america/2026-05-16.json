@@ -1,0 +1,519 @@
+{
+  "name": "United States Of America",
+  "slug": "united-states-of-america",
+  "locale": "en-US",
+  "timestamp": "2026-05-16T00:00:00.000Z",
+  "invalidCount": 41866,
+  "missingNamesCount": 1451,
+  "totalCount": 71839,
+  "groupedDivisionStats": {
+    "United States Of America": [
+      {
+        "name": "Alabama",
+        "divisionSlug": "united-states-of-america",
+        "slug": "alabama",
+        "invalidCount": 135,
+        "missingNamesCount": 101,
+        "totalCount": 307,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Alaska",
+        "divisionSlug": "united-states-of-america",
+        "slug": "alaska",
+        "invalidCount": 1381,
+        "missingNamesCount": 31,
+        "totalCount": 2146,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "American Samoa",
+        "divisionSlug": "united-states-of-america",
+        "slug": "american-samoa",
+        "invalidCount": 67,
+        "missingNamesCount": 21,
+        "totalCount": 94,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Arizona",
+        "divisionSlug": "united-states-of-america",
+        "slug": "arizona",
+        "invalidCount": 892,
+        "missingNamesCount": 15,
+        "totalCount": 1298,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Arkansas",
+        "divisionSlug": "united-states-of-america",
+        "slug": "arkansas",
+        "invalidCount": 422,
+        "missingNamesCount": 4,
+        "totalCount": 511,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "California",
+        "divisionSlug": "united-states-of-america",
+        "slug": "california",
+        "invalidCount": 5134,
+        "missingNamesCount": 181,
+        "totalCount": 8957,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Colorado",
+        "divisionSlug": "united-states-of-america",
+        "slug": "colorado",
+        "invalidCount": 427,
+        "missingNamesCount": 62,
+        "totalCount": 746,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Connecticut",
+        "divisionSlug": "united-states-of-america",
+        "slug": "connecticut",
+        "invalidCount": 94,
+        "missingNamesCount": 7,
+        "totalCount": 201,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Delaware",
+        "divisionSlug": "united-states-of-america",
+        "slug": "delaware",
+        "invalidCount": 14,
+        "missingNamesCount": 2,
+        "totalCount": 34,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "District of Columbia",
+        "divisionSlug": "united-states-of-america",
+        "slug": "district-of-columbia",
+        "invalidCount": 82,
+        "missingNamesCount": 2,
+        "totalCount": 530,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Florida",
+        "divisionSlug": "united-states-of-america",
+        "slug": "florida",
+        "invalidCount": 1202,
+        "missingNamesCount": 201,
+        "totalCount": 1841,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Georgia",
+        "divisionSlug": "united-states-of-america",
+        "slug": "georgia",
+        "invalidCount": 326,
+        "missingNamesCount": 13,
+        "totalCount": 521,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Guam",
+        "divisionSlug": "united-states-of-america",
+        "slug": "guam",
+        "invalidCount": 194,
+        "missingNamesCount": 27,
+        "totalCount": 321,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Hawaii",
+        "divisionSlug": "united-states-of-america",
+        "slug": "hawaii",
+        "invalidCount": 1306,
+        "missingNamesCount": 116,
+        "totalCount": 1830,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Idaho",
+        "divisionSlug": "united-states-of-america",
+        "slug": "idaho",
+        "invalidCount": 369,
+        "missingNamesCount": 2,
+        "totalCount": 455,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Illinois",
+        "divisionSlug": "united-states-of-america",
+        "slug": "illinois",
+        "invalidCount": 1725,
+        "missingNamesCount": 12,
+        "totalCount": 2351,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Indiana",
+        "divisionSlug": "united-states-of-america",
+        "slug": "indiana",
+        "invalidCount": 2326,
+        "missingNamesCount": 6,
+        "totalCount": 2756,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Iowa",
+        "divisionSlug": "united-states-of-america",
+        "slug": "iowa",
+        "invalidCount": 56,
+        "missingNamesCount": 1,
+        "totalCount": 457,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Kansas",
+        "divisionSlug": "united-states-of-america",
+        "slug": "kansas",
+        "invalidCount": 126,
+        "missingNamesCount": 1,
+        "totalCount": 272,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Kentucky",
+        "divisionSlug": "united-states-of-america",
+        "slug": "kentucky",
+        "invalidCount": 164,
+        "missingNamesCount": 4,
+        "totalCount": 259,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Louisiana",
+        "divisionSlug": "united-states-of-america",
+        "slug": "louisiana",
+        "invalidCount": 1295,
+        "missingNamesCount": 74,
+        "totalCount": 1578,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Maine",
+        "divisionSlug": "united-states-of-america",
+        "slug": "maine",
+        "invalidCount": 195,
+        "missingNamesCount": 7,
+        "totalCount": 3695,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Maryland",
+        "divisionSlug": "united-states-of-america",
+        "slug": "maryland",
+        "invalidCount": 148,
+        "missingNamesCount": 8,
+        "totalCount": 288,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Massachusetts",
+        "divisionSlug": "united-states-of-america",
+        "slug": "massachusetts",
+        "invalidCount": 355,
+        "missingNamesCount": 17,
+        "totalCount": 820,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Michigan",
+        "divisionSlug": "united-states-of-america",
+        "slug": "michigan",
+        "invalidCount": 595,
+        "missingNamesCount": 25,
+        "totalCount": 902,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Minnesota",
+        "divisionSlug": "united-states-of-america",
+        "slug": "minnesota",
+        "invalidCount": 1388,
+        "missingNamesCount": 15,
+        "totalCount": 2736,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Mississippi",
+        "divisionSlug": "united-states-of-america",
+        "slug": "mississippi",
+        "invalidCount": 53,
+        "missingNamesCount": 6,
+        "totalCount": 182,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Missouri",
+        "divisionSlug": "united-states-of-america",
+        "slug": "missouri",
+        "invalidCount": 208,
+        "missingNamesCount": 7,
+        "totalCount": 531,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Montana",
+        "divisionSlug": "united-states-of-america",
+        "slug": "montana",
+        "invalidCount": 172,
+        "missingNamesCount": 21,
+        "totalCount": 864,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Nebraska",
+        "divisionSlug": "united-states-of-america",
+        "slug": "nebraska",
+        "invalidCount": 63,
+        "missingNamesCount": 2,
+        "totalCount": 168,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Nevada",
+        "divisionSlug": "united-states-of-america",
+        "slug": "nevada",
+        "invalidCount": 484,
+        "missingNamesCount": 10,
+        "totalCount": 904,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "New Hampshire",
+        "divisionSlug": "united-states-of-america",
+        "slug": "new-hampshire",
+        "invalidCount": 61,
+        "missingNamesCount": 5,
+        "totalCount": 824,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "New Jersey",
+        "divisionSlug": "united-states-of-america",
+        "slug": "new-jersey",
+        "invalidCount": 176,
+        "missingNamesCount": 13,
+        "totalCount": 489,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "New Mexico",
+        "divisionSlug": "united-states-of-america",
+        "slug": "new-mexico",
+        "invalidCount": 549,
+        "missingNamesCount": 20,
+        "totalCount": 1014,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "New York",
+        "divisionSlug": "united-states-of-america",
+        "slug": "new-york",
+        "invalidCount": 7946,
+        "missingNamesCount": 97,
+        "totalCount": 10497,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "North Carolina",
+        "divisionSlug": "united-states-of-america",
+        "slug": "north-carolina",
+        "invalidCount": 797,
+        "missingNamesCount": 2,
+        "totalCount": 1067,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "North Dakota",
+        "divisionSlug": "united-states-of-america",
+        "slug": "north-dakota",
+        "invalidCount": 656,
+        "missingNamesCount": 0,
+        "totalCount": 1483,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Northern Mariana Islands",
+        "divisionSlug": "united-states-of-america",
+        "slug": "northern-mariana-islands",
+        "invalidCount": 64,
+        "missingNamesCount": 21,
+        "totalCount": 204,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Ohio",
+        "divisionSlug": "united-states-of-america",
+        "slug": "ohio",
+        "invalidCount": 375,
+        "missingNamesCount": 25,
+        "totalCount": 904,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Oklahoma",
+        "divisionSlug": "united-states-of-america",
+        "slug": "oklahoma",
+        "invalidCount": 393,
+        "missingNamesCount": 7,
+        "totalCount": 536,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Oregon",
+        "divisionSlug": "united-states-of-america",
+        "slug": "oregon",
+        "invalidCount": 826,
+        "missingNamesCount": 87,
+        "totalCount": 1136,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Pennsylvania",
+        "divisionSlug": "united-states-of-america",
+        "slug": "pennsylvania",
+        "invalidCount": 1175,
+        "missingNamesCount": 17,
+        "totalCount": 1836,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Puerto Rico",
+        "divisionSlug": "united-states-of-america",
+        "slug": "puerto-rico",
+        "invalidCount": 674,
+        "missingNamesCount": 9,
+        "totalCount": 1144,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Rhode Island",
+        "divisionSlug": "united-states-of-america",
+        "slug": "rhode-island",
+        "invalidCount": 31,
+        "missingNamesCount": 0,
+        "totalCount": 92,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "South Carolina",
+        "divisionSlug": "united-states-of-america",
+        "slug": "south-carolina",
+        "invalidCount": 76,
+        "missingNamesCount": 0,
+        "totalCount": 282,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "South Dakota",
+        "divisionSlug": "united-states-of-america",
+        "slug": "south-dakota",
+        "invalidCount": 87,
+        "missingNamesCount": 3,
+        "totalCount": 346,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Tennessee",
+        "divisionSlug": "united-states-of-america",
+        "slug": "tennessee",
+        "invalidCount": 233,
+        "missingNamesCount": 11,
+        "totalCount": 332,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Texas",
+        "divisionSlug": "united-states-of-america",
+        "slug": "texas",
+        "invalidCount": 1810,
+        "missingNamesCount": 30,
+        "totalCount": 3000,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "United States Virgin Islands",
+        "divisionSlug": "united-states-of-america",
+        "slug": "united-states-virgin-islands",
+        "invalidCount": 33,
+        "missingNamesCount": 1,
+        "totalCount": 51,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Utah",
+        "divisionSlug": "united-states-of-america",
+        "slug": "utah",
+        "invalidCount": 176,
+        "missingNamesCount": 11,
+        "totalCount": 324,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Vermont",
+        "divisionSlug": "united-states-of-america",
+        "slug": "vermont",
+        "invalidCount": 357,
+        "missingNamesCount": 0,
+        "totalCount": 482,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Virginia",
+        "divisionSlug": "united-states-of-america",
+        "slug": "virginia",
+        "invalidCount": 184,
+        "missingNamesCount": 15,
+        "totalCount": 649,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Washington",
+        "divisionSlug": "united-states-of-america",
+        "slug": "washington",
+        "invalidCount": 1236,
+        "missingNamesCount": 50,
+        "totalCount": 2874,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "West Virginia",
+        "divisionSlug": "united-states-of-america",
+        "slug": "west-virginia",
+        "invalidCount": 120,
+        "missingNamesCount": 0,
+        "totalCount": 207,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Wisconsin",
+        "divisionSlug": "united-states-of-america",
+        "slug": "wisconsin",
+        "invalidCount": 2238,
+        "missingNamesCount": 18,
+        "totalCount": 3203,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      },
+      {
+        "name": "Wyoming",
+        "divisionSlug": "united-states-of-america",
+        "slug": "wyoming",
+        "invalidCount": 195,
+        "missingNamesCount": 8,
+        "totalCount": 308,
+        "lastUpdated": "2026-05-16T00:00:00.000Z"
+      }
+    ]
+  },
+  "autoFixableCount": 0,
+  "safeEditCount": 0
+}
