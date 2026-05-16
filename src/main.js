@@ -498,7 +498,7 @@ async function processCountry(countryData) {
         await generateCountryIndexHtml(reportType, countryStats[reportType]);
     });
 
-    return { countryStats };
+    return countryStats;
 }
 
 /**
