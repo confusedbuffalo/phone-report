@@ -18,6 +18,10 @@ export const FAX_TAGS = ['fax', 'contact:fax'];
 export const OTHER_TAGS = ['contact:whatsapp'];
 export const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
 
+export const HOURS_POINT_OR_RANGE_TAGS = ['collection_times', 'service_times'];
+export const HOURS_RANGE_TAGS = ['opening_hours', 'opening_hours:delivery', 'opening_hours:drive_through', 'opening_hours:kitchen', 'happy_hours'];
+export const ALL_HOURS_TAGS = [...HOURS_POINT_OR_RANGE_TAGS, ...HOURS_RANGE_TAGS]
+
 /**
  * Defines the preference order for phone-related OpenStreetMap (OSM) keys.
  * A lower number indicates a higher preference (i.e., the key to KEEP).

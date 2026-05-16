@@ -10,7 +10,7 @@ describe('validateNames', () => {
 
     beforeEach(() => {
         testCounter++;
-        tmpFilePath = path.join(os.tmpdir(), `validate-numbers-test-${testCounter}.json`);
+        tmpFilePath = path.join(os.tmpdir(), `validate-names-test-${testCounter}.json`);
     });
 
     afterEach(() => {

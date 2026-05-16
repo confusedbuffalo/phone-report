@@ -106,4 +106,3 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
     return { totalNames, incompleteNames, missingNames };
 }
-
