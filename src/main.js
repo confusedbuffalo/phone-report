@@ -320,6 +320,8 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     fs.unlinkSync(tmpFilePath);
 
+    console.log(reportType, stats)
+
     return stats;
 }
 
@@ -452,14 +454,13 @@ async function processCountry(countryData) {
     );
 
     for (const rawDivisionName in divisions) {
-        const {
-            divisionStats, divisionTotals
-        } = await processDivision(rawDivisionName, countryData, clientTranslations);
+        const { divisionStats, divisionTotals } = await processDivision(rawDivisionName, countryData, clientTranslations);
 
-        const divisionName = rawDivisionName;
+        console.log(divisionStats)
+        console.log(divisionTotals)
 
         REPORT_TYPES.forEach(reportType => {
-            groupedDivisionStats[reportType][divisionName] = divisionStats[reportType];
+            groupedDivisionStats[reportType][rawDivisionName] = divisionStats[reportType];
 
             Object.keys(totals[reportType]).forEach(countType => {
                 totals[reportType][countType] += divisionTotals[reportType][countType];
@@ -603,8 +604,6 @@ async function main() {
             break;
         }
     }
-
-    console.log(allCountryStats)
 
     REPORT_TYPES.forEach(async reportType => {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);
