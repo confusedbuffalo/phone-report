@@ -198,17 +198,18 @@ function createNameFixRows(item, locale) {
  */
 function createHoursFixRows(item, locale) {
     return Object.keys(item.invalidHours).map(key => {
+        const originalValue = invalidHours[key];
         const suggestedFix = item.suggestedFixes[key];
         const suggestedRowKey = translate('suggestedFix', locale);
 
         if (suggestedFix) {
             return {
-                [key]: escapeHTML(originalRowValue),
+                [key]: escapeHTML(originalValue),
                 [suggestedRowKey]: suggestedFix
             };
         } else {
             return {
-                [key]: escapeHTML(originalRowValue),
+                [key]: escapeHTML(originalValue),
             };
         }
     }).filter(Boolean);
