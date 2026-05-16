@@ -1,6 +1,7 @@
 import { addNoteBtn, appState, commentBox, noteCancelBtn, noteCloseBtnBottom, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
 import { moveEditsToUploadedStorage } from "./report-storage.js";
 import { disableModalCloseListeners, enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
+import { escapeHTML } from "./report-utils.js";
 
 const redirectUrl = reportType === 'phone' ? 'https://confusedbuffalo.github.io/phone-report/land.html' : 'https://names-report.pages.dev/land.html';
 
@@ -76,13 +77,13 @@ function getUser() {
 
     OSM.getUser("me")
         .then((result) => {
-            logoutBtn.innerText = `Logout ${result.display_name}`;
+            logoutBtn.textContent = `Logout ${result.display_name}`;
             localStorage.setItem('osm_display_name', result.display_name);
-            errorDiv.innerText = '';
+            errorDiv.textContent = '';
             errorDiv.hidden = true;
         })
         .catch((err) => {
-            logoutBtn.innerText = `${err}`;
+            logoutBtn.textContent = String(err);
         });
 }
 
@@ -243,7 +244,7 @@ export function addNote(osmType, osmId) {
             const openNotesMessage = result
                 .filter(note => note.status === 'open')
                 .map(note => note.id)
-                .map(id => translate('noteIsClose', { '%n': `<a href="https://www.openstreetmap.org/note/${id}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${id}</a>` }))
+                .map(id => translate('noteIsClose', { '%n': `<a href="https://www.openstreetmap.org/note/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>` }))
                 .join('\n');
             if (openNotesMessage.length > 0) {
                 disableCreateNoteWithMessage(openNotesMessage);
@@ -293,7 +294,7 @@ function checkAndCreateNote(itemId, lat, lon) {
             .then((result) => {
                 const successMessage = translate(
                     'noteCreated',
-                    { '%n': `<a href="https://www.openstreetmap.org/note/${result.id}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${result.id}</a>` }
+                    { '%n': `<a href="https://www.openstreetmap.org/note/${escapeHTML(result.id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(result.id)}</a>` }
                 );
                 messageBox.className = 'message-box-success';
                 messageBox.innerHTML = successMessage;
@@ -315,7 +316,7 @@ function checkAndCreateNote(itemId, lat, lon) {
                 addNoteBtn.classList.remove('cursor-progress');
 
                 messageBox.className = 'message-box-error';
-                messageBox.innerHTML = `There was an error: ${err}`;
+                messageBox.textContent = `There was an error: ${err}`;
                 messageBox.classList.remove('hidden');
 
                 noteCancelBtn.classList.remove('hidden');
@@ -356,7 +357,7 @@ export function checkAndSubmit() {
                 if (result) {
                     const changesetIds = Object.keys(result || {});
                     const links = changesetIds.map(id =>
-                        `<a href="https://www.openstreetmap.org/changeset/${id}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${id}</a>`
+                        `<a href="https://www.openstreetmap.org/changeset/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`
                     ).join(', ');
                     const successMessage = translate(
                         'changesetCreated',
@@ -383,13 +384,13 @@ export function checkAndSubmit() {
             })
             .catch((err) => {
                 toggleUploadingSpinner(false);
-                uploadBtn.innerHTML = translate('upload');
+                uploadBtn.textContent = translate('upload');
                 uploadBtn.disabled = false;
                 uploadBtn.classList.add('cursor-pointer');
                 uploadBtn.classList.remove('cursor-progress');
 
                 messageBox.className = 'message-box-error';
-                messageBox.innerHTML = `There was an error: ${err}`;
+                messageBox.textContent = `There was an error: ${err}`;
                 messageBox.classList.remove('hidden');
 
                 uploadCancelBtn.classList.remove('hidden');

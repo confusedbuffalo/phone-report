@@ -172,6 +172,7 @@ export function escapeHTML(str) {
     if (!str) {
         return '';
     }
+    str = String(str);
     return str.replace(/[&<>"']/g, (match) => {
         switch (match) {
             case '&': return '&amp;';
