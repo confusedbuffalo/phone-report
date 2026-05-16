@@ -4,20 +4,18 @@ import path from 'path';
 import fs from 'fs';
 
 import {
-    stripStandardExtension,
     checkExclusions,
     processSingleNumber,
     validateNumbers,
     validateSingleTag,
     phoneTagToUse,
     keyToRemove,
-    getStandardExtension,
     getNumberAndExtension,
     isSafeEdit,
     isSafeItemEdit,
-    isStandardExtension,
     getWhatsappNumber,
     convertPhonewordToDigits,
+    parseStandardExtension,
 } from '../src/phone-processor.js';
 
 const SAMPLE_COUNTRY_CODE_GB = 'GB';
@@ -28,139 +26,112 @@ const SAMPLE_COUNTRY_CODE_PL = 'PL';
 const SAMPLE_COUNTRY_CODE_FR = 'FR';
 
 // =====================================================================
-// stripStandardExtension Tests
+// parseStandardExtension Tests
 // =====================================================================
-describe('stripStandardExtension', () => {
-    test('should strip an extension prefixed by "x"', () => {
-        expect(stripStandardExtension('020 7946 0000 x123')).toBe('020 7946 0000');
+describe('parseStandardExtension', () => {
+    test('should parse an extension prefixed by "x"', () => {
+        const result = parseStandardExtension('020 7946 0000 x123');
+        expect(result.coreNumber).toEqual('020 7946 0000');
+        expect(result.extension).toEqual('123');
+        expect(result.hasStandardExtension).toBe(true);
     });
 
-    test('should strip an extension prefixed by "ext"', () => {
-        expect(stripStandardExtension('+44 20 7946 0000 ext. 456')).toBe('+44 20 7946 0000');
+    test('should parse an extension prefixed by "x" without spaces', () => {
+        const result = parseStandardExtension('020 7946 0000x123');
+        expect(result.coreNumber).toEqual('020 7946 0000');
+        expect(result.extension).toEqual('123');
+        expect(result.hasStandardExtension).toBe(true);
     });
 
-    test('should strip an extension prefixed by "extension"', () => {
-        expect(stripStandardExtension('+44 20 7946 0000 extension 456')).toBe('+44 20 7946 0000');
+    test('should parse a non-standard extension prefixed by "x" with trailing space', () => {
+        const result = parseStandardExtension('020 7946 0000 x 123');
+        expect(result.coreNumber).toEqual('020 7946 0000');
+        expect(result.extension).toEqual('123');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should return the original string if no extension is present', () => {
-        expect(stripStandardExtension('0800 123 4567')).toBe('0800 123 4567');
-    });
-});
-
-// =====================================================================
-// getStandardExtension Tests
-// =====================================================================
-describe('getStandardExtension', () => {
-
-    test('should extract a numeric extension prefixed by "x"', () => {
-        expect(getStandardExtension('020 7946 0000 x123')).toBe('123');
+    test('should parse a non-standard extension prefixed by uppercase "X"', () => {
+        const result = parseStandardExtension('020 7946 0000 X123');
+        expect(result.coreNumber).toEqual('020 7946 0000');
+        expect(result.extension).toEqual('123');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should extract a numeric extension prefixed by uppercase "X"', () => {
-        expect(getStandardExtension('020 7946 0000 X99')).toBe('99');
+    test('should parse an extension prefixed by "ext."', () => {
+        const result = parseStandardExtension('+44 20 7946 0000 ext. 456');
+        expect(result.coreNumber).toEqual('+44 20 7946 0000');
+        expect(result.extension).toEqual('456');
+        expect(result.hasStandardExtension).toBe(true);
     });
 
-    test('should extract a numeric extension prefixed by "ext."', () => {
-        expect(getStandardExtension('+44 20 7946 0000 ext. 456')).toBe('456');
+    test('should parse a non-standard extension prefixed by "ext." without trailing space', () => {
+        const result = parseStandardExtension('+44 20 7946 0000 ext.456');
+        expect(result.coreNumber).toEqual('+44 20 7946 0000');
+        expect(result.extension).toEqual('456');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should extract a numeric extension prefixed by "ext" without a dot', () => {
-        expect(getStandardExtension('1-800-CALL EXT500')).toBe('500');
+    test('should parse a non-standard extension prefixed by "EXT." in uppercase', () => {
+        const result = parseStandardExtension('+44 20 7946 0000 EXT. 456');
+        expect(result.coreNumber).toEqual('+44 20 7946 0000');
+        expect(result.extension).toEqual('456');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should extract a numeric extension prefixed by uppercase "EXT."', () => {
-        expect(getStandardExtension('123 EXT.789')).toBe('789');
+    test('should parse a non-standard extension prefixed by "ext" (without a dot)', () => {
+        const result = parseStandardExtension('+44 20 7946 0000 ext456');
+        expect(result.coreNumber).toEqual('+44 20 7946 0000');
+        expect(result.extension).toEqual('456');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should extract a numeric extension prefixed by "extension"', () => {
-        expect(getStandardExtension('+44 20 7946 0000 extension 808')).toBe('808');
+    test('should parse a non-standard extension prefixed by "extension"', () => {
+        const result = parseStandardExtension('+44 20 7946 0000 extension 456');
+        expect(result.coreNumber).toEqual('+44 20 7946 0000');
+        expect(result.extension).toEqual('456');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should extract an extension when prefixed by uppercase "EXTENSION"', () => {
-        expect(getStandardExtension('Office Number EXTENSION 101')).toBe('101');
+    test('should parse a non-standard extension prefixed by "EXTENSION" in uppercase', () => {
+        const result = parseStandardExtension('+44 20 7946 0000 EXTENSION 456');
+        expect(result.coreNumber).toEqual('+44 20 7946 0000');
+        expect(result.extension).toEqual('456');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should return null if no extension prefix is present', () => {
-        expect(getStandardExtension('0800 123 4567')).toBeNull();
+    test('should parse a non-standard extension prefixed by "wew."', () => {
+        const result = parseStandardExtension('+48 22 825 91 00 wew.106');
+        expect(result.coreNumber).toEqual('+48 22 825 91 00');
+        expect(result.extension).toEqual('106');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should return null if the prefix is present but no digits follow', () => {
-        expect(getStandardExtension('555-1212 x')).toBeNull();
+    test('should parse a non-standard extension prefixed by "wewn"', () => {
+        const result = parseStandardExtension('+48 22 825 91 00 wewn 106');
+        expect(result.coreNumber).toEqual('+48 22 825 91 00');
+        expect(result.extension).toEqual('106');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should return null if the string is empty', () => {
-        expect(getStandardExtension('')).toBeNull();
-    });
-});
-
-// =====================================================================
-// isStandardExtension Tests
-// =====================================================================
-describe('isStandardExtension', () => {
-
-    // --- Cases expected to be TRUE (Standard Formats) ---
-
-    test('should return true for "ext." with mandatory surrounding spaces', () => {
-        expect(isStandardExtension('555-123-4567 ext. 101')).toBe(true);
-        expect(isStandardExtension('1234 ext. 567')).toBe(true);
+    test('should parse a non-standard extension prefixed by "poste"', () => {
+        const result = parseStandardExtension('+1-819-755-4833 poste 5421');
+        expect(result.coreNumber).toEqual('+1-819-755-4833');
+        expect(result.extension).toEqual('5421');
+        expect(result.hasStandardExtension).toBe(false);
     });
 
-    test('should return true for "x" with a leading space', () => {
-        expect(isStandardExtension('(555) 123-4567 x101')).toBe(true);
-        expect(isStandardExtension('1234 x567')).toBe(true);
+    test('should parse a number without extension and return the original string', () => {
+        const result = parseStandardExtension('0800 123 4567');
+        expect(result.coreNumber).toEqual('0800 123 4567');
+        expect(result.extension).toBeNull();
+        expect(result.hasStandardExtension).toBeNull();
     });
 
-    test('should return true for "x" with no spaces', () => {
-        expect(isStandardExtension('1234x567')).toBe(true);
-    });
-
-
-    // --- Cases expected to be FALSE (Non-Standard Formats that match the regex) ---
-
-    test('should return false for "x" with a trailing space', () => {
-        expect(isStandardExtension('1234 x 567')).toBe(false);
-    });
-
-    test('should return false for "ext." with missing trailing space', () => {
-        expect(isStandardExtension('1234 ext.567')).toBe(false);
-    });
-
-    test('should return false for uppercase non-standard keywords (e.g., "EXTENSION")', () => {
-        expect(isStandardExtension('1234 EXTENSION 567')).toBe(false);
-    });
-
-    test('should return false for full "extension" keyword (lowercase)', () => {
-        expect(isStandardExtension('1234 extension 567')).toBe(false);
-    });
-
-    test('should return false for non-standard keyword (wewn)', () => {
-        expect(isStandardExtension('1234 wewn 567')).toBe(false);
-    });
-
-    test('should return false for uppercase ext. or x in otherwise standard format', () => {
-        expect(isStandardExtension('1234 EXT. 999')).toBe(false);
-        expect(isStandardExtension('1234 X123')).toBe(false);
-    });
-
-    // --- Cases expected to be NULL (No valid extension found) ---
-
-    test('should return null when no separator is present', () => {
-        // No match for the full regex
-        expect(isStandardExtension('1234567')).toBeNull();
-    });
-
-    test('should return null when the separator exists but no digits follow (ext.)', () => {
-        expect(isStandardExtension('1234 ext. ')).toBeNull();
-    });
-
-    test('should return null when the separator exists but no digits follow (x)', () => {
-        expect(isStandardExtension('1234x')).toBeNull();
-    });
-
-    test('should return null for an empty string or null input', () => {
-        expect(isStandardExtension('')).toBeNull();
-        expect(isStandardExtension(null)).toBeNull();
+    test('should parse a number with extension marker but no extension', () => {
+        const result = parseStandardExtension('0800 123 4567 x');
+        expect(result.coreNumber).toEqual('0800 123 4567');
+        expect(result.extension).toBeNull();
+        expect(result.hasStandardExtension).toBeNull();
     });
 });
 
@@ -321,7 +292,7 @@ describe('getNumberAndExtension', () => {
 
     // --- Standard (Fallback) Tests (Any Country Code other than DIN or TW) ---
 
-    describe('Standard Format)', () => {
+    describe('Standard Format', () => {
 
         test('should handle "x" prefixed extension using standard logic (without space)', () => {
             expect(getNumberAndExtension('1-800-555-1212x456', 'US')).toEqual({
