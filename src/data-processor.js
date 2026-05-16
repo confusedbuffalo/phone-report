@@ -142,6 +142,13 @@ export function getFeatureIcon(item, locale) {
 export function getRepresentativeLocation(geometry) {
     if (!geometry) return null;
 
+    if (geometry.type === 'Point') {
+        return {
+            lat: geometry.coordinates[1],
+            lon: geometry.coordinates[0]
+        };
+    }
+
     const representativePoint = pointOnFeature(geometry);
     const [lon, lat] = representativePoint.geometry.coordinates;
 

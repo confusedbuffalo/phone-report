@@ -147,7 +147,8 @@ function getSubdivisions(countryData, divisionName) {
                 name: name,
                 id: value.relationId,
                 countryCode: value.countryCode ?? countryData.countryCode,
-                ...(value.pbfUrl && { pbfUrl: value.pbfUrl })
+                ...(value.pbfUrl && { pbfUrl: value.pbfUrl }),
+                ...(value.timestamp && { timestamp: value.timestamp })
             };
         }
         // Fallback for standard number-only format
@@ -282,7 +283,7 @@ async function processSubdivisionPhones(subdivision, countryData, rawDivisionNam
     const siteInvalidCount = botEnabled ? invalidCount - safeEditCount : invalidCount;
     const siteAutoFixableCount = botEnabled ? autoFixableCount - safeEditCount : autoFixableCount;
 
-    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const parsedTimestamp = parseOsmTimestamp(subdivision.timestamp || countryData.timestamp)
     const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
 
     const stats = {
@@ -338,7 +339,7 @@ async function processSubdivisionNames(subdivision, countryData, rawDivisionName
 
     fs.unlinkSync(geojsonPath);
 
-    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const parsedTimestamp = parseOsmTimestamp(subdivision.timestamp || countryData.timestamp)
     const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
 
     const stats = {
@@ -486,8 +487,8 @@ async function processCountry(countryData) {
                     fs.rmSync(file, { force: true });
                 });
 
-                // TODO: store this per subdivision
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);
+                subData.timestamp = dataTimestamp;
                 if (!countryData.timestamp) {
                     countryData.timestamp = dataTimestamp;
                 }
