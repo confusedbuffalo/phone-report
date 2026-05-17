@@ -71,10 +71,10 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
 
             const spanPrefix = '<span';
             const flagIconAndTitle = flagHtml.startsWith(spanPrefix)
-                ? `${spanPrefix} title="${flagName}" ${flagHtml.slice(spanPrefix.length)}`
+                ? `${spanPrefix} title="${escapeHTML(flagName)}" ${flagHtml.slice(spanPrefix.length)}`
                 : flagHtml;
 
-            foreignRows.push(`<span class="inline-flex items-center">${flagIconAndTitle}${phone}</span>`)
+            foreignRows.push(`<span class="inline-flex items-center">${flagIconAndTitle}${escapeHTML(phone)}</span>`)
         }
 
         return {
