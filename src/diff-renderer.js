@@ -440,7 +440,7 @@ function mergeConsecutiveSeparators(inputArray, useDeSeparators) {
  * @param {Array<Object>} newDiff - The suggested string.
  * @returns {{oldDiffHtml: string, newDiffHtml: string}} - An object containing the HTML for both diffs.
  */
-export function getDiffHtml(oldDiff, newDiff) {
+function getDiffHtml(oldDiff, newDiff) {
     const mergedOldDiff = mergeDiffs(oldDiff);
     const mergedNewDiff = mergeDiffs(newDiff);
 

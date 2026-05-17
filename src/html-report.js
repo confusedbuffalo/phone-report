@@ -17,7 +17,7 @@ import { Eta } from 'eta';
 import { OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE, BUILD_DIR } from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
 import { translate } from './i18n.js';
-import { getPhoneDiffHtml, getDiffTagsHtml, getDiffHtml, getHoursDiffHtml } from './diff-renderer.js';
+import { getPhoneDiffHtml, getDiffTagsHtml, getHoursDiffHtml } from './diff-renderer.js';
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { IconManager } from './icon-manager.js';
 import { phoneTagToUse } from './phone-processor.js';

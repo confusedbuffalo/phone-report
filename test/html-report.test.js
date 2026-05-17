@@ -56,10 +56,6 @@ jest.unstable_mockModule('../src/i18n.js', () => ({
 }));
 
 jest.unstable_mockModule('../src/diff-renderer.js', () => ({
-    getDiffHtml: (original, suggested) => ({
-        oldDiff: original,
-        newDiff: suggested,
-    }),
     getPhoneDiffHtml: (original, suggested) => ({
         oldDiff: original,
         newDiff: suggested,
