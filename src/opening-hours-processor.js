@@ -10,6 +10,10 @@ function replaceValidSpacing(str) {
     result = result.replace(/\s*(\-)\s*/g, '$1');
     // e.g. Su [1]
     result = result.replace(/((?<=\w)\s+(?=\[))/g, '');
+    // e.g. Fr10:00
+    result = result.replace(/((?<=\w)\s+(?=\d))/g, '');
+    // consecutive spaces
+    result = result.replace(/\s+/g, ' ');
     return result;
 }
 
