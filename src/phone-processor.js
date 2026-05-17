@@ -818,7 +818,7 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
 
         if (validPhonewords) {
             // Multiple phonewords in one tag gets complicated and is likely very rare
-            if (tagValidationResult.numberOfValues == 1 && !tagValidationResult.validPhonewords) {
+            if (tagValidationResult.numberOfValues === 1 && !tagValidationResult.validPhonewords) {
                 tagValidationResult.validPhonewords = true;
             } else {
                 tagValidationResult.validPhonewords = false;

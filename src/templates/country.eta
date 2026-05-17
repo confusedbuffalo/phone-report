@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%~ it.translate(it.reportType === 'phone' ? 'countryReportTitle' : 'countryReportTitleNames', it.locale, [it.escapeHTML(it.countryData.name)]) %></title>
+    <title><%~ it.translate(it.reportType === 'phone' ? 'countryReportTitle' : it.reportType === 'names' ? 'countryReportTitleNames' : 'countryReportTitleHours', it.locale, [it.escapeHTML(it.countryData.name)]) %></title>
     <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="../styles.css" rel="stylesheet">
     <script src="../theme.js"></script>
@@ -20,8 +20,8 @@
                 </a>
                 <%~ include("./partials/theme-button") %>
             </div>
-            <h1 class="page-title"><%~ it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : 'osmIncompleteNameValidation', it.locale) %></h1>
-            <p class="report-subtitle"><%~ it.translate(it.reportType === 'phone' ? 'reportSubtitleForCountry' : 'reportSubtitleNamesForCountry', it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
+            <h1 class="page-title"><%~ it.translate(it.reportType === 'phone' ? 'osmPhoneNumberValidation' : it.reportType === 'name' ? 'osmIncompleteNamesValidation' : 'osmOpeningHoursValidation', it.locale) %></h1>
+            <p class="report-subtitle"><%~ it.translate(it.reportType === 'phone' ? 'reportSubtitleForCountry' : it.reportType === 'name' ? 'reportSubtitleNamesForCountry' : 'reportSubtitleHoursForCountry', it.locale, [it.escapeHTML(it.countryData.name)]) %></p>
         </header>
         <%~ it.createStatsBox(it.reportType, it.countryData, it.locale, true) %>
         <div class="card">
@@ -55,6 +55,7 @@
         const T_CLIENT = {
             invalidNumbersOutOf: `<%= it.translate('invalidNumbersOutOf', it.locale) %>`,
             incompleteNamesOutOf: `<%= it.translate('incompleteNamesOutOf', it.locale) %>`,
+            invalidHoursOutOf: `<%= it.translate('invalidHoursOutOf', it.locale) %>`,
             invalid: `<%= it.translate('invalid', it.locale) %>`,
             noSubdivisionsFound: `<%= it.translate('noSubdivisionsFound', it.locale) %>`
         };

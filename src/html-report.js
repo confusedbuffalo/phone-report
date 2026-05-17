@@ -14,13 +14,14 @@ const { disassembler } = pkgDisassembler;
 import pkgStringer from 'stream-json/stringer.js';
 const { stringer } = pkgStringer;
 import { Eta } from 'eta';
-import { PUBLIC_DIR, OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, NAMES_BUILD_DIR, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE } from './constants.js';
+import { OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE, BUILD_DIR } from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
 import { translate } from './i18n.js';
-import { getDiffHtml, getDiffTagsHtml } from './diff-renderer.js';
+import { getPhoneDiffHtml, getDiffTagsHtml, getHoursDiffHtml } from './diff-renderer.js';
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { IconManager } from './icon-manager.js';
 import { phoneTagToUse } from './phone-processor.js';
+import { diffChars } from 'diff';
 
 
 /**
@@ -86,10 +87,9 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
  * Creates the fix rows for an invalid phone number item.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
- * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {Object}
  */
-function createPhoneFixRows(item, locale, iconManager) {
+function createPhoneFixRows(item, locale) {
     return Object.keys(item.invalidNumbers).map(key => {
         const originalNumber = item.invalidNumbers[key];
         const suggestedFix = item.suggestedFixes[key];
@@ -105,8 +105,8 @@ function createPhoneFixRows(item, locale, iconManager) {
         const numberMovingToEmptyTag = !(item.invalidNumbers.hasOwnProperty(tagToUse)) && (item.suggestedFixes.hasOwnProperty(tagToUse));
 
         // Internal duplicate (in same tag)
-        if (isDuplicateKey && item.duplicateNumbers[key] == key) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+        if (isDuplicateKey && item.duplicateNumbers[key] === key) {
+            const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
                 [suggestedRowKey]: newDiff
@@ -114,7 +114,7 @@ function createPhoneFixRows(item, locale, iconManager) {
         }
 
         if (suggestedFix) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
 
             let originalRowValue;
             if (problemLabel) {
@@ -132,7 +132,7 @@ function createPhoneFixRows(item, locale, iconManager) {
             if (numberMovingToEmptyTag) {
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
-                const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
+                const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getPhoneDiffHtml('', item.suggestedFixes[tagToUse]);
                 return {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
@@ -145,12 +145,12 @@ function createPhoneFixRows(item, locale, iconManager) {
                 [suggestedRowKey]: newDiff
             };
         } else if (isDuplicateKey) {
-            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
         } else if (isMismatchKey && !numberMovingToEmptyTag) {
-            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
@@ -158,7 +158,7 @@ function createPhoneFixRows(item, locale, iconManager) {
             // Mobile is being moved to standard key, which did not exist before
             if (numberMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
-                const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
+                const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
                 return {
                     [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
                     [newTagDiff]: newDiff
@@ -179,10 +179,9 @@ function createPhoneFixRows(item, locale, iconManager) {
  * Creates the fix rows for an invalid name item.
  * @param {Object} item - The invalid data item.
  * @param {string} locale - The locale for the text
- * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {Object}
  */
-function createNameFixRows(item, locale, iconManager) {
+function createNameFixRows(item, locale) {
     const escapedNameTags = Object.fromEntries(
         Object.entries(item.nameTags).map(([key, value]) => [key, escapeHTML(value)])
     );
@@ -193,8 +192,35 @@ function createNameFixRows(item, locale, iconManager) {
 }
 
 /**
+ * Creates the fix rows for an invalid opening hours item.
+ * @param {Object} item - The invalid data item.
+ * @param {string} locale - The locale for the text
+ * @returns {Object}
+ */
+function createHoursFixRows(item, locale) {
+    return Object.keys(item.invalidHours).map(key => {
+        const originalValue = item.invalidHours[key];
+        const suggestedFix = item.suggestedFixes[key];
+        const suggestedRowKey = translate('suggestedFix', locale);
+
+        if (suggestedFix) {
+            const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);
+
+            return {
+                [key]: oldDiff,
+                [suggestedRowKey]: newDiff
+            };
+        } else {
+            return {
+                [key]: escapeHTML(originalValue),
+            };
+        }
+    }).filter(Boolean);
+}
+
+/**
  * Creates the items for client side injection, with extra content.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
@@ -228,7 +254,16 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
         return clientItem;
     }
 
-    item.fixRows = reportType === 'phone' ? createPhoneFixRows(item, locale, iconManager) : createNameFixRows(item, locale, iconManager);
+    const fixRowsFunctions = {
+        phone: createPhoneFixRows,
+        name: createNameFixRows,
+        hours: createHoursFixRows,
+    };
+
+    const fixer = fixRowsFunctions[reportType];
+    if (!fixer) throw new Error(`Unsupported report type: ${reportType}`);
+
+    item.fixRows = fixer(item, locale);
 
     item.josmFixUrl = createJosmFixUrl(item);
 
@@ -298,7 +333,7 @@ export function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdiv
 
 /**
  * Generates the HTML report for a single subdivision.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {string} countryData
  * @param {Object} subdivisionStats - The subdivision statistics object.
  * @param {string} tmpFilePath - Filepath of the json file containing the invalid items.
@@ -316,8 +351,8 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
     const safeCountryName = safeName(countryName);
     const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
     const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug);
-    const htmlFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.html` : `${path.join(PUBLIC_DIR, relativeFilePath)}.html`;
-    const dataFilePath = reportType === 'name' ? `${path.join(NAMES_BUILD_DIR, relativeFilePath)}.json` : `${path.join(PUBLIC_DIR, relativeFilePath)}.json`;
+    const htmlFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.html`;
+    const dataFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.json`;
 
     const stringerOptions = { makeArray: true };
 

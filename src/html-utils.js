@@ -20,7 +20,7 @@ function getFormattedPercentage(numerator, denominator, locale) {
 
 /**
  * Creates the HTML box displaying statistics.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {Object} data - The statistics data.
  * @param {string} locale - Locale to display stats in.
  * @param {boolean} [includeProgress=false] - Whether or not to include a link to the progress page.
@@ -84,6 +84,29 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 numberClass: 'stats-box-number-fixable',
                 percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.missingNamesCount, data.totalCount, locale)]),
                 href: (!includeProgress && data.missingNamesCount > 0) ? '#missingSection' : null,
+            }
+        ];
+    } else if (reportType === 'hours') {
+        statsData = [
+            {
+                value: data.totalCount.toLocaleString(locale),
+                label: translate('hoursChecked', locale),
+                numberClass: 'stats-box-number',
+                percentage: null
+            },
+            {
+                value: data.invalidCount.toLocaleString(locale),
+                label: translate('invalidHours', locale),
+                numberClass: 'stats-box-number-invalid',
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)]),
+                href: (!includeProgress && data.invalidCount > 0) ? '#invalidSection' : null,
+            },
+            {
+                value: data.autoFixableCount.toLocaleString(locale),
+                label: translate('potentiallyFixable', locale),
+                numberClass: 'stats-box-number-fixable',
+                percentage: translate('fixablePercentageOfInvalid', locale, [getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale)]),
+                href: (!includeProgress && data.autoFixableCount > 0) ? '#fixableSection' : null,
             }
         ];
     } else {

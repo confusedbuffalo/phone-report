@@ -45,7 +45,7 @@ export function createListItem(item) {
         `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameTo')}</span>` :
         `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameFrom')}</span>`;
 
-    const buttonLayout = reportType === 'phone'
+    const buttonLayout = ['phone', 'hours'].includes(reportType)
         ? [
             [websiteButton, fixableLabel, fixButton, noteButton],
             [josmFixButton, editorButtons]

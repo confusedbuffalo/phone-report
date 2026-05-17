@@ -109,6 +109,12 @@ jobs:
           name: names-build
           path: names_build/
 
+      - name: Upload Hours Pages Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: hours-build
+          path: hours_build/
+
       - name: Deploy names to Cloudflare
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true # in case of files being too large, e.g., don't kill the rest of the process
@@ -116,6 +122,15 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
           command: pages deploy names_build --project-name=names-report
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy opening hours to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true # in case of files being too large, e.g., don't kill the rest of the process
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
+          command: pages deploy hours_build --project-name=opening-hours
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Pages artifact

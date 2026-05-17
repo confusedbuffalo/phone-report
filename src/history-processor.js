@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { PUBLIC_DIR, NAMES_BUILD_DIR, HISTORY_DIR } from './constants.js';
+import { HISTORY_DIR, BUILD_DIR, REPORT_TYPES } from './constants.js';
 
 /**
  * Reads all historical data snapshots, aggregates them by date, and generates a
@@ -13,11 +13,11 @@ import { PUBLIC_DIR, NAMES_BUILD_DIR, HISTORY_DIR } from './constants.js';
  * 3. It aggregates the data, creating a time-series array for each country and an
  *    overall summary across all countries.
  * 4. The final aggregated data is written to the relevant `history-data.json` file.
- * @param {'phone' | 'name'} reportType - The type of report to generate history for.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report to generate history for.
  */
 export function processHistory(reportType) {
     const historyDir = path.join(HISTORY_DIR, reportType);
-    const rootOutputDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
+    const rootOutputDir = BUILD_DIR[reportType];
 
     if (!fs.existsSync(historyDir)) {
         console.log('History directory not found. Skipping history processing.');
@@ -143,7 +143,8 @@ export function processHistory(reportType) {
 // Execute the function if run directly
 const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
-    processHistory('phone');
-    processHistory('name');
+    REPORT_TYPES.forEach(reportType => {
+        processHistory(reportType);
+    });
 }
 

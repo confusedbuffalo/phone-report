@@ -37,8 +37,8 @@ function sortItems(items, key, direction) {
                 break;
             case 'invalid':
                 // Get the value of the first key in invalidNumbers
-                valA = getFirstNonNullValue(a.invalidNumbers);
-                valB = getFirstNonNullValue(b.invalidNumbers);
+                valA = getFirstNonNullValue(a.invalidNumbers ?? a.invalidHours);
+                valB = getFirstNonNullValue(b.invalidNumbers ?? b.invalidHours);
                 break;
             case 'foreign':
                 // Get the value of the first key in validForeignNumbers
@@ -190,8 +190,9 @@ export function getSortedItems(filterType) {
         const isWanted =
             filterType === 'foreign' ? item.isForeignItem :
                 filterType === 'fixable' ? item.autoFixable :
-                    reportType === 'phone' ? (!item.autoFixable && !item.isForeignItem) // 'invalid' case
-                        : filterType === 'missing' ? !item.name : item.name; // names report
+                    reportType === 'phone' ? (!item.autoFixable && !item.isForeignItem) // 'invalid' phone case
+                        : reportType === 'hours' ? !item.autoFixable
+                            : filterType === 'missing' ? !item.name : item.name; // names report
         const isNotInUploadedChanges = !(
             uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
         );

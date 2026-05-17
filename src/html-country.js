@@ -2,14 +2,14 @@ import { promises as fsPromises } from 'fs';
 import path from 'path';
 import { Eta } from 'eta';
 import { minify } from 'html-minifier-terser';
-import { PUBLIC_DIR, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } from './constants.js';
+import { GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS, BUILD_DIR } from './constants.js';
 import { translate, getTranslations } from './i18n.js';
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { safeName } from './data-processor.js';
 
 /**
  * Generates the country index page with a list of its subdivisions.
- * @param {'phone' | 'name'} reportType - The type of report being created.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {Object} countryData
  */
 export async function generateCountryIndexHtml(reportType, countryData) {
@@ -47,7 +47,7 @@ export async function generateCountryIndexHtml(reportType, countryData) {
         }
     }
 
-    const outputDir = reportType === 'name' ? NAMES_BUILD_DIR : PUBLIC_DIR;
+    const outputDir = BUILD_DIR[reportType];
     const pageFileName = path.join(outputDir, countryData.slug, 'index.html');
     await fsPromises.writeFile(pageFileName, finalHtml);
     console.log(`Report for ${countryData.name} generated at ${pageFileName}.`);

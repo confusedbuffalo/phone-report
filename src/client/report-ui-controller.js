@@ -174,12 +174,12 @@ export function renderNumbers() {
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
     if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
-        if (reportType === 'phone' && (anyFixable || editCount.total > 0)) {
+        if (['phone', 'hours'].includes(reportType) && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
                 "fixableSection",
                 sortedItems.fixable,
-                translate('fixableNumbersHeader'),
-                translate('fixableNumbersDescription'),
+                translate(reportType === 'phone' ? 'fixableNumbersHeader' : 'fixableHoursHeader'),
+                translate(reportType === 'phone' ? 'fixableNumbersDescription': 'fixableHoursDescription'),
                 currentPage['fixable'],
                 (page) => currentPage['fixable'] = page,
                 'fixable'
@@ -190,8 +190,8 @@ export function renderNumbers() {
             renderPaginatedSection(
                 "invalidSection",
                 sortedItems.invalid,
-                reportType === 'phone' ? translate('invalidNumbersHeader') : translate('incompleteNames'),
-                reportType === 'phone' ? translate('invalidNumbersDescription') : translate('incompleteNamesDescription'),
+                translate(reportType === 'phone' ? 'invalidNumbersHeader' : reportType === 'name' ? 'incompleteNames' : 'invalidHours'),
+                translate(reportType === 'phone' ? 'invalidNumbersDescription' : reportType === 'name' ? 'incompleteNamesDescription' : 'invalidHoursDescription'),
                 currentPage['invalid'],
                 (page) => currentPage['invalid'] = page,
                 'invalid'
@@ -218,13 +218,13 @@ export function renderNumbers() {
                 </div></div>`
         }
     } else {
-        // No invalid numbers found at all
+        // No invalid items found at all
         noInvalidContainer.innerHTML = `
             <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : 'noIncompleteNames')}</p>
         `;
     }
 
-    // Always render foreign items
+    // Always render foreign items on phone report
     if (reportType === 'phone' && anyForeign) {
         renderPaginatedSection(
             "foreignSection",
@@ -308,28 +308,44 @@ function renderPaginatedSection(
 
     const saveRow = createSaveRow();
 
-    const sortButtonLayout = (reportType === 'phone' && filterType === 'fixable')
-        ? [
+    let sortButtonLayout;
+
+    if (reportType === 'phone' && filterType === 'fixable') {
+        sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'fixable', label: 'suggestedFix' },
             { style: 'invalid', label: 'invalidNumber' },
         ]
-        : (reportType === 'phone' && filterType === 'foreign')
-            ? [
-                { style: 'name', label: 'name' },
-                { style: 'date', label: 'date' },
-                { style: 'foreign', label: 'phoneNumber' },
-            ]
-            : reportType === 'phone' //invalid phone
-                ? [
-                    { style: 'name', label: 'name' },
-                    { style: 'date', label: 'date' },
-                    { style: 'invalid', label: 'invalidNumber' },
-                ]
-                : [ // name
-                    { style: 'name', label: 'name' },
-                    { style: 'date', label: 'date' },
-                ];
+    } else if (reportType === 'phone' && filterType === 'foreign') {
+        sortButtonLayout = [
+            { style: 'name', label: 'name' },
+            { style: 'date', label: 'date' },
+            { style: 'foreign', label: 'phoneNumber' },
+        ]
+    } else if (reportType === 'phone') { //invalid phone
+        sortButtonLayout = [
+            { style: 'name', label: 'name' },
+            { style: 'date', label: 'date' },
+            { style: 'invalid', label: 'invalidNumber' },
+        ]
+    } else if (reportType === 'hours' && filterType === 'fixable') {
+        sortButtonLayout = [
+            { style: 'name', label: 'name' },
+            { style: 'fixable', label: 'suggestedFix' },
+            { style: 'invalid', label: 'invalidHours' },
+        ]
+    } else if (reportType === 'hours') { // invalid hours
+        sortButtonLayout = [
+            { style: 'name', label: 'name' },
+            { style: 'date', label: 'date' },
+            { style: 'invalid', label: 'invalidHours' },
+        ]
+    } else { // name
+        sortButtonLayout = [
+            { style: 'name', label: 'name' },
+            { style: 'date', label: 'date' },
+        ];
+    }
 
     const sortControlContainer = sortButtonLayout
         .map(row => `
@@ -346,6 +362,7 @@ function renderPaginatedSection(
             ${sortControlContainer}
         </div>`
 
+    // Extra space on name report since save row is separate and sticky
     const paginationSortCard = `
         <div class="page-sort-card ${reportType === 'name' ? 'top-24' : ''}">
             ${filterType === 'fixable' ? `
@@ -541,6 +558,23 @@ export function openNoteModal(item) {
 
         noteComment += '\n\n';
         noteComment += namesList;
+    } else if (reportType === 'hours') {
+        const invalidWithoutFix = Object.entries(item.invalidHours)
+            .filter(([key]) => {
+                const fix = item.suggestedFixes?.[key];
+                return fix === null || fix === undefined;
+            })
+
+        const invalidHoursList = invalidWithoutFix
+            .map(([key, number]) => {
+                return `${key} = ${number}`;
+            })
+            .join('\n');
+
+        noteComment = translate('hasInvalidHours', { '%n': item.featureTypeName });
+
+        noteComment += '\n\n';
+        noteComment += invalidHoursList;
     }
 
     noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${item.type}/${item.id}\n`;

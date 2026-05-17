@@ -3,7 +3,7 @@ import path from 'path';
 import { Eta } from 'eta';
 import { minify } from 'html-minifier-terser';
 import { translate } from './i18n.js';
-import { PUBLIC_DIR, COUNTRIES, NAMES_BUILD_DIR, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS } from './constants.js';
+import { COUNTRIES, GITHUB_LINK, IS_TEST_MODE, MINIFY_OPTIONS, BUILD_DIR, REPORT_TYPES } from './constants.js';
 import { getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { getTranslations } from './i18n.js';
 import { safeName } from './data-processor.js';
@@ -14,12 +14,12 @@ const testMode = BUILD_TYPE === 'simplified';
 /**
  * Generates the progress.html page, which displays charts visualizing the
  * history of invalid phone number counts over time.
- * @param {'phone' | 'name'} reportType - The type of report to generate history for.
+ * @param {'phone' | 'name' | 'hours'} reportType - The type of report to generate history for.
  * @param {string} country - The slug for the country to create the progress page for (e.g. 'south-africa').
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  */
 export async function generateProgressPage(reportType, country = null, locale = 'en-GB') {
-    const rootDir = reportType === 'phone' ? PUBLIC_DIR : NAMES_BUILD_DIR;
+    const rootDir = BUILD_DIR[reportType];
     const historyDataPath = path.join(rootDir, 'history-data.json');
 
     try {
@@ -82,15 +82,18 @@ export async function generateProgressPage(reportType, country = null, locale = 
 const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
     (async () => {
-        await generateProgressPage('phone');
-        await generateProgressPage('name');
+        REPORT_TYPES.forEach(async reportType => {
+            await generateProgressPage(reportType)
+        })
 
         for (const countryKey in COUNTRIES) {
             const countryData = COUNTRIES[countryKey];
             const locale = countryData.locale;
 
-            await generateProgressPage('phone', safeName(countryKey), locale);
-            await generateProgressPage('name', safeName(countryKey), locale);
+            REPORT_TYPES.forEach(async reportType => {
+                await generateProgressPage(reportType, safeName(countryKey), locale)
+            })
+
             if (testMode) {
                 break;
             }
