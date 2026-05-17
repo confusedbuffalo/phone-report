@@ -435,13 +435,40 @@ function mergeConsecutiveSeparators(inputArray, useDeSeparators) {
 }
 
 /**
+ * Creates an HTML string with diff highlighting for two strings.
+ * @param {Array<Object>} oldDiff - The original string.
+ * @param {Array<Object>} newDiff - The suggested string.
+ * @returns {{oldDiffHtml: string, newDiffHtml: string}} - An object containing the HTML for both diffs.
+ */
+export function getDiffHtml(oldDiff, newDiff) {
+    const mergedOldDiff = mergeDiffs(oldDiff);
+    const mergedNewDiff = mergeDiffs(newDiff);
+
+    let oldDiffHtml = '';
+    let newDiffHtml = '';
+
+    mergedOldDiff.forEach((part) => {
+        const colorClass = part.removed ? 'diff-removed' : 'diff-unchanged';
+        oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
+    });
+
+    mergedNewDiff.forEach((part) => {
+        const colorClass = part.added ? 'diff-added' : 'diff-unchanged';
+        // Use nbsp so that it always displays, even when there are multiple spaces or when a line would break
+        newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
+    });
+
+    return { oldDiffHtml, newDiffHtml }
+}
+
+/**
  * Creates an HTML string with diff highlighting for two phone number strings, 
  * handling multiple numbers separated by various delimiters.
  * @param {string} oldString - The original phone number string(s).
  * @param {string} newString - The suggested phone number string(s).
  * @returns {{oldDiff: string, newDiff: string}} - An object containing the HTML for both diffs.
  */
-export function getDiffHtml(oldString, newString) {
+export function getPhoneDiffHtml(oldString, newString) {
     if (!oldString) {
         return { oldDiff: null, newDiff: `<span class="diff-added">${escapeHTML(newString).replace(/ /g, '&nbsp;')}</span>` };
     }
@@ -567,23 +594,38 @@ export function getDiffHtml(oldString, newString) {
         }
     }
 
-    const mergedOriginalDiff = mergeDiffs(allOriginalDiff);
-    const mergedSuggestedDiff = mergeDiffs(allSuggestedDiff);
-
-    let oldDiffHtml = '';
-    let newDiffHtml = '';
-
-    mergedOriginalDiff.forEach((part) => {
-        const colorClass = part.removed ? 'diff-removed' : 'diff-unchanged';
-        oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
-    });
-
-    mergedSuggestedDiff.forEach((part) => {
-        const colorClass = part.added ? 'diff-added' : 'diff-unchanged';
-        // Use nbsp so that it always displays, even when there are multiple spaces or when a line would break
-        newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
-    });
+    const { oldDiffHtml, newDiffHtml } = getDiffHtml(allOriginalDiff, allSuggestedDiff);
 
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
 }
 
+/**
+ * Creates an HTML string with diff highlighting for two opening hours strings.
+ * @param {string} oldString - The original opening hours string.
+ * @param {string} newString - The suggested opening hours string.
+ * @returns {{oldDiff: string, newDiff: string}} - An object containing the HTML for both diffs.
+ */
+export function getHoursDiffHtml(oldString, newString) {
+    const parts = diffChars(oldString, newString);
+
+    let oldDiff = [];
+    let newDiff = [];
+
+    parts.forEach(part => {
+        if (!part.added && !part.removed) {
+            oldDiff.push({...part});
+            newDiff.push({...part});
+        } else if (part.added) {
+            newDiff.push({...part});
+        } else if (part.removed) {
+            oldDiff.push({...part});
+        }
+    });
+
+    console.log(oldDiff)
+    // console.log(newDiff)
+
+    const { oldDiffHtml, newDiffHtml } = getDiffHtml(oldDiff, newDiff);
+
+    return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
+}

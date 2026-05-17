@@ -17,10 +17,11 @@ import { Eta } from 'eta';
 import { OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE, BUILD_DIR } from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
 import { translate } from './i18n.js';
-import { getDiffHtml, getDiffTagsHtml } from './diff-renderer.js';
+import { getPhoneDiffHtml, getDiffTagsHtml, getDiffHtml, getHoursDiffHtml } from './diff-renderer.js';
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { IconManager } from './icon-manager.js';
 import { phoneTagToUse } from './phone-processor.js';
+import { diffChars } from 'diff';
 
 
 /**
@@ -105,7 +106,7 @@ function createPhoneFixRows(item, locale) {
 
         // Internal duplicate (in same tag)
         if (isDuplicateKey && item.duplicateNumbers[key] == key) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
                 [suggestedRowKey]: newDiff
@@ -113,7 +114,7 @@ function createPhoneFixRows(item, locale) {
         }
 
         if (suggestedFix) {
-            const { oldDiff, newDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
 
             let originalRowValue;
             if (problemLabel) {
@@ -131,7 +132,7 @@ function createPhoneFixRows(item, locale) {
             if (numberMovingToEmptyTag) {
                 // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
-                const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getDiffHtml('', item.suggestedFixes[tagToUse]);
+                const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getPhoneDiffHtml('', item.suggestedFixes[tagToUse]);
                 return {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
@@ -144,12 +145,12 @@ function createPhoneFixRows(item, locale) {
                 [suggestedRowKey]: newDiff
             };
         } else if (isDuplicateKey) {
-            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
             }
         } else if (isMismatchKey && !numberMovingToEmptyTag) {
-            const { oldDiff } = getDiffHtml(originalNumber, suggestedFix);
+            const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
             }
@@ -157,7 +158,7 @@ function createPhoneFixRows(item, locale) {
             // Mobile is being moved to standard key, which did not exist before
             if (numberMovingToEmptyTag) {
                 const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
-                const { oldDiff, newDiff } = getDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
+                const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
                 return {
                     [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
                     [newTagDiff]: newDiff
@@ -203,9 +204,11 @@ function createHoursFixRows(item, locale) {
         const suggestedRowKey = translate('suggestedFix', locale);
 
         if (suggestedFix) {
+            const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);
+
             return {
-                [key]: escapeHTML(originalValue),
-                [suggestedRowKey]: suggestedFix
+                [key]: oldDiff,
+                [suggestedRowKey]: newDiff
             };
         } else {
             return {
