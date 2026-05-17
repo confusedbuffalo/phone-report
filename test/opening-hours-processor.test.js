@@ -25,6 +25,14 @@ describe('validateHoursTag', () => {
         expect(result.warnings).toBeDefined();
     });
 
+    test('Opening hours with missing leading zero in hours is invalid but fixable', () => {
+        const result = validateHoursTag('Mo-Fr 8:00-17:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
+        expect(result.warnings).toBeDefined();
+    });
+
     test('Totally invalid opening hours is invalid and unfixable', () => {
         const result = validateHoursTag('Sometimes', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
@@ -50,6 +58,36 @@ describe('validateHoursTag', () => {
 
     test('Valid range collection times is valid', () => {
         const result = validateHoursTag('Su 10:00-12:00', 'service_times', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('No spaces after semicolon is valid', () => {
+        const result = validateHoursTag('Mo,We,Th 09:30-18:30;Tu,Fr 09:30-20:30;Sa 09:00-18:30;Su 09:30-18:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Spaces in time range is valid', () => {
+        const result = validateHoursTag('Mo-Sa 12:00-14:30, 17:00-21:30', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Spaces between days is valid', () => {
+        const result = validateHoursTag('Mo-Th, Sa 10:00-17:00; Fr 10:00-18:00; Su 11:00-15:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Comma separated days that could be a range is valid', () => {
+        const result = validateHoursTag('Mo,Tu,We,Th 10:00-16:30', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Comma separated days that could be a range is valid for two consecutive days', () => {
+        const result = validateHoursTag('Mo,Tu 10:00-16:30', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Days as range is valid for two consecutive days', () => {
+        const result = validateHoursTag('Mo-Tu 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
     });
 });

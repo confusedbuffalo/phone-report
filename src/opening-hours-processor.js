@@ -3,6 +3,8 @@ import { createBaseItem } from './data-processor.js';
 import { ALL_HOURS_TAGS } from './constants.js';
 import opening_hours from 'opening_hours';
 
+const SPACING_REGEX = /([,;])\s+/g;
+
 export function validateHoursTag(hoursTagValue, tag, locale) {
     const tagValidationResult = {
         isInvalid: false,
@@ -14,7 +16,12 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
     try {
         const oh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: locale });
 
-        if (oh.prettifyValue() !== hoursTagValue) {
+        const prettyValue = oh.prettifyValue();
+
+        if (
+            prettyValue !== hoursTagValue
+            && prettyValue.replace(SPACING_REGEX, '$1') !== hoursTagValue.replace(SPACING_REGEX, '$1')
+        ) {
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
             tagValidationResult.prettyValue = oh.prettifyValue();
