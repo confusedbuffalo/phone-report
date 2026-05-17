@@ -76,6 +76,21 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('Spaces around a hyphen is valid', () => {
+        const result = validateHoursTag('Mo - Th, Sa 10:00 - 17:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Inconsisten spaces around a hyphen is valid', () => {
+        const result = validateHoursTag('Mo- Th, Sa 10:00 -17:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Space between days and week modifier is valid', () => {
+        const result = validateHoursTag('Su [1,3] 08:00-14:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('Comma separated days that could be a range is valid', () => {
         const result = validateHoursTag('Mo,Tu,We,Th 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);

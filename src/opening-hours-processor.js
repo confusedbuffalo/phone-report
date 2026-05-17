@@ -3,7 +3,15 @@ import { createBaseItem } from './data-processor.js';
 import { ALL_HOURS_TAGS } from './constants.js';
 import opening_hours from 'opening_hours';
 
-const SPACING_REGEX = /([,;])\s+/g;
+function replaceValidSpacing(str) {
+    // e.g. Su, Mo
+    let result = str.replace(/([,;])\s+/g, '$1');
+    // e.g. Mo - Th
+    result = result.replace(/\s*(\-)\s*/g, '$1');
+    // e.g. Su [1]
+    result = result.replace(/((?<=\w)\s+(?=\[))/g, '');
+    return result;
+}
 
 export function validateHoursTag(hoursTagValue, tag, locale) {
     const tagValidationResult = {
@@ -20,7 +28,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 
         if (
             prettyValue !== hoursTagValue
-            && prettyValue.replace(SPACING_REGEX, '$1') !== hoursTagValue.replace(SPACING_REGEX, '$1')
+            && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)
         ) {
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
