@@ -313,7 +313,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
         fs.mkdirSync(divisionDir, { recursive: true });
     }
 
-    if (reportType == 'phone') {
+    if (reportType === 'phone') {
         await generateSafeEditFile(countryName, stats, tmpFilePath);
     }
     await generateHtmlReport(reportType, countryData, stats, tmpFilePath, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);

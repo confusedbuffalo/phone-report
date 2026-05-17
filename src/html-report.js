@@ -105,7 +105,7 @@ function createPhoneFixRows(item, locale) {
         const numberMovingToEmptyTag = !(item.invalidNumbers.hasOwnProperty(tagToUse)) && (item.suggestedFixes.hasOwnProperty(tagToUse));
 
         // Internal duplicate (in same tag)
-        if (isDuplicateKey && item.duplicateNumbers[key] == key) {
+        if (isDuplicateKey && item.duplicateNumbers[key] === key) {
             const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
             return {
                 [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,

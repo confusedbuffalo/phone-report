@@ -328,13 +328,13 @@ function renderPaginatedSection(
             { style: 'date', label: 'date' },
             { style: 'invalid', label: 'invalidNumber' },
         ]
-    } else if (reportType == 'hours' && filterType === 'fixable') {
+    } else if (reportType === 'hours' && filterType === 'fixable') {
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'fixable', label: 'suggestedFix' },
             { style: 'invalid', label: 'invalidHours' },
         ]
-    } else if (reportType == 'hours') { // invalid hours
+    } else if (reportType === 'hours') { // invalid hours
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'date', label: 'date' },
