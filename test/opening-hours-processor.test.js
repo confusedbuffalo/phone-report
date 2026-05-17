@@ -26,6 +26,8 @@ describe('validateHoursTag', () => {
     });
 
     test('Opening hours with missing leading zero in hours is invalid but fixable', () => {
+        // This must be kept, because sometimes there are things like "Mo-Fr 08:15-4:45"
+        // which would be corrected to "Mo-Fr 08:15-04:45", which is wrong, but needs to be flagged
         const result = validateHoursTag('Mo-Fr 8:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
