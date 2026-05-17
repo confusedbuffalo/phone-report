@@ -37,8 +37,8 @@ function sortItems(items, key, direction) {
                 break;
             case 'invalid':
                 // Get the value of the first key in invalidNumbers
-                valA = getFirstNonNullValue(a.invalidNumbers);
-                valB = getFirstNonNullValue(b.invalidNumbers);
+                valA = getFirstNonNullValue(a.invalidNumbers ?? a.invalidHours);
+                valB = getFirstNonNullValue(b.invalidNumbers ?? b.invalidHours);
                 break;
             case 'foreign':
                 // Get the value of the first key in validForeignNumbers
