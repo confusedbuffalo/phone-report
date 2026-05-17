@@ -55,7 +55,10 @@ export const OTHER_TAGS = ['contact:whatsapp'];
 export const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
 
 export const HOURS_POINT_OR_RANGE_TAGS = ['collection_times', 'service_times'];
-export const HOURS_RANGE_TAGS = ['opening_hours', 'opening_hours:delivery', 'opening_hours:drive_through', 'opening_hours:kitchen', 'happy_hours'];
+export const HOURS_RANGE_TAGS = [
+    'opening_hours', 'opening_hours:atm', 'opening_hours:bar', 'opening_hours:delivery', 'opening_hours:drive_through',
+    'opening_hours:kitchen', 'opening_hours:lifeguard', 'opening_hours:office', 'opening_hours:pharmacy', 'opening_hours:reception',
+    'opening_hours:self_service', 'opening_hours:store', 'opening_hours:workshop', 'happy_hours'];
 export const ALL_HOURS_TAGS = [...HOURS_POINT_OR_RANGE_TAGS, ...HOURS_RANGE_TAGS]
 
 /**
