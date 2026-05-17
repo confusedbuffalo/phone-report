@@ -1,6 +1,6 @@
-import { languageNames } from "./report-state.js";
-import { isItemClicked } from "./report-storage.js";
-import { escapeHTML } from "./report-utils.js";
+import { languageNames } from './report-state.js';
+import { isItemClicked } from './report-storage.js';
+import { escapeHTML } from './report-utils.js';
 
 export function createSaveRow() {
     return `
@@ -26,41 +26,54 @@ export function createListItem(item) {
 
     const relativeTime = getRelativeTime(item.timestamp);
 
-    const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton } = createButtons(item, clickedClass);
+    const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton } = createButtons(
+        item,
+        clickedClass
+    );
 
-    const iconHtml = item.iconName ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>` : item.iconHtml;
+    const iconHtml = item.iconName
+        ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>`
+        : item.iconHtml;
 
-    const itemMetadata = item.user ? `
+    const itemMetadata = item.user
+        ? `
         <a href="https://www.openstreetmap.org/changeset/${escapeHTML(item.changeset)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
         <a href="https://www.openstreetmap.org/user/${encodeURIComponent(item.user)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${escapeHTML(item.user)}</a>`
-        : item.timestamp ? `<span>${relativeTime}</span>` : '';
+        : item.timestamp
+          ? `<span>${relativeTime}</span>`
+          : '';
 
-    const metaDataDiv = itemMetadata ? `
+    const metaDataDiv = itemMetadata
+        ? `
         <div class="list-item-meta">
             <svg class="meta-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
             ${itemMetadata}
-        </div>` : '';
+        </div>`
+        : '';
 
-    const helpLabel = item.name ?
-        `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameTo')}</span>` :
-        `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameFrom')}</span>`;
+    const helpLabel = item.name
+        ? `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameTo')}</span>`
+        : `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameFrom')}</span>`;
 
     const buttonLayout = ['phone', 'hours'].includes(reportType)
         ? [
-            [websiteButton, fixableLabel, fixButton, noteButton],
-            [josmFixButton, editorButtons]
-        ]
+              [websiteButton, fixableLabel, fixButton, noteButton],
+              [josmFixButton, editorButtons],
+          ]
         : [
-            [helpLabel, fixButton],
-            [websiteButton, fixableLabel, noteButton],
-            [josmFixButton, editorButtons]
-        ];
+              [helpLabel, fixButton],
+              [websiteButton, fixableLabel, noteButton],
+              [josmFixButton, editorButtons],
+          ];
 
     const actionsContainer = buttonLayout
-        .map(row => `
+        .map(
+            row => `
               <div class="flex flex-wrap gap-2 justify-end">
                   ${row.join('')}
-              </div>`).join('');
+              </div>`
+        )
+        .join('');
 
     return `
         <li class="report-list-item" data-item-id="${itemId}">
@@ -97,7 +110,7 @@ function createDetailsRow(label, number) {
             </div>
             <div class="list-item-phone-value-container ${reportType === 'phone' ? 'break-all' : 'wrap-break-word'}">
                 ${number}
-            </div>`
+            </div>`;
 }
 
 /**
@@ -107,15 +120,19 @@ function createDetailsRow(label, number) {
  * @returns {string} The HTML string for the details grid.
  */
 function createDetailsGrid(item) {
-    const detailsGrid = item.fixRows.map(row => {
-        const detailsRows = Object.entries(row).map(([label, number]) => {
-            return createDetailsRow(label, number);
-        }).join('\n');
-        return `
+    const detailsGrid = item.fixRows
+        .map(row => {
+            const detailsRows = Object.entries(row)
+                .map(([label, number]) => {
+                    return createDetailsRow(label, number);
+                })
+                .join('\n');
+            return `
             <div class="list-item-details-grid">
                 ${detailsRows}
-            </div>`
-    }).join('<hr class="phone-separator-line">');
+            </div>`;
+        })
+        .join('<hr class="phone-separator-line">');
 
     return detailsGrid;
 }
@@ -125,14 +142,14 @@ function createDetailsGrid(item) {
  * @param {Object} item - The invalid number data item.
  * @param {string} clickedClass - A class string to apply if the item has been clicked (e.g., 'btn-clicked').
  * @returns {{
-* websiteButton: string,
-* fixableLabel: string,
-* josmFixButton: string,
-* fixButton: string,
-* editorButtons: string
-* noteButton: string
-* }} An object containing the HTML strings for all generated buttons.
-*/
+ * websiteButton: string,
+ * fixableLabel: string,
+ * josmFixButton: string,
+ * fixButton: string,
+ * editorButtons: string
+ * noteButton: string
+ * }} An object containing the HTML strings for all generated buttons.
+ */
 function createButtons(item, clickedClass) {
     // Generate buttons for ALL editors so client-side script can hide them
     const editorButtons = ALL_EDITOR_IDS.map(editorId => {
@@ -169,9 +186,10 @@ function createButtons(item, clickedClass) {
 
     let fixButton;
     if (reportType === 'name' && !item.name) {
-        fixButton = Object.keys(item.nameTags).map(key => {
-            const nameLanguage = key.slice(5);
-            return `<button
+        fixButton = Object.keys(item.nameTags)
+            .map(key => {
+                const nameLanguage = key.slice(5);
+                return `<button
                 data-action="add-name"
                 data-language="${nameLanguage}"
                 data-item-type="${item.type}"
@@ -180,11 +198,12 @@ function createButtons(item, clickedClass) {
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}"
                 title="${languageNames.of(nameLanguage)}">
                 ${nameLanguage}
-            </button>`
-        }).join('\n')
+            </button>`;
+            })
+            .join('\n');
     } else if (reportType === 'name' && item.name) {
         fixButton = OFFICIAL_LANGUAGES.map(language => {
-            const nameExists = (`name:${language}` in item.nameTags);
+            const nameExists = `name:${language}` in item.nameTags;
             return `<button
                 data-action="complete-name"
                 data-language="${language}"
@@ -195,35 +214,36 @@ function createButtons(item, clickedClass) {
                 class="btn ${nameExists ? 'btn-disabled' : clickedClass ? clickedClass + ' cursor-pointer' : 'cursor-pointer btn-josm-fix'}"
                 title="${languageNames.of(language)}">
                 ${language}
-            </button>`
-        }).join('\n')
+            </button>`;
+        }).join('\n');
     } else {
-        fixButton = item.autoFixable ?
-            `<button
+        fixButton = item.autoFixable
+            ? `<button
                 data-action="fix"
                 data-item-type="${item.type}"
                 data-item-id="${item.id}"
                 data-editor-id="apply-fix"
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
                 ${translate('applyFix')}
-        </button>` :
-            '';
+        </button>`
+            : '';
     }
 
     const createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
     const noteClickedClass = createdNotes.includes(`${item.type}/${item.id}`) ? 'btn-clicked' : 'btn-note';
-    const noteButton = item.autoFixable ? '' :
-        `<button
+    const noteButton = item.autoFixable
+        ? ''
+        : `<button
             data-action="add-note"
             data-item-type="${item.type}"
             data-item-id="${item.id}"
             data-editor-id="note-btn"
             class="btn cursor-pointer ${noteClickedClass}">
             ${translate('openNote')}
-       </button>`
+       </button>`;
 
-    const josmFixButton = item.josmFixUrl ?
-        `<button 
+    const josmFixButton = item.josmFixUrl
+        ? `<button 
             data-action="josm"
             data-item-type="${item.type}"
             data-item-id="${item.id}"
@@ -231,24 +251,24 @@ function createButtons(item, clickedClass) {
             data-editor-id="josm-fix"
             class="btn ${clickedClass ? clickedClass : 'btn-josm-fix'}">
             ${translate('fixInJOSM')}
-       </button>` :
-        '';
-    const fixableLabel = item.autoFixable ?
-        `<span data-editor-id="fix-label" class="label ${clickedClass ? clickedClass : 'label-fixable'}">${translate('fixable')}</span>` :
-        '';
+       </button>`
+        : '';
+    const fixableLabel = item.autoFixable
+        ? `<span data-editor-id="fix-label" class="label ${clickedClass ? clickedClass : 'label-fixable'}">${translate('fixable')}</span>`
+        : '';
 
-    const websiteButton = item.website ?
-        `<a href="${escapeHTML(item.website)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>` :
-        '';
+    const websiteButton = item.website
+        ? `<a href="${escapeHTML(item.website)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>`
+        : '';
 
     return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton };
 }
 
 /**
-* Formats a timestamp into a localized relative time string.
-* @param {string} timestamp - ISO 8601 string.
-* @returns {string} Localized string (e.g., "2 hours ago", "3 weeks ago").
-*/
+ * Formats a timestamp into a localized relative time string.
+ * @param {string} timestamp - ISO 8601 string.
+ * @returns {string} Localized string (e.g., "2 hours ago", "3 weeks ago").
+ */
 function getRelativeTime(timestamp) {
     const lang = document.documentElement.lang || 'en';
     const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'always' });
@@ -258,11 +278,11 @@ function getRelativeTime(timestamp) {
     const diffInSeconds = Math.floor((past - now) / 1000);
 
     const units = [
-        { unit: 'hour', seconds: 3600, threshold: 86400 },       // < 24 hours
-        { unit: 'day', seconds: 86400, threshold: 1209600 },     // < 14 days
-        { unit: 'week', seconds: 604800, threshold: 5184000 },     // < 60 days
-        { unit: 'month', seconds: 2592000, threshold: 31536000 },    // < 365 days
-        { unit: 'year', seconds: 31536000, threshold: Infinity }
+        { unit: 'hour', seconds: 3600, threshold: 86400 }, // < 24 hours
+        { unit: 'day', seconds: 86400, threshold: 1209600 }, // < 14 days
+        { unit: 'week', seconds: 604800, threshold: 5184000 }, // < 60 days
+        { unit: 'month', seconds: 2592000, threshold: 31536000 }, // < 365 days
+        { unit: 'year', seconds: 31536000, threshold: Infinity },
     ];
 
     for (const { unit, seconds, threshold } of units) {

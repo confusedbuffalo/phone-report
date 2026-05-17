@@ -1,6 +1,6 @@
-import { appState, currentPage, pageSize, sortDirection, sortKey } from "./report-state.js";
-import { renderNumbers } from "./report-ui-controller.js";
-import { getSortedItems } from "./report-utils.js";
+import { appState, currentPage, pageSize, sortDirection, sortKey } from './report-state.js';
+import { renderNumbers } from './report-ui-controller.js';
+import { getSortedItems } from './report-utils.js';
 
 /**
  * Handles pagination control logic by calculating the new current page,
@@ -9,19 +9,23 @@ import { getSortedItems } from "./report-utils.js";
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 export function changePage(section, delta) {
-    delta = Number(delta)
+    delta = Number(delta);
     if (!appState.reportData) {
-        console.error("Cannot change page before data is loaded.");
+        console.error('Cannot change page before data is loaded.');
         return;
     }
     const totalPages =
-        section === 'fixable' ? Math.ceil(appState.reportData.filter(item => item.autoFixable).length / pageSize) :
-            section === 'foreign' ? Math.ceil(appState.reportData.filter(item => item.isForeignItem).length / pageSize) :
-                Math.ceil(appState.reportData.filter(item => (!item.autoFixable && !item.isForeignItem)).length / pageSize); // invalid
+        section === 'fixable'
+            ? Math.ceil(appState.reportData.filter(item => item.autoFixable).length / pageSize)
+            : section === 'foreign'
+              ? Math.ceil(appState.reportData.filter(item => item.isForeignItem).length / pageSize)
+              : Math.ceil(
+                    appState.reportData.filter(item => !item.autoFixable && !item.isForeignItem).length / pageSize
+                ); // invalid
 
     currentPage[section] = Math.max(1, Math.min(totalPages, currentPage[section] + delta));
     renderNumbers();
-    document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
+    document.getElementById(`${section}Section`).scrollIntoView({ behavior: 'smooth' });
 }
 
 /**
@@ -37,18 +41,18 @@ export function handleSort(section, newKey) {
 
     if (newKey === currentKey) {
         // Same key clicked, toggle direction
-        sortDirection[section] = (currentDirection === 'asc') ? 'desc' : 'asc';
+        sortDirection[section] = currentDirection === 'asc' ? 'desc' : 'asc';
     } else {
         // New key clicked, set key and default to ascending
         sortKey[section] = newKey;
-        sortDirection[section] = 'asc'
+        sortDirection[section] = 'asc';
     }
 
     // Reset to the first page after sorting
     currentPage[section] = 1;
 
     renderNumbers();
-    document.getElementById(`${section}Section`).scrollIntoView({ 'behavior': 'smooth' });
+    document.getElementById(`${section}Section`).scrollIntoView({ behavior: 'smooth' });
 }
 
 /**
@@ -57,7 +61,7 @@ export function handleSort(section, newKey) {
  *
  * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
  * @param {number} osmId - The ID of the OpenStreetMap element.
- * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to search. 
+ * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to search.
  * @returns {{item: Object, index: number}|void} An object containing the item and its index, or void if not found.
  */
 export function getItemWithIndex(osmType, osmId, filterType) {
@@ -67,11 +71,11 @@ export function getItemWithIndex(osmType, osmId, filterType) {
     });
     if (targetItem.length !== 1) {
         console.log('No item or too many items found');
-        return
+        return;
     }
     const item = targetItem[0];
     return {
-        'item': item,
-        'index': sortedItems.indexOf(item),
+        item: item,
+        index: sortedItems.indexOf(item),
     };
 }

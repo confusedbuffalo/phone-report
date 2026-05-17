@@ -139,7 +139,6 @@ describe('parseStandardExtension', () => {
 // getNumberAndExtension Tests
 // =====================================================================
 describe('getNumberAndExtension', () => {
-
     // --- DE/AT (Germany/Austria) Specific Tests (DIN Format) ---
 
     describe('DE and AT Country Code (DIN Format)', () => {
@@ -293,7 +292,6 @@ describe('getNumberAndExtension', () => {
     // --- Standard (Fallback) Tests (Any Country Code other than DIN or TW) ---
 
     describe('Standard Format', () => {
-
         test('should handle "x" prefixed extension using standard logic (without space)', () => {
             expect(getNumberAndExtension('1-800-555-1212x456', 'US')).toEqual({
                 coreNumber: '1-800-555-1212',
@@ -389,15 +387,15 @@ describe('phoneTagToUse', () => {
     });
 
     test('should return phone if both phone and contact:phone are present', () => {
-        expect(phoneTagToUse({ 'contact:phone': '01234', 'phone': '06789' })).toBe('phone');
+        expect(phoneTagToUse({ 'contact:phone': '01234', phone: '06789' })).toBe('phone');
     });
 
     test('should return phone if it is present', () => {
-        expect(phoneTagToUse({ 'phone': '01234' })).toBe('phone');
+        expect(phoneTagToUse({ phone: '01234' })).toBe('phone');
     });
 
     test('should not be affected by other tags', () => {
-        expect(phoneTagToUse({ 'phone': '01234', 'mobile': '07123' })).toBe('phone');
+        expect(phoneTagToUse({ phone: '01234', mobile: '07123' })).toBe('phone');
     });
 });
 
@@ -405,7 +403,6 @@ describe('phoneTagToUse', () => {
 // keyToRemove Tests
 // =====================================================================
 describe('keyToRemove', () => {
-
     // Test cases for clear preference based on the defined order
     test('should remove the lower-preference key (contact:phone) when comparing phone vs contact:phone', () => {
         expect(keyToRemove('phone', 'contact:phone')).toBe('contact:phone');
@@ -454,7 +451,7 @@ describe('keyToRemove', () => {
 // checkExclusions Tests
 // =====================================================================
 /**
- * A mock function to simulate the output of a successful phone number parse 
+ * A mock function to simulate the output of a successful phone number parse
  * (from libphonenumber-js), primarily exposing the nationalNumber.
  * @param {string} nationalNumber - The core national number of the phone number.
  * @param {string} countryCode - The country code (e.g., 'FR').
@@ -466,7 +463,6 @@ const mockPhoneNumber = (nationalNumber, countryCode) => ({
 });
 
 describe('checkExclusions', () => {
-
     const FR = 'FR';
     const GP = 'GP';
     const DE = 'DE'; // Non-excluded country
@@ -484,7 +480,7 @@ describe('checkExclusions', () => {
         const expected = {
             isInvalid: false,
             autoFixable: true,
-            suggestedFix: excludedNumber
+            suggestedFix: excludedNumber,
         };
         expect(checkExclusions(phoneNumber, excludedNumber, FR, requiredTags)).toEqual(expected);
     });
@@ -494,7 +490,7 @@ describe('checkExclusions', () => {
         const expected = {
             isInvalid: false,
             autoFixable: true,
-            suggestedFix: excludedNumber
+            suggestedFix: excludedNumber,
         };
         expect(checkExclusions(phoneNumber, excludedNumber, GP, requiredTags)).toEqual(expected);
     });
@@ -504,7 +500,7 @@ describe('checkExclusions', () => {
         const expected = {
             isInvalid: true,
             autoFixable: true,
-            suggestedFix: excludedNumber
+            suggestedFix: excludedNumber,
         };
         expect(checkExclusions(phoneNumber, excludedNumberWithExtra, FR, requiredTags)).toEqual(expected);
     });
@@ -515,7 +511,7 @@ describe('checkExclusions', () => {
         const expected = {
             isInvalid: false,
             autoFixable: true,
-            suggestedFix: excludedNumber
+            suggestedFix: excludedNumber,
         };
         expect(checkExclusions(phoneNumber, excludedNumber, FR, combinedTags)).toEqual(expected);
     });
@@ -555,7 +551,6 @@ describe('checkExclusions', () => {
 // getWhatsappNumber Tests
 // =====================================================================
 describe('getWhatsappNumber', () => {
-
     test('Plain number returns plain number', () => {
         const result = getWhatsappNumber('+442079460000');
         expect(result.cleanNumberStr).toEqual('+442079460000');
@@ -658,7 +653,6 @@ describe('getWhatsappNumber', () => {
         expect(result.validNonNumber).toBe(false);
     });
 });
-
 
 // =====================================================================
 // convertPhonewordToDigits Tests
@@ -1162,7 +1156,7 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('+886 2 2938 2300#630', 'TW');
         expect(result.isInvalid).toBe(false);
     });
-    
+
     test('TW: Standard format extension is valid', () => {
         const result = processSingleNumber('+886 2 2938 2300 ext. 630', 'TW');
         expect(result.isInvalid).toBe(false);
@@ -1210,12 +1204,22 @@ describe('processSingleNumber', () => {
     });
 
     test('wa.me message link is valid in whatsapp key', () => {
-        const result = processSingleNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        const result = processSingleNumber(
+            'https://wa.me/message/ZQ4YRTMO7OUAJ1',
+            SAMPLE_COUNTRY_CODE_ZA,
+            {},
+            'contact:whatsapp'
+        );
         expect(result.isInvalid).toBe(false);
     });
 
     test('wa.me qr link is valid in whatsapp key', () => {
-        const result = processSingleNumber('https://wa.me/qr/ZQ4YRTMO7OUAJ1', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        const result = processSingleNumber(
+            'https://wa.me/qr/ZQ4YRTMO7OUAJ1',
+            SAMPLE_COUNTRY_CODE_ZA,
+            {},
+            'contact:whatsapp'
+        );
         expect(result.isInvalid).toBe(false);
     });
 
@@ -1225,12 +1229,22 @@ describe('processSingleNumber', () => {
     });
 
     test('Whatsapp channel link is valid in whatsapp key', () => {
-        const result = processSingleNumber('https://www.whatsapp.com/channel/ABCD1234', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        const result = processSingleNumber(
+            'https://www.whatsapp.com/channel/ABCD1234',
+            SAMPLE_COUNTRY_CODE_ZA,
+            {},
+            'contact:whatsapp'
+        );
         expect(result.isInvalid).toBe(false);
     });
 
     test('Whatsapp channel link is invalid in other key', () => {
-        const result = processSingleNumber('https://www.whatsapp.com/channel/ABCD1234', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:mobile');
+        const result = processSingleNumber(
+            'https://www.whatsapp.com/channel/ABCD1234',
+            SAMPLE_COUNTRY_CODE_ZA,
+            {},
+            'contact:mobile'
+        );
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(false);
     });
@@ -1260,18 +1274,12 @@ describe('processSingleNumber', () => {
 // =====================================================================
 describe('validateSingleTag', () => {
     test('correctly count total numbers processed', () => {
-        const result = validateSingleTag(
-            '020 1234 5678; +44 20 7946 0000',
-            'GB'
-        );
+        const result = validateSingleTag('020 1234 5678; +44 20 7946 0000', 'GB');
         expect(result.numberOfValues).toBe(2);
     });
 
     test('single valid phone number is valid', () => {
-        const result = validateSingleTag(
-            '+44 20 1234 5678',
-            'GB'
-        );
+        const result = validateSingleTag('+44 20 1234 5678', 'GB');
         expect(result.isInvalid).toBe(false);
     });
 
@@ -1286,40 +1294,28 @@ describe('validateSingleTag', () => {
     });
 
     test('single number in national format is fixable', () => {
-        const result = validateSingleTag(
-            '01389 123456',
-            'GB'
-        );
+        const result = validateSingleTag('01389 123456', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
     });
 
     test('leading 0 and country code is fixable', () => {
-        const result = validateSingleTag(
-            '+44 01389 123456',
-            'GB'
-        );
+        const result = validateSingleTag('+44 01389 123456', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
     });
 
     test('leading 0 and extraneous brackets is fixable', () => {
-        const result = validateSingleTag(
-            '+44 (0) (1389) 123456',
-            'GB'
-        );
+        const result = validateSingleTag('+44 (0) (1389) 123456', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
     });
 
     test('number with extension is valid', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456 x104',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456 x104', 'GB');
         expect(result.isInvalid).toBe(false);
     });
 
@@ -1345,79 +1341,55 @@ describe('validateSingleTag', () => {
     });
 
     test('using "or" as separator is fixable', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456 or +44 1389 123457',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456 or +44 1389 123457', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
     });
 
     test('using "and" as separator is fixable', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456 and +44 1389 123457',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456 and +44 1389 123457', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
     });
 
     test('using "ou" as separator is fixable', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456 ou +44 1389 123457',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456 ou +44 1389 123457', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
     });
 
     test('using comma as separator is fixable', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456, +44 1389 123457',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456, +44 1389 123457', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
     });
 
     test('using forward slash as separator is fixable', () => {
-        const result_no_space = validateSingleTag(
-            '+44 1389 123456/+44 1389 123457',
-            'GB'
-        );
+        const result_no_space = validateSingleTag('+44 1389 123456/+44 1389 123457', 'GB');
         expect(result_no_space.isInvalid).toBe(true);
         expect(result_no_space.isAutoFixable).toBe(true);
-        expect(result_no_space.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result_no_space.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
 
-        const result_one_space = validateSingleTag(
-            '+44 1389 123456/ +44 1389 123457',
-            'GB'
-        );
+        const result_one_space = validateSingleTag('+44 1389 123456/ +44 1389 123457', 'GB');
         expect(result_one_space.isInvalid).toBe(true);
         expect(result_one_space.isAutoFixable).toBe(true);
-        expect(result_one_space.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result_one_space.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
 
-        const result_two_spaces = validateSingleTag(
-            '+44 1389 123456/ +44 1389 123457',
-            'GB'
-        );
+        const result_two_spaces = validateSingleTag('+44 1389 123456/ +44 1389 123457', 'GB');
         expect(result_two_spaces.isInvalid).toBe(true);
         expect(result_two_spaces.isAutoFixable).toBe(true);
-        expect(result_two_spaces.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result_two_spaces.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
     });
 
     test('using forward slash as separator is fixable in AT where slash is usually a spacing character', () => {
-        const result = validateSingleTag(
-            '+43 664 1234567 / +43 3332 12345',
-            'AT'
-        );
+        const result = validateSingleTag('+43 664 1234567 / +43 3332 12345', 'AT');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+43 664 1234567', '+43 3332 12345'])
+        expect(result.suggestedNumbersList).toEqual(['+43 664 1234567', '+43 3332 12345']);
     });
 
     test('Valid WhatsApp link with phone number is invalid and fixable', () => {
@@ -1433,41 +1405,25 @@ describe('validateSingleTag', () => {
     });
 
     test('Valid WhatsApp link with slash is valid', () => {
-        const result = validateSingleTag(
-            'https://wa.me/message/ZQ4YRTMO7OUAJ1',
-            'GB',
-            {},
-            'contact:whatsapp'
-        );
+        const result = validateSingleTag('https://wa.me/message/ZQ4YRTMO7OUAJ1', 'GB', {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(false);
     });
 
     test('fix one fixable number and keep existing valid number', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456; 01389 123457',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456; 01389 123457', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457'])
+        expect(result.suggestedNumbersList).toEqual(['+44 1389 123456', '+44 1389 123457']);
     });
 
     test('one valid and one invalid makes the whole thing invalid and unfixable', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456; +44 1389',
-            'GB'
-        );
+        const result = validateSingleTag('+44 1389 123456; +44 1389', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(false);
     });
 
     test('mobile number and non-mobile number in mobile tag is invalid but fixable', () => {
-        const result = validateSingleTag(
-            '+44 1389 123456; +44 7496 123456',
-            'GB',
-            {},
-            'mobile'
-        );
+        const result = validateSingleTag('+44 1389 123456; +44 7496 123456', 'GB', {}, 'mobile');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.mismatchTypeNumbers).toEqual(['+44 1389 123456']);
@@ -1476,10 +1432,7 @@ describe('validateSingleTag', () => {
     });
 
     test('double plus can be fixed', () => {
-        const result = validateSingleTag(
-            '++44 1389 123456',
-            'GB'
-        );
+        const result = validateSingleTag('++44 1389 123456', 'GB');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.suggestedNumbersList).toEqual(['+44 1389 123456']);
@@ -1523,7 +1476,7 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.validPhonewords).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(["+1-870-525-3769"]);
+        expect(result.suggestedNumbersList).toEqual(['+1-870-525-3769']);
     });
 
     test('AU: phonewords is fixable', () => {
@@ -1531,7 +1484,7 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.validPhonewords).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(["+61 1300 842 538"]);
+        expect(result.suggestedNumbersList).toEqual(['+61 1300 842 538']);
     });
 
     test('US: give up with multiple phonewords in a single tag', () => {
@@ -1545,21 +1498,21 @@ describe('validateSingleTag', () => {
         const result = validateSingleTag('+212522941234/45', 'MA');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 12 45"]);
+        expect(result.suggestedNumbersList).toEqual(['+212 5 22 94 12 34', '+212 5 22 94 12 45']);
     });
 
     test('fix slash used to denote multiple endings to a number (1 digit)', () => {
         const result = validateSingleTag('+212522941234/5', 'MA');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 12 35"]);
+        expect(result.suggestedNumbersList).toEqual(['+212 5 22 94 12 34', '+212 5 22 94 12 35']);
     });
 
     test('fix slash used to denote multiple endings to a number (4 digits)', () => {
         const result = validateSingleTag('+212522941234/3579', 'MA');
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(["+212 5 22 94 12 34", "+212 5 22 94 35 79"]);
+        expect(result.suggestedNumbersList).toEqual(['+212 5 22 94 12 34', '+212 5 22 94 35 79']);
     });
 
     test('slash cannot denote alternate ending longer than 4 digits', () => {
@@ -1585,9 +1538,7 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(false);
         expect(result.validForeignNumbersMap.size).toEqual(1);
 
-        const expected = new Map([
-            ['+44 2079460000', 'GB']
-        ]);
+        const expected = new Map([['+44 2079460000', 'GB']]);
         expect(result.validForeignNumbersMap).toEqual(expected);
     });
 
@@ -1596,9 +1547,7 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(false);
         expect(result.validForeignNumbersMap.size).toEqual(1);
 
-        const expected = new Map([
-            ['+44 2079460000', 'GB']
-        ]);
+        const expected = new Map([['+44 2079460000', 'GB']]);
         expect(result.validForeignNumbersMap).toEqual(expected);
     });
 });
@@ -1629,7 +1578,7 @@ describe('validateNumbers', () => {
         type: 'Feature',
         geometry: {
             type: 'Point',
-            coordinates: [lon, lat]
+            coordinates: [lon, lat],
         },
         properties: {
             ...tags,
@@ -1637,8 +1586,8 @@ describe('validateNumbers', () => {
             '@type': type,
             '@user': 'test-user',
             '@timestamp': '1776196800',
-            '@changeset': '12345'
-        }
+            '@changeset': '12345',
+        },
     });
 
     // UK numbers used for testing
@@ -1667,9 +1616,7 @@ describe('validateNumbers', () => {
     const FIXABLE_US_NUMBER = '+1 2026271951';
 
     test('should correctly identify a single valid number and return zero invalid items', async () => {
-        const elements = [
-            createGeoJson(1001, { phone: VALID_LANDLINE, name: 'Valid Shop' }, 51.5, 0.0)
-        ];
+        const elements = [createGeoJson(1001, { phone: VALID_LANDLINE, name: 'Valid Shop' }, 51.5, 0.0)];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
@@ -1678,11 +1625,9 @@ describe('validateNumbers', () => {
     });
 
     test('should correctly handle ISO 3166-2 code for country code', async () => {
-        const elements = [
-            createGeoJson(1001, { phone: VALID_LANDLINE, name: 'Valid Shop' }, 51.5, 0.0)
-        ];
+        const elements = [createGeoJson(1001, { phone: VALID_LANDLINE, name: 'Valid Shop' }, 51.5, 0.0)];
 
-        const result = await validateNumbers(Readable.from(elements), "GB-ENG", tmpFilePath);
+        const result = await validateNumbers(Readable.from(elements), 'GB-ENG', tmpFilePath);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -1690,7 +1635,13 @@ describe('validateNumbers', () => {
 
     test('should identify a single fixable invalid number (no country code) and provide suggested fix', async () => {
         const elements = [
-            createGeoJson(2002, { 'contact:phone': FIXABLE_LANDLINE_INPUT, name: 'Fixable Business' }, 52.0, 1.0, 'way')
+            createGeoJson(
+                2002,
+                { 'contact:phone': FIXABLE_LANDLINE_INPUT, name: 'Fixable Business' },
+                52.0,
+                1.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1713,9 +1664,7 @@ describe('validateNumbers', () => {
     });
 
     test('AT: should identify a single fixable invalid toll free number (no country code) and provide suggested fix', async () => {
-        const elements = [
-            createGeoJson(2002, { 'phone': '0800 6624 5324' }, 52.0, 1.0, 'way')
-        ];
+        const elements = [createGeoJson(2002, { phone: '0800 6624 5324' }, 52.0, 1.0, 'way')];
 
         const result = await validateNumbers(Readable.from(elements), 'AT', tmpFilePath);
 
@@ -1729,17 +1678,15 @@ describe('validateNumbers', () => {
         expect(invalidItem.id).toBe(2002);
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'phone': '0800 6624 5324',
+            phone: '0800 6624 5324',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone': '+43 800 66245324',
+            phone: '+43 800 66245324',
         });
     });
 
     test('should identify a fundamentally unfixable number (too short) and mark it as unfixable', async () => {
-        const elements = [
-            createGeoJson(3003, { mobile: UNFIXABLE_INPUT, name: 'Short Mobile' }, 53.0, 2.0)
-        ];
+        const elements = [createGeoJson(3003, { mobile: UNFIXABLE_INPUT, name: 'Short Mobile' }, 53.0, 2.0)];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
@@ -1754,7 +1701,7 @@ describe('validateNumbers', () => {
 
     test('should handle multiple numbers in a single tag using a bad separator (comma)', async () => {
         const elements = [
-            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_COMMA, name: 'Multiple Contacts' }, 54.0, 3.0)
+            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_COMMA, name: 'Multiple Contacts' }, 54.0, 3.0),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1771,7 +1718,7 @@ describe('validateNumbers', () => {
 
     test('should handle multiple numbers in a single tag using a bad separator (pipe)', async () => {
         const elements = [
-            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_PIPE, name: 'Multiple Contacts' }, 54.0, 3.0)
+            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_PIPE, name: 'Multiple Contacts' }, 54.0, 3.0),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1788,7 +1735,7 @@ describe('validateNumbers', () => {
 
     test('should handle multiple numbers in a single tag using a bad separator (slash)', async () => {
         const elements = [
-            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_SLASH, name: 'Multiple Contacts' }, 54.0, 3.0)
+            createGeoJson(4004, { phone: BAD_SEPARATOR_INPUT_SLASH, name: 'Multiple Contacts' }, 54.0, 3.0),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1804,9 +1751,7 @@ describe('validateNumbers', () => {
     });
 
     test('should not consider a slash as a separator in DE', async () => {
-        const elements = [
-            createGeoJson(4004, { phone: SLASH_IN_NUMBER_DE, name: 'Slashing Sales' }, 54.0, 3.0)
-        ];
+        const elements = [createGeoJson(4004, { phone: SLASH_IN_NUMBER_DE, name: 'Slashing Sales' }, 54.0, 3.0)];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_DE, tmpFilePath);
 
@@ -1821,9 +1766,7 @@ describe('validateNumbers', () => {
     });
 
     test('should consider a slash as a space if removing it makes a valid number', async () => {
-        const elements = [
-            createGeoJson(4004, { phone: "010/420.420" }, 54.0, 3.0)
-        ];
+        const elements = [createGeoJson(4004, { phone: '010/420.420' }, 54.0, 3.0)];
 
         const result = await validateNumbers(Readable.from(elements), 'BE', tmpFilePath);
 
@@ -1839,12 +1782,17 @@ describe('validateNumbers', () => {
 
     test('should aggregate results from multiple phone tags on a single element', async () => {
         const elements = [
-            createGeoJson(5005, {
-                'contact:phone': FIXABLE_LANDLINE_INPUT,
-                'contact:mobile': FIXABLE_MOBILE_INPUT,
-                phone: VALID_LANDLINE_2,
-                name: 'Mixed Contact Info',
-            }, 55.0, 4.0)
+            createGeoJson(
+                5005,
+                {
+                    'contact:phone': FIXABLE_LANDLINE_INPUT,
+                    'contact:mobile': FIXABLE_MOBILE_INPUT,
+                    phone: VALID_LANDLINE_2,
+                    name: 'Mixed Contact Info',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1867,9 +1815,7 @@ describe('validateNumbers', () => {
 
     test('should correctly process website tag (without protocol) and include protocol in base item', async () => {
         const websiteInput = 'www.test-site.co.uk';
-        const elements = [
-            createGeoJson(6006, { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput }, 56.0, 5.0)
-        ];
+        const elements = [createGeoJson(6006, { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput }, 56.0, 5.0)];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
@@ -1882,9 +1828,7 @@ describe('validateNumbers', () => {
 
     test('should not change website tag if it already has a protocol', async () => {
         const websiteInput = 'https://secure.site.com';
-        const elements = [
-            createGeoJson(6006, { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput }, 56.0, 5.0)
-        ];
+        const elements = [createGeoJson(6006, { phone: FIXABLE_LANDLINE_INPUT, website: websiteInput }, 56.0, 5.0)];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
@@ -1900,7 +1844,7 @@ describe('validateNumbers', () => {
             createGeoJson(7001, { phone: VALID_LANDLINE }, 57.0, 6.0),
             createGeoJson(7002, { 'contact:phone': FIXABLE_LANDLINE_INPUT }, 57.1, 6.1, 'way'),
             createGeoJson(7003, { mobile: BAD_SEPARATOR_INPUT_COMMA }, 57.2, 6.2, 'relation'),
-            createGeoJson(7004, {}, 57.3, 6.3)
+            createGeoJson(7004, {}, 57.3, 6.3),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1912,11 +1856,17 @@ describe('validateNumbers', () => {
 
     test('should do nothing with mobile=yes and process actual phone number', async () => {
         const elements = [
-            createGeoJson(5005, {
-                'mobile': 'yes',
-                phone: FIXABLE_LANDLINE_INPUT,
-                name: 'Mobile caterer',
-            }, 55.0, 4.0, 'relation')
+            createGeoJson(
+                5005,
+                {
+                    mobile: 'yes',
+                    phone: FIXABLE_LANDLINE_INPUT,
+                    name: 'Mobile caterer',
+                },
+                55.0,
+                4.0,
+                'relation'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1928,17 +1878,15 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'phone': FIXABLE_LANDLINE_INPUT,
+            phone: FIXABLE_LANDLINE_INPUT,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
+            phone: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
 
     test('phone=no is valid as marking object as having no phone number', async () => {
-        const elements = [
-            createGeoJson(5005, { 'phone': 'no' }, 55.0, 4.0, 'relation')
-        ];
+        const elements = [createGeoJson(5005, { phone: 'no' }, 55.0, 4.0, 'relation')];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
@@ -1948,10 +1896,16 @@ describe('validateNumbers', () => {
 
     test('should fix and move landline number out of mobile tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:mobile': FIXABLE_LANDLINE_INPUT,
-                name: 'Landline in Mobile',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:mobile': FIXABLE_LANDLINE_INPUT,
+                    name: 'Landline in Mobile',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1964,24 +1918,30 @@ describe('validateNumbers', () => {
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.hasTypeMismatch).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:mobile': FIXABLE_LANDLINE_INPUT
+            'contact:mobile': FIXABLE_LANDLINE_INPUT,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:mobile': null,
-            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX
+            phone: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
-            "contact:mobile": FIXABLE_LANDLINE_SUGGESTED_FIX
+            'contact:mobile': FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
 
     test('should fix and move landline number out of mobile tag and append to existing phone tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:mobile': FIXABLE_LANDLINE_INPUT,
-                'phone': VALID_LANDLINE_2,
-                name: 'Landline in Mobile',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:mobile': FIXABLE_LANDLINE_INPUT,
+                    phone: VALID_LANDLINE_2,
+                    name: 'Landline in Mobile',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -1995,23 +1955,29 @@ describe('validateNumbers', () => {
         expect(invalidItem.hasTypeMismatch).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:mobile': FIXABLE_LANDLINE_INPUT,
-            'phone': VALID_LANDLINE_2,
+            phone: VALID_LANDLINE_2,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:mobile': null,
-            'phone': `${VALID_LANDLINE_2}; ${FIXABLE_LANDLINE_SUGGESTED_FIX}`
+            phone: `${VALID_LANDLINE_2}; ${FIXABLE_LANDLINE_SUGGESTED_FIX}`,
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
-            "contact:mobile": FIXABLE_LANDLINE_SUGGESTED_FIX
+            'contact:mobile': FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
 
     test('should keep mobile number in mobile tag when moving another number out', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`,
-                name: 'Confused mobile',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`,
+                    name: 'Confused mobile',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2024,24 +1990,30 @@ describe('validateNumbers', () => {
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.hasTypeMismatch).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`
+            'contact:mobile': `${FIXABLE_LANDLINE_INPUT}; ${FIXABLE_MOBILE_INPUT}`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:mobile': FIXABLE_MOBILE_SUGGESTED_FIX,
-            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX
+            phone: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
-            'contact:mobile': FIXABLE_LANDLINE_SUGGESTED_FIX
+            'contact:mobile': FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
 
     test('should remove duplicate number in different tags', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': VALID_LANDLINE,
-                'phone': VALID_LANDLINE,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': VALID_LANDLINE,
+                    phone: VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2053,27 +2025,33 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': VALID_LANDLINE,
-            'phone': VALID_LANDLINE,
+            phone: VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null
+            'contact:phone': null,
         });
     });
 
     test('DE should remove duplicate number with extension in different tags', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': "+49 651 146262-0",
-                'phone': "+49 651 146262-0",
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': '+49 651 146262-0',
+                    phone: '+49 651 146262-0',
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
-        const result = await validateNumbers(Readable.from(elements), "DE", tmpFilePath);
+        const result = await validateNumbers(Readable.from(elements), 'DE', tmpFilePath);
 
         expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
@@ -2082,27 +2060,33 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': "+49 651 146262-0",
-            'phone': "+49 651 146262-0",
+            'contact:phone': '+49 651 146262-0',
+            phone: '+49 651 146262-0',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null
+            'contact:phone': null,
         });
     });
 
     test('FR should remove duplicate valid national numbers in different tags', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': "0 890 64 97 13",
-                'phone': "0 890 64 97 13",
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': '0 890 64 97 13',
+                    phone: '0 890 64 97 13',
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
-        const result = await validateNumbers(Readable.from(elements), "FR", tmpFilePath);
+        const result = await validateNumbers(Readable.from(elements), 'FR', tmpFilePath);
 
         expect(result.totalCount).toBe(2);
         expect(result.invalidCount).toBe(1);
@@ -2111,24 +2095,30 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': "0 890 64 97 13",
-            'phone': "0 890 64 97 13",
+            'contact:phone': '0 890 64 97 13',
+            phone: '0 890 64 97 13',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null
+            'contact:phone': null,
         });
     });
 
     test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
-                'phone': VALID_MOBILE,
-                name: 'Triple phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
+                    phone: VALID_MOBILE,
+                    name: 'Triple phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2140,24 +2130,30 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:mobile': 'phone'
+            'contact:mobile': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:mobile': `${VALID_MOBILE}; ${VALID_MOBILE_2}`,
-            'phone': VALID_MOBILE,
+            phone: VALID_MOBILE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:mobile': VALID_MOBILE_2
+            'contact:mobile': VALID_MOBILE_2,
         });
     });
 
     test('should only remove duplicate number with multiple numbers where one is a duplicate to another tag, phone and contact:phone', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': '+27 11 984 4050;+27 83 462 3316',
-                'phone': '+27 11 984 4050',
-                name: 'Triple phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': '+27 11 984 4050;+27 83 462 3316',
+                    phone: '+27 11 984 4050',
+                    name: 'Triple phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), 'ZA', tmpFilePath);
@@ -2169,23 +2165,29 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': '+27 11 984 4050;+27 83 462 3316',
-            'phone': '+27 11 984 4050',
+            phone: '+27 11 984 4050',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': '+27 83 462 3316'
+            'contact:phone': '+27 83 462 3316',
         });
     });
 
     test('should remove duplicate number in the same tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2200,19 +2202,25 @@ describe('validateNumbers', () => {
             'contact:phone': 'contact:phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`
+            'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE}`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': VALID_LANDLINE
+            'contact:phone': VALID_LANDLINE,
         });
     });
 
     test('should remove duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2230,16 +2238,22 @@ describe('validateNumbers', () => {
             'contact:phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_NO_SPACE}`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': VALID_LANDLINE
+            'contact:phone': VALID_LANDLINE,
         });
     });
 
     test('should respect country formatting with duplicate numbers in the same tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2257,16 +2271,22 @@ describe('validateNumbers', () => {
             'contact:phone': `${VALID_US_NUMBER}; ${VALID_US_NUMBER}`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': VALID_US_NUMBER
+            'contact:phone': VALID_US_NUMBER,
         });
     });
 
     test('should fix duplicate numbers with different formatting in the same tag', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2284,17 +2304,23 @@ describe('validateNumbers', () => {
             'contact:phone': `${FIXABLE_LANDLINE_INPUT}; ${VALID_LANDLINE_NO_SPACE}`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': VALID_LANDLINE
+            'contact:phone': VALID_LANDLINE,
         });
     });
 
     test('different extensions are not duplicates', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${VALID_LANDLINE}x123`,
-                'phone': `${VALID_LANDLINE}x456`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${VALID_LANDLINE}x123`,
+                    phone: `${VALID_LANDLINE}x456`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2305,11 +2331,17 @@ describe('validateNumbers', () => {
 
     test('different extensions are not duplicates, US', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${VALID_US_NUMBER} x123`,
-                'phone': `${VALID_US_NUMBER} x456`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${VALID_US_NUMBER} x123`,
+                    phone: `${VALID_US_NUMBER} x456`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2320,11 +2352,17 @@ describe('validateNumbers', () => {
 
     test('duplicate numbers with extensions should be detected and fixed, US', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${FIXABLE_US_NUMBER} x123`,
-                'phone': `${FIXABLE_US_NUMBER} x123`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${FIXABLE_US_NUMBER} x123`,
+                    phone: `${FIXABLE_US_NUMBER} x123`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2337,25 +2375,31 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': `${FIXABLE_US_NUMBER} x123`,
-            'phone': `${FIXABLE_US_NUMBER} x123`,
+            phone: `${FIXABLE_US_NUMBER} x123`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
-            'phone': `${VALID_US_NUMBER} x123`
+            phone: `${VALID_US_NUMBER} x123`,
         });
     });
 
     test('different spacing is still a duplicate', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': VALID_LANDLINE_NO_SPACE,
-                'phone': VALID_LANDLINE,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': VALID_LANDLINE_NO_SPACE,
+                    phone: VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2367,24 +2411,30 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': VALID_LANDLINE_NO_SPACE,
-            'phone': VALID_LANDLINE,
+            phone: VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null
+            'contact:phone': null,
         });
     });
 
     test('fixable and correct formatting are duplicates', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': FIXABLE_LANDLINE_INPUT,
-                'phone': VALID_LANDLINE,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': FIXABLE_LANDLINE_INPUT,
+                    phone: VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2396,24 +2446,30 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': FIXABLE_LANDLINE_INPUT,
-            'phone': VALID_LANDLINE
+            phone: VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null
+            'contact:phone': null,
         });
     });
 
     test('duplicate with bad formatting gets fixed', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': FIXABLE_LANDLINE_INPUT,
-                'phone': VALID_LANDLINE_NO_SPACE,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': FIXABLE_LANDLINE_INPUT,
+                    phone: VALID_LANDLINE_NO_SPACE,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2425,25 +2481,31 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': FIXABLE_LANDLINE_INPUT,
-            'phone': VALID_LANDLINE_NO_SPACE
+            phone: VALID_LANDLINE_NO_SPACE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
-            'phone': VALID_LANDLINE
+            phone: VALID_LANDLINE,
         });
     });
 
     test('duplicate with bad formatting gets fixed, respecting country formatting', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': VALID_US_NUMBER,
-                'phone': VALID_US_NUMBER,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': VALID_US_NUMBER,
+                    phone: VALID_US_NUMBER,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2455,24 +2517,30 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': VALID_US_NUMBER,
-            'phone': VALID_US_NUMBER
+            phone: VALID_US_NUMBER,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'contact:phone': null
+            'contact:phone': null,
         });
     });
 
     test('duplicate non-mobile numbers in phone and mobile are duplicate, not type mismatch', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'mobile': VALID_LANDLINE,
-                'phone': VALID_LANDLINE,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    mobile: VALID_LANDLINE,
+                    phone: VALID_LANDLINE,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2485,25 +2553,31 @@ describe('validateNumbers', () => {
         expect(invalidItem.hasTypeMismatch).toBe(false);
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'mobile': 'phone'
+            mobile: 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'mobile': VALID_LANDLINE,
-            'phone': VALID_LANDLINE
+            mobile: VALID_LANDLINE,
+            phone: VALID_LANDLINE,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'mobile': null
+            mobile: null,
         });
     });
 
     test('non-mobile number in mobile tag and other duplicate numbers has duplicate and type mismatch', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': VALID_LANDLINE_2,
-                'mobile': VALID_LANDLINE,
-                'phone': VALID_LANDLINE_2,
-                name: 'Triple phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': VALID_LANDLINE_2,
+                    mobile: VALID_LANDLINE,
+                    phone: VALID_LANDLINE_2,
+                    name: 'Triple phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2516,30 +2590,36 @@ describe('validateNumbers', () => {
         expect(invalidItem.hasTypeMismatch).toBe(true);
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'contact:phone': 'phone'
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': VALID_LANDLINE_2,
-            'mobile': VALID_LANDLINE,
-            'phone': VALID_LANDLINE_2
+            mobile: VALID_LANDLINE,
+            phone: VALID_LANDLINE_2,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
-            'mobile': null,
-            'phone': `${VALID_LANDLINE_2}; ${VALID_LANDLINE}`
+            mobile: null,
+            phone: `${VALID_LANDLINE_2}; ${VALID_LANDLINE}`,
         });
         expect(invalidItem.mismatchTypeNumbers).toEqual({
-            "mobile": VALID_LANDLINE
+            mobile: VALID_LANDLINE,
         });
     });
 
     test('should fix separator and report duplicates for duplicate numbers with incorrect separator', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
-                'phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
-                name: 'Double phone',
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
+                    phone: `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
+                    name: 'Double phone',
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2555,20 +2635,25 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
-            'phone': `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
+            phone: `${VALID_LANDLINE}, ${VALID_LANDLINE_2}`,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': null,
-            'phone': `${VALID_LANDLINE}; ${VALID_LANDLINE_2}`,
+            phone: `${VALID_LANDLINE}; ${VALID_LANDLINE_2}`,
         });
     });
 
     test('should find and remove duplicates among other numbers in one tag', async () => {
         const elements = [
-            createGeoJson(5775129635, {
-                'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
-                name: 'Many phones',
-            }, 55.0, 4.0)
+            createGeoJson(
+                5775129635,
+                {
+                    phone: '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+                    name: 'Many phones',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2580,22 +2665,27 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'phone': 'phone',
+            phone: 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'phone': '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
+            phone: '+44 1768 779 280;+44 7901854574;+44 7554806119;+44 7554806119;+44 7554806119',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone': '+44 17687 79280; +44 7901 854574; +44 7554 806119',
+            phone: '+44 17687 79280; +44 7901 854574; +44 7554 806119',
         });
     });
 
     test('should fix duplicates in a single tag where number is duplicated in another tag as well', async () => {
         const elements = [
-            createGeoJson(5775129635, {
-                'phone': '+44 17687 79280; +441768779280',
-                'contact:phone': '+44 (17687) 79280',
-            }, 55.0, 4.0)
+            createGeoJson(
+                5775129635,
+                {
+                    phone: '+44 17687 79280; +441768779280',
+                    'contact:phone': '+44 (17687) 79280',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2607,25 +2697,31 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.duplicateNumbers).toEqual({
-            'phone': 'phone',
-            'contact:phone': 'phone'
+            phone: 'phone',
+            'contact:phone': 'phone',
         });
         expect(invalidItem.invalidNumbers).toEqual({
-            'phone': '+44 17687 79280; +441768779280',
+            phone: '+44 17687 79280; +441768779280',
             'contact:phone': '+44 (17687) 79280',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone': '+44 17687 79280',
+            phone: '+44 17687 79280',
             'contact:phone': null,
         });
     });
 
     test('whatsapp number is not duplicate to phone tags', async () => {
         const elements = [
-            createGeoJson(1234, {
-                'contact:whatsapp': `${VALID_MOBILE}`,
-                'contact:mobile': `${VALID_MOBILE}`,
-            }, 55.0, 4.0, 'way')
+            createGeoJson(
+                1234,
+                {
+                    'contact:whatsapp': `${VALID_MOBILE}`,
+                    'contact:mobile': `${VALID_MOBILE}`,
+                },
+                55.0,
+                4.0,
+                'way'
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2636,10 +2732,15 @@ describe('validateNumbers', () => {
 
     test('should fix a fax number on a single element', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'fax': FIXABLE_LANDLINE_INPUT,
-                name: 'Faxable',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    fax: FIXABLE_LANDLINE_INPUT,
+                    name: 'Faxable',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2651,19 +2752,24 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'fax': FIXABLE_LANDLINE_INPUT,
+            fax: FIXABLE_LANDLINE_INPUT,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'fax': FIXABLE_LANDLINE_SUGGESTED_FIX,
+            fax: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
 
     test('toll free fax number is valid', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'fax': VALID_TOLL_FREE,
-                name: 'Toll Free Faxable',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    fax: VALID_TOLL_FREE,
+                    name: 'Toll Free Faxable',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2674,10 +2780,15 @@ describe('validateNumbers', () => {
 
     test('mobile phone fax number is valid', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'fax': VALID_MOBILE,
-                name: 'Toll Free Faxable',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    fax: VALID_MOBILE,
+                    name: 'Toll Free Faxable',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2688,11 +2799,16 @@ describe('validateNumbers', () => {
 
     test('should fix both phone and fax numbers on a single element', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'phone': FIXABLE_MOBILE_INPUT,
-                'fax': FIXABLE_LANDLINE_INPUT,
-                name: 'Faxable',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    phone: FIXABLE_MOBILE_INPUT,
+                    fax: FIXABLE_LANDLINE_INPUT,
+                    name: 'Faxable',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2704,22 +2820,27 @@ describe('validateNumbers', () => {
 
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'fax': FIXABLE_LANDLINE_INPUT,
-            'phone': FIXABLE_MOBILE_INPUT,
+            fax: FIXABLE_LANDLINE_INPUT,
+            phone: FIXABLE_MOBILE_INPUT,
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'fax': FIXABLE_LANDLINE_SUGGESTED_FIX,
-            'phone': FIXABLE_MOBILE_SUGGESTED_FIX,
+            fax: FIXABLE_LANDLINE_SUGGESTED_FIX,
+            phone: FIXABLE_MOBILE_SUGGESTED_FIX,
         });
     });
 
     test('same number for phone and fax is not duplicate', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'phone': VALID_LANDLINE,
-                'fax': VALID_LANDLINE,
-                name: 'Faxable',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    phone: VALID_LANDLINE,
+                    fax: VALID_LANDLINE,
+                    name: 'Faxable',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2730,11 +2851,16 @@ describe('validateNumbers', () => {
 
     test('duplicate numbers in fax tags is invalid and fixable', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'contact:fax': FIXABLE_LANDLINE_INPUT,
-                'fax': FIXABLE_LANDLINE_INPUT,
-                name: 'Double Faxable',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    'contact:fax': FIXABLE_LANDLINE_INPUT,
+                    fax: FIXABLE_LANDLINE_INPUT,
+                    name: 'Double Faxable',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2747,11 +2873,11 @@ describe('validateNumbers', () => {
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
             'contact:fax': FIXABLE_LANDLINE_INPUT,
-            'fax': FIXABLE_LANDLINE_INPUT,
+            fax: FIXABLE_LANDLINE_INPUT,
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:fax': null,
-            'fax': FIXABLE_LANDLINE_SUGGESTED_FIX,
+            fax: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
         expect(invalidItem.duplicateNumbers).toEqual({
             'contact:fax': 'fax',
@@ -2759,9 +2885,7 @@ describe('validateNumbers', () => {
     });
 
     test('phonewords is invalid and fixable and adds phone:mnemonic', async () => {
-        const elements = [
-            createGeoJson(123456, { 'phone': "1-870-KAKESNY" }, 55.0, 4.0)
-        ];
+        const elements = [createGeoJson(123456, { phone: '1-870-KAKESNY' }, 55.0, 4.0)];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
@@ -2773,18 +2897,16 @@ describe('validateNumbers', () => {
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
             'phone:mnemonic': null,
-            'phone': "1-870-KAKESNY",
+            phone: '1-870-KAKESNY',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone:mnemonic': "1-870-KAKESNY",
-            'phone': "+1-870-525-3769",
+            'phone:mnemonic': '1-870-KAKESNY',
+            phone: '+1-870-525-3769',
         });
     });
 
     test('AU phonewords is invalid and fixable and adds phone:mnemonic', async () => {
-        const elements = [
-            createGeoJson(123456, { 'phone': "1300-TICKET" }, 55.0, 4.0)
-        ];
+        const elements = [createGeoJson(123456, { phone: '1300-TICKET' }, 55.0, 4.0)];
 
         const result = await validateNumbers(Readable.from(elements), 'AU', tmpFilePath);
 
@@ -2797,19 +2919,24 @@ describe('validateNumbers', () => {
         expect(invalidItem.validPhonewords).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
             'phone:mnemonic': null,
-            'phone': "1300-TICKET",
+            phone: '1300-TICKET',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone:mnemonic': "1300-TICKET",
-            'phone': "+61 1300 842 538",
+            'phone:mnemonic': '1300-TICKET',
+            phone: '+61 1300 842 538',
         });
     });
 
     test('WhatsApp wa.me message link in whatsapp key is valid', async () => {
         const elements = [
-            createGeoJson(123456, {
-                'contact:whatsapp': 'https://wa.me/message/ZQ4YRTMO7OUAJ1',
-            }, 55.0, 4.0)
+            createGeoJson(
+                123456,
+                {
+                    'contact:whatsapp': 'https://wa.me/message/ZQ4YRTMO7OUAJ1',
+                },
+                55.0,
+                4.0
+            ),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
@@ -2819,9 +2946,7 @@ describe('validateNumbers', () => {
     });
 
     test('should identify a valid foreign number', async () => {
-        const elements = [
-            createGeoJson(2002, { 'phone': VALID_LANDLINE }, 52.0, 1.0, 'way')
-        ];
+        const elements = [createGeoJson(2002, { phone: VALID_LANDLINE }, 52.0, 1.0, 'way')];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
@@ -2836,13 +2961,13 @@ describe('validateNumbers', () => {
         expect(invalidItem.id).toBe(2002);
         expect(invalidItem.isForeignItem).toBe(true);
         expect(invalidItem.validForeignNumbers).toEqual({
-            'phone': { [VALID_LANDLINE]: 'GB' },
+            phone: { [VALID_LANDLINE]: 'GB' },
         });
     });
 
     test('should identify multiple valid foreign numbers of different countries', async () => {
         const elements = [
-            createGeoJson(2002, { 'phone': `${VALID_LANDLINE}; ${SLASH_IN_NUMBER_DE_FIX}` }, 52.0, 1.0, 'way')
+            createGeoJson(2002, { phone: `${VALID_LANDLINE}; ${SLASH_IN_NUMBER_DE_FIX}` }, 52.0, 1.0, 'way'),
         ];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
@@ -2858,7 +2983,7 @@ describe('validateNumbers', () => {
         expect(invalidItem.id).toBe(2002);
         expect(invalidItem.isForeignItem).toBe(true);
         expect(invalidItem.validForeignNumbers).toEqual({
-            'phone': {
+            phone: {
                 [VALID_LANDLINE]: 'GB',
                 [SLASH_IN_NUMBER_DE_FIX]: 'DE',
             },
@@ -2867,9 +2992,7 @@ describe('validateNumbers', () => {
 
     // US uses hyphens, UK uses spaces. Fix should have spaces, not brackets.
     test('should format a foreign number with formatting for that country, not the local country', async () => {
-        const elements = [
-            createGeoJson(2002, { 'phone': '(+44) 0207 9460000' }, 52.0, 1.0, 'way')
-        ];
+        const elements = [createGeoJson(2002, { phone: '(+44) 0207 9460000' }, 52.0, 1.0, 'way')];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE_US, tmpFilePath);
 
@@ -2883,10 +3006,10 @@ describe('validateNumbers', () => {
         expect(invalidItem.id).toBe(2002);
         expect(invalidItem.autoFixable).toBe(true);
         expect(invalidItem.invalidNumbers).toEqual({
-            'phone': '(+44) 0207 9460000',
+            phone: '(+44) 0207 9460000',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
+            phone: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
 });
@@ -2895,7 +3018,6 @@ describe('validateNumbers', () => {
 // isSafeEdit Tests
 // =====================================================================
 describe('isSafeEdit', () => {
-
     // =======================================================
     // Test: Success Scenarios
     // =======================================================
@@ -3070,12 +3192,8 @@ describe('isSafeItemEdit', () => {
 
     const validGBItem = {
         ...baseItem,
-        invalidNumbers: new Map([
-            ['phone', '020 7946 0000'],
-        ]),
-        suggestedFixes: new Map([
-            ['phone', '+44 20 7946 0000'],
-        ]),
+        invalidNumbers: new Map([['phone', '020 7946 0000']]),
+        suggestedFixes: new Map([['phone', '+44 20 7946 0000']]),
     };
 
     // =======================================================
@@ -3131,7 +3249,10 @@ describe('isSafeItemEdit', () => {
     test('should return false if invalidNumbers map size is greater than suggestedFixes map size', () => {
         const item = {
             ...validUSItem,
-            invalidNumbers: new Map([['phone', '...'], ['contact:phone', '...']]),
+            invalidNumbers: new Map([
+                ['phone', '...'],
+                ['contact:phone', '...'],
+            ]),
             suggestedFixes: new Map([['phone', '...']]), // Missing contact:phone fix
         };
         expect(isSafeItemEdit(item, 'US')).toBe(false);
@@ -3141,17 +3262,25 @@ describe('isSafeItemEdit', () => {
         const item = {
             ...validUSItem,
             invalidNumbers: new Map([['phone', '...']]), // Missing contact:phone invalid
-            suggestedFixes: new Map([['phone', '...'], ['contact:phone', '...']]),
+            suggestedFixes: new Map([
+                ['phone', '...'],
+                ['contact:phone', '...'],
+            ]),
         };
         expect(isSafeItemEdit(item, 'US')).toBe(false);
     });
 
-
     test('should return false if a key from invalidNumbers is missing from suggestedFixes', () => {
         const item = {
             ...validUSItem,
-            invalidNumbers: new Map([['phone', '(213) 373-1234'], ['contact:phone', '(213) 373-5678']]),
-            suggestedFixes: new Map([['phone', '+1-213-373-1234'], ['mobile', '+1-213-373-5678']]), // contact:phone key is missing
+            invalidNumbers: new Map([
+                ['phone', '(213) 373-1234'],
+                ['contact:phone', '(213) 373-5678'],
+            ]),
+            suggestedFixes: new Map([
+                ['phone', '+1-213-373-1234'],
+                ['mobile', '+1-213-373-5678'],
+            ]), // contact:phone key is missing
         };
         expect(isSafeItemEdit(item, 'US')).toBe(false);
     });

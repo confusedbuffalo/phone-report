@@ -23,7 +23,7 @@ export async function generateProgressPage(reportType, country = null, locale = 
     const historyDataPath = path.join(rootDir, 'history-data.json');
 
     try {
-        await fsPromises.access(historyDataPath);   
+        await fsPromises.access(historyDataPath);
     } catch (error) {
         // 'ENOENT' (File Not Found)
         if (error.code === 'ENOENT') {
@@ -35,7 +35,7 @@ export async function generateProgressPage(reportType, country = null, locale = 
     }
 
     const eta = new Eta({
-        views: path.join(process.cwd(), "src", "templates"),
+        views: path.join(process.cwd(), 'src', 'templates'),
         cache: true,
     });
 
@@ -52,7 +52,7 @@ export async function generateProgressPage(reportType, country = null, locale = 
         GITHUB_LINK,
     };
 
-    const htmlContent = eta.render("progress", templateData);
+    const htmlContent = eta.render('progress', templateData);
 
     let finalHtml = htmlContent;
 
@@ -66,7 +66,7 @@ export async function generateProgressPage(reportType, country = null, locale = 
     }
 
     const outputDir = country ? path.join(rootDir, country) : rootDir;
-    const outputPath = path.join(outputDir, 'progress.html')
+    const outputPath = path.join(outputDir, 'progress.html');
 
     await fsPromises.mkdir(outputDir, { recursive: true }).catch(err => {
         // Ignore the error if the directory already exists
@@ -78,21 +78,20 @@ export async function generateProgressPage(reportType, country = null, locale = 
     console.log(`Progress page generated at ${outputPath}`);
 }
 
-
 const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
     (async () => {
         REPORT_TYPES.forEach(async reportType => {
-            await generateProgressPage(reportType)
-        })
+            await generateProgressPage(reportType);
+        });
 
         for (const countryKey in COUNTRIES) {
             const countryData = COUNTRIES[countryKey];
             const locale = countryData.locale;
 
             REPORT_TYPES.forEach(async reportType => {
-                await generateProgressPage(reportType, safeName(countryKey), locale)
-            })
+                await generateProgressPage(reportType, safeName(countryKey), locale);
+            });
 
             if (testMode) {
                 break;
@@ -100,4 +99,3 @@ if (process.argv[1] === __filename) {
         }
     })();
 }
-

@@ -7,14 +7,20 @@ function escapeHTML(str) {
     if (!str) {
         return '';
     }
-    return str.replace(/[&<>"']/g, (match) => {
+    return str.replace(/[&<>"']/g, match => {
         switch (match) {
-            case '&': return '&amp;';
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '"': return '&quot;';
-            case "'": return '&#039;';
-            default: return match;
+            case '&':
+                return '&amp;';
+            case '<':
+                return '&lt;';
+            case '>':
+                return '&gt;';
+            case '"':
+                return '&quot;';
+            case "'":
+                return '&#039;';
+            default:
+                return match;
         }
     });
 }
@@ -24,7 +30,7 @@ const listContainer = document.getElementById('division-list');
 const sortButtons = document.querySelectorAll('.sort-btn');
 const showEmptyCheckbox = document.getElementById('show-empty');
 let currentSort = 'percentage';
-let sortDirection = 'asc'
+let sortDirection = 'asc';
 
 /**
  * Formats a number using the current locale for consistent display.
@@ -36,7 +42,7 @@ function formatNumber(num) {
     return num.toLocaleString(locale, {
         useGrouping: true,
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0
+        maximumFractionDigits: 0,
     });
 }
 
@@ -83,7 +89,10 @@ function createCollapseIcon() {
     svg.setAttribute('viewBox', '0 0 20 20');
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('fill-rule', 'evenodd');
-    path.setAttribute('d', 'M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z');
+    path.setAttribute(
+        'd',
+        'M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'
+    );
     path.setAttribute('clip-rule', 'evenodd');
     svg.appendChild(path);
     return svg;
@@ -103,8 +112,8 @@ function renderList() {
         if (currentSort === 'percentage') {
             const statsA = calculatedDivisionTotals[a];
             const statsB = calculatedDivisionTotals[b];
-            const percentageA = statsA.total > 0 ? (statsA.invalid / statsA.total) : 0;
-            const percentageB = statsB.total > 0 ? (statsB.invalid / statsB.total) : 0;
+            const percentageA = statsA.total > 0 ? statsA.invalid / statsA.total : 0;
+            const percentageB = statsB.total > 0 ? statsB.invalid / statsB.total : 0;
             const diff = percentageB - percentageA;
             return sortDirection === 'asc' ? diff : -1 * diff;
         } else if (currentSort === 'invalidCount') {
@@ -146,7 +155,6 @@ function renderList() {
         }
 
         if (sortedData.length > 0) {
-
             // --- Group Stats Calculation ---
             const groupStats = calculatedDivisionTotals[divisionName];
             const groupInvalidFormatted = formatNumber(groupStats.invalid);
@@ -157,26 +165,27 @@ function renderList() {
             const formattedGroupPercentage = groupPercentageNumber.toLocaleString(locale, percentageOptions);
 
             // Client-side substitution using the embedded template literal
-            const groupStatsLine = reportType === 'phone' ?
-                T_CLIENT.invalidNumbersOutOf
-                    .replace('%i', groupInvalidFormatted)
-                    .replace('%f', groupFixableFormatted)
-                    .replace('%t', groupTotalFormatted) :
-                reportType === 'names' ?
-                    T_CLIENT.incompleteNamesOutOf
-                        .replace('%i', groupInvalidFormatted)
-                        .replace('%t', groupTotalFormatted) :
-                    T_CLIENT.invalidHoursOutOf
-                        .replace('%i', groupInvalidFormatted)
-                        .replace('%f', groupFixableFormatted)
-                        .replace('%t', groupTotalFormatted);
+            const groupStatsLine =
+                reportType === 'phone'
+                    ? T_CLIENT.invalidNumbersOutOf
+                          .replace('%i', groupInvalidFormatted)
+                          .replace('%f', groupFixableFormatted)
+                          .replace('%t', groupTotalFormatted)
+                    : reportType === 'names'
+                      ? T_CLIENT.incompleteNamesOutOf
+                            .replace('%i', groupInvalidFormatted)
+                            .replace('%t', groupTotalFormatted)
+                      : T_CLIENT.invalidHoursOutOf
+                            .replace('%i', groupInvalidFormatted)
+                            .replace('%f', groupFixableFormatted)
+                            .replace('%t', groupTotalFormatted);
 
             // --- End Group Stats Calculation ---
 
             sortedData.sort((a, b) => {
                 if (currentSort === 'percentage') {
-                    const percentageA = a.totalCount > 0 ? (a.invalidCount / a.totalCount) : 0;
-                    const percentageB = b.totalCount > 0 ? (b.invalidCount / b.totalCount) : 0;
+                    const percentageA = a.totalCount > 0 ? a.invalidCount / a.totalCount : 0;
+                    const percentageB = b.totalCount > 0 ? b.invalidCount / b.totalCount : 0;
                     const diff = percentageB - percentageA;
                     return sortDirection === 'asc' ? diff : -1 * diff;
                 } else if (currentSort === 'invalidCount') {
@@ -258,7 +267,6 @@ function renderList() {
 
                 detailsGroup.appendChild(ul);
                 listContainer.appendChild(detailsGroup);
-
             } else {
                 // --- RENDER FLAT LIST ---
                 ul = listContainer;
@@ -266,33 +274,39 @@ function renderList() {
 
             // --- LIST ITEM RENDERING (Common Logic) ---
             sortedData.forEach(subdivision => {
-                const singleLevelDivision = safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
-                const subdivisionSlug = singleLevelDivision ? subdivision.slug : `${subdivision.divisionSlug}/${subdivision.slug}`;
+                const singleLevelDivision =
+                    safeCountryName === subdivision.divisionSlug || subdivision.divisionSlug === subdivision.slug;
+                const subdivisionSlug = singleLevelDivision
+                    ? subdivision.slug
+                    : `${subdivision.divisionSlug}/${subdivision.slug}`;
 
-                const percentage = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
+                const percentage =
+                    subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const invalidPercentage = Math.max(0, Math.min(100, percentage));
 
                 const formattedInvalidCount = formatNumber(subdivision.invalidCount);
                 const formattedFixableCount = formatNumber(subdivision.autoFixableCount);
                 const formattedTotalCount = formatNumber(subdivision.totalCount);
 
-                const percentageNumber = subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
+                const percentageNumber =
+                    subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const formattedPercentage = percentageNumber.toLocaleString(locale, percentageOptions);
 
                 // Client-side substitution using the embedded template literal
-                const itemStatsLine = reportType === 'phone' ?
-                    T_CLIENT.invalidNumbersOutOf
-                        .replace('%i', formattedInvalidCount)
-                        .replace('%f', formattedFixableCount)
-                        .replace('%t', formattedTotalCount) :
-                    reportType === 'name' ?
-                        T_CLIENT.incompleteNamesOutOf
-                            .replace('%i', formattedInvalidCount)
-                            .replace('%t', formattedTotalCount) :
-                        T_CLIENT.invalidHoursOutOf
-                            .replace('%i', formattedInvalidCount)
-                            .replace('%f', formattedFixableCount)
-                            .replace('%t', formattedTotalCount);
+                const itemStatsLine =
+                    reportType === 'phone'
+                        ? T_CLIENT.invalidNumbersOutOf
+                              .replace('%i', formattedInvalidCount)
+                              .replace('%f', formattedFixableCount)
+                              .replace('%t', formattedTotalCount)
+                        : reportType === 'name'
+                          ? T_CLIENT.incompleteNamesOutOf
+                                .replace('%i', formattedInvalidCount)
+                                .replace('%t', formattedTotalCount)
+                          : T_CLIENT.invalidHoursOutOf
+                                .replace('%i', formattedInvalidCount)
+                                .replace('%f', formattedFixableCount)
+                                .replace('%t', formattedTotalCount);
 
                 const li = document.createElement('li');
                 li.className = 'subdivision-list-item';

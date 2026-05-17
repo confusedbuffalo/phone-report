@@ -2,7 +2,13 @@ import { parsePhoneNumber } from 'libphonenumber-js/max';
 import { stringSimilarity } from 'string-similarity-js';
 import * as pkgDiff from 'diff';
 const { diffChars } = pkgDiff.default || pkgDiff;
-import { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN, SEPARATOR_NEED_SPACE, SEPARATOR_OPTIONAL_SPACE, SEPARATOR_OPTIONAL_SPACE_DIN } from './constants.js';
+import {
+    UNIVERSAL_SPLIT_CAPTURE_REGEX,
+    UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN,
+    SEPARATOR_NEED_SPACE,
+    SEPARATOR_OPTIONAL_SPACE,
+    SEPARATOR_OPTIONAL_SPACE_DIN,
+} from './constants.js';
 import { escapeHTML } from './html-utils.js';
 import { isWhatsappUrl, isSlashSpace } from './phone-processor.js';
 
@@ -12,10 +18,8 @@ import { isWhatsappUrl, isSlashSpace } from './phone-processor.js';
 // string and added to the second string. Instead, we want to show the digits as unchanging
 // and the formatting as the change.
 
-
 // Used for splitting the suggested fix (assuming standard semicolon separation)
 const NEW_SPLIT_CAPTURE_REGEX = /(; ?)/g;
-
 
 // --- Helper Functions ---
 
@@ -25,10 +29,10 @@ const NEW_SPLIT_CAPTURE_REGEX = /(; ?)/g;
  * @param {string} str - The phone number string.
  * @returns {string} The normalised string (digits only).
  */
-export const normalise = (str) => str.replace(/[^\d]/g, '');
+export const normalise = str => str.replace(/[^\d]/g, '');
 
 /**
- * Helper function to consolidate lone '+' signs with the following segment, 
+ * Helper function to consolidate lone '+' signs with the following segment,
  * ensuring the full international number is treated as one segment.
  * @param {Array<string>} parts - Array of segments from a split operation.
  * @returns {Array<string>} Consolidated array.
@@ -52,26 +56,24 @@ export function consolidatePlusSigns(parts) {
     return consolidated.filter(s => s && s.trim().length > 0);
 }
 
-
 /**
- * Replaces invisible Unicode control characters (zero-width characters, 
+ * Replaces invisible Unicode control characters (zero-width characters,
  * joiners, and directional marks) in a string with the visible space symbol (U+2423 '␣').
  * This is primarily used for displaying user input in a diff or log, ensuring
- * that characters which consume zero width (and would otherwise be invisible) 
- * are clearly marked as present in the original string before being removed by 
+ * that characters which consume zero width (and would otherwise be invisible)
+ * are clearly marked as present in the original string before being removed by
  * parsing/cleaning logic.
  * @param {string} text The input string potentially containing invisible Unicode characters.
  * @returns {string} The string with all specified invisible characters replaced by '␣'.
  */
 export function replaceInvisibleChars(text) {
     if (!text) {
-        "";
+        ('');
     }
     // The pattern targets the common zero-width, joiner, and directional marks and spacing characters other than space itself.
     const invisibleCharPattern = /(?![ ])\s|[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]/g;
     return text.replace(invisibleCharPattern, '␣');
 }
-
 
 // --- Core Diff Logic ---
 
@@ -80,7 +82,7 @@ export function replaceInvisibleChars(text) {
  * @param {string} original - The phone number to be fixed.
  * @param {string} suggested - The fixed phone number.
  * @returns {{
- * originalDiff: Array<{value: string, added: boolean, removed: boolean}>, 
+ * originalDiff: Array<{value: string, added: boolean, removed: boolean}>,
  * suggestedDiff: Array<{value: string, added: boolean, removed: boolean}>
  * }} The diff objects for rendering two separate lines.
  */
@@ -125,9 +127,7 @@ export function diffPhoneNumbers(original, suggested) {
     let originalRemainder = original; // We will cut these down to keep track of added/removed separators
     let suggestedRemainder = suggested;
 
-    const actualNumberStartsWithZero = suggested.split(' ')[1]
-        ?.startsWith('0')
-        ?? false;
+    const actualNumberStartsWithZero = suggested.split(' ')[1]?.startsWith('0') ?? false;
 
     const onlyAddingPlus = normalisedOriginal === normalisedSuggested;
     const numericalPrefix = suggested.split(' ')[0].slice(1);
@@ -139,17 +139,25 @@ export function diffPhoneNumbers(original, suggested) {
         const char = original[i];
         const slice = original.slice(i, i + 3); // to check for encoded plus
 
-        if (char === '+' && suggestedRemainder && suggestedRemainder[0] !== '+' && originalPrefix && originalPrefix.length <= 4) { // Special handling of REMOVING a prefix, e.g. for a short number that is not international
+        if (
+            char === '+' &&
+            suggestedRemainder &&
+            suggestedRemainder[0] !== '+' &&
+            originalPrefix &&
+            originalPrefix.length <= 4
+        ) {
+            // Special handling of REMOVING a prefix, e.g. for a short number that is not international
             for (let j = 0; j < originalPrefix.length; j++) {
                 originalDiff.push({ value: originalPrefix[j], added: false, removed: true });
                 originalRemainder = originalRemainder.slice(1);
             }
             originalDiff.push({ value: ' ', added: false, removed: true });
-            i = original.indexOf(' ')
-        } else if ( // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
-            suggestedRemainder[0] === '+'
-            && char === '0'
-            && !actualNumberStartsWithZero
+            i = original.indexOf(' ');
+        } else if (
+            // Special handling of adding a prefix to ensure that leading zero that was removed to add the prefix is marked removed,
+            suggestedRemainder[0] === '+' &&
+            char === '0' &&
+            !actualNumberStartsWithZero
         ) {
             originalDiff.push({ value: char, removed: true });
             if (commonDigits[commonPointer] === '0') {
@@ -157,9 +165,10 @@ export function diffPhoneNumbers(original, suggested) {
                 commonPointer++;
             }
 
-            const spacePosition = suggested.indexOf(' ')
-            suggestedRemainder = suggestedRemainder.slice(spacePosition + 1) // Remove the prefix
-        } else if (suggestedRemainder[0] === '+' && slice.toLowerCase() === '%2b') { // url encoded plus sign, "%2B", can match with digits in number
+            const spacePosition = suggested.indexOf(' ');
+            suggestedRemainder = suggestedRemainder.slice(spacePosition + 1); // Remove the prefix
+        } else if (suggestedRemainder[0] === '+' && slice.toLowerCase() === '%2b') {
+            // url encoded plus sign, "%2B", can match with digits in number
             originalDiff.push({ value: slice, removed: true });
             i += 2;
         } else if (/\d/.test(char)) {
@@ -169,14 +178,17 @@ export function diffPhoneNumbers(original, suggested) {
                 originalDiff.push({ value: char, added: false, removed: false });
 
                 // Cut down until we get to a matching character
-                while (originalRemainder[0] !== suggestedRemainder[0] && suggestedRemainder[0] !== commonDigits[commonPointer] && suggestedRemainder !== '') {
+                while (
+                    originalRemainder[0] !== suggestedRemainder[0] &&
+                    suggestedRemainder[0] !== commonDigits[commonPointer] &&
+                    suggestedRemainder !== ''
+                ) {
                     suggestedRemainder = suggestedRemainder.slice(1);
                 }
                 // Remove the current digit
                 suggestedRemainder = suggestedRemainder.slice(1);
 
                 commonPointer++;
-
             } else {
                 // Digit was part of the normalised original string, but NOT in the common sequence. REMOVED.
                 originalDiff.push({ value: char, removed: true });
@@ -184,7 +196,7 @@ export function diffPhoneNumbers(original, suggested) {
         } else if (char === suggestedRemainder[0]) {
             // Both have another character the same (plus, space or dash), UNCHANGED
             originalDiff.push({ value: char, removed: false, added: false });
-            suggestedRemainder = suggestedRemainder.slice(1)
+            suggestedRemainder = suggestedRemainder.slice(1);
         } else if (suggestedRemainder.includes(char) && char.match(/[extension\.]/)) {
             // Extension letters
             while (suggestedRemainder != '' && char !== suggestedRemainder[0]) {
@@ -211,17 +223,13 @@ export function diffPhoneNumbers(original, suggested) {
         // Special handling of adding a prefix to ensure that the whole prefix is marked as added,
         // even if it contains the same digit as the first digit of the actual phone number
         if (
-            char === '+'
-            && (
-                !originalRemainderNew.includes('+') // + might exist but not be first character, e.g. 'tel:+...'
-                || (originalRemainderNew.includes('+') && numericallyOnlyAddingPrefix) // in case of incorrect leading plus and first digits the same as prefix, see "should show prefix as added when actual number starts with the same prefix and incorrect plus"
-            )
-            && normalisedOriginal.slice(0, 2) != '00' // This gets handled properly by the rest of the logic anyway
-            && !onlyAddingPlus // doesn't need special handling
-            && (
-                normalisedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix // edge case, see "should cope with brackets and zero removed and plus added" test
-                || numericallyOnlyAddingPrefix // needed because of clash with this case, see "should mark prefix as new, even when it is the same as the first digits of the original" test
-            )
+            char === '+' &&
+            (!originalRemainderNew.includes('+') || // + might exist but not be first character, e.g. 'tel:+...'
+                (originalRemainderNew.includes('+') && numericallyOnlyAddingPrefix)) && // in case of incorrect leading plus and first digits the same as prefix, see "should show prefix as added when actual number starts with the same prefix and incorrect plus"
+            normalisedOriginal.slice(0, 2) != '00' && // This gets handled properly by the rest of the logic anyway
+            !onlyAddingPlus && // doesn't need special handling
+            (normalisedOriginal.slice(0, numericalPrefix.length) !== numericalPrefix || // edge case, see "should cope with brackets and zero removed and plus added" test
+                numericallyOnlyAddingPrefix) // needed because of clash with this case, see "should mark prefix as new, even when it is the same as the first digits of the original" test
         ) {
             const isNanp = suggested.startsWith('+1-');
             let prefix = isNanp ? suggested.split('-')[0] : suggested.split(' ')[0];
@@ -266,7 +274,11 @@ export function diffPhoneNumbers(original, suggested) {
 
             suggestedDiff.push({ value: isNanp ? '-' : ' ', added: true });
 
-            if (commonDigits[commonPointerNew] === '0' && originalRemainderNew.match(/[^d]+0.*/) && !actualNumberStartsWithZero) {
+            if (
+                commonDigits[commonPointerNew] === '0' &&
+                originalRemainderNew.match(/[^d]+0.*/) &&
+                !actualNumberStartsWithZero
+            ) {
                 while (originalRemainderNew && originalRemainderNew[0] !== '0') {
                     originalRemainderNew = originalRemainderNew.slice(1); // remove any leading non-digits
                 }
@@ -279,14 +291,14 @@ export function diffPhoneNumbers(original, suggested) {
                     commonPointerNew++;
                 }
             }
-            suggestedRemainderNew = suggestedRemainderNew.slice(i) // Remove the prefix
+            suggestedRemainderNew = suggestedRemainderNew.slice(i); // Remove the prefix
         } else if (/\d/.test(char)) {
             // Slash used to denote multiple endings being expanded to full number
             if (
-                normalisedOriginal.length <= 4
-                && normalisedOriginal.length < normalisedSuggested.length
-                && normalisedSuggested.slice(-normalisedOriginal.length) === normalisedOriginal
-                && normalise(suggestedRemainderNew) !== normalisedOriginal.slice(commonPointerNew)
+                normalisedOriginal.length <= 4 &&
+                normalisedOriginal.length < normalisedSuggested.length &&
+                normalisedSuggested.slice(-normalisedOriginal.length) === normalisedOriginal &&
+                normalise(suggestedRemainderNew) !== normalisedOriginal.slice(commonPointerNew)
             ) {
                 suggestedDiff.push({ value: char, added: true });
             }
@@ -296,14 +308,17 @@ export function diffPhoneNumbers(original, suggested) {
                 suggestedDiff.push({ value: char, removed: false, added: false });
 
                 // Cut down until we get to a matching character
-                while (originalRemainderNew[0] != char && originalRemainderNew[0] != commonDigits[commonPointerNew] && originalRemainderNew != '') {
+                while (
+                    originalRemainderNew[0] != char &&
+                    originalRemainderNew[0] != commonDigits[commonPointerNew] &&
+                    originalRemainderNew != ''
+                ) {
                     originalRemainderNew = originalRemainderNew.slice(1);
                 }
                 // Remove the current digit
                 originalRemainderNew = originalRemainderNew.slice(1);
 
                 commonPointerNew++;
-
             } else {
                 // Digit is NEW (e.g., prefix '32' or a replaced digit). ADDED.
                 suggestedDiff.push({ value: char, added: true });
@@ -315,7 +330,11 @@ export function diffPhoneNumbers(original, suggested) {
         } else {
             // Non-digit, non-common character, happens when characters were removed from the old string
             if (originalRemainderNew.includes(char)) {
-                while (originalRemainderNew[0] != char && originalRemainderNew[0] != commonDigits[commonPointerNew] && originalRemainderNew != '') {
+                while (
+                    originalRemainderNew[0] != char &&
+                    originalRemainderNew[0] != commonDigits[commonPointerNew] &&
+                    originalRemainderNew != ''
+                ) {
                     originalRemainderNew = originalRemainderNew.slice(1);
                 }
                 if (char === originalRemainderNew[0]) {
@@ -329,7 +348,7 @@ export function diffPhoneNumbers(original, suggested) {
             }
         }
         // Remove the current checked char
-        suggestedRemainderNew = suggestedRemainderNew.slice(1)
+        suggestedRemainderNew = suggestedRemainderNew.slice(1);
     }
 
     return { originalDiff, suggestedDiff };
@@ -347,7 +366,7 @@ export function mergeDiffs(diffResult) {
     if (!diffResult[0]) {
         return mergedDiff;
     }
-    mergedDiff.push(diffResult[0])
+    mergedDiff.push(diffResult[0]);
     for (let i = 1; i < diffResult.length; i++) {
         const thisDiff = diffResult[i];
         const lastDiff = mergedDiff.at(-1);
@@ -364,7 +383,7 @@ export function mergeDiffs(diffResult) {
 
 /**
  * Creates an HTML string with diff highlighting for two phone tags.
- * Does not do a full diff, but just considers whether 'contact:' is changing or not 
+ * Does not do a full diff, but just considers whether 'contact:' is changing or not
  * @param {string} oldTag - The old phone tag.
  * @param {string} newTag - The new phone tag.
  * @returns {{oldTagDiff: string, newTagDiff: string}} - An object containing the HTML for both diffs.
@@ -377,13 +396,13 @@ export function getDiffTagsHtml(oldTag, newTag) {
 
         return {
             oldTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-removed">${actualOldTag}</span>`,
-            newTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-added">${actualNewTag}</span>`
-        }
+            newTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-added">${actualNewTag}</span>`,
+        };
     } else {
         return {
             oldTagDiff: `<span class="diff-removed">${oldTag}</span>`,
-            newTagDiff: `<span class="diff-added">${newTag}</span>`
-        }
+            newTagDiff: `<span class="diff-added">${newTag}</span>`,
+        };
     }
 }
 
@@ -399,10 +418,11 @@ export function getDiffTagsHtml(oldTag, newTag) {
  * @returns {Token[]} A new array where all sequences of consecutive separators have been merged.
  */
 function mergeConsecutiveSeparators(inputArray, useDeSeparators) {
-
     const mergedArray = [];
 
-    const ALL_SEPARATORS = useDeSeparators ? [...SEPARATOR_OPTIONAL_SPACE_DIN, ...SEPARATOR_NEED_SPACE] : [...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE];
+    const ALL_SEPARATORS = useDeSeparators
+        ? [...SEPARATOR_OPTIONAL_SPACE_DIN, ...SEPARATOR_NEED_SPACE]
+        : [...SEPARATOR_OPTIONAL_SPACE, ...SEPARATOR_NEED_SPACE];
 
     for (let i = 0; i < inputArray.length; i++) {
         let currentElement = inputArray[i];
@@ -417,9 +437,9 @@ function mergeConsecutiveSeparators(inputArray, useDeSeparators) {
             let j = i + 1;
 
             while (
-                j < inputArray.length
-                && inputArray[j].length > 0
-                && (ALL_SEPARATORS.includes(inputArray[j].toLowerCase().trim()))
+                j < inputArray.length &&
+                inputArray[j].length > 0 &&
+                ALL_SEPARATORS.includes(inputArray[j].toLowerCase().trim())
             ) {
                 currentElement += inputArray[j];
                 j++;
@@ -447,22 +467,22 @@ function getDiffHtml(oldDiff, newDiff) {
     let oldDiffHtml = '';
     let newDiffHtml = '';
 
-    mergedOldDiff.forEach((part) => {
+    mergedOldDiff.forEach(part => {
         const colorClass = part.removed ? 'diff-removed' : 'diff-unchanged';
         oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
     });
 
-    mergedNewDiff.forEach((part) => {
+    mergedNewDiff.forEach(part => {
         const colorClass = part.added ? 'diff-added' : 'diff-unchanged';
         // Use nbsp so that it always displays, even when there are multiple spaces or when a line would break
         newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
     });
 
-    return { oldDiffHtml, newDiffHtml }
+    return { oldDiffHtml, newDiffHtml };
 }
 
 /**
- * Creates an HTML string with diff highlighting for two phone number strings, 
+ * Creates an HTML string with diff highlighting for two phone number strings,
  * handling multiple numbers separated by various delimiters.
  * @param {string} oldString - The original phone number string(s).
  * @param {string} newString - The suggested phone number string(s).
@@ -470,13 +490,19 @@ function getDiffHtml(oldDiff, newDiff) {
  */
 export function getPhoneDiffHtml(oldString, newString) {
     if (!oldString) {
-        return { oldDiff: null, newDiff: `<span class="diff-added">${escapeHTML(newString).replace(/ /g, '&nbsp;')}</span>` };
+        return {
+            oldDiff: null,
+            newDiff: `<span class="diff-added">${escapeHTML(newString).replace(/ /g, '&nbsp;')}</span>`,
+        };
     }
     if (!newString) {
-        return { oldDiff: `<span class="diff-removed">${escapeHTML(oldString).replace(/ /g, '&nbsp;')}</span>`, newDiff: null };
+        return {
+            oldDiff: `<span class="diff-removed">${escapeHTML(oldString).replace(/ /g, '&nbsp;')}</span>`,
+            newDiff: null,
+        };
     }
-    const oldStringCleaned = replaceInvisibleChars(oldString)
-    const newStringCleaned = replaceInvisibleChars(newString)
+    const oldStringCleaned = replaceInvisibleChars(oldString);
+    const newStringCleaned = replaceInvisibleChars(newString);
 
     // Split and initial filter for both strings
 
@@ -491,8 +517,7 @@ export function getPhoneDiffHtml(oldString, newString) {
                 useDinSeparators = true;
                 // DIN does not consider '/' as separator
             }
-        }
-        catch {
+        } catch {
             // Error parsing number, stick with default split regex
         }
     }
@@ -503,10 +528,16 @@ export function getPhoneDiffHtml(oldString, newString) {
 
     // Filter out falsey values (undefined from capturing groups) and empty strings
     // Remove consecutive separators, e.g. '//'
-    const oldParts = mergeConsecutiveSeparators(oldPartsUnfiltered.filter(s => s && s.trim().length > 0), useDinSeparators);
+    const oldParts = mergeConsecutiveSeparators(
+        oldPartsUnfiltered.filter(s => s && s.trim().length > 0),
+        useDinSeparators
+    );
 
     const newPartsUnfiltered = newStringCleaned.split(NEW_SPLIT_CAPTURE_REGEX);
-    const newParts = mergeConsecutiveSeparators(newPartsUnfiltered.filter(s => s && s.trim().length > 0), useDinSeparators);
+    const newParts = mergeConsecutiveSeparators(
+        newPartsUnfiltered.filter(s => s && s.trim().length > 0),
+        useDinSeparators
+    );
 
     // Apply consolidation to both old and new parts
     const consolidatedOldParts = consolidatePlusSigns(oldParts);
@@ -520,10 +551,10 @@ export function getPhoneDiffHtml(oldString, newString) {
 
     // Number is being removed
     if (
-        consolidatedOldParts.length === 3 // num1, separator, num2
-        && consolidatedNewParts.length === 1
-        && /\d/.test(consolidatedOldParts[0])
-        && /\d/.test(consolidatedOldParts[2])
+        consolidatedOldParts.length === 3 && // num1, separator, num2
+        consolidatedNewParts.length === 1 &&
+        /\d/.test(consolidatedOldParts[0]) &&
+        /\d/.test(consolidatedOldParts[2])
     ) {
         // More robust checking and comparison would be possible
         // However, most common case is two numbers, one being removed
@@ -584,8 +615,8 @@ export function getPhoneDiffHtml(oldString, newString) {
         }
 
         // Append any trailing parts
-        const trailingOriginal = consolidatedOldParts.slice(numSegments).join('')
-        const trailingSuggested = consolidatedNewParts.slice(numSegments).join('')
+        const trailingOriginal = consolidatedOldParts.slice(numSegments).join('');
+        const trailingSuggested = consolidatedNewParts.slice(numSegments).join('');
         if (trailingOriginal) {
             allOriginalDiff.push({ value: trailingOriginal, removed: true, added: false });
         }
@@ -613,12 +644,12 @@ export function getHoursDiffHtml(oldString, newString) {
 
     parts.forEach(part => {
         if (!part.added && !part.removed) {
-            oldDiff.push({...part});
-            newDiff.push({...part});
+            oldDiff.push({ ...part });
+            newDiff.push({ ...part });
         } else if (part.added) {
-            newDiff.push({...part});
+            newDiff.push({ ...part });
         } else if (part.removed) {
-            oldDiff.push({...part});
+            oldDiff.push({ ...part });
         }
     });
 

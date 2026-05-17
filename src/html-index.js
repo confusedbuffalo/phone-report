@@ -20,8 +20,8 @@ function buildSearchIndex() {
         // Add the Country itself
         index.push({
             name: countryName,
-            type: "Country",
-            url: `./${countrySafe}/`
+            type: 'Country',
+            url: `./${countrySafe}/`,
         });
 
         // Handle standard "divisions"
@@ -29,9 +29,9 @@ function buildSearchIndex() {
             for (const divName of Object.keys(countryObj.divisions)) {
                 index.push({
                     name: divName,
-                    type: "Region",
+                    type: 'Region',
                     url: `./${countrySafe}/${safeName(divName)}.html`,
-                    parent: countryName
+                    parent: countryName,
                 });
             }
         }
@@ -44,20 +44,20 @@ function buildSearchIndex() {
                 if (Object.entries(subdivisions).length > 1) {
                     index.push({
                         name: divName,
-                        type: "Region",
+                        type: 'Region',
                         url: `./${countrySafe}/`,
-                        parent: countryName
+                        parent: countryName,
                     });
                 }
 
                 for (const [subName, relId] of Object.entries(subdivisions)) {
                     // If names match (e.g., Berlin/Berlin), only add the deeper one
-                    const isDuplicate = (subName.toLowerCase() === divName.toLowerCase());
+                    const isDuplicate = subName.toLowerCase() === divName.toLowerCase();
 
                     const item = {
                         name: subName,
-                        type: "Subdivision",
-                        parent: isDuplicate ? countryName : `${countryName} > ${divName}`
+                        type: 'Subdivision',
+                        parent: isDuplicate ? countryName : `${countryName} > ${divName}`,
                     };
 
                     // Path logic: united-kingdom/wales.html vs united-kingdom/england/east-midlands.html
@@ -84,7 +84,7 @@ function buildSearchIndex() {
  */
 export async function generateMainIndexHtml(reportType, countryStats, locale, translations) {
     const eta = new Eta({
-        views: path.join(process.cwd(), "src", "templates"),
+        views: path.join(process.cwd(), 'src', 'templates'),
         cache: true,
     });
 
@@ -100,7 +100,7 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
         GITHUB_LINK,
     };
 
-    const htmlContent = eta.render("index", templateData);
+    const htmlContent = eta.render('index', templateData);
 
     let finalHtml = htmlContent;
 
@@ -117,4 +117,3 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
     await fsPromises.writeFile(fileName, finalHtml);
     console.log('Main index.html generated.');
 }
-

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
-import OSM from "osm-api";
+import OSM from 'osm-api';
 import { pipeline } from 'stream/promises';
 import { chain } from 'stream-chain';
 import pkgParser from 'stream-json/parser.js';
@@ -21,11 +21,10 @@ import { fileURLToPath } from 'url';
  */
 const BOT_AUTH_TOKEN = process.env.BOT_AUTH_TOKEN;
 
-
 /**
  * Basic sleep utility to pause between uploads so as not to overload the OSM servers
  */
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * A custom stream transform that takes a single object chunk and stringifies it
@@ -61,14 +60,17 @@ class StringifyTransform extends Transform {
  */
 export async function generateSafeEditFile(countryName, subdivisionStats, tmpFilePath) {
     const safeCountryName = safeName(countryName);
-    const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
-    const subdivisionSlug = singleLevelDivision ? subdivisionStats.slug : path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
+    const singleLevelDivision =
+        safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
+    const subdivisionSlug = singleLevelDivision
+        ? subdivisionStats.slug
+        : path.join(subdivisionStats.divisionSlug, subdivisionStats.slug);
     const safeCountryDir = path.join(SAFE_EDITS_DIR, safeCountryName);
 
     await fsp.mkdir(safeCountryDir, { recursive: true });
 
     if (!singleLevelDivision) {
-        const subdivisionDir = path.join(safeCountryDir, subdivisionStats.divisionSlug)
+        const subdivisionDir = path.join(safeCountryDir, subdivisionStats.divisionSlug);
         await fsp.mkdir(subdivisionDir, { recursive: true });
     }
 
@@ -119,14 +121,14 @@ export async function generateSafeEditFile(countryName, subdivisionStats, tmpFil
                 edits: this.edits,
                 totalOriginalItems: this.totalOriginalItems,
                 totalSuggestedEdits: this.totalSuggestedEdits,
-                totalSafeEdits: this.totalSafeEdits
+                totalSafeEdits: this.totalSafeEdits,
             });
             callback();
         }
     }
 
     /**
-     * A custom stream transform that wraps the final array of edits, with 
+     * A custom stream transform that wraps the final array of edits, with
      * counts of edits, into the output object structure with metadata.
      * @augments stream.Transform
      */
@@ -172,28 +174,18 @@ export async function generateSafeEditFile(countryName, subdivisionStats, tmpFil
         parser(),
         streamArray(),
         new SafeEditFilter(),
-        new SafeEditWrapper(
-            countryName,
-            subdivisionStats.name,
-            subdivisionStats.divisionSlug,
-            subdivisionStats.slug
-        ),
-        new StringifyTransform()
+        new SafeEditWrapper(countryName, subdivisionStats.name, subdivisionStats.divisionSlug, subdivisionStats.slug),
+        new StringifyTransform(),
     ]);
 
     try {
-        await pipeline(
-            inputStream,
-            chainedStream,
-            outputStream
-        );
+        await pipeline(inputStream, chainedStream, outputStream);
         console.debug(`Safe edits output data written to ${dataFilePath}`);
     } catch (err) {
         console.error('An error occurred during safe edits streaming:', err);
         throw err;
     }
 }
-
 
 /**
  * Applies a set of tag edits (key-value pairs) to an OSM feature's 'tags' object.
@@ -338,24 +330,36 @@ export async function uploadSafeChanges(filePath) {
     const modifications = await processFeatures(groupedData);
 
     if (modifications.length > 0) {
-        console.log(`Uploading ${modifications.length} modifications for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`);
+        console.log(
+            `Uploading ${modifications.length} modifications for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`
+        );
 
-        const relativePagePath = getSubdivisionRelativeFilePath(subdivisionData.countryName, subdivisionData.divisionSlug, subdivisionData.subdivisionSlug);
+        const relativePagePath = getSubdivisionRelativeFilePath(
+            subdivisionData.countryName,
+            subdivisionData.divisionSlug,
+            subdivisionData.subdivisionSlug
+        );
         const pageLink = `${HOST_URL}${relativePagePath}`;
 
         const response = await OSM.uploadChangeset(
             {
                 ...AUTO_CHANGESET_TAGS,
-                ...{ 'comment': `${subdivisionData.subdivisionName} (${subdivisionData.countryName}): ` + AUTO_CHANGESET_TAGS.comment },
-                ...{ 'manual_review_needed': pageLink }
+                ...{
+                    comment:
+                        `${subdivisionData.subdivisionName} (${subdivisionData.countryName}): ` +
+                        AUTO_CHANGESET_TAGS.comment,
+                },
+                ...{ manual_review_needed: pageLink },
             },
             { create: [], modify: modifications, delete: [] }
         );
 
         const changesetIds = Object.keys(response || {});
 
-        changesetIds.forEach((id) => {
-            console.log(`Changeset ${id} created for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`);
+        changesetIds.forEach(id => {
+            console.log(
+                `Changeset ${id} created for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`
+            );
         });
     }
 }
@@ -400,11 +404,11 @@ async function processSafeEdits() {
     // Configure with the auth token
     OSM.configure({ authHeader: `Bearer ${BOT_AUTH_TOKEN}` });
 
-    OSM.getUser("me")
-        .then((result) => {
+    OSM.getUser('me')
+        .then(result => {
             console.debug(`Logged in as ${result.display_name}`);
         })
-        .catch((error) => {
+        .catch(error => {
             console.error('Could not identify with OSM API');
             throw error;
         });
@@ -432,14 +436,14 @@ async function processSafeEdits() {
                         totalSuggestedEdits: 0,
                         totalSafeEdits: 0,
                         uploaded: 0,
-                        skipped: 0
+                        skipped: 0,
                     };
                 }
 
                 const stats = countryStats[countryName];
-                stats.totalOriginalItems += (data.totalOriginalItems || 0);
-                stats.totalSuggestedEdits += (data.totalSuggestedEdits || 0);
-                stats.totalSafeEdits += (data.totalSafeEdits || 0);
+                stats.totalOriginalItems += data.totalOriginalItems || 0;
+                stats.totalSuggestedEdits += data.totalSuggestedEdits || 0;
+                stats.totalSafeEdits += data.totalSafeEdits || 0;
 
                 const countryConfig = COUNTRIES[countryName];
 
@@ -454,14 +458,13 @@ async function processSafeEdits() {
                     try {
                         await uploadSafeChanges(filePath);
                         stats.uploaded++;
-                        await sleep(500); 
+                        await sleep(500);
                     } catch (err) {
                         console.error(`Upload failed for ${filePath}:`, err.message);
                     }
                 } else {
                     stats.skipped++;
                 }
-
             } catch (error) {
                 console.error(`Error processing file ${filePath}:`, error.message);
                 throw error;
@@ -484,7 +487,6 @@ async function processSafeEdits() {
         console.log(`\n--- Processing Complete ---`);
         console.log(`Total files processed: ${filesToProcess.length}`);
         console.log(`Successful uploads: ${uploadedCount}`);
-
     } catch (error) {
         console.error('An error occurred during directory traversal:', error);
         throw error;
@@ -502,4 +504,3 @@ const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
     main();
 }
-

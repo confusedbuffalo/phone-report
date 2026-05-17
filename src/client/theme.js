@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * or the user's OS-level preference. It also updates the toggle icon visibility.
      */
     const setInitialTheme = () => {
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        if (
+            localStorage.getItem('color-theme') === 'dark' ||
+            (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        ) {
             document.documentElement.classList.add('dark');
             if (themeToggleLightIcon) themeToggleLightIcon.classList.remove('hidden');
             if (themeToggleDarkIcon) themeToggleDarkIcon.classList.add('hidden');

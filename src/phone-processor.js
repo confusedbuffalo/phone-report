@@ -31,7 +31,6 @@ const MobileStatus = {
     UNKNOWN: 'unknown',
 };
 
-
 /**
  * Checks if a phone number is a mobile number
  * @param {PhoneNumber} phoneNumber The libphonenumber-js PhoneNumber object.
@@ -51,7 +50,7 @@ function checkMobileStatus(phoneNumber) {
 /**
  * Determines the OSM phone tag to use for an element.
  * * 'phone' is used if both are present, or if only 'phone' is present.
- * * It only returns 'contact:phone' if only that tag is present. 
+ * * It only returns 'contact:phone' if only that tag is present.
  * * 'phone' is the fallback if neither is present.
  * @param {Object} tags The tags of the the OSM element
  * @returns {('phone'|'contact:phone')}
@@ -95,7 +94,7 @@ export function keyToRemove(key1, key2) {
 }
 
 /**
- * Checks if a change is only to the formatting or adding a country code and 
+ * Checks if a change is only to the formatting or adding a country code and
  * so can be safely made automatically.
  * @param {string} originalNumberStr - The original OSM tag
  * @param {string} newNumberStr - The suggested fix
@@ -107,10 +106,9 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
 
     // Digits, spaces, plus, dash and hyphens and invisible spacing characters
     // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
-    const SAFE_CHARACTER_REGEX =
-        DIN_FORMAT_COUNTRIES.includes(countryCode)
-            ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/
-            : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/;
+    const SAFE_CHARACTER_REGEX = DIN_FORMAT_COUNTRIES.includes(countryCode)
+        ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/
+        : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/;
 
     if (!SAFE_CHARACTER_REGEX.test(originalNumberStr)) return false;
 
@@ -128,12 +126,12 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
         if (
             // Toll free numbers in all of NANP are parsed as US
             // It is not possible to tell the country from the phone number in this case
-            NANP_COUNTRY_CODES.includes(countryCode)
-            && parsedNew.isValid()
-            && NON_STANDARD_COST_TYPES.includes(parsedNew.getType())
-            && parsedNew.country === 'US'
+            NANP_COUNTRY_CODES.includes(countryCode) &&
+            parsedNew.isValid() &&
+            NON_STANDARD_COST_TYPES.includes(parsedNew.getType()) &&
+            parsedNew.country === 'US'
         ) {
-            return true
+            return true;
         }
     } catch (e) {
         // Parsing failed due to an exception
@@ -188,13 +186,13 @@ function getSpacingRegex(countryCode) {
 }
 
 /**
- * Checks if a parsed phone number matches any defined exclusions based on country 
+ * Checks if a parsed phone number matches any defined exclusions based on country
  * code and OSM tags.
  * @param {Object} phoneNumber - The parsed phone number object from libphonenumber-js.
  * @param {string} numberStr - The phone number string to validate.
  * @param {string} countryCode - The country code.
  * @param {Object} osmTags - The OpenStreetMap tags associated with the number.
- * @returns {Object|null} - Returns an object with { isInvalid: false, autoFixable: true, suggestedFix } 
+ * @returns {Object|null} - Returns an object with { isInvalid: false, autoFixable: true, suggestedFix }
  * if an exclusion is matched, otherwise returns null.
  */
 export function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
@@ -210,15 +208,14 @@ export function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
     if (['FR', 'GF', 'GP', 'YT'].includes(countryCode)) {
         // libphonenumbers-js doesn't support the short number check
         // but that would catch emergency numbers which probably shouldn't be mapped anyway
-        const isValidShortNumberFr = (
-            (coreNationalNumber.length === 4 && coreNationalNumber.at(0) === '3')
-            || (coreNationalNumber.length === 4 && coreNationalNumber.at(0) === '1')
-        )
+        const isValidShortNumberFr =
+            (coreNationalNumber.length === 4 && coreNationalNumber.at(0) === '3') ||
+            (coreNationalNumber.length === 4 && coreNationalNumber.at(0) === '1');
         if (isValidShortNumberFr) {
             return {
                 isInvalid: !(normalisedOriginal === coreNationalNumber),
                 autoFixable: true,
-                suggestedFix: coreNationalNumber
+                suggestedFix: coreNationalNumber,
             };
         }
     }
@@ -235,7 +232,7 @@ export function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
                         return {
                             isInvalid: !(normalisedOriginal === coreNationalNumber),
                             autoFixable: true,
-                            suggestedFix: coreNationalNumber
+                            suggestedFix: coreNationalNumber,
                         };
                     }
                 }
@@ -277,7 +274,7 @@ export function getNumberAndExtension(numberStr, countryCode) {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,
                         hasStandardExtension: isHyphen,
-                    }
+                    };
                 }
             } catch (e) {
                 // Parsing failed due to an exception
@@ -293,13 +290,13 @@ export function getNumberAndExtension(numberStr, countryCode) {
                 const mainNumber = parsePhoneNumber(match[1], countryCode);
                 const isHash = match[2].trim() === '#';
                 const extensionDigits = match[3].replace(/[^\d]/, '');
-                
+
                 if (mainNumber.isValid() && extensionDigits) {
                     return {
                         coreNumber: match[1].trim(),
                         extension: extensionDigits,
                         hasStandardExtension: isHash,
-                    }
+                    };
                 }
             } catch (e) {
                 // Parsing failed due to an exception
@@ -334,12 +331,12 @@ function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
         : phoneNumber.format('INTERNATIONAL');
 
     // Append the extension in the standard format (' x{ext}', DIN format or with hash for TW)
-    const extension = originalExt ?
-        (
-            DIN_FORMAT_COUNTRIES.includes(countryCode) ? `-${originalExt}`
-            : countryCode === 'TW' ? `#${originalExt}`
-            : ` x${originalExt}`
-        )
+    const extension = originalExt
+        ? DIN_FORMAT_COUNTRIES.includes(countryCode)
+            ? `-${originalExt}`
+            : countryCode === 'TW'
+              ? `#${originalExt}`
+              : ` x${originalExt}`
         : '';
 
     let result;
@@ -367,13 +364,13 @@ function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
  */
 function fixPolishPrefixedNumber(phoneNumber, countryCode) {
     if (
-        countryCode !== 'PL'
-        || !phoneNumber
-        || phoneNumber.isValid()
-        || !phoneNumber.isPossible()
-        || !phoneNumber.nationalNumber.startsWith('0')
+        countryCode !== 'PL' ||
+        !phoneNumber ||
+        phoneNumber.isValid() ||
+        !phoneNumber.isPossible() ||
+        !phoneNumber.nationalNumber.startsWith('0')
     ) {
-        return phoneNumber
+        return phoneNumber;
     }
     const prefixRemovedNumber = parsePhoneNumber(phoneNumber.nationalNumber.slice(1), countryCode);
     if (phoneNumber.ext) prefixRemovedNumber.setExt(phoneNumber.ext);
@@ -388,7 +385,7 @@ function fixPolishPrefixedNumber(phoneNumber, countryCode) {
  */
 function isPolishPrefixedNumber(phoneNumber, countryCode) {
     // See https://github.com/confusedbuffalo/phone-report/issues/15
-    return (phoneNumber.number !== fixPolishPrefixedNumber(phoneNumber, countryCode).number);
+    return phoneNumber.number !== fixPolishPrefixedNumber(phoneNumber, countryCode).number;
 }
 
 function insertMissingItalianZero(numberStr) {
@@ -402,8 +399,7 @@ function insertMissingItalianZero(numberStr) {
         if (phoneNumber.isValid()) {
             return newNumberStr;
         }
-    }
-    catch (e) {
+    } catch (e) {
         return numberStr;
     }
     return numberStr;
@@ -419,7 +415,7 @@ export function isItalianMissingZeroNumber(phoneNumber, countryCode) {
  * @param {string} urlString The URL string to check.
  * @returns {boolean} True if the host is valid.
  */
-export const isWhatsappUrl = (urlString) => {
+export const isWhatsappUrl = urlString => {
     const validWhatsappHosts = ['wa.me', 'whatsapp.com'];
 
     const fullUrlString = !urlString.includes(':') ? `https://${urlString}` : urlString;
@@ -428,7 +424,7 @@ export const isWhatsappUrl = (urlString) => {
         const url = new URL(fullUrlString);
 
         if (url.protocol === 'whatsapp:') {
-            return true
+            return true;
         }
 
         const host = url.hostname;
@@ -442,7 +438,6 @@ export const isWhatsappUrl = (urlString) => {
             }
             return false;
         });
-
     } catch (e) {
         return false;
     }
@@ -461,14 +456,14 @@ export function getWhatsappNumber(numberStr) {
 
     const parsedUrl = URL.parse(numberStr);
     if (parsedUrl) {
-        isValidWhatsappUrl = isWhatsappUrl(numberStr)
+        isValidWhatsappUrl = isWhatsappUrl(numberStr);
         const pathname = parsedUrl.pathname;
 
         if (!isValidWhatsappUrl) {
             return {
                 cleanNumberStr: cleanNumberStr,
-                validNonNumber: isValidWhatsappUrl
-            }
+                validNonNumber: isValidWhatsappUrl,
+            };
         }
         if (parsedUrl.searchParams?.get('phone')) {
             cleanNumberStr = parsedUrl.searchParams.get('phone');
@@ -476,12 +471,11 @@ export function getWhatsappNumber(numberStr) {
                 cleanNumberStr = '+' + cleanNumberStr.trimStart();
             }
             isValidWhatsappUrl = false;
-        }
-        else if (
-            parsedUrl.hostname.endsWith('wa.me')
-            && !pathname.startsWith('/qr')
-            && !pathname.startsWith('/message')
-            && !pathname.startsWith('/c')
+        } else if (
+            parsedUrl.hostname.endsWith('wa.me') &&
+            !pathname.startsWith('/qr') &&
+            !pathname.startsWith('/message') &&
+            !pathname.startsWith('/c')
         ) {
             cleanNumberStr = pathname.startsWith('/') ? pathname.slice(1) : pathname;
             isValidWhatsappUrl = false;
@@ -489,8 +483,8 @@ export function getWhatsappNumber(numberStr) {
     }
     return {
         cleanNumberStr: cleanNumberStr,
-        validNonNumber: isValidWhatsappUrl
-    }
+        validNonNumber: isValidWhatsappUrl,
+    };
 }
 
 /**
@@ -499,21 +493,22 @@ export function getWhatsappNumber(numberStr) {
  * @returns {string} - The converted numeric string (e.g., "1-800-3569377")
  */
 export function convertPhonewordToDigits(phoneword) {
+    // prettier-ignore
     const mapping = {
-      'A': '2', 'B': '2', 'C': '2',
-      'D': '3', 'E': '3', 'F': '3',
-      'G': '4', 'H': '4', 'I': '4',
-      'J': '5', 'K': '5', 'L': '5',
-      'M': '6', 'N': '6', 'O': '6',
-      'P': '7', 'Q': '7', 'R': '7', 'S': '7',
-      'T': '8', 'U': '8', 'V': '8',
-      'W': '9', 'X': '9', 'Y': '9', 'Z': '9'
+        'A': '2', 'B': '2', 'C': '2',
+        'D': '3', 'E': '3', 'F': '3',
+        'G': '4', 'H': '4', 'I': '4',
+        'J': '5', 'K': '5', 'L': '5',
+        'M': '6', 'N': '6', 'O': '6',
+        'P': '7', 'Q': '7', 'R': '7', 'S': '7',
+        'T': '8', 'U': '8', 'V': '8',
+        'W': '9', 'X': '9', 'Y': '9', 'Z': '9',
     };
-  
-    return phoneword.toUpperCase().replace(/[A-Z]/g, (char) => {
-      return mapping[char] || char;
+
+    return phoneword.toUpperCase().replace(/[A-Z]/g, char => {
+        return mapping[char] || char;
     });
-  }
+}
 
 /**
  * Validates a single phone number string using libphonenumber-js.
@@ -524,9 +519,13 @@ export function convertPhonewordToDigits(phoneword) {
  * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean, validPhonewords: boolean, foreign: string|null}}
  */
 export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
-    let suggestedFix = null, phoneNumber = null, foreign = null;
+    let suggestedFix = null,
+        phoneNumber = null,
+        foreign = null;
     let autoFixable = true;
-    let isInvalid = false, typeMismatch = false, validPhonewords = false;
+    let isInvalid = false,
+        typeMismatch = false,
+        validPhonewords = false;
 
     const spacingRegex = getSpacingRegex(countryCode);
 
@@ -551,7 +550,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         const { cleanNumberStr, validNonNumber } = getWhatsappNumber(numberStr);
         if (validNonNumber) {
             return {
-                isInvalid: false
+                isInvalid: false,
             };
         } else if (numberStr !== cleanNumberStr) {
             numberStr = cleanNumberStr;
@@ -562,9 +561,13 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    const invalidSpacingRegex = countryCode === 'TW' ? INVALID_SPACING_CHARACTERS_REGEX_TW : INVALID_SPACING_CHARACTERS_REGEX
+    const invalidSpacingRegex =
+        countryCode === 'TW' ? INVALID_SPACING_CHARACTERS_REGEX_TW : INVALID_SPACING_CHARACTERS_REGEX;
 
-    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(numberStr.replace(invalidSpacingRegex, " "), countryCode);
+    const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(
+        numberStr.replace(invalidSpacingRegex, ' '),
+        countryCode
+    );
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
 
     try {
@@ -591,11 +594,10 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber) {
-            const tollFreeAsInternational = (
-                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
-                || numberStr.includes('+')
-                || numberStr.startsWith('00')
-            );
+            const tollFreeAsInternational =
+                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode) ||
+                numberStr.includes('+') ||
+                numberStr.startsWith('00');
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
         }
 
@@ -638,10 +640,14 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
             // Toll free numbers in all of NANP are parsed as US
             // It is not possible to tell the country from the phone number in this case
-            const isNanpTollFree = NANP_COUNTRY_CODES.includes(countryCode)
-                && NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())
-                && phoneNumber.country === 'US'
-            foreign = (phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() && !isNanpTollFree) ? phoneNumber.country : null;
+            const isNanpTollFree =
+                NANP_COUNTRY_CODES.includes(countryCode) &&
+                NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) &&
+                phoneNumber.country === 'US';
+            foreign =
+                phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() && !isNanpTollFree
+                    ? phoneNumber.country
+                    : null;
         } else {
             // The number is fundamentally invalid (e.g., too few digits)
             phoneNumber = null;
@@ -660,11 +666,11 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     // so it is not clear what the correct fix should be, whether adding 0 or adding +
     // see https://github.com/confusedbuffalo/phone-report/issues/78 and https://github.com/confusedbuffalo/phone-report/issues/53
     if (
-        isInvalid
-        && autoFixable
-        && countryCode === 'DE'
-        && coreNumber.replace(/[^\d]/g, '').startsWith('49')
-        && !coreNumber.split('49')[0].includes('+')
+        isInvalid &&
+        autoFixable &&
+        countryCode === 'DE' &&
+        coreNumber.replace(/[^\d]/g, '').startsWith('49') &&
+        !coreNumber.split('49')[0].includes('+')
     ) {
         autoFixable = false;
         suggestedFix = null;
@@ -672,7 +678,6 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
 
     return { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords, foreign: foreign };
 }
-
 
 /**
  * Checks if the forward slash character should be considered as a spacing character.
@@ -684,9 +689,8 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
  */
 export function isSlashSpace(tagValue, countryCode, osmTags, tag) {
     const validationResult = processSingleNumber(tagValue, countryCode, osmTags, tag);
-    return (!validationResult.isInvalid || validationResult.autoFixable);
+    return !validationResult.isInvalid || validationResult.autoFixable;
 }
-
 
 /**
  * Expands a phone number string where a slash denotes an alternative suffix.
@@ -716,11 +720,10 @@ function expandSlashEnding(tagValue, countryCode, osmTags, tag) {
     const altValidationResult = processSingleNumber(altNumber, countryCode, osmTags, tag);
 
     if (!altValidationResult.isInvalid || altValidationResult.autoFixable) {
-        return [parts[0], altNumber]
+        return [parts[0], altNumber];
     }
     return null;
 }
-
 
 /**
  * Validates a whole phone number tag using libphonenumber-js.
@@ -754,13 +757,12 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     const splitRegex = slashAsSpace ? UNIVERSAL_SPLIT_REGEX_DIN : UNIVERSAL_SPLIT_REGEX;
 
     // Single-step splitting: The regex finds all separators and removes them.
-    const numberList = tag === 'contact:whatsapp'
-        ? originalTagValue.split(';')
-        : slashForMultipleEndings
-        ?? originalTagValue.replace('\\;ext=', ' ext ').replace('\\;=ext=', ' ext ').split(splitRegex);
-    const numbers = numberList
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
+    const numberList =
+        tag === 'contact:whatsapp'
+            ? originalTagValue.split(';')
+            : (slashForMultipleEndings ??
+              originalTagValue.replace('\\;ext=', ' ext ').replace('\\;=ext=', ' ext ').split(splitRegex));
+    const numbers = numberList.map(s => s.trim()).filter(s => s.length > 0);
 
     let hasIndividualInvalidNumber = false;
 
@@ -784,24 +786,26 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
 
         // Some editors prompt an initial plus, but some mappers then just put the phone number in using national format, which is invalid
         if (
-            validationResult.isInvalid
-            && !validationResult.autoFixable
-            && numberStr.startsWith('+')
-            && CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS.includes(countryCode)
+            validationResult.isInvalid &&
+            !validationResult.autoFixable &&
+            numberStr.startsWith('+') &&
+            CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS.includes(countryCode)
         ) {
             const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
             const countryCodePrefix = noPlusValidationResult.phoneNumber?.format('INTERNATIONAL').split(' ')[0];
             if (
-                noPlusValidationResult.phoneNumber
-                && noPlusValidationResult.autoFixable
-                && noPlusValidationResult.phoneNumber.country === countryCode
-                && (INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE.includes(countryCode)) || !numberStr.startsWith(countryCodePrefix)
+                (noPlusValidationResult.phoneNumber &&
+                    noPlusValidationResult.autoFixable &&
+                    noPlusValidationResult.phoneNumber.country === countryCode &&
+                    INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE.includes(countryCode)) ||
+                !numberStr.startsWith(countryCodePrefix)
             ) {
                 validationResult = noPlusValidationResult;
             }
         }
 
-        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords, foreign } = validationResult;
+        const { phoneNumber, isInvalid, suggestedFix, autoFixable, typeMismatch, validPhonewords, foreign } =
+            validationResult;
 
         if (phoneNumber) {
             tagValidationResult.validNumbersList.push(phoneNumber);
@@ -847,7 +851,6 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     return tagValidationResult;
 }
 
-
 /**
  * Iterates over the mismatchTypeNumbers Map and updates the suggestedFixes Map.
  * @param {object} item - The item object containing the Maps.
@@ -856,7 +859,6 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
 function processMismatches(item, countryCode) {
     if (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map) {
         for (const [mismatchKey, mismatchValue] of item.mismatchTypeNumbers) {
-
             const tagToUse = phoneTagToUse(item.allTags);
             const existingValue = item.allTags[tagToUse];
             const existingFix = item.suggestedFixes.get(tagToUse);
@@ -867,16 +869,19 @@ function processMismatches(item, countryCode) {
             if (existingFix || existingValue) {
                 const suggested = existingFix ? existingFix : existingValue;
 
-                const validatedSuggested = validateSingleTag(suggested, countryCode, item.allTags, tagToUse)
-                const validatedMismatch = validateSingleTag(mismatchValue, countryCode, item.allTags, tagToUse)
+                const validatedSuggested = validateSingleTag(suggested, countryCode, item.allTags, tagToUse);
+                const validatedMismatch = validateSingleTag(mismatchValue, countryCode, item.allTags, tagToUse);
 
-                const allSuggested = [...validatedSuggested.suggestedNumbersList, ...validatedMismatch.suggestedNumbersList];
+                const allSuggested = [
+                    ...validatedSuggested.suggestedNumbersList,
+                    ...validatedMismatch.suggestedNumbersList,
+                ];
                 const suggestedSet = new Set(allSuggested);
                 const filteredSuggested = Array.from(suggestedSet);
 
                 if (
-                    filteredSuggested.join('; ') === validatedSuggested.suggestedNumbersList.join('; ')
-                    && !item.suggestedFixes[mismatchKey]
+                    filteredSuggested.join('; ') === validatedSuggested.suggestedNumbersList.join('; ') &&
+                    !item.suggestedFixes[mismatchKey]
                 ) {
                     item.hasTypeMismatch = false;
                     item.mismatchTypeNumbers.delete(mismatchKey);
@@ -910,12 +915,12 @@ function processMismatches(item, countryCode) {
 export function isSafeItemEdit(item, countryCode) {
     // Not safe if there are any mismatch type numbers or duplicate numbers
     if (
-        !item.autoFixable
-        || item.hasTypeMismatch
-        || (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map && item.mismatchTypeNumbers.size !== 0)
-        || (item.duplicateNumbers && item.duplicateNumbers instanceof Map && item.duplicateNumbers.size !== 0)
+        !item.autoFixable ||
+        item.hasTypeMismatch ||
+        (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map && item.mismatchTypeNumbers.size !== 0) ||
+        (item.duplicateNumbers && item.duplicateNumbers instanceof Map && item.duplicateNumbers.size !== 0)
     ) {
-        return false
+        return false;
     }
 
     // If sizes are different, there are unpaired items.
@@ -973,7 +978,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
     for await (const element of elementStream) {
         if (!element.properties) continue;
-        
+
         const tags = element.properties;
 
         let item = null;
@@ -993,12 +998,12 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             };
         };
 
-        const getOrCreateItem = (autoFixable) => {
+        const getOrCreateItem = autoFixable => {
             if (item) return item;
 
             const baseItem = createItem();
-            item = { ...baseItem, autoFixable }
-            return item
+            item = { ...baseItem, autoFixable };
+            return item;
         };
 
         const getOrCreateForeignItem = () => {
@@ -1010,7 +1015,6 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 ...baseItem,
                 isForeignItem: true,
                 validForeignNumbers: new Map(),
-
             };
             return foreignItem;
         };
@@ -1039,12 +1043,14 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (uniqueFormattedSet.length < formattedNumbers.length) {
                 tagShouldBeFlaggedForRemoval = true;
                 hasInternalDuplicate = true;
-                suggestedFix = uniqueFormattedSet.map((number) => {
-                    return getFormattedNumber(
-                        parsePhoneNumber(number, baseCountryCode),
-                        !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
-                    );
-                }).join('; ');
+                suggestedFix = uniqueFormattedSet
+                    .map(number => {
+                        return getFormattedNumber(
+                            parsePhoneNumber(number, baseCountryCode),
+                            !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
+                        );
+                    })
+                    .join('; ');
             }
 
             // --- Detect duplicates across tags ---
@@ -1063,7 +1069,8 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 const normalisedMismatch = validationResult.mismatchTypeNumbers.map(number =>
                     number.replace(getSpacingRegex(baseCountryCode), '')
                 );
-                const isMismatchNumber = validationResult.mismatchTypeNumbers && normalisedMismatch.includes(normalisedNumber);
+                const isMismatchNumber =
+                    validationResult.mismatchTypeNumbers && normalisedMismatch.includes(normalisedNumber);
                 if (isMismatchNumber && allNormalisedNumbers.get(normalisedNumber)) {
                     duplicateMismatchCount++;
                 }
@@ -1079,7 +1086,9 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     currentItem.duplicateNumbers.set(tagToRemove, keptTag);
 
                     // Get fixes for tagToRemove and only mark null if there are no other values
-                    const removeTagToValidate = currentItem.suggestedFixes.get(tagToRemove) ? currentItem.suggestedFixes.get(tagToRemove) : tags[tagToRemove];
+                    const removeTagToValidate = currentItem.suggestedFixes.get(tagToRemove)
+                        ? currentItem.suggestedFixes.get(tagToRemove)
+                        : tags[tagToRemove];
                     const validatedRemoved = validateSingleTag(removeTagToValidate, baseCountryCode, tags, tagToRemove);
                     if (validatedRemoved.suggestedNumbersList) {
                         const normalisedRemoved = validatedRemoved.suggestedNumbersList.map(number =>
@@ -1088,7 +1097,12 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         let removedValue = null;
                         const deduplicatedRemoved = normalisedRemoved.filter(item => item !== normalisedNumber);
                         if (deduplicatedRemoved) {
-                            const dedupValidatedRemoved = validateSingleTag(deduplicatedRemoved.join('; '), baseCountryCode, tags, tagToRemove);
+                            const dedupValidatedRemoved = validateSingleTag(
+                                deduplicatedRemoved.join('; '),
+                                baseCountryCode,
+                                tags,
+                                tagToRemove
+                            );
                             removedValue = dedupValidatedRemoved.suggestedNumbersList.join('; ');
                         }
                         if (removedValue && !hasInternalDuplicate) {
@@ -1105,12 +1119,14 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                     if (validatedKept.suggestedNumbersList) {
                         const formattedKeptNumbers = validatedKept.validNumbersList.map(n => n.format('INTERNATIONAL'));
                         const uniqueFormattedKeptSet = [...new Set(formattedKeptNumbers)];
-                        const validatedKeptValue = uniqueFormattedKeptSet.map((number) => {
-                            return getFormattedNumber(
-                                parsePhoneNumber(number, baseCountryCode),
-                                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
-                            );
-                        }).join('; ');
+                        const validatedKeptValue = uniqueFormattedKeptSet
+                            .map(number => {
+                                return getFormattedNumber(
+                                    parsePhoneNumber(number, baseCountryCode),
+                                    !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
+                                );
+                            })
+                            .join('; ');
 
                         if (validatedKeptValue !== tags[keptTag]) {
                             currentItem.suggestedFixes.set(keptTag, validatedKeptValue);
@@ -1170,11 +1186,13 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 }
 
                 if (
-                    validationResult.validPhonewords
-                    && autoFixable && !tagShouldBeFlaggedForRemoval && validationResult.suggestedNumbersList.length > 0
+                    validationResult.validPhonewords &&
+                    autoFixable &&
+                    !tagShouldBeFlaggedForRemoval &&
+                    validationResult.suggestedNumbersList.length > 0
                 ) {
-                    currentItem.invalidNumbers.set('phone:mnemonic', null)
-                    currentItem.suggestedFixes.set('phone:mnemonic', phoneTagValue)
+                    currentItem.invalidNumbers.set('phone:mnemonic', null);
+                    currentItem.suggestedFixes.set('phone:mnemonic', phoneTagValue);
                 }
 
                 currentItem.autoFixable = currentItem.autoFixable && autoFixable;
@@ -1198,20 +1216,22 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             const finalItem = {
                 ...item,
-                safeEdit: safeEdit
+                safeEdit: safeEdit,
             };
-            
+
             if (!isFirstItem) {
                 fileStream.write(',\n');
             }
-            
+
             // Convert Maps and nested Maps
-            fileStream.write(JSON.stringify(finalItem, (key, value) => {
-                if (value instanceof Map) {
-                    return Object.fromEntries(value);
-                }
-                return value;
-            }));
+            fileStream.write(
+                JSON.stringify(finalItem, (key, value) => {
+                    if (value instanceof Map) {
+                        return Object.fromEntries(value);
+                    }
+                    return value;
+                })
+            );
             isFirstItem = false;
         }
 
@@ -1219,14 +1239,16 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (!isFirstItem) {
                 fileStream.write(',\n');
             }
-            
+
             // Convert Maps and nested Maps
-            fileStream.write(JSON.stringify(foreignItem, (key, value) => {
-                if (value instanceof Map) {
-                    return Object.fromEntries(value);
-                }
-                return value;
-            }));
+            fileStream.write(
+                JSON.stringify(foreignItem, (key, value) => {
+                    if (value instanceof Map) {
+                        return Object.fromEntries(value);
+                    }
+                    return value;
+                })
+            );
             isFirstItem = false;
         }
     }
@@ -1238,5 +1260,3 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
     return { totalCount, invalidCount, autoFixableCount, foreignCount, safeEditCount };
 }
-
-

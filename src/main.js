@@ -6,12 +6,21 @@ import yaml from 'js-yaml';
 import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from 'url';
-import { COUNTRIES, OSM_DIR, HISTORY_DIR, IS_TEST_MODE, REPORT_TYPES, BUILD_DIR, COUNT_TYPES, VALIDATORS } from './constants.js';
+import {
+    COUNTRIES,
+    OSM_DIR,
+    HISTORY_DIR,
+    IS_TEST_MODE,
+    REPORT_TYPES,
+    BUILD_DIR,
+    COUNT_TYPES,
+    VALIDATORS,
+} from './constants.js';
 import { splitPbf, getOsmTimestamp, downloadPbf, filterPbf } from './osm-download.js';
 import { safeName } from './data-processor.js';
-import { generateCountryIndexHtml } from './html-country.js'
-import { generateMainIndexHtml } from './html-index.js'
-import { generateHtmlReport } from './html-report.js'
+import { generateCountryIndexHtml } from './html-country.js';
+import { generateMainIndexHtml } from './html-index.js';
+import { generateHtmlReport } from './html-report.js';
 import { getTranslations } from './i18n.js';
 import { generateSafeEditFile } from './osm-safe-edits.js';
 import { minify } from 'terser';
@@ -44,7 +53,8 @@ function createClientTranslations(fullTranslations, fullDefaultTranslations) {
 }
 
 async function downloadAndParseOfficialLanguages() {
-    const url = 'https://raw.githubusercontent.com/streetcomplete/countrymetadata/refs/heads/master/data/officialLanguages.yml';
+    const url =
+        'https://raw.githubusercontent.com/streetcomplete/countrymetadata/refs/heads/master/data/officialLanguages.yml';
     try {
         const response = await axios.get(url);
         const rawYaml = response.data;
@@ -79,7 +89,8 @@ function saveCountryHistory(reportType, originalCountryStats) {
     const needsFallback = allDivisions.some(div => div.totalCount === 0);
 
     if (needsFallback) {
-        const files = fs.readdirSync(historyCountryDir)
+        const files = fs
+            .readdirSync(historyCountryDir)
             .filter(f => f.endsWith('.json') && f !== `${today}.json`)
             .sort((a, b) => b.localeCompare(a));
 
@@ -89,20 +100,24 @@ function saveCountryHistory(reportType, originalCountryStats) {
                 const lastHistory = JSON.parse(fs.readFileSync(lastHistoryPath, 'utf8'));
 
                 const historyMap = new Map();
-                Object.values(lastHistory.groupedDivisionStats).flat().forEach(div => {
-                    const compositeKey = `${div.divisionSlug}|${div.slug}`;
-                    historyMap.set(compositeKey, div);
-                });
+                Object.values(lastHistory.groupedDivisionStats)
+                    .flat()
+                    .forEach(div => {
+                        const compositeKey = `${div.divisionSlug}|${div.slug}`;
+                        historyMap.set(compositeKey, div);
+                    });
 
                 for (const groupName in countryStats.groupedDivisionStats) {
-                    countryStats.groupedDivisionStats[groupName] = countryStats.groupedDivisionStats[groupName].map(div => {
-                        const compositeKey = `${div.divisionSlug}|${div.slug}`;
-                        if (div.totalCount === 0 && historyMap.has(compositeKey)) {
-                            console.log(`Falling back to previous history for ${div.name}`);
-                            return { ...historyMap.get(compositeKey) };
+                    countryStats.groupedDivisionStats[groupName] = countryStats.groupedDivisionStats[groupName].map(
+                        div => {
+                            const compositeKey = `${div.divisionSlug}|${div.slug}`;
+                            if (div.totalCount === 0 && historyMap.has(compositeKey)) {
+                                console.log(`Falling back to previous history for ${div.name}`);
+                                return { ...historyMap.get(compositeKey) };
+                            }
+                            return div;
                         }
-                        return div;
-                    });
+                    );
                 }
             } catch (err) {
                 console.error(`Failed to read history file for fallback: ${err.message}`);
@@ -116,12 +131,14 @@ function saveCountryHistory(reportType, originalCountryStats) {
     let totalSafeEdit = 0;
     let totalCount = 0;
 
-    Object.values(countryStats.groupedDivisionStats).flat().forEach(div => {
-        totalInvalid += (div.invalidCount || 0);
-        totalAutoFixable += (div.autoFixableCount || 0);
-        totalSafeEdit += (div.safeEditCount || 0);
-        totalCount += (div.totalCount || 0);
-    });
+    Object.values(countryStats.groupedDivisionStats)
+        .flat()
+        .forEach(div => {
+            totalInvalid += div.invalidCount || 0;
+            totalAutoFixable += div.autoFixableCount || 0;
+            totalSafeEdit += div.safeEditCount || 0;
+            totalCount += div.totalCount || 0;
+        });
 
     countryStats.invalidCount = totalInvalid;
     countryStats.autoFixableCount = totalAutoFixable;
@@ -153,7 +170,7 @@ function getSubdivisions(countryData, divisionName) {
         return {
             name: name,
             id: value,
-            countryCode: countryData.countryCode
+            countryCode: countryData.countryCode,
         };
     };
 
@@ -205,7 +222,7 @@ async function* createGeoJsonElementStream(filePath) {
                 this.push(this._buffer.trim());
             }
             callback();
-        }
+        },
     });
 
     const pipeline = fileStream.pipe(rsSplitter);
@@ -302,13 +319,13 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     const stats = {
         ...baseStats,
-        ...dynamicCounts
+        ...dynamicCounts,
     };
 
     fs.unlinkSync(geojsonPath);
 
     const countryDir = path.join(BUILD_DIR[reportType], safeName(countryName));
-    const divisionDir = path.join(countryDir, stats.divisionSlug)
+    const divisionDir = path.join(countryDir, stats.divisionSlug);
     if (!fs.existsSync(divisionDir)) {
         fs.mkdirSync(divisionDir, { recursive: true });
     }
@@ -316,7 +333,15 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
     if (reportType === 'phone') {
         await generateSafeEditFile(countryName, stats, tmpFilePath);
     }
-    await generateHtmlReport(reportType, countryData, stats, tmpFilePath, clientTranslations, countryData.safeAutoFixBotEnabled, dataTimestamp);
+    await generateHtmlReport(
+        reportType,
+        countryData,
+        stats,
+        tmpFilePath,
+        clientTranslations,
+        countryData.safeAutoFixBotEnabled,
+        dataTimestamp
+    );
 
     fs.unlinkSync(tmpFilePath);
 
@@ -346,24 +371,25 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
     const divisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
     const divisionTotals = Object.fromEntries(
         Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
-            return [
-                reportType,
-                Object.fromEntries(countTypes.map(t => [t, 0]))
-            ];
+            return [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))];
         })
     );
 
     for (const subdivision of subdivisions) {
         for (const reportType of REPORT_TYPES) {
-            const reportStats = await processSubdivision(subdivision, reportType, countryData, rawDivisionName, clientTranslations);
+            const reportStats = await processSubdivision(
+                subdivision,
+                reportType,
+                countryData,
+                rawDivisionName,
+                clientTranslations
+            );
             divisionStats[reportType].push(reportStats);
             Object.keys(divisionTotals[reportType]).forEach(countType => {
                 divisionTotals[reportType][countType] += reportStats[countType];
             });
         }
     }
-
-    console.log('division stats', divisionStats, divisionTotals)
 
     return { divisionStats, divisionTotals };
 }
@@ -382,9 +408,7 @@ async function processCountry(countryData) {
     // TODO: serve full translations server-side
     const clientTranslations = createClientTranslations(fullTranslations, fullDefaultTranslations);
 
-    const divisions = countryData.divisions
-        ? { [countryData.name]: countryData.divisions }
-        : countryData.divisionMap;
+    const divisions = countryData.divisions ? { [countryData.name]: countryData.divisions } : countryData.divisionMap;
 
     if (countryData.pbfUrl) {
         const tmpPbfFilePath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
@@ -396,7 +420,7 @@ async function processCountry(countryData) {
             await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
             await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
             fs.rmSync(tmpReportPbfFilePath, { force: true });
-        };
+        }
 
         fs.rmSync(tmpPbfFilePath, { force: true });
 
@@ -406,14 +430,17 @@ async function processCountry(countryData) {
 
     for (const [groupName, groupDivisions] of Object.entries(divisions)) {
         for (const [subName, subData] of Object.entries(groupDivisions)) {
-            const pbfUrl = (typeof subData === 'object') ? subData.pbfUrl : null;
+            const pbfUrl = typeof subData === 'object' ? subData.pbfUrl : null;
             if (pbfUrl) {
                 const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
 
                 await downloadPbf(pbfUrl, subPbfFilePath);
 
                 REPORT_TYPES.forEach(async reportType => {
-                    const tmpReportPbfFilePath = path.join(process.cwd(), `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`);
+                    const tmpReportPbfFilePath = path.join(
+                        process.cwd(),
+                        `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
+                    );
                     await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
                     await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
                     fs.rmSync(tmpReportPbfFilePath, { force: true });
@@ -446,15 +473,16 @@ async function processCountry(countryData) {
 
     const totals = Object.fromEntries(
         Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
-            return [
-                reportType,
-                Object.fromEntries(countTypes.map(t => [t, 0]))
-            ];
+            return [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))];
         })
     );
 
     for (const rawDivisionName in divisions) {
-        const { divisionStats, divisionTotals } = await processDivision(rawDivisionName, countryData, clientTranslations);
+        const { divisionStats, divisionTotals } = await processDivision(
+            rawDivisionName,
+            countryData,
+            clientTranslations
+        );
 
         REPORT_TYPES.forEach(reportType => {
             groupedDivisionStats[reportType][rawDivisionName] = divisionStats[reportType];
@@ -465,14 +493,14 @@ async function processCountry(countryData) {
         });
     }
 
-    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp)
+    const parsedTimestamp = parseOsmTimestamp(countryData.timestamp);
     const dataTimestamp = parsedTimestamp ? parsedTimestamp : new Date();
 
     const baseCountryStats = {
         name: countryName,
         slug: safeName(countryName),
         locale: locale,
-        timestamp: dataTimestamp
+        timestamp: dataTimestamp,
     };
 
     const countryStats = {};
@@ -520,7 +548,7 @@ async function minifyJsFiles(directory) {
 
                 const result = await minify(code, {
                     compress: true,
-                    mangle: true
+                    mangle: true,
                 });
 
                 if (result.code) {
@@ -559,7 +587,7 @@ async function main() {
             console.error('Error copying files:', err);
         }
 
-        const VENDOR_DIR = path.join(dir, 'vendor')
+        const VENDOR_DIR = path.join(dir, 'vendor');
         if (!fs.existsSync(VENDOR_DIR)) {
             fs.mkdirSync(VENDOR_DIR);
         }
@@ -604,7 +632,7 @@ async function main() {
 
     REPORT_TYPES.forEach(async reportType => {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);
-    })
+    });
 
     console.log('Full build process completed successfully.');
 }

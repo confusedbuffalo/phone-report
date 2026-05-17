@@ -1,9 +1,11 @@
-import { addNote, openInJosm, login, logout, checkAndSubmit } from "./report-osm-edit.js";
-import { addNoteBtn, commentBox, editsModal, noteCancelBtn, noteCloseBtnBottom, noteModal, settingsMenu, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, pageSize, currentPage, sortKey, undoData, appState } from "./report-state.js";
-import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from "./report-storage.js";
-import { changePage, getItemWithIndex, handleSort } from "./report-ui-actions.js";
-import { createListItem, createSaveRow, decodeHtmlEntities } from "./report-ui-components.js";
-import { getFilterType, getSortedItems } from "./report-utils.js";
+import { addNote, openInJosm, login, logout, checkAndSubmit } from './report-osm-edit.js';
+// prettier-ignore
+import { addNoteBtn, commentBox, editsModal, noteCancelBtn, noteCloseBtnBottom, noteModal, settingsMenu, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, uploadModal, pageSize, currentPage, sortKey, undoData, appState } from './report-state.js';
+// prettier-ignore
+import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from './report-storage.js';
+import { changePage, getItemWithIndex, handleSort } from './report-ui-actions.js';
+import { createListItem, createSaveRow, decodeHtmlEntities } from './report-ui-components.js';
+import { getFilterType, getSortedItems } from './report-utils.js';
 
 let firstLoad = true;
 
@@ -101,7 +103,7 @@ export function handleGlobalClicks(event) {
 }
 
 // Add event listener to prevent new lines and handle submission
-commentBox.addEventListener('keydown', (event) => {
+commentBox.addEventListener('keydown', event => {
     if (event.key === 'Enter') {
         // Prevent the default action (inserting a new line)
         event.preventDefault();
@@ -120,14 +122,14 @@ commentBox.addEventListener('keydown', (event) => {
  */
 export function renderNumbers() {
     if (!appState.reportData) {
-        console.error("Attempted to render numbers before data was loaded.");
+        console.error('Attempted to render numbers before data was loaded.');
         return;
     }
-    const fixableContainer = document.getElementById("fixableSection");
-    const invalidContainer = document.getElementById("invalidSection");
-    const foreignContainer = document.getElementById("foreignSection");
-    const missingContainer = document.getElementById("missingSection");
-    const noInvalidContainer = document.getElementById("noInvalidSection");
+    const fixableContainer = document.getElementById('fixableSection');
+    const invalidContainer = document.getElementById('invalidSection');
+    const foreignContainer = document.getElementById('foreignSection');
+    const missingContainer = document.getElementById('missingSection');
+    const noInvalidContainer = document.getElementById('noInvalidSection');
 
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
 
@@ -158,8 +160,8 @@ export function renderNumbers() {
         fixable: getSortedItems('fixable'),
         invalid: getSortedItems('invalid'),
         foreign: getSortedItems('foreign'),
-        missing: getSortedItems('missing')
-    }
+        missing: getSortedItems('missing'),
+    };
 
     const anyFixable = sortedItems.fixable.length > 0;
     const anyInvalid = sortedItems.invalid.length > 0;
@@ -176,36 +178,48 @@ export function renderNumbers() {
     if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
         if (['phone', 'hours'].includes(reportType) && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
-                "fixableSection",
+                'fixableSection',
                 sortedItems.fixable,
                 translate(reportType === 'phone' ? 'fixableNumbersHeader' : 'fixableHoursHeader'),
-                translate(reportType === 'phone' ? 'fixableNumbersDescription': 'fixableHoursDescription'),
+                translate(reportType === 'phone' ? 'fixableNumbersDescription' : 'fixableHoursDescription'),
                 currentPage['fixable'],
-                (page) => currentPage['fixable'] = page,
+                page => (currentPage['fixable'] = page),
                 'fixable'
             );
         }
 
         if (anyInvalid || (reportType === 'name' && editCount.invalid > 0)) {
             renderPaginatedSection(
-                "invalidSection",
+                'invalidSection',
                 sortedItems.invalid,
-                translate(reportType === 'phone' ? 'invalidNumbersHeader' : reportType === 'name' ? 'incompleteNames' : 'invalidHours'),
-                translate(reportType === 'phone' ? 'invalidNumbersDescription' : reportType === 'name' ? 'incompleteNamesDescription' : 'invalidHoursDescription'),
+                translate(
+                    reportType === 'phone'
+                        ? 'invalidNumbersHeader'
+                        : reportType === 'name'
+                          ? 'incompleteNames'
+                          : 'invalidHours'
+                ),
+                translate(
+                    reportType === 'phone'
+                        ? 'invalidNumbersDescription'
+                        : reportType === 'name'
+                          ? 'incompleteNamesDescription'
+                          : 'invalidHoursDescription'
+                ),
                 currentPage['invalid'],
-                (page) => currentPage['invalid'] = page,
+                page => (currentPage['invalid'] = page),
                 'invalid'
             );
         }
 
         if (reportType === 'name' && (anyMissing || editCount.missing > 0)) {
             renderPaginatedSection(
-                "missingSection",
+                'missingSection',
                 sortedItems.missing,
                 translate('missingNames'),
                 translate('missingNamesDescription'),
                 currentPage['missing'],
-                (page) => currentPage['missing'] = page,
+                page => (currentPage['missing'] = page),
                 'missing'
             );
         }
@@ -215,7 +229,7 @@ export function renderNumbers() {
 
             saveRow.innerHTML = `<div class="page-sort-card"><div class="save-sort-container">
                 ${createSaveRow()}
-                </div></div>`
+                </div></div>`;
         }
     } else {
         // No invalid items found at all
@@ -227,12 +241,12 @@ export function renderNumbers() {
     // Always render foreign items on phone report
     if (reportType === 'phone' && anyForeign) {
         renderPaginatedSection(
-            "foreignSection",
+            'foreignSection',
             sortedItems.foreign,
             translate('foreignNumbersHeader'),
             translate('foreignNumbersDescription'),
             currentPage['foreign'],
-            (page) => currentPage['foreign'] = page,
+            page => (currentPage['foreign'] = page),
             'foreign'
         );
     }
@@ -251,7 +265,7 @@ export function renderNumbers() {
  * @param {string} descriptionStr - The description text.
  * @param {number} currentPage - The current page number for this section.
  * @param {function} setCurrentPageFn - Function to call to update the current page in the global state.
- * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to render for (used for unique IDs). 
+ * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to render for (used for unique IDs).
  */
 function renderPaginatedSection(
     containerId,
@@ -279,15 +293,17 @@ function renderPaginatedSection(
 
     const currentSortKey = sortKey[filterType];
 
-    const getSortStyle = (key) => {
+    const getSortStyle = key => {
         if (currentSortKey === key) {
-            return 'sort-btn-style-active'
+            return 'sort-btn-style-active';
         } else {
-            return 'sort-btn-style-inactive'
+            return 'sort-btn-style-inactive';
         }
     };
 
-    const pageControls = totalItems > pageSize ? `
+    const pageControls =
+        totalItems > pageSize
+            ? `
         <div class="page-btns-container">
             <button id="prevPage${filterType}" data-action="page" data-page-change="-1" data-section="${filterType}"
                     class="page-btn
@@ -304,7 +320,8 @@ function renderPaginatedSection(
                     ${currentPage >= totalPages ? 'disabled' : ''}>
                     ${translate('next')}
             </button>
-        </div>` : '<div></div>';
+        </div>`
+            : '<div></div>';
 
     const saveRow = createSaveRow();
 
@@ -315,32 +332,35 @@ function renderPaginatedSection(
             { style: 'name', label: 'name' },
             { style: 'fixable', label: 'suggestedFix' },
             { style: 'invalid', label: 'invalidNumber' },
-        ]
+        ];
     } else if (reportType === 'phone' && filterType === 'foreign') {
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'date', label: 'date' },
             { style: 'foreign', label: 'phoneNumber' },
-        ]
-    } else if (reportType === 'phone') { //invalid phone
+        ];
+    } else if (reportType === 'phone') {
+        //invalid phone
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'date', label: 'date' },
             { style: 'invalid', label: 'invalidNumber' },
-        ]
+        ];
     } else if (reportType === 'hours' && filterType === 'fixable') {
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'fixable', label: 'suggestedFix' },
             { style: 'invalid', label: 'invalidHours' },
-        ]
-    } else if (reportType === 'hours') { // invalid hours
+        ];
+    } else if (reportType === 'hours') {
+        // invalid hours
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'date', label: 'date' },
             { style: 'invalid', label: 'invalidHours' },
-        ]
-    } else { // name
+        ];
+    } else {
+        // name
         sortButtonLayout = [
             { style: 'name', label: 'name' },
             { style: 'date', label: 'date' },
@@ -348,11 +368,14 @@ function renderPaginatedSection(
     }
 
     const sortControlContainer = sortButtonLayout
-        .map(row => `
+        .map(
+            row => `
             <button data-action="sort" data-section="${filterType}" data-sort-key="${row.style}"
                 class="sort-btn sort-btn-style ${getSortStyle(row.style)}">
                 ${translate(row.label)}
-            </button>`).join('');
+            </button>`
+        )
+        .join('');
 
     const pageAndSortControls = `
         ${pageControls}
@@ -360,18 +383,21 @@ function renderPaginatedSection(
             <span class="sort-label">${translate('sortBy')}</span>
             ${sortButtonLayout.length === 2 ? '<span></span>' : ''}
             ${sortControlContainer}
-        </div>`
+        </div>`;
 
     // Extra space on name report since save row is separate and sticky
     const paginationSortCard = `
         <div class="page-sort-card ${reportType === 'name' ? 'top-24' : ''}">
-            ${filterType === 'fixable' ? `
+            ${
+                filterType === 'fixable'
+                    ? `
                 <div class="save-sort-container">
                     <div>${saveRow}</div>
                     <div class="page-sort-controls">${pageAndSortControls}</div>
                 </div>
                 `
-            : pageAndSortControls}
+                    : pageAndSortControls
+            }
         </div>
     `;
 
@@ -527,11 +553,10 @@ export function openNoteModal(item) {
     let noteComment;
 
     if (reportType === 'phone') {
-        const invalidWithoutFix = Object.entries(item.invalidNumbers)
-            .filter(([key]) => {
-                const fix = item.suggestedFixes?.[key];
-                return fix === null || fix === undefined;
-            })
+        const invalidWithoutFix = Object.entries(item.invalidNumbers).filter(([key]) => {
+            const fix = item.suggestedFixes?.[key];
+            return fix === null || fix === undefined;
+        });
 
         const invalidNumbersList = invalidWithoutFix
             .map(([key, number]) => {
@@ -539,9 +564,10 @@ export function openNoteModal(item) {
             })
             .join('\n');
 
-        noteComment = invalidWithoutFix.length > 1
-            ? translate('hasInvalidPlural', { '%n': item.featureTypeName })
-            : translate('hasInvalidSingular', { '%n': item.featureTypeName });
+        noteComment =
+            invalidWithoutFix.length > 1
+                ? translate('hasInvalidPlural', { '%n': item.featureTypeName })
+                : translate('hasInvalidSingular', { '%n': item.featureTypeName });
 
         noteComment += '\n\n';
         noteComment += invalidNumbersList;
@@ -551,19 +577,16 @@ export function openNoteModal(item) {
             : translate('hasMissingName', { '%n': item.featureTypeName });
 
         const namesList = item.fixRows
-            .flatMap(obj =>
-                Object.entries(obj).map(([key, value]) => `${key} = ${value}`)
-            )
+            .flatMap(obj => Object.entries(obj).map(([key, value]) => `${key} = ${value}`))
             .join('\n');
 
         noteComment += '\n\n';
         noteComment += namesList;
     } else if (reportType === 'hours') {
-        const invalidWithoutFix = Object.entries(item.invalidHours)
-            .filter(([key]) => {
-                const fix = item.suggestedFixes?.[key];
-                return fix === null || fix === undefined;
-            })
+        const invalidWithoutFix = Object.entries(item.invalidHours).filter(([key]) => {
+            const fix = item.suggestedFixes?.[key];
+            return fix === null || fix === undefined;
+        });
 
         const invalidHoursList = invalidWithoutFix
             .map(([key, number]) => {
@@ -652,20 +675,20 @@ export function closeEditsModal() {
 }
 
 // Close upload modal when clicking the semi-transparent backdrop
-const handleUploadModalClick = (event) => {
+const handleUploadModalClick = event => {
     if (event.target === uploadModal) {
         closeUploadModal();
     }
 };
 
 // Close note modal when clicking the semi-transparent backdrop
-const handleNoteModalClick = (event) => {
+const handleNoteModalClick = event => {
     if (event.target === noteModal) {
         closeNoteModal();
     }
 };
 
-const handleDocumentKeydown = (event) => {
+const handleDocumentKeydown = event => {
     if (event.key === 'Escape') {
         if (!uploadModal.classList.contains('hidden')) {
             closeUploadModal();
@@ -798,7 +821,9 @@ export function enableSave() {
  */
 function disableSave() {
     const saveBtn = document.getElementById('save-btn');
-    if (saveBtn) { disableGrayBtn(saveBtn) };
+    if (saveBtn) {
+        disableGrayBtn(saveBtn);
+    }
 }
 
 /**
@@ -807,7 +832,9 @@ function disableSave() {
  */
 export function enableUndo() {
     const undoBtn = document.getElementById('undo-btn');
-    if (undoBtn) { enableGrayBtn(undoBtn) };
+    if (undoBtn) {
+        enableGrayBtn(undoBtn);
+    }
 }
 
 /**
@@ -816,7 +843,9 @@ export function enableUndo() {
  */
 export function disableUndo() {
     const undoBtn = document.getElementById('undo-btn');
-    if (undoBtn) { disableGrayBtn(undoBtn) };
+    if (undoBtn) {
+        disableGrayBtn(undoBtn);
+    }
 }
 
 /**
@@ -825,7 +854,9 @@ export function disableUndo() {
  */
 export function enableRedo() {
     const redoBtn = document.getElementById('redo-btn');
-    if (redoBtn) { enableGrayBtn(redoBtn) };
+    if (redoBtn) {
+        enableGrayBtn(redoBtn);
+    }
 }
 
 /**
@@ -834,7 +865,9 @@ export function enableRedo() {
  */
 export function disableRedo() {
     const redoBtn = document.getElementById('redo-btn');
-    if (redoBtn) { disableGrayBtn(redoBtn) };
+    if (redoBtn) {
+        disableGrayBtn(redoBtn);
+    }
 }
 
 /**
@@ -844,7 +877,7 @@ export function disableRedo() {
  */
 function disableGrayBtn(selector) {
     selector.classList.remove('gray-btn-enabled');
-    selector.classList.add('gray-btn-disabled')
+    selector.classList.add('gray-btn-disabled');
     selector.disabled = true;
 }
 
@@ -855,7 +888,7 @@ function disableGrayBtn(selector) {
  */
 function enableGrayBtn(selector) {
     selector.classList.remove('gray-btn-disabled');
-    selector.classList.add('gray-btn-enabled')
+    selector.classList.add('gray-btn-enabled');
     selector.disabled = false;
 }
 
@@ -968,7 +1001,7 @@ export function transitionInsertItem(osmType, osmId) {
         if (!nextListItem) {
             // Change is happening on a different page
             renderNumbers();
-            return
+            return;
         }
 
         nextListItem.insertAdjacentElement('beforebegin', newListItem);
@@ -976,6 +1009,6 @@ export function transitionInsertItem(osmType, osmId) {
 
         animateInItem(newListItem);
     } else {
-        console.error('Target item to insert not found')
+        console.error('Target item to insert not found');
     }
 }

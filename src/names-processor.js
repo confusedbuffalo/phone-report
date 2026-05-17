@@ -58,8 +58,16 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
         if (isInvalid) {
             const langMap = {
                 'BE-BRU': [['fr', 'nl']], // Strict: Only FR - NL
-                'BE-VLG': [['nl', 'fr'], ['fr', 'nl']], // Flexible
-                'BE-WAL': [['fr', 'nl'], ['nl', 'fr'], ['fr', 'de'], ['de', 'fr']] // Flexible
+                'BE-VLG': [
+                    ['nl', 'fr'],
+                    ['fr', 'nl'],
+                ], // Flexible
+                'BE-WAL': [
+                    ['fr', 'nl'],
+                    ['nl', 'fr'],
+                    ['fr', 'de'],
+                    ['de', 'fr'],
+                ], // Flexible
             };
 
             const validPairs = langMap[countryCode] || [];
@@ -89,12 +97,14 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             }
 
             // Convert Maps and nested Maps
-            fileStream.write(JSON.stringify(item, (key, value) => {
-                if (value instanceof Map) {
-                    return Object.fromEntries(value);
-                }
-                return value;
-            }));
+            fileStream.write(
+                JSON.stringify(item, (key, value) => {
+                    if (value instanceof Map) {
+                        return Object.fromEntries(value);
+                    }
+                    return value;
+                })
+            );
             isFirstItem = false;
         }
     }

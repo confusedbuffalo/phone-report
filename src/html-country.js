@@ -14,7 +14,7 @@ import { safeName } from './data-processor.js';
  */
 export async function generateCountryIndexHtml(reportType, countryData) {
     const eta = new Eta({
-        views: path.join(process.cwd(), "src", "templates"),
+        views: path.join(process.cwd(), 'src', 'templates'),
         cache: false,
     });
 
@@ -34,7 +34,7 @@ export async function generateCountryIndexHtml(reportType, countryData) {
         translations: getTranslations(locale),
     };
 
-    const htmlContent = eta.render("country", templateData);
+    const htmlContent = eta.render('country', templateData);
 
     let finalHtml = htmlContent;
 

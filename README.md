@@ -2,7 +2,7 @@
 
 This project generates static websites that report on issues in OpenStreetMap (OSM) data, including invalid phone numbers, invalid opening hours and incomplete names. The goal is to identify and provide an easy way to fix incorrect data in OSM.
 
-The generated site for invalid phone numbers is available at https://confusedbuffalo.github.io/phone-report/, for invalid opening hours at https://head.opening-hours.pages.dev/ and for incomplete names at https://names-report.pages.dev/ and the data  is usually updated once per day.
+The generated site for invalid phone numbers is available at https://confusedbuffalo.github.io/phone-report/, for invalid opening hours at https://head.opening-hours.pages.dev/ and for incomplete names at https://names-report.pages.dev/ and the data is usually updated once per day.
 
 ## How it works
 
@@ -17,19 +17,20 @@ The project fetches data from OSM, validates it and generates static HTML report
 To add a new country to the report, you need to modify [countries.json](/src/data/countries.json). Follow these steps:
 
 1.  **Add a new entry** to the [countries.json](/src/data/countries.json) file. You will need to provide:
-    *   `name`: The name of the country.
-    *   `countryCode`: The two-letter ISO 3166-1 alpha-2 country code (regional ISO 3166-2 codes can be used on a division level).
-    *   `locale`: The locale for formatting and language of the generated pages.
-    *   `pbfUrl`: A url for an OSM pbf file for the country
-        *   Alternatively this can be on a per division basis (like USA), or mixed (like France).
-        *   [bbbike.org](https://download3.bbbike.org/osm/pbf/region/) and [openstreetmap.fr](https://download.openstreetmap.fr/extracts/) have full metadata, [geofabrik.de](https://download.geofabrik.de/) only has timestamps and [geo2day.com](https://geo2day.com/) has no metadata
-    *   `divisions` or `divisionMap`:
-        *   Use `divisions` to specify a map of division names to their OSM relation IDs
-        *   Use `divisionMap` for a list of divisions and subdivisions (like Germany).
+    - `name`: The name of the country.
+    - `countryCode`: The two-letter ISO 3166-1 alpha-2 country code (regional ISO 3166-2 codes can be used on a division level).
+    - `locale`: The locale for formatting and language of the generated pages.
+    - `pbfUrl`: A url for an OSM pbf file for the country
+        - Alternatively this can be on a per division basis (like USA), or mixed (like France).
+        - [bbbike.org](https://download3.bbbike.org/osm/pbf/region/) and [openstreetmap.fr](https://download.openstreetmap.fr/extracts/) have full metadata, [geofabrik.de](https://download.geofabrik.de/) only has timestamps and [geo2day.com](https://geo2day.com/) has no metadata
+    - `divisions` or `divisionMap`:
+        - Use `divisions` to specify a map of division names to their OSM relation IDs
+        - Use `divisionMap` for a list of divisions and subdivisions (like Germany).
 
 2.  **Add translations** (optional): If the country uses a language not already present, add a new JSON file in the `locales/` directory (e.g., `de-DE.json` for German).
 
 ## Bot edit
+
 Some of the fixes can be made without individual review if they are simply removing punctuation or adding the country code. There is an option of an ongoing automated edit which can be enabled on a country-level basis after discussion with the relevant community.
 
 This [wiki page](https://wiki.openstreetmap.org/wiki/Automated_edits/confusedbuffalo/Fix_basic_phone_number_issues) details the process of the bot edit and which elements it would apply to. If you think such an ongoing edit would be useful and accepted in your country then open an issue to suggest it.
@@ -43,20 +44,24 @@ Contributions are welcome! If you have suggestions for improvements or find any 
 To run the project locally and generate the reports, follow these steps:
 
 1.  **Clone the repository:**
+
     ```bash
     git clone https://confusedbuffalo.github.io/phone-report/
     cd phone-report
     ```
 
 2.  **Install dependencies:**
+
     ```bash
     npm install
     ```
 
 3.  **Run the build script:**
+
     ```bash
     npm start
     ```
+
     This will generate the static site in the `public/` directory.
 
 4.  **Run in test mode:**

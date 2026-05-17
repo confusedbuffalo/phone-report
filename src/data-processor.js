@@ -2,7 +2,6 @@ import { pointOnFeature } from '@turf/turf';
 import { getBestPreset, getGeometry } from './preset-matcher.js';
 import { FEATURE_TAGS, HISTORIC_AND_DISUSED_PREFIXES, WEBSITE_TAGS } from './constants.js';
 
-
 /**
  * Converts a country or region name into a 'safe' string (slug) suitable for
  * use as filenames, URLs, or command-line identifiers.
@@ -58,17 +57,17 @@ export function safeName(name) {
 export function isDisused(item) {
     const featureType = getFeatureType(item);
     if (featureType) {
-        return false
+        return false;
     }
 
     for (const prefix of HISTORIC_AND_DISUSED_PREFIXES) {
         for (const tag of FEATURE_TAGS) {
             if (item.allTags[`${prefix}:${tag}`]) {
-                return true
+                return true;
             }
         }
     }
-    return false
+    return false;
 }
 
 /**
@@ -83,7 +82,7 @@ function getFeatureType(item) {
             return item.allTags[tag];
         }
     }
-    return null
+    return null;
 }
 
 /**
@@ -123,13 +122,13 @@ export function getFeatureIcon(item, locale) {
     }
     const geometry = getGeometry(item);
     if (geometry === 'point') {
-        return "iD-icon-point"
+        return 'iD-icon-point';
     } else if (geometry === 'area') {
-        return 'iD-icon-area'
+        return 'iD-icon-area';
     } else if (geometry === 'line') {
-        return 'iD-icon-line'
+        return 'iD-icon-line';
     } else {
-        return 'iD-icon-relation'
+        return 'iD-icon-relation';
     }
 }
 
@@ -145,7 +144,7 @@ export function getRepresentativeLocation(geometry) {
     if (geometry.type === 'Point') {
         return {
             lat: geometry.coordinates[1],
-            lon: geometry.coordinates[0]
+            lon: geometry.coordinates[0],
         };
     }
 
@@ -154,7 +153,7 @@ export function getRepresentativeLocation(geometry) {
 
     return {
         lat: lat,
-        lon: lon
+        lon: lon,
     };
 }
 
@@ -166,8 +165,13 @@ export function getRepresentativeLocation(geometry) {
 export function isArea(geometry) {
     if (!geometry) return false;
     const { type: geometryType, coordinates: c } = geometry;
-    return ['Polygon', 'MultiPolygon'].includes(geometryType)
-        || (geometryType === 'LineString' && c.length > 2 && c[0][0] === c[c.length - 1][0] && c[0][1] === c[c.length - 1][1]);
+    return (
+        ['Polygon', 'MultiPolygon'].includes(geometryType) ||
+        (geometryType === 'LineString' &&
+            c.length > 2 &&
+            c[0][0] === c[c.length - 1][0] &&
+            c[0][1] === c[c.length - 1][1])
+    );
 }
 
 /**
@@ -185,14 +189,14 @@ export function createBaseItem(element) {
 
     const { lat, lon } = getRepresentativeLocation(element.geometry);
     const couldBeArea = isArea(element.geometry);
-    const elementTimestamp = tags["@timestamp"] ? new Date(tags["@timestamp"] * 1000).toISOString() : 0;
+    const elementTimestamp = tags['@timestamp'] ? new Date(tags['@timestamp'] * 1000).toISOString() : 0;
 
     return {
-        type: tags["@type"],
-        id: tags["@id"],
-        user: tags["@user"],
+        type: tags['@type'],
+        id: tags['@id'],
+        user: tags['@user'],
         timestamp: elementTimestamp,
-        changeset: tags["@changeset"],
+        changeset: tags['@changeset'],
         website,
         lat,
         lon,

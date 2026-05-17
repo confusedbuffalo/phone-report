@@ -13,7 +13,6 @@ import {
 // --- Test Suites ---
 
 describe('Phone Diff Helper Functions', () => {
-
     test('normalise should remove all non-digits', () => {
         expect(normalise('+44 (0) 1234-567 890')).toBe('4401234567890');
         expect(normalise('0471 124 380')).toBe('0471124380');
@@ -36,113 +35,111 @@ describe('Phone Diff Helper Functions', () => {
 });
 
 describe('replaceInvisibleChars', () => {
-
     test('should handle an empty string', () => {
-        expect(replaceInvisibleChars("")).toBe("");
+        expect(replaceInvisibleChars('')).toBe('');
     });
 
     test('should return the original string if no invisible characters are present', () => {
-        const text = "123-456-7890";
+        const text = '123-456-7890';
         expect(replaceInvisibleChars(text)).toBe(text);
     });
 
     test('should preserve regular spaces and visible characters', () => {
-        const text = "Hello World 123";
-        expect(replaceInvisibleChars(text)).toBe("Hello World 123");
+        const text = 'Hello World 123';
+        expect(replaceInvisibleChars(text)).toBe('Hello World 123');
     });
 
     // Test for core Zero-Width characters (U+200B, U+200C, U+200D)
     test('should replace Zero Width Space (U+200B) with ␣', () => {
         // "123(ZWSP)456"
-        const input = "123\u200B456";
-        const expected = "123␣456";
+        const input = '123\u200B456';
+        const expected = '123␣456';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace Zero Width Non-Joiner (U+200C) with ␣', () => {
         // "123(ZWNJ)456"
-        const input = "123\u200C456";
-        const expected = "123␣456";
+        const input = '123\u200C456';
+        const expected = '123␣456';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace Zero Width Joiner (U+200D) with ␣', () => {
         // "123(ZWJ)456"
-        const input = "123\u200D456";
-        const expected = "123␣456";
+        const input = '123\u200D456';
+        const expected = '123␣456';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     // Test for Directional Marks (U+200E, U+200F)
     test('should replace Left-to-Right Mark (U+200E) with ␣', () => {
         // "ABC(LRM)DEF"
-        const input = "ABC\u200E DEF";
-        const expected = "ABC␣ DEF";
+        const input = 'ABC\u200E DEF';
+        const expected = 'ABC␣ DEF';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace Right-to-Left Mark (U+200F) with ␣', () => {
         // "GHI(RLM)JKL"
-        const input = "GHI\u200FJKL";
-        const expected = "GHI␣JKL";
+        const input = 'GHI\u200FJKL';
+        const expected = 'GHI␣JKL';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     // Test for Byte Order Mark / ZWNBSP (U+FEFF)
     test('should replace Byte Order Mark (U+FEFF) with ␣', () => {
         // (BOM)START(BOM)END
-        const input = "\uFEFFSTART\uFEFFEND";
-        const expected = "␣START␣END";
+        const input = '\uFEFFSTART\uFEFFEND';
+        const expected = '␣START␣END';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace Soft Hyphen (U+00AD) with ␣', () => {
         // "MNO(SFT)PQR"
-        const input = "MNO\u00ADPQR";
-        const expected = "MNO␣PQR";
+        const input = 'MNO\u00ADPQR';
+        const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace tab character with ␣', () => {
         // "MNO(SFT)PQR"
-        const input = "MNO\tPQR";
-        const expected = "MNO␣PQR";
+        const input = 'MNO\tPQR';
+        const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace thin space character with ␣', () => {
         // "MNO(SFT)PQR"
-        const input = "MNO PQR";
-        const expected = "MNO␣PQR";
+        const input = 'MNO PQR';
+        const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace first strong isolate (U+2068) character with ␣', () => {
         // "MNO(PDI)PQR"
-        const input = "MNO\u2068PQR";
-        const expected = "MNO␣PQR";
+        const input = 'MNO\u2068PQR';
+        const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace pop directional isolate (U+2069) character with ␣', () => {
         // "MNO(PDI)PQR"
-        const input = "MNO\u2069PQR";
-        const expected = "MNO␣PQR";
+        const input = 'MNO\u2069PQR';
+        const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     // Test for multiple characters, including ranges from the pattern
     test('should replace a mixed sequence of invisible characters with multiple ␣ symbols', () => {
         // ZWSP, ZWJ, LRE (U+202A), Invisible Times (U+2062)
-        const input = "A\u200B\u200D\u202A B\u2062C";
-        const expected = "A␣␣␣ B␣C"; // 4 replacements
+        const input = 'A\u200B\u200D\u202A B\u2062C';
+        const expected = 'A␣␣␣ B␣C'; // 4 replacements
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 });
 
-
 describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
-    const originalGood = '+4 12'
+    const originalGood = '+4 12';
     const originalLeadingZero = '012';
     const suggestedLeadingZero = originalGood;
 
@@ -150,16 +147,16 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         { value: '0', removed: true },
         { value: '1', removed: false, added: false },
         { value: '2', removed: false, added: false },
-    ]
+    ];
     const suggestedLeadingZeroDiff = [
         { value: '+', added: true },
         { value: '4', added: true },
         { value: ' ', added: true },
         { value: '1', removed: false, added: false },
         { value: '2', removed: false, added: false },
-    ]
+    ];
 
-    const originalExtraZero = '+4 012'
+    const originalExtraZero = '+4 012';
     const originalExtraZeroDiff = [
         { value: '+', removed: false, added: false },
         { value: '4', removed: false, added: false },
@@ -167,27 +164,27 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
         { value: '0', removed: true },
         { value: '1', removed: false, added: false },
         { value: '2', removed: false, added: false },
-    ]
+    ];
     const suggestedExtraZeroDiff = [
         { value: '+', removed: false, added: false },
         { value: '4', removed: false, added: false },
         { value: ' ', removed: false, added: false },
         { value: '1', removed: false, added: false },
         { value: '2', removed: false, added: false },
-    ]
+    ];
 
     test('basic phone number diff test', () => {
         const result = diffPhoneNumbers(originalLeadingZero, suggestedLeadingZero);
 
-        expect(result.originalDiff).toEqual(originalLeadingZeroDiff)
-        expect(result.suggestedDiff).toEqual(suggestedLeadingZeroDiff)
+        expect(result.originalDiff).toEqual(originalLeadingZeroDiff);
+        expect(result.suggestedDiff).toEqual(suggestedLeadingZeroDiff);
     });
 
     test('basic phone number diff test with leading plus', () => {
         const result = diffPhoneNumbers(originalExtraZero, suggestedLeadingZero);
 
-        expect(result.originalDiff).toEqual(originalExtraZeroDiff)
-        expect(result.suggestedDiff).toEqual(suggestedExtraZeroDiff)
+        expect(result.originalDiff).toEqual(originalExtraZeroDiff);
+        expect(result.suggestedDiff).toEqual(suggestedExtraZeroDiff);
     });
 
     test('should correctly identify prefix addition/removal and formatting changes (0 removal, 32 addition)', () => {
@@ -210,8 +207,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '3', removed: false, added: false },
             { value: '8', removed: false, added: false },
             { value: '0', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: '+32 ' and space after 3 added. Other digits and spaces unchanged.
         const expectedSuggested = [
@@ -231,10 +228,9 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: ' ', added: true },
             { value: '8', removed: false, added: false },
             { value: '0', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
-
 
     test('should correctly handle complex formatting changes (+44 example)', () => {
         const original = '+44 (0) 1234 5678';
@@ -261,8 +257,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '6', removed: false, added: false },
             { value: '7', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Suggested: everything present is unchanged.
         const expectedSuggested = [
@@ -279,8 +275,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '6', removed: false, added: false },
             { value: '7', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should correctly handle US number without country code adding country code (+1- example)', () => {
@@ -301,8 +297,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '4', removed: false, added: false },
             { value: '4', removed: false, added: false },
             { value: '0', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // + and dashes are added
         const expectedSuggested = [
@@ -321,8 +317,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '4', removed: false, added: false },
             { value: '4', removed: false, added: false },
             { value: '0', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should not mark + as added when text is removed', () => {
@@ -357,8 +353,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '5', removed: false, added: false },
             { value: '6', removed: false, added: false },
             { value: '1', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: All unchanged
         const expectedSuggested = [
@@ -377,8 +373,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '5', removed: false, added: false },
             { value: '6', removed: false, added: false },
             { value: '1', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should mark prefix as new, even when its first digit is the same as the first digit after 0 in the original', () => {
@@ -393,8 +389,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '3', removed: false, added: false },
             { value: '9', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: +32 added
         const expectedSuggested = [
@@ -405,8 +401,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '3', removed: false, added: false },
             { value: '9', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should mark prefix as new, even when it is the same as the first digits of the original', () => {
@@ -421,8 +417,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '9', removed: false, added: false },
             { value: '1', removed: false, added: false },
             { value: '2', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: +32 added
         const expectedSuggested = [
@@ -434,8 +430,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '9', removed: false, added: false },
             { value: '1', removed: false, added: false },
             { value: '2', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should mark prefix as new, even when its first digit is the same as the first digit in the original (no leading 0)', () => {
@@ -449,8 +445,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '3', removed: false, added: false },
             { value: '2', removed: false, added: false },
             { value: '7', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: +32 added
         const expectedSuggested = [
@@ -461,8 +457,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '3', removed: false, added: false },
             { value: '2', removed: false, added: false },
             { value: '7', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should mark leading 0 as removed, even when prefix has a 0', () => {
@@ -477,8 +473,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '1', removed: false, added: false },
             { value: '2', removed: false, added: false },
             { value: '3', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: +32 added
         const expectedSuggested = [
@@ -489,8 +485,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '1', removed: false, added: false },
             { value: '2', removed: false, added: false },
             { value: '3', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should not mark leading 0 as removed when adding a prefix and number actually starts with 0', () => {
@@ -511,8 +507,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '0', removed: false, added: false },
             { value: '0', removed: false, added: false },
             { value: '2', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: +39 and space added
         const expectedSuggested = [
@@ -530,8 +526,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '0', removed: false, added: false },
             { value: '0', removed: false, added: false },
             { value: '2', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should mark only + as added when only + is added', () => {
@@ -554,8 +550,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '2', removed: false, added: false },
             { value: '1', removed: false, added: false },
             { value: '6', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: + and spaces added
         const expectedSuggested = [
@@ -574,8 +570,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '2', removed: false, added: false },
             { value: '1', removed: false, added: false },
             { value: '6', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 
     test('should cope with brackets and zero removed and plus added', () => {
@@ -593,8 +589,8 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: '0', removed: true },
             { value: '5', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
-        expect(result.originalDiff).toEqual(expectedOriginal)
+        ];
+        expect(result.originalDiff).toEqual(expectedOriginal);
 
         // Check Suggested Diff: + and spaces added
         const expectedSuggested = [
@@ -604,11 +600,10 @@ describe('diffPhoneNumbers (Single Number Diff Logic)', () => {
             { value: ' ', added: true },
             { value: '5', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
-        expect(result.suggestedDiff).toEqual(expectedSuggested)
+        ];
+        expect(result.suggestedDiff).toEqual(expectedSuggested);
     });
 });
-
 
 describe('mergeDiffs', () => {
     test('merge simple diff', () => {
@@ -616,12 +611,12 @@ describe('mergeDiffs', () => {
             { value: '0', removed: true },
             { value: '1', removed: false, added: false },
             { value: '2', removed: false, added: false },
-        ]
+        ];
         const expectedMerged = [
             { value: '0', removed: true },
             { value: '12', removed: false, added: false },
-        ]
-        expect(mergeDiffs(original)).toEqual(expectedMerged)
+        ];
+        expect(mergeDiffs(original)).toEqual(expectedMerged);
     });
 
     test('merge multiple unchanged and removals diff', () => {
@@ -643,13 +638,13 @@ describe('mergeDiffs', () => {
             { value: '6', removed: false, added: false },
             { value: '7', removed: false, added: false },
             { value: '8', removed: false, added: false },
-        ]
+        ];
         const expectedMerged = [
             { value: '+44 ', removed: false, added: false },
             { value: '(0) ', removed: true },
             { value: '1234 5678', removed: false, added: false },
-        ]
-        expect(mergeDiffs(original)).toEqual(expectedMerged)
+        ];
+        expect(mergeDiffs(original)).toEqual(expectedMerged);
     });
 
     test('merge various multiple additions and unchanged', () => {
@@ -669,7 +664,7 @@ describe('mergeDiffs', () => {
             { value: ' ', added: true },
             { value: '9', removed: false, added: false },
             { value: '2', removed: false, added: false },
-        ]
+        ];
         const expectedMerged = [
             { value: '+32 ', added: true },
             { value: '58 51', removed: false, added: false },
@@ -677,14 +672,12 @@ describe('mergeDiffs', () => {
             { value: '55', removed: false, added: false },
             { value: ' ', added: true },
             { value: '92', removed: false, added: false },
-        ]
-        expect(mergeDiffs(original)).toEqual(expectedMerged)
+        ];
+        expect(mergeDiffs(original)).toEqual(expectedMerged);
     });
 });
 
-
 describe('getDiffTagsHtml', () => {
-
     test('should correctly diff different tags', () => {
         const oldTag = 'mobile';
         const newTag = 'phone';
@@ -726,7 +719,6 @@ describe('getDiffTagsHtml', () => {
 });
 
 describe('getPhoneDiffHtml', () => {
-
     // Single number, adding country code
     test('should correctly diff one number', () => {
         const original = '023 456 7890';
@@ -734,10 +726,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">0</span><span class="diff-unchanged">23&nbsp;456&nbsp;7890</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">0</span><span class="diff-unchanged">23&nbsp;456&nbsp;7890</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+37&nbsp;</span><span class="diff-unchanged">23&nbsp;456&nbsp;7890</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+37&nbsp;</span><span class="diff-unchanged">23&nbsp;456&nbsp;7890</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -748,10 +742,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">(</span><span class="diff-unchanged">347</span><span class="diff-removed">)&nbsp;</span><span class="diff-unchanged">456-7890</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">(</span><span class="diff-unchanged">347</span><span class="diff-removed">)&nbsp;</span><span class="diff-unchanged">456-7890</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+1&nbsp;</span><span class="diff-unchanged">347</span><span class="diff-added">-</span><span class="diff-unchanged">456-7890</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+1&nbsp;</span><span class="diff-unchanged">347</span><span class="diff-added">-</span><span class="diff-unchanged">456-7890</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -763,13 +759,17 @@ describe('getPhoneDiffHtml', () => {
         const result = getPhoneDiffHtml(original, suggested);
 
         // Original '0' marked removed.
-        const expectedOriginalN1 = '<span class="diff-unchanged">+32&nbsp;</span><span class="diff-removed">0</span><span class="diff-unchanged">58&nbsp;515</span><span class="diff-removed">&nbsp;</span><span class="diff-unchanged">592;';
-        const expectedOriginalN2 = '+32&nbsp;</span><span class="diff-removed">0</span><span class="diff-unchanged">473&nbsp;792</span><span class="diff-removed">&nbsp;</span><span class="diff-unchanged">951</span>';
+        const expectedOriginalN1 =
+            '<span class="diff-unchanged">+32&nbsp;</span><span class="diff-removed">0</span><span class="diff-unchanged">58&nbsp;515</span><span class="diff-removed">&nbsp;</span><span class="diff-unchanged">592;';
+        const expectedOriginalN2 =
+            '+32&nbsp;</span><span class="diff-removed">0</span><span class="diff-unchanged">473&nbsp;792</span><span class="diff-removed">&nbsp;</span><span class="diff-unchanged">951</span>';
         expect(result.oldDiff).toBe(expectedOriginalN1 + expectedOriginalN2);
 
         // Suggested: added space after semicolon and space either side of 55 and of 29.
-        const expectedSuggestedN1 = '<span class="diff-unchanged">+32&nbsp;58&nbsp;51</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">55</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">92;';
-        const expectedSuggestedN2 = '</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">+32&nbsp;473&nbsp;79</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">29</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">51</span>';
+        const expectedSuggestedN1 =
+            '<span class="diff-unchanged">+32&nbsp;58&nbsp;51</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">55</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">92;';
+        const expectedSuggestedN2 =
+            '</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">+32&nbsp;473&nbsp;79</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">29</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">51</span>';
         expect(result.newDiff).toBe(expectedSuggestedN1 + expectedSuggestedN2);
     });
 
@@ -780,10 +780,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">0</span><span class="diff-unchanged">123&nbsp;</span><span class="diff-removed">/&nbsp;</span><span class="diff-unchanged">4567</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">0</span><span class="diff-unchanged">123&nbsp;</span><span class="diff-removed">/&nbsp;</span><span class="diff-unchanged">4567</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">123</span><span class="diff-added">;</span><span class="diff-unchanged">&nbsp;</span><span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">4567</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">123</span><span class="diff-added">;</span><span class="diff-unchanged">&nbsp;</span><span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">4567</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -793,11 +795,14 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">00</span><span class="diff-unchanged">3235024353;</span><span class="diff-removed">00</span><span class="diff-unchanged">32485610715</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">00</span><span class="diff-unchanged">3235024353;</span><span class="diff-removed">00</span><span class="diff-unchanged">32485610715</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggestedN1 = '<span class="diff-added">+</span><span class="diff-unchanged">32</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">3</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">502</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">43</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">53;</span>';
-        const expectedSuggestedN2 = '<span class="diff-added">&nbsp;+</span><span class="diff-unchanged">32</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">485</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">61</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">15</span>';
+        const expectedSuggestedN1 =
+            '<span class="diff-added">+</span><span class="diff-unchanged">32</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">3</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">502</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">43</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">53;</span>';
+        const expectedSuggestedN2 =
+            '<span class="diff-added">&nbsp;+</span><span class="diff-unchanged">32</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">485</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">61</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">15</span>';
         expect(result.newDiff).toBe(expectedSuggestedN1 + expectedSuggestedN2);
     });
 
@@ -807,10 +812,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">tel:00</span><span class="diff-unchanged">3235024353</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">tel:00</span><span class="diff-unchanged">3235024353</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">32</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">3</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">502</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">43</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">53</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+</span><span class="diff-unchanged">32</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">3</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">502</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">43</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">53</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -820,7 +827,8 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span><span class="diff-removed">;&nbsp;+32&nbsp;473&nbsp;792&nbsp;951</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span><span class="diff-removed">;&nbsp;+32&nbsp;473&nbsp;792&nbsp;951</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span>';
@@ -836,7 +844,8 @@ describe('getPhoneDiffHtml', () => {
         const expectedOriginal = '<span class="diff-unchanged">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span><span class="diff-added">;&nbsp;+32&nbsp;473&nbsp;792&nbsp;951</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span><span class="diff-added">;&nbsp;+32&nbsp;473&nbsp;792&nbsp;951</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -859,7 +868,7 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span>';;
+        const expectedOriginal = '<span class="diff-removed">+32&nbsp;58&nbsp;51&nbsp;55&nbsp;92</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = null;
@@ -875,7 +884,8 @@ describe('getPhoneDiffHtml', () => {
         const expectedOriginal = '<span class="diff-unchanged">0708676778</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+39&nbsp;</span><span class="diff-unchanged">070</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">867</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6778</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+39&nbsp;</span><span class="diff-unchanged">070</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">867</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6778</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -885,10 +895,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">787-728-1111</span><span class="diff-removed">//</span><span class="diff-unchanged">787-265-2525</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">787-728-1111</span><span class="diff-removed">//</span><span class="diff-unchanged">787-265-2525</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+1-</span><span class="diff-unchanged">787-728-1111</span><span class="diff-added">;&nbsp;+1-</span><span class="diff-unchanged">787-265-2525</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+1-</span><span class="diff-unchanged">787-728-1111</span><span class="diff-added">;&nbsp;+1-</span><span class="diff-unchanged">787-265-2525</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -898,7 +910,8 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">+27&nbsp;11&nbsp;984;</span><span class="diff-unchanged">+27&nbsp;83&nbsp;462</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">+27&nbsp;11&nbsp;984;</span><span class="diff-unchanged">+27&nbsp;83&nbsp;462</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+27&nbsp;83&nbsp;462</span>';
@@ -911,10 +924,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=0</span><span class="diff-unchanged">123456789</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">https://api.whatsapp.com/send?phone=0</span><span class="diff-unchanged">123456789</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+27&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+27&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -924,10 +939,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">https://wa.me/</span><span class="diff-unchanged">3881234567</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">https://wa.me/</span><span class="diff-unchanged">3881234567</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+39&nbsp;</span><span class="diff-unchanged">388</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">123</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">4567</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+39&nbsp;</span><span class="diff-unchanged">388</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">123</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">4567</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -937,10 +954,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=</span><span class="diff-unchanged">+27123456789</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">https://api.whatsapp.com/send?phone=</span><span class="diff-unchanged">+27123456789</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">+27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">+27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -950,10 +969,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2B</span><span class="diff-unchanged">27123456789</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2B</span><span class="diff-unchanged">27123456789</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -963,10 +984,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2b</span><span class="diff-unchanged">27123456789</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">https://api.whatsapp.com/send?phone=%2b</span><span class="diff-unchanged">27123456789</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -976,10 +999,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">wa.me/</span><span class="diff-unchanged">27123456789</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">wa.me/</span><span class="diff-unchanged">27123456789</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">345</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">6789</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -989,7 +1014,8 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567&nbsp;</span><span class="diff-removed">&nbsp;</span><span class="diff-unchanged">x123</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+1-209-123-4567&nbsp;</span><span class="diff-removed">&nbsp;</span><span class="diff-unchanged">x123</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567&nbsp;x123</span>';
@@ -1002,7 +1028,8 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">,</span><span class="diff-unchanged">&nbsp;</span><span class="diff-removed">e</span><span class="diff-unchanged">x</span><span class="diff-removed">t&nbsp;</span><span class="diff-unchanged">123</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">,</span><span class="diff-unchanged">&nbsp;</span><span class="diff-removed">e</span><span class="diff-unchanged">x</span><span class="diff-removed">t&nbsp;</span><span class="diff-unchanged">123</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567&nbsp;x123</span>';
@@ -1015,10 +1042,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">\\;e</span><span class="diff-unchanged">x</span><span class="diff-removed">t=</span><span class="diff-unchanged">123</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">\\;e</span><span class="diff-unchanged">x</span><span class="diff-removed">t=</span><span class="diff-unchanged">123</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -1028,10 +1057,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">\\;=e</span><span class="diff-unchanged">x</span><span class="diff-removed">t=</span><span class="diff-unchanged">123</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-removed">\\;=e</span><span class="diff-unchanged">x</span><span class="diff-removed">t=</span><span class="diff-unchanged">123</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">+1-209-123-4567</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">x123</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -1041,10 +1072,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-removed">(0</span><span class="diff-unchanged">222</span><span class="diff-removed">)</span><span class="diff-unchanged">&nbsp;226&nbsp;2002</span>';
+        const expectedOriginal =
+            '<span class="diff-removed">(0</span><span class="diff-unchanged">222</span><span class="diff-removed">)</span><span class="diff-unchanged">&nbsp;226&nbsp;2002</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">222&nbsp;226&nbsp;20</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">02</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+90&nbsp;</span><span class="diff-unchanged">222&nbsp;226&nbsp;20</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">02</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -1057,7 +1090,8 @@ describe('getPhoneDiffHtml', () => {
         const expectedOriginal = '<span class="diff-unchanged">+590&nbsp;12&nbsp;34</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">+</span><span class="diff-added">590&nbsp;</span><span class="diff-unchanged">590&nbsp;12&nbsp;34</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">+</span><span class="diff-added">590&nbsp;</span><span class="diff-unchanged">590&nbsp;12&nbsp;34</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -1096,7 +1130,8 @@ describe('getPhoneDiffHtml', () => {
         const expectedOriginal = '<span class="diff-unchanged">621234</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-added">+44&nbsp;1624&nbsp;</span><span class="diff-unchanged">621234</span>';
+        const expectedSuggested =
+            '<span class="diff-added">+44&nbsp;1624&nbsp;</span><span class="diff-unchanged">621234</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -1106,7 +1141,8 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+353&nbsp;21&nbsp;427&nbsp;1234</span><span class="diff-removed">+</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+353&nbsp;21&nbsp;427&nbsp;1234</span><span class="diff-removed">+</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">+353&nbsp;21&nbsp;427&nbsp;1234</span>';
@@ -1119,10 +1155,12 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+212522941234</span><span class="diff-removed">/</span><span class="diff-unchanged">35</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+212522941234</span><span class="diff-removed">/</span><span class="diff-unchanged">35</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">34</span><span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;12&nbsp;</span><span class="diff-unchanged">35</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">12</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">34</span><span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;12&nbsp;</span><span class="diff-unchanged">35</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
@@ -1132,11 +1170,14 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+212522940770</span><span class="diff-removed">/</span><span class="diff-unchanged">74</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+212522940770</span><span class="diff-removed">/</span><span class="diff-unchanged">74</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedFirst = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">70</span>';
-        const expectedSecond = '<span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;07&nbsp;</span><span class="diff-unchanged">74</span>';
+        const expectedFirst =
+            '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">70</span>';
+        const expectedSecond =
+            '<span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;07&nbsp;</span><span class="diff-unchanged">74</span>';
 
         const expectedSuggested = expectedFirst + expectedSecond;
         expect(result.newDiff).toBe(expectedSuggested);
@@ -1148,11 +1189,14 @@ describe('getPhoneDiffHtml', () => {
 
         const result = getPhoneDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">+212522940770</span><span class="diff-removed">/</span><span class="diff-unchanged">2774</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">+212522940770</span><span class="diff-removed">/</span><span class="diff-unchanged">2774</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedFirst = '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">70</span>';
-        const expectedSecond = '<span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">74</span>';
+        const expectedFirst =
+            '<span class="diff-unchanged">+212</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">5</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">22</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">94</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">07</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">70</span>';
+        const expectedSecond =
+            '<span class="diff-added">;&nbsp;+212&nbsp;5&nbsp;22&nbsp;94&nbsp;</span><span class="diff-unchanged">27</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">74</span>';
 
         const expectedSuggested = expectedFirst + expectedSecond;
         expect(result.newDiff).toBe(expectedSuggested);
@@ -1160,14 +1204,14 @@ describe('getPhoneDiffHtml', () => {
 });
 
 describe('getHoursDiffHtml', () => {
-
     test('should correctly diff three letter to two letter days', () => {
         const original = 'Mon-Fri 08:00-17:00';
         const suggested = 'Mo-Fr 08:00-17:00';
 
         const result = getHoursDiffHtml(original, suggested);
 
-        const expectedOriginal = '<span class="diff-unchanged">Mo</span><span class="diff-removed">n</span><span class="diff-unchanged">-Fr</span><span class="diff-removed">i</span><span class="diff-unchanged">&nbsp;08:00-17:00</span>';
+        const expectedOriginal =
+            '<span class="diff-unchanged">Mo</span><span class="diff-removed">n</span><span class="diff-unchanged">-Fr</span><span class="diff-removed">i</span><span class="diff-unchanged">&nbsp;08:00-17:00</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
         const expectedSuggested = '<span class="diff-unchanged">Mo-Fr&nbsp;08:00-17:00</span>';
@@ -1183,7 +1227,8 @@ describe('getHoursDiffHtml', () => {
         const expectedOriginal = '<span class="diff-unchanged">Mo-Fr08:00-17:00</span>';
         expect(result.oldDiff).toBe(expectedOriginal);
 
-        const expectedSuggested = '<span class="diff-unchanged">Mo-Fr</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">08:00-17:00</span>';
+        const expectedSuggested =
+            '<span class="diff-unchanged">Mo-Fr</span><span class="diff-added">&nbsp;</span><span class="diff-unchanged">08:00-17:00</span>';
         expect(result.newDiff).toBe(expectedSuggested);
     });
 });

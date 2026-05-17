@@ -1,4 +1,4 @@
-import { appState, sortDirection, sortKey, UPLOADED_ITEMS_KEY } from "./report-state.js";
+import { appState, sortDirection, sortKey, UPLOADED_ITEMS_KEY } from './report-state.js';
 
 /**
  * Sorts an array of report items based on a specified key and direction.
@@ -90,8 +90,8 @@ function sortItems(items, key, direction) {
             if (valA === valB) return 0;
             // For first click ('asc'), we want higher (newer) numbers to come first
             return direction === 'asc'
-                ? (valB - valA)  // Newest to Oldest
-                : (valA - valB); // Oldest to Newest
+                ? valB - valA // Newest to Oldest
+                : valA - valB; // Oldest to Newest
         }
 
         // Regular comparison (works for numbers/timestamps and strings)
@@ -117,14 +117,20 @@ export function escapeHTML(str) {
         return '';
     }
     str = String(str);
-    return str.replace(/[&<>"']/g, (match) => {
+    return str.replace(/[&<>"']/g, match => {
         switch (match) {
-            case '&': return '&amp;';
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '"': return '&quot;';
-            case "'": return '&#039;';
-            default: return match;
+            case '&':
+                return '&amp;';
+            case '<':
+                return '&lt;';
+            case '>':
+                return '&gt;';
+            case '"':
+                return '&quot;';
+            case "'":
+                return '&#039;';
+            default:
+                return match;
         }
     });
 }
@@ -141,8 +147,8 @@ function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
     const R = 6371000;
 
     // Convert buffer distance in metres to degrees (approximate).
-    const latDelta = bufferMetres / R * (180 / Math.PI);
-    const lonDelta = bufferMetres / (R * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+    const latDelta = (bufferMetres / R) * (180 / Math.PI);
+    const lonDelta = (bufferMetres / (R * Math.cos((lat * Math.PI) / 180))) * (180 / Math.PI);
 
     const minLat = lat - latDelta;
     const maxLat = lat + latDelta;
@@ -151,7 +157,6 @@ function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
 
     return [minLon, minLat, maxLon, maxLat];
 }
-
 
 /**
  * Helper to retrieve the first non-null value in an object.
@@ -188,17 +193,19 @@ export function getSortedItems(filterType) {
 
     const targetItems = appState.reportData.filter(item => {
         const isWanted =
-            filterType === 'foreign' ? item.isForeignItem :
-                filterType === 'fixable' ? item.autoFixable :
-                    reportType === 'phone' ? (!item.autoFixable && !item.isForeignItem) // 'invalid' phone case
-                        : reportType === 'hours' ? !item.autoFixable
-                            : filterType === 'missing' ? !item.name : item.name; // names report
-        const isNotInUploadedChanges = !(
-            uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id]
-        );
-        const isNotInCurrentEdits = !(
-            edits?.[subdivisionName]?.[item.type]?.[item.id]
-        );
+            filterType === 'foreign'
+                ? item.isForeignItem
+                : filterType === 'fixable'
+                  ? item.autoFixable
+                  : reportType === 'phone'
+                    ? !item.autoFixable && !item.isForeignItem // 'invalid' phone case
+                    : reportType === 'hours'
+                      ? !item.autoFixable
+                      : filterType === 'missing'
+                        ? !item.name
+                        : item.name; // names report
+        const isNotInUploadedChanges = !uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id];
+        const isNotInCurrentEdits = !edits?.[subdivisionName]?.[item.type]?.[item.id];
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
     });
 
@@ -215,9 +222,7 @@ export function getSortedItems(filterType) {
  * @returns {string[]} The filtered createdNotes array.
  */
 export function filterCreatedNotes(createdNotes, reportData) {
-    const reportDataIds = new Set(
-        reportData.map(item => `${item.type}/${item.id}`)
-    );
+    const reportDataIds = new Set(reportData.map(item => `${item.type}/${item.id}`));
 
     const filteredNotes = createdNotes.filter(id => {
         return reportDataIds.has(id);
@@ -226,7 +231,7 @@ export function filterCreatedNotes(createdNotes, reportData) {
     return filteredNotes;
 }
 
- /**
+/**
  * Determines the necessary filter type required to find an item with given type and id.
  *
  * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
@@ -239,7 +244,7 @@ export function getFilterType(osmType, osmId) {
     });
     if (targetItem.length !== 1) {
         console.log('No item or too many items found');
-        return
+        return;
     }
 
     const item = targetItem[0];
@@ -247,9 +252,9 @@ export function getFilterType(osmType, osmId) {
     if (item.autoFixable) {
         return 'fixable';
     } else if (item.isForeignItem) {
-        return 'foreign'
+        return 'foreign';
     } else if (reportType === 'name' && !item.name) {
-        return 'missing'
+        return 'missing';
     }
-    return 'invalid'
+    return 'invalid';
 }

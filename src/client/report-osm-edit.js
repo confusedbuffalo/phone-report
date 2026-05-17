@@ -1,7 +1,23 @@
-import { addNoteBtn, appState, commentBox, noteCancelBtn, noteCloseBtnBottom, undoData, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom } from "./report-state.js";
-import { moveEditsToUploadedStorage } from "./report-storage.js";
-import { disableModalCloseListeners, enableModalCloseListeners, openNoteModal, renderNumbers, toggleUploadingSpinner } from "./report-ui-controller.js";
-import { escapeHTML } from "./report-utils.js";
+import {
+    addNoteBtn,
+    appState,
+    commentBox,
+    noteCancelBtn,
+    noteCloseBtnBottom,
+    undoData,
+    uploadBtn,
+    uploadCancelBtn,
+    uploadCloseBtnBottom,
+} from './report-state.js';
+import { moveEditsToUploadedStorage } from './report-storage.js';
+import {
+    disableModalCloseListeners,
+    enableModalCloseListeners,
+    openNoteModal,
+    renderNumbers,
+    toggleUploadingSpinner,
+} from './report-ui-controller.js';
+import { escapeHTML } from './report-utils.js';
 
 const redirectUrl = `${CHANGESET_TAGS[reportType]}land.html`;
 
@@ -16,7 +32,9 @@ export function openInJosm(url) {
             if (response.ok) {
                 console.log('JOSM command sent successfully.');
             } else {
-                console.error('Failed to send command to JOSM. Please ensure JOSM is running with Remote Control enabled.');
+                console.error(
+                    'Failed to send command to JOSM. Please ensure JOSM is running with Remote Control enabled.'
+                );
             }
         })
         .catch(error => {
@@ -31,18 +49,18 @@ export function openInJosm(url) {
  * @returns {void}
  */
 export function login() {
-    const errorDiv = document.querySelector("#error-div");
-    errorDiv.innerText = "";
+    const errorDiv = document.querySelector('#error-div');
+    errorDiv.innerText = '';
     errorDiv.hidden = true;
 
     OSM.login({
-        mode: "popup",
-        clientId: "bexjmcD0H12VKCGMYNmbIA10FYh1O96vgF4-1xH6qKs",
+        mode: 'popup',
+        clientId: 'bexjmcD0H12VKCGMYNmbIA10FYh1O96vgF4-1xH6qKs',
         redirectUrl: redirectUrl,
-        scopes: ["write_api", "read_prefs", "write_notes"],
+        scopes: ['write_api', 'read_prefs', 'write_notes'],
     })
         .then(initLogin)
-        .catch((err) => {
+        .catch(err => {
             errorDiv.hidden = false;
             errorDiv.innerText = `${err}`;
         });
@@ -66,8 +84,8 @@ export function logout() {
  * @returns {void}
  */
 function getUser() {
-    const logoutBtn = document.getElementById("logout-btn");
-    const errorDiv = document.getElementById("error-div");
+    const logoutBtn = document.getElementById('logout-btn');
+    const errorDiv = document.getElementById('error-div');
     const displayName = localStorage.getItem('osm_display_name');
 
     if (displayName) {
@@ -75,14 +93,14 @@ function getUser() {
         return;
     }
 
-    OSM.getUser("me")
-        .then((result) => {
+    OSM.getUser('me')
+        .then(result => {
             logoutBtn.textContent = `Logout ${result.display_name}`;
             localStorage.setItem('osm_display_name', result.display_name);
             errorDiv.textContent = '';
             errorDiv.hidden = true;
         })
-        .catch((err) => {
+        .catch(err => {
             logoutBtn.textContent = String(err);
         });
 }
@@ -94,12 +112,12 @@ function getUser() {
  */
 export function initLogin() {
     if (OSM.isLoggedIn()) {
-        document.getElementById("logout-btn").hidden = false;
-        document.getElementById("login-btn").hidden = true;
+        document.getElementById('logout-btn').hidden = false;
+        document.getElementById('login-btn').hidden = true;
         getUser();
     } else {
-        document.getElementById("logout-btn").hidden = true;
-        document.getElementById("login-btn").hidden = false;
+        document.getElementById('logout-btn').hidden = true;
+        document.getElementById('login-btn').hidden = false;
     }
 }
 
@@ -155,7 +173,6 @@ function applyEditsToFeatureTags(feature, elementEdits) {
     return changed;
 }
 
-
 /**
  * Asynchronously uploads the local edits for the current subdivision to OpenStreetMap
  * as a single changeset. It fetches the latest feature data, applies the local
@@ -193,7 +210,7 @@ async function uploadChanges() {
                 }
 
                 for (const feature of allFeatures) {
-                    const changed = applyEditsToFeatureTags(feature, editsForType[feature.id])
+                    const changed = applyEditsToFeatureTags(feature, editsForType[feature.id]);
                     if (changed) {
                         modifications.push(feature);
                     }
@@ -204,7 +221,7 @@ async function uploadChanges() {
 
     if (modifications.length > 0) {
         const result = await OSM.uploadChangeset(
-            { ...CHANGESET_TAGS, ...{ 'comment': commentBox.value.trim() } },
+            { ...CHANGESET_TAGS, ...{ comment: commentBox.value.trim() } },
             { create: [], modify: modifications, delete: [] }
         );
         moveEditsToUploadedStorage();
@@ -240,11 +257,15 @@ export function addNote(osmType, osmId) {
     });
     openNoteModal(item);
     checkForNotes(item.lat, item.lon)
-        .then((result) => {
+        .then(result => {
             const openNotesMessage = result
                 .filter(note => note.status === 'open')
                 .map(note => note.id)
-                .map(id => translate('noteIsClose', { '%n': `<a href="https://www.openstreetmap.org/note/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>` }))
+                .map(id =>
+                    translate('noteIsClose', {
+                        '%n': `<a href="https://www.openstreetmap.org/note/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`,
+                    })
+                )
                 .join('\n');
             if (openNotesMessage.length > 0) {
                 disableCreateNoteWithMessage(openNotesMessage);
@@ -261,7 +282,7 @@ export function addNote(osmType, osmId) {
                 addNoteBtn.addEventListener('click', appState.noteButtonClickHandler);
             }
         })
-        .catch((err) => {
+        .catch(err => {
             disableCreateNoteWithMessage(`Error fetching notes: ${err}`);
         });
 }
@@ -291,11 +312,10 @@ function checkAndCreateNote(itemId, lat, lon) {
         noteCommentBox.classList.add('cursor-not-allowed');
 
         OSM.createNote(lat, lon, noteCommentBox.value.trim())
-            .then((result) => {
-                const successMessage = translate(
-                    'noteCreated',
-                    { '%n': `<a href="https://www.openstreetmap.org/note/${escapeHTML(result.id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(result.id)}</a>` }
-                );
+            .then(result => {
+                const successMessage = translate('noteCreated', {
+                    '%n': `<a href="https://www.openstreetmap.org/note/${escapeHTML(result.id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(result.id)}</a>`,
+                });
                 messageBox.className = 'message-box-success';
                 messageBox.innerHTML = successMessage;
                 messageBox.classList.remove('hidden');
@@ -310,7 +330,7 @@ function checkAndCreateNote(itemId, lat, lon) {
                 // Re-render to make note button grey
                 renderNumbers();
             })
-            .catch((err) => {
+            .catch(err => {
                 addNoteBtn.disabled = false;
                 addNoteBtn.classList.add('cursor-pointer');
                 addNoteBtn.classList.remove('cursor-progress');
@@ -353,16 +373,16 @@ export function checkAndSubmit() {
         commentBox.classList.add('cursor-not-allowed');
         toggleUploadingSpinner(true);
         uploadChanges()
-            .then((result) => {
+            .then(result => {
                 if (result) {
                     const changesetIds = Object.keys(result || {});
-                    const links = changesetIds.map(id =>
-                        `<a href="https://www.openstreetmap.org/changeset/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`
-                    ).join(', ');
-                    const successMessage = translate(
-                        'changesetCreated',
-                        { '%n': links }
-                    );
+                    const links = changesetIds
+                        .map(
+                            id =>
+                                `<a href="https://www.openstreetmap.org/changeset/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`
+                        )
+                        .join(', ');
+                    const successMessage = translate('changesetCreated', { '%n': links });
 
                     messageBox.className = 'message-box-success';
                     messageBox.innerHTML = successMessage;
@@ -382,7 +402,7 @@ export function checkAndSubmit() {
                 renderNumbers();
                 enableModalCloseListeners();
             })
-            .catch((err) => {
+            .catch(err => {
                 toggleUploadingSpinner(false);
                 uploadBtn.textContent = translate('upload');
                 uploadBtn.disabled = false;

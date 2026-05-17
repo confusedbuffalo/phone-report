@@ -14,16 +14,14 @@ const isRefresh = process.argv.includes('--refresh');
  */
 export function getSubdivisionIds(country) {
     // Helper to extract the ID regardless of whether the value is a number or an object
-    const extractId = (val) => (typeof val === 'object' && val !== null ? val.relationId : val);
+    const extractId = val => (typeof val === 'object' && val !== null ? val.relationId : val);
 
     if (country.divisions) {
         return Object.values(country.divisions).map(extractId);
     }
 
     if (country.divisionMap) {
-        return Object.values(country.divisionMap).flatMap(subRegion =>
-            Object.values(subRegion).map(extractId)
-        );
+        return Object.values(country.divisionMap).flatMap(subRegion => Object.values(subRegion).map(extractId));
     }
 
     return [];
@@ -109,4 +107,3 @@ const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
     run();
 }
-

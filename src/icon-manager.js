@@ -36,10 +36,10 @@ export class IconManager {
             const cleanContent = iconName.startsWith('Flagpedia')
                 ? data.content
                 : data.content
-                    .replace(/ fill="#[^"]+"/g, '')
-                    .replace(/ stroke="#[^"]+"/g, '')
-                    .replace(/ fill='[^']+'/g, '')
-                    .replace(/ stroke='[^']+'/g, '');
+                      .replace(/ fill="#[^"]+"/g, '')
+                      .replace(/ stroke="#[^"]+"/g, '')
+                      .replace(/ fill='[^']+'/g, '')
+                      .replace(/ stroke='[^']+'/g, '');
 
             symbols += `
                 <symbol id="${iconName}" viewBox="${viewBox}">
@@ -86,7 +86,7 @@ export class IconManager {
 
         return {
             content: svgContent.trim(),
-            viewBox: viewBox
+            viewBox: viewBox,
         };
     }
 
@@ -132,13 +132,16 @@ export class IconManager {
                 iconPath = path.join(basePath, `${icon}.svg`);
         }
 
-        if (packageName) { // This covers 'fas', 'far', 'maki', and 'temaki'
+        if (packageName) {
+            // This covers 'fas', 'far', 'maki', and 'temaki'
             let svgSubPath = '';
-            if (faStyleDir) { // Font Awesome Icons
+            if (faStyleDir) {
+                // Font Awesome Icons
                 svgSubPath = `svgs/${faStyleDir}/${icon}.svg`;
             } else if (library === 'temaki') {
                 svgSubPath = `icons/${icon.replace('-', '_')}.svg`;
-            } else { // Maki
+            } else {
+                // Maki
                 svgSubPath = `icons/${icon}.svg`;
             }
             iconPath = path.resolve(__dirname, '..', `node_modules/${packageName}/${svgSubPath}`);
@@ -147,8 +150,8 @@ export class IconManager {
         if (existsSync(iconPath)) {
             const { content, viewBox } = this.getSvgContent(iconPath);
             this.addIconToSprite(iconName, content, viewBox);
-            const svgClass = library === 'Flagpedia' ? 'flag-svg' : 'icon-svg'
-            const svgContainerClass = library === 'Flagpedia' ? 'flag-svg-container' : 'icon-svg-container'
+            const svgClass = library === 'Flagpedia' ? 'flag-svg' : 'icon-svg';
+            const svgContainerClass = library === 'Flagpedia' ? 'flag-svg-container' : 'icon-svg-container';
             iconHtml = `<span class="${svgContainerClass}"><svg class="${svgClass}"><use href="#${iconName}"></use></svg></span>`;
         } else {
             console.log(`Icon not found: ${library}-${icon}`);
@@ -159,7 +162,7 @@ export class IconManager {
             // Return flag for flags, point icon for icons
             return library === 'Flagpedia'
                 ? '<span class="list-item-icon-container icon-fallback">🏳️</span>'
-                : this.getIconHtml('iD-icon-point')
+                : this.getIconHtml('iD-icon-point');
         }
 
         return iconHtml || `<span class="list-item-icon-container icon-fallback">?</span>`;
@@ -169,4 +172,3 @@ export class IconManager {
         this.iconSvgData.clear();
     }
 }
-
