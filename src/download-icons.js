@@ -1,9 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { ICONS_DIR, GITHUB_ICON_PACKS, GITHUB_API_BASE_URL } from './constants.js'
+import { ICONS_DIR, GITHUB_ICON_PACKS, GITHUB_API_BASE_URL } from './constants.js';
 import AdmZip from 'adm-zip';
 import fetch from 'node-fetch';
-
 
 /**
  * Downloads all SVG files for a single icon pack.
@@ -18,7 +17,7 @@ async function downloadSinglePack(packName, packDetails) {
     console.log(`  Source: ${owner}/${repo}/${folder_path}`);
 
     const headers = {
-        'Authorization': `token ${process.env.GITHUB_TOKEN}`,
+        Authorization: `token ${process.env.GITHUB_TOKEN}`,
         'X-GitHub-Api-Version': '2022-11-28',
     };
 
@@ -39,7 +38,7 @@ async function downloadSinglePack(packName, packDetails) {
     const failedDownloads = []; // Array to store error messages for failed files
 
     // 3. Download each SVG file
-    const downloadPromises = svgFiles.map(async (file) => {
+    const downloadPromises = svgFiles.map(async file => {
         const rawUrl = file.download_url;
         const filePath = path.join(FINAL_OUTPUT_DIR, file.name);
 
@@ -95,14 +94,14 @@ async function downloadFlagpediaIcons() {
         // 2. Fetch the ZIP file
         const response = await fetch(FLAG_URL);
         if (!response.ok) throw new Error(`Failed to fetch ZIP: ${response.statusText}`);
-        
+
         const buffer = await response.arrayBuffer();
         await fs.writeFile(TEMP_ZIP_PATH, Buffer.from(buffer));
 
         // 3. Unzip the contents
         console.log(`  Extracting icons to ${OUTPUT_DIR}...`);
         const zip = new AdmZip(TEMP_ZIP_PATH);
-        
+
         // Extract all to the Flagpedia folder
         zip.extractAllTo(OUTPUT_DIR, true);
 
@@ -135,7 +134,6 @@ async function downloadAllIcons() {
     console.log('== ALL ICON DOWNLOADS COMPLETE / SKIPPED ==');
     console.log('=============================================');
 }
-
 
 // --- Execution ---
 

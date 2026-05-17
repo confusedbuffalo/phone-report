@@ -68,7 +68,7 @@ function updateCharts(days) {
     const ctxCount = document.getElementById('progressChart').getContext('2d');
     const countDatasets = regionKeys.map((region, index) => {
         const regionHistory = allData[region];
-        const displayName = regionHistory.length > 0 ? (regionHistory[0].name || region) : region;
+        const displayName = regionHistory.length > 0 ? regionHistory[0].name || region : region;
         const dataPoints = labels.map(date => {
             const entry = regionHistory.find(d => d.date === date);
             return entry ? entry.invalidCount : null;
@@ -80,7 +80,7 @@ function updateCharts(days) {
             borderColor: colours[index],
             pointBackgroundColor: colours[index],
             tension: 0.1,
-            yAxisID: 'y'
+            yAxisID: 'y',
         };
     });
 
@@ -97,34 +97,34 @@ function updateCharts(days) {
                     ticks: { color: axisColour },
                     grid: {
                         color: semiTransparentGridColour,
-                        borderColor: axisColour
-                    }
+                        borderColor: axisColour,
+                    },
                 },
                 x: {
                     ticks: { color: axisColour },
                     grid: {
                         color: semiTransparentGridColour,
-                        borderColor: axisColour
-                    }
-                }
+                        borderColor: axisColour,
+                    },
+                },
             },
             plugins: {
                 legend: {
                     labels: {
                         color: axisColour,
                         usePointStyle: true,
-                        pointStyle: 'circle'
-                    }
-                }
-            }
-        }
+                        pointStyle: 'circle',
+                    },
+                },
+            },
+        },
     });
 
     // Chart for percentage
     const ctxPercent = document.getElementById('progressChartPercent').getContext('2d');
     const percentDatasets = regionKeys.map((region, index) => {
         const regionHistory = allData[region];
-        const displayName = regionHistory.length > 0 ? (regionHistory[0].name || region) : region;
+        const displayName = regionHistory.length > 0 ? regionHistory[0].name || region : region;
         const dataPoints = labels.map(date => {
             const entry = regionHistory.find(d => d.date === date);
             if (entry && entry.totalCount > 0) {
@@ -154,28 +154,28 @@ function updateCharts(days) {
                     min: 0,
                     ticks: {
                         color: axisColour,
-                        callback: value => value + '%'
+                        callback: value => value + '%',
                     },
                     grid: {
                         color: semiTransparentGridColour,
-                        borderColor: axisColour
-                    }
+                        borderColor: axisColour,
+                    },
                 },
                 x: {
                     ticks: { color: axisColour },
                     grid: {
                         color: semiTransparentGridColour,
-                        borderColor: axisColour
-                    }
-                }
+                        borderColor: axisColour,
+                    },
+                },
             },
             plugins: {
                 legend: {
                     labels: {
                         color: axisColour,
                         usePointStyle: true,
-                        pointStyle: 'circle'
-                    }
+                        pointStyle: 'circle',
+                    },
                 },
                 tooltip: {
                     callbacks: {
@@ -185,14 +185,13 @@ function updateCharts(days) {
                             if (context.parsed.y !== null) label += context.parsed.y + '%';
                             else label += 'No Data';
                             return label;
-                        }
-                    }
-                }
-            }
-        }
+                        },
+                    },
+                },
+            },
+        },
     });
 }
-
 
 document.addEventListener('DOMContentLoaded', () => {
     const timeRangeSlider = document.getElementById('timeRange');
@@ -215,10 +214,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const maxDate = new Date(sortedDates[sortedDates.length - 1]);
             const maxDays = Math.ceil((maxDate - minDate) / (1000 * 60 * 60 * 24));
 
-            const unitFormatter = new Intl.NumberFormat(
-                document.documentElement.lang,
-                { style: 'unit', unit: 'day', unitDisplay: 'long'}
-            );
+            const unitFormatter = new Intl.NumberFormat(document.documentElement.lang, {
+                style: 'unit',
+                unit: 'day',
+                unitDisplay: 'long',
+            });
 
             timeRangeSlider.max = maxDays;
             timeRangeSlider.value = maxDays > 30 ? 30 : maxDays;
@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             rangeMinLabel.innerHTML = maxDays < 7 ? unitFormatter.format(maxDays) : unitFormatter.format(7);
 
-            const refreshLabel = (days) => {
+            const refreshLabel = days => {
                 rangeValueLabel.innerHTML = unitFormatter.format(days);
             };
 

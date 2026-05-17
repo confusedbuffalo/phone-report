@@ -30,10 +30,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 
         const prettyValue = oh.prettifyValue();
 
-        if (
-            prettyValue !== hoursTagValue
-            && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)
-        ) {
+        if (prettyValue !== hoursTagValue && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)) {
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
             tagValidationResult.prettyValue = oh.prettifyValue();
@@ -85,12 +82,12 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
             };
         };
 
-        const getOrCreateItem = (autoFixable) => {
+        const getOrCreateItem = autoFixable => {
             if (item) return item;
 
             const baseItem = createItem();
-            item = { ...baseItem, autoFixable }
-            return item
+            item = { ...baseItem, autoFixable };
+            return item;
         };
 
         for (const tag of ALL_HOURS_TAGS) {
@@ -128,12 +125,14 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
             }
 
             // Convert Maps and nested Maps
-            fileStream.write(JSON.stringify(item, (key, value) => {
-                if (value instanceof Map) {
-                    return Object.fromEntries(value);
-                }
-                return value;
-            }));
+            fileStream.write(
+                JSON.stringify(item, (key, value) => {
+                    if (value instanceof Map) {
+                        return Object.fromEntries(value);
+                    }
+                    return value;
+                })
+            );
             isFirstItem = false;
         }
     }

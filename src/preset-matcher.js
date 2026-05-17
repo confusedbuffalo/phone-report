@@ -11,7 +11,12 @@ const __dirname = path.dirname(__filename);
  * Loads the raw preset data from the iD Tagging Schema module.
  * @type {Object<string, object>}
  */
-const presetsData = JSON.parse(fs.readFileSync(path.resolve(__dirname, '..', 'node_modules/@openstreetmap/id-tagging-schema/dist/presets.json'), 'utf8'));
+const presetsData = JSON.parse(
+    fs.readFileSync(
+        path.resolve(__dirname, '..', 'node_modules/@openstreetmap/id-tagging-schema/dist/presets.json'),
+        'utf8'
+    )
+);
 
 /**
  * A map of all presets, indexed by their ID, with the ID added as a property to the preset object.
@@ -74,7 +79,7 @@ function loadTranslation(locale) {
     const translationPaths = [
         path.resolve(__dirname, '..', `node_modules/@openstreetmap/id-tagging-schema/dist/translations/${locale}.json`),
         path.resolve(__dirname, '..', `node_modules/@openstreetmap/id-tagging-schema/dist/translations/${lang}.json`),
-        path.resolve(__dirname, '..', `node_modules/@openstreetmap/id-tagging-schema/dist/translations/en.json`)
+        path.resolve(__dirname, '..', `node_modules/@openstreetmap/id-tagging-schema/dist/translations/en.json`),
     ];
 
     for (const p of translationPaths) {
@@ -111,10 +116,18 @@ export function getGeometry(item) {
 
     // Check for common area-defining keys
     const areaKeys = [
-        'amenity', 'shop', 'tourism', 'leisure', 'building',
-        'craft', 'healthcare', 'military', 'landuse', 'natural',
-        'historic'
-    ]
+        'amenity',
+        'shop',
+        'tourism',
+        'leisure',
+        'building',
+        'craft',
+        'healthcare',
+        'military',
+        'landuse',
+        'natural',
+        'historic',
+    ];
     for (const key of areaKeys) {
         if (item.allTags[key]) {
             return 'area';
@@ -131,7 +144,7 @@ export function getGeometry(item) {
 
     // Resort to checking if it could be an area based on whether it forms a loop
     if (item.couldBeArea) {
-        return 'area'
+        return 'area';
     }
     return 'line';
 }
@@ -156,12 +169,12 @@ export function getMatchScore(preset, tags, geometry) {
     // Check tag compatibility and count matches
     for (const key in preset.tags) {
         const value = preset.tags[key];
-        
+
         // Fail if a required tag key is missing from the feature
         if (!tags.hasOwnProperty(key)) {
-            return -1; 
+            return -1;
         }
-        
+
         if (value === '*') {
             // Wildcard match
             wildcardMatches++;
@@ -170,7 +183,7 @@ export function getMatchScore(preset, tags, geometry) {
             specificMatches++;
         } else {
             // Fail if the tag exists but the value is incorrect
-            return -1; 
+            return -1;
         }
     }
 
@@ -178,7 +191,7 @@ export function getMatchScore(preset, tags, geometry) {
         if (wildcardMatches > 0 && specificMatches === 0) {
             return preset.matchScore * 0.95;
         }
-        return preset.matchScore
+        return preset.matchScore;
     }
 
     return specificMatches + wildcardMatches * 0.5;
@@ -197,7 +210,7 @@ export function getBestPreset(item, locale = 'en') {
     let maxScore = -1;
 
     // Use globally injected mock presets for testing, or the real presets otherwise.
-    const isMocking = (typeof global !== 'undefined' && typeof global.getMockPresets === 'function');
+    const isMocking = typeof global !== 'undefined' && typeof global.getMockPresets === 'function';
     let presetsToTest;
 
     if (isMocking) {
@@ -230,10 +243,15 @@ export function getBestPreset(item, locale = 'en') {
         const translation = loadTranslation(locale) || loadTranslation('en');
 
         // Apply translation if available
-        if (translation && translation.presets && translation.presets.presets && translation.presets.presets[presetCopy.id]) {
+        if (
+            translation &&
+            translation.presets &&
+            translation.presets.presets &&
+            translation.presets.presets[presetCopy.id]
+        ) {
             presetCopy.name = translation.presets.presets[presetCopy.id].name;
         } else {
-             // Fallback name generation
+            // Fallback name generation
             const nameParts = presetCopy.id.split('/');
             const fallbackName = nameParts[nameParts.length - 1];
             presetCopy.name = fallbackName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());

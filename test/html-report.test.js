@@ -22,7 +22,7 @@ jest.unstable_mockModule('fs', () => {
             }),
             createWriteStream: jest.fn().mockImplementation(() => {
                 const writable = new Stream.Writable({
-                    highWaterMark: 16
+                    highWaterMark: 16,
                 });
 
                 writable._write = (chunk, encoding, callback) => {
@@ -30,7 +30,7 @@ jest.unstable_mockModule('fs', () => {
                 };
 
                 const originalEnd = writable.end;
-                writable.end = function(...args) {
+                writable.end = function (...args) {
                     originalEnd.apply(this, args);
 
                     process.nextTick(() => {
@@ -40,7 +40,7 @@ jest.unstable_mockModule('fs', () => {
 
                 return writable;
             }),
-        }
+        },
     };
 });
 
@@ -52,7 +52,7 @@ jest.unstable_mockModule('../src/i18n.js', () => ({
         if (args) return `${key}: ${args.join(',')}`;
         return key;
     },
-    getTranslations: (locale) => ({}),
+    getTranslations: locale => ({}),
 }));
 
 jest.unstable_mockModule('../src/diff-renderer.js', () => ({
@@ -83,7 +83,7 @@ jest.unstable_mockModule('../src/icon-manager.js', () => ({
 const actualDataProcessor = await import('../src/data-processor.js');
 jest.unstable_mockModule('../src/data-processor.js', () => ({
     ...actualDataProcessor,
-    getFeatureTypeName: (item) => item.name || 'Unknown Feature',
+    getFeatureTypeName: item => item.name || 'Unknown Feature',
     getFeatureIcon: () => 'iD-icon-point',
     isDisused: () => false,
 }));
@@ -106,8 +106,8 @@ describe('createJosmFixUrl', () => {
         suggestedFixes: { 'contact:mobile': null },
         hasTypeMismatch: false,
         mismatchTypeNumbers: [],
-        autoFixable: false
-    }
+        autoFixable: false,
+    };
 
     const FIXABLE_ITEM = {
         type: 'node',
@@ -125,8 +125,8 @@ describe('createJosmFixUrl', () => {
         hasTypeMismatch: false,
         mismatchTypeNumbers: [],
         autoFixable: true,
-        phoneTagToUse: "contact:phone"
-    }
+        phoneTagToUse: 'contact:phone',
+    };
 
     const MISMATCH_MOVE_TAG_ITEM = {
         type: 'node',
@@ -142,13 +142,13 @@ describe('createJosmFixUrl', () => {
         invalidNumbers: { 'contact:mobile': '+44 141 955 0411' },
         suggestedFixes: {
             'contact:mobile': null,
-            'phone': '+44 141 955 0411'
+            phone: '+44 141 955 0411',
         },
         hasTypeMismatch: true,
-        mismatchTypeNumbers: {'contact:mobile': '+44 141 955 0411'},
+        mismatchTypeNumbers: { 'contact:mobile': '+44 141 955 0411' },
         autoFixable: true,
-        phoneTagToUse: "phone"
-    }
+        phoneTagToUse: 'phone',
+    };
 
     const MISTMATCH_ADD_TO_TAG_ITEM = {
         type: 'node',
@@ -168,10 +168,10 @@ describe('createJosmFixUrl', () => {
             'contact:phone': '+44 141 956 6323; +44 141 955 0411',
         },
         hasTypeMismatch: true,
-        mismatchTypeNumbers: {'contact:mobile': '+44 141 955 0411'},
+        mismatchTypeNumbers: { 'contact:mobile': '+44 141 955 0411' },
         autoFixable: true,
-        phoneTagToUse: "contact:phone"
-    }
+        phoneTagToUse: 'contact:phone',
+    };
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -183,20 +183,35 @@ describe('createJosmFixUrl', () => {
 
     test('should return fix URL', () => {
         const addTags = encodeURIComponent('contact:phone') + '=' + encodeURIComponent('+44 141 956 6323');
-        expect(createJosmFixUrl(FIXABLE_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`,);
+        expect(createJosmFixUrl(FIXABLE_ITEM)).toBe(
+            `http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`
+        );
     });
 
     test('should remove old tag and add new tag for tag mismatch', () => {
-        const addTags = encodeURIComponent('contact:mobile') + '=' + encodeURIComponent('|phone') + '=' + encodeURIComponent('+44 141 955 0411');
-        expect(createJosmFixUrl(MISMATCH_MOVE_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`,);
+        const addTags =
+            encodeURIComponent('contact:mobile') +
+            '=' +
+            encodeURIComponent('|phone') +
+            '=' +
+            encodeURIComponent('+44 141 955 0411');
+        expect(createJosmFixUrl(MISMATCH_MOVE_TAG_ITEM)).toBe(
+            `http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`
+        );
     });
 
     test('should remove old tag and append to existing tag for tag mismatch', () => {
-        const addTags = encodeURIComponent('contact:mobile') + '=' + encodeURIComponent('|contact:phone') + '=' + encodeURIComponent('+44 141 956 6323; +44 141 955 0411');
-        expect(createJosmFixUrl(MISTMATCH_ADD_TO_TAG_ITEM)).toBe(`http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`,);
+        const addTags =
+            encodeURIComponent('contact:mobile') +
+            '=' +
+            encodeURIComponent('|contact:phone') +
+            '=' +
+            encodeURIComponent('+44 141 956 6323; +44 141 955 0411');
+        expect(createJosmFixUrl(MISTMATCH_ADD_TO_TAG_ITEM)).toBe(
+            `http://127.0.0.1:8111/load_object?objects=n12164564580&relation_members=true&addtags=${addTags}`
+        );
     });
 });
-
 
 describe('generateHtmlReport', () => {
     afterEach(() => {
@@ -205,10 +220,10 @@ describe('generateHtmlReport', () => {
 
     it('should correctly escape country and subdivision names with special characters', async () => {
         const countryData = {
-            countryName: "St. Kitts & Nevis",
+            countryName: 'St. Kitts & Nevis',
             locale: 'en-US',
             officialLanguages: ['en'],
-        }
+        };
         const subdivisionStats = {
             name: "O'Fallon",
             divisionSlug: 'st-clair-county',

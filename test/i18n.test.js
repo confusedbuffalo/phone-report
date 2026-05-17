@@ -9,11 +9,12 @@ const __dirname = path.dirname(__filename);
 
 // Helper to load all translation files
 const localesDir = path.join(__dirname, '../locales');
-const translationFiles = fs.readdirSync(localesDir)
+const translationFiles = fs
+    .readdirSync(localesDir)
     .filter(file => file.endsWith('.json'))
     .map(file => ({
         locale: file.replace('.json', ''),
-        content: JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8'))
+        content: JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8')),
     }));
 
 // List of all expected keys
@@ -26,9 +27,7 @@ const PLACEHOLDER_REGEX = /%[a-z]/g;
 const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
 const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;|quot;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
 
-
 describe('Localization File Integrity Tests', () => {
-
     // Check for missing or extra keys in all locale files
     translationFiles.forEach(({ locale, content }) => {
         const currentKeys = Object.keys(content);
@@ -47,9 +46,7 @@ describe('Localization File Integrity Tests', () => {
 
     // Check for correct placeholder usage in all locale files
     translationFiles.forEach(({ locale, content }) => {
-
         test(`[${locale}] must use correct placeholders for all keys`, () => {
-
             // This array will collect all placeholder errors for this locale
             const placeholderErrors = [];
 
@@ -61,8 +58,7 @@ describe('Localization File Integrity Tests', () => {
                 if (!translationString) return;
 
                 // Find all placeholders used in the current translation string
-                const actualPlaceholders = (translationString.match(PLACEHOLDER_REGEX) || [])
-                    .map(p => p.toLowerCase()); // Ensure consistent case
+                const actualPlaceholders = (translationString.match(PLACEHOLDER_REGEX) || []).map(p => p.toLowerCase()); // Ensure consistent case
 
                 // Check for missing required placeholders
                 requiredPlaceholders.forEach(requiredP => {
@@ -71,7 +67,7 @@ describe('Localization File Integrity Tests', () => {
                             key,
                             type: 'MISSING',
                             placeholder: requiredP,
-                            translation: translationString
+                            translation: translationString,
                         });
                     }
                 });
@@ -83,7 +79,7 @@ describe('Localization File Integrity Tests', () => {
                             key,
                             type: 'EXTRA',
                             placeholder: actualP,
-                            translation: translationString
+                            translation: translationString,
                         });
                     }
                 });
@@ -96,7 +92,6 @@ describe('Localization File Integrity Tests', () => {
 
     // Check for disallowed HTML characters in all locale files
     translationFiles.forEach(({ locale, content }) => {
-
         test(`[${locale}] must not contain disallowed HTML characters`, () => {
             const htmlErrors = [];
 
@@ -113,7 +108,7 @@ describe('Localization File Integrity Tests', () => {
                         key,
                         type: 'DISALLOWED_CHARACTERS',
                         characters: generalMatches.join(''),
-                        translation: translationString
+                        translation: translationString,
                     });
                     // Once a general match is found, skip the ampersand check for this string
                     return;
@@ -127,7 +122,7 @@ describe('Localization File Integrity Tests', () => {
                         type: 'DISALLOWED_AMPERSAND',
                         // Report the raw match which will be '&'
                         characters: ampersandMatches.join(''),
-                        translation: translationString
+                        translation: translationString,
                     });
                 }
             });
@@ -139,7 +134,6 @@ describe('Localization File Integrity Tests', () => {
 });
 
 describe('i18n Module Functionality', () => {
-
     describe('translate', () => {
         test('should return the correct translation for a given key and locale', () => {
             expect(translate('backToAllCountries', 'fr-FR')).toBe('Retour à tous les pays');
@@ -170,7 +164,9 @@ describe('i18n Module Functionality', () => {
 
         test('should handle single-argument substitution for %p', () => {
             const expected = '12.34% of total';
-            const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).invalidPercentageOfTotal;
+            const master = JSON.parse(
+                fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')
+            ).invalidPercentageOfTotal;
             expect(master).toContain('%p'); // Ensure master key is correct
             expect(translate('invalidPercentageOfTotal', 'en', ['12.34'])).toBe(expected);
         });

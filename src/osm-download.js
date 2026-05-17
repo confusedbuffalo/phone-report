@@ -9,7 +9,6 @@ import { getSubdivisionIds } from './fetch-polys.js';
 
 const execPromise = promisify(exec);
 
-
 /**
  * Downloads a specified OSM PBF file and saves it to the given path.
  * @param {string} url - The URL of the .osm.pbf file.
@@ -21,7 +20,7 @@ export async function downloadPbf(url, outputPath) {
         const response = await axios({
             url,
             method: 'GET',
-            responseType: 'stream'
+            responseType: 'stream',
         });
 
         const writer = fs.createWriteStream(outputPath);
@@ -40,7 +39,7 @@ const FILTER_EXPRESSIONS = {
     phone: `nwr/${ALL_NUMBER_TAGS.join(',')}`,
     name: 'name:*',
     hours: `nwr/${ALL_HOURS_TAGS.join(',')}`,
-}
+};
 
 /**
  * Filters an OSM PBF file by tags appropriate for the specified report type.
@@ -62,7 +61,7 @@ export async function filterPbf(inputPath, outputPath, reportType) {
 /**
  * Splits a PBF file into smaller extracts based on country or specific division boundaries.
  * * This function uses the `osmium` CLI tool to extract geographic data using `.poly` files.
- * If a division is provided, it extracts that specific relation; otherwise, it 
+ * If a division is provided, it extracts that specific relation; otherwise, it
  * iterates through all subdivision IDs for the given country.
  * * @async
  * @param {string} filteredFilePath - The file path to the source .osm.pbf file.
@@ -78,7 +77,7 @@ export async function splitPbf(filteredFilePath, outputDir, country = null, divi
 
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
-    }    
+    }
 
     for (const id of ids) {
         const polyPath = path.join(POLY_DIR, `${id}.poly`);
@@ -149,10 +148,8 @@ export async function getOsmTimestamp(pbfUrl) {
         }
 
         return new Date(text).toISOString();
-
     } catch (error) {
         console.error('Error fetching timestamp:', error);
         return null;
     }
 }
-

@@ -7,15 +7,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const localesDir = path.join(__dirname, '../locales');
-const translationFiles = fs.readdirSync(localesDir)
+const translationFiles = fs
+    .readdirSync(localesDir)
     .filter(file => file.endsWith('.json'))
     .map(file => ({
         locale: file.replace('.json', ''),
-        content: JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8'))
+        content: JSON.parse(fs.readFileSync(path.join(localesDir, file), 'utf8')),
     }));
 
 describe('Countries file tests', () => {
-
     test('Countries should be arranged in alphabetical order', () => {
         const keys = Object.keys(COUNTRIES);
         const sortedKeys = [...keys].sort((a, b) => a.localeCompare(b));
@@ -51,21 +51,21 @@ describe('Countries file tests', () => {
                 expect(value).toEqual({
                     relationId: expect.any(Number),
                     ...(value.pbfUrl !== undefined && { pbfUrl: expect.any(String) }),
-                    ...(value.countryCode !== undefined && { countryCode: expect.any(String) })
+                    ...(value.countryCode !== undefined && { countryCode: expect.any(String) }),
                 });
             }
         }
 
         if (countryData.hasOwnProperty('divisions')) {
             test(`[${countryKey}] divisions is set up correctly`, () => {
-                Object.values(countryData.divisions).forEach((value) => {
+                Object.values(countryData.divisions).forEach(value => {
                     isNumberOrIdPbfObject(value);
                 });
             });
         } else if (countryData.hasOwnProperty('divisionMap')) {
             test(`[${countryKey}] divisionMap is set up correctly`, () => {
-                Object.values(countryData.divisionMap).forEach((division) => {
-                    Object.values(division).forEach((value) => {
+                Object.values(countryData.divisionMap).forEach(division => {
+                    Object.values(division).forEach(value => {
                         isNumberOrIdPbfObject(value);
                     });
                 });
@@ -74,15 +74,15 @@ describe('Countries file tests', () => {
 
         test(`[${countryKey}] all regions must have an extract URL`, () => {
             if (countryData.hasOwnProperty('pbfUrl')) {
-                expect(typeof countryData.pbfUrl).toBe('string')
+                expect(typeof countryData.pbfUrl).toBe('string');
             } else if (countryData.hasOwnProperty('divisions')) {
-                Object.values(countryData.divisions).forEach((value) => {
-                    expect(value.hasOwnProperty('pbfUrl')).toBe(true)
+                Object.values(countryData.divisions).forEach(value => {
+                    expect(value.hasOwnProperty('pbfUrl')).toBe(true);
                 });
             } else {
-                Object.values(countryData.divisionMap).forEach((division) => {
-                    Object.values(division).forEach((value) => {
-                        expect(value.hasOwnProperty('pbfUrl')).toBe(true)
+                Object.values(countryData.divisionMap).forEach(division => {
+                    Object.values(division).forEach(value => {
+                        expect(value.hasOwnProperty('pbfUrl')).toBe(true);
                     });
                 });
             }

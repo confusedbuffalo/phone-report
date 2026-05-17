@@ -77,7 +77,7 @@ export function processHistory(reportType) {
                         date: date,
                         invalidCount: division.invalidCount,
                         totalCount: division.totalCount,
-                    }
+                    };
 
                     if (!aggregatedDivisionStats[divisionName]) {
                         aggregatedDivisionStats[divisionName] = [];
@@ -87,17 +87,20 @@ export function processHistory(reportType) {
             } else {
                 // Aggregate data for the divisions
                 for (const [divisionName, divisionStats] of Object.entries(stats.groupedDivisionStats)) {
-                    const divisionTotals = divisionStats.reduce((accumulator, subdivision) => {
-                        accumulator.invalidCount += subdivision.invalidCount;
-                        accumulator.totalCount += subdivision.totalCount;
-                        return accumulator;
-                    }, { invalidCount: 0, totalCount: 0 });
+                    const divisionTotals = divisionStats.reduce(
+                        (accumulator, subdivision) => {
+                            accumulator.invalidCount += subdivision.invalidCount;
+                            accumulator.totalCount += subdivision.totalCount;
+                            return accumulator;
+                        },
+                        { invalidCount: 0, totalCount: 0 }
+                    );
 
                     const divisionRecord = {
                         date: date,
                         invalidCount: divisionTotals.invalidCount,
                         totalCount: divisionTotals.totalCount,
-                    }
+                    };
 
                     if (!aggregatedDivisionStats[divisionName]) {
                         aggregatedDivisionStats[divisionName] = [];
@@ -113,7 +116,7 @@ export function processHistory(reportType) {
             divisionData.sort((a, b) => new Date(a.date) - new Date(b.date));
         }
 
-        const aggregatedCountryData = { 'overall': {}, 'divisions': {} };
+        const aggregatedCountryData = { overall: {}, divisions: {} };
         aggregatedCountryData['overall'] = aggregatedData.countries[countrySlug];
         aggregatedCountryData['divisions'] = aggregatedDivisionStats;
 
@@ -147,4 +150,3 @@ if (process.argv[1] === __filename) {
         processHistory(reportType);
     });
 }
-

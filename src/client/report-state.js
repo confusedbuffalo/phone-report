@@ -5,32 +5,32 @@ export const currentPage = {
     invalid: 1,
     foreign: 1,
     missing: 1,
-}
+};
 
 export const sortDirection = {
     fixable: 'asc',
     invalid: 'asc',
     foreign: 'asc',
     missing: 'asc',
-}
+};
 
 export const sortKey = {
     fixable: 'none',
     invalid: 'none',
     foreign: 'none',
     missing: 'none',
-}
+};
 
 export const undoData = {
     stack: JSON.parse(localStorage.getItem(`undoStack_${subdivisionName}`)) ?? [],
     position: +localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0,
-}
+};
 
 export const appState = {
     noteButtonClickHandler: null,
     currentActiveEditors: [],
     reportData: null,
-}
+};
 
 export const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
 export const UPLOADED_ITEMS_KEY = `uploaded_${DATA_LAST_UPDATED}`;
@@ -51,7 +51,7 @@ export const noteCloseBtnBottom = document.getElementById('close-note-modal-btn-
 export const addNoteBtn = document.getElementById('add-note-btn');
 export const noteModal = document.getElementById('note-modal-overlay');
 
-const isMobileView = window.matchMedia("(max-width: 767px)").matches;
+const isMobileView = window.matchMedia('(max-width: 767px)').matches;
 export const DEFAULT_EDITORS = isMobileView ? DEFAULT_EDITORS_MOBILE : DEFAULT_EDITORS_DESKTOP;
 
-export const languageNames = new Intl.DisplayNames([document.documentElement.lang], {type: 'language'});
+export const languageNames = new Intl.DisplayNames([document.documentElement.lang], { type: 'language' });

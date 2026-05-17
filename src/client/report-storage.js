@@ -1,5 +1,17 @@
 import { appState, CLICKED_ITEMS_KEY, DEFAULT_EDITORS, undoData, UPLOADED_ITEMS_KEY } from './report-state.js';
-import { enableRedo, disableRedo, renderNumbers, closeEditsModal, setUpSaveBtn, setUpUndoRedoBtns, transitionRemoveItem, transitionInsertItem, enableUndo, enableSave, disableUndo } from './report-ui-controller.js';
+import {
+    enableRedo,
+    disableRedo,
+    renderNumbers,
+    closeEditsModal,
+    setUpSaveBtn,
+    setUpUndoRedoBtns,
+    transitionRemoveItem,
+    transitionInsertItem,
+    enableUndo,
+    enableSave,
+    disableUndo,
+} from './report-ui-controller.js';
 
 /**
  * Adds an item's ID to localStorage to mark it as clicked.
@@ -11,7 +23,7 @@ export function recordItemClick(itemId) {
         clickedItems[itemId] = true;
         localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
     } catch (e) {
-        console.error("Could not save clicked item to localStorage:", e);
+        console.error('Could not save clicked item to localStorage:', e);
     }
 }
 
@@ -25,7 +37,7 @@ function clearItemClick(itemId) {
         clickedItems[itemId] = false;
         localStorage.setItem(CLICKED_ITEMS_KEY, JSON.stringify(clickedItems));
     } catch (e) {
-        console.error("Could not save clicked item to localStorage:", e);
+        console.error('Could not save clicked item to localStorage:', e);
     }
 }
 
@@ -56,7 +68,7 @@ export function isItemClicked(itemId) {
         const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
         return clickedItems.hasOwnProperty(itemId) && clickedItems[itemId];
     } catch (e) {
-        console.error("Could not read clicked items from localStorage:", e);
+        console.error('Could not read clicked items from localStorage:', e);
         return false;
     }
 }
@@ -73,7 +85,7 @@ export function loadSettings() {
             return;
         }
     } catch (e) {
-        console.error("Error loading settings from localStorage:", e);
+        console.error('Error loading settings from localStorage:', e);
     }
     // Fallback to defaults
     appState.currentActiveEditors = [...DEFAULT_EDITORS];
@@ -86,7 +98,7 @@ export function saveSettings() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(appState.currentActiveEditors));
     } catch (e) {
-        console.error("Error saving settings to localStorage:", e);
+        console.error('Error saving settings to localStorage:', e);
     }
 }
 
@@ -104,15 +116,15 @@ export function moveEditsToUploadedStorage() {
     if (uploadedChanges && uploadedChanges[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
             uploadedChanges[subdivisionName][type] = {
-                ...edits[subdivisionName][type] || {},
-                ...uploadedChanges[subdivisionName][type]
-            }
+                ...(edits[subdivisionName][type] || {}),
+                ...uploadedChanges[subdivisionName][type],
+            };
         }
     } else if (uploadedChanges) {
-        uploadedChanges[subdivisionName] = edits[subdivisionName]
+        uploadedChanges[subdivisionName] = edits[subdivisionName];
     } else {
         uploadedChanges = {};
-        uploadedChanges[subdivisionName] = edits[subdivisionName]
+        uploadedChanges[subdivisionName] = edits[subdivisionName];
     }
 
     localStorage.setItem(UPLOADED_ITEMS_KEY, JSON.stringify(uploadedChanges));
@@ -174,12 +186,12 @@ function saveChangeToStorage(osmType, osmId, language = null) {
 
     if (language) {
         if (item.name) {
-            edits[subdivisionName][osmType][osmId] = {[`name:${language}`]: item.name};
-        } else{
-            edits[subdivisionName][osmType][osmId] = {name: item.nameTags["name:" + language]};
+            edits[subdivisionName][osmType][osmId] = { [`name:${language}`]: item.name };
+        } else {
+            edits[subdivisionName][osmType][osmId] = { name: item.nameTags['name:' + language] };
         }
     } else {
-        edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+        edits[subdivisionName][osmType][osmId] = item['suggestedFixes'];
     }
 
     localStorage.setItem('edits', JSON.stringify(edits));
@@ -239,7 +251,7 @@ function addToUndo(osmType, osmId, language) {
  */
 export function undoChange() {
     if (undoData.position === 0) {
-        return
+        return;
     }
     undoData.position -= 1;
     if (undoData.position === 0) {
@@ -274,7 +286,7 @@ export function undoChange() {
  */
 export function redoChange() {
     if (undoData.position === undoData.stack.length) {
-        return
+        return;
     }
 
     const undoneElement = undoData.stack[undoData.position];
@@ -290,12 +302,12 @@ export function redoChange() {
 
     if (reportType === 'name') {
         if (item.name) {
-            edits[subdivisionName][osmType][osmId] = {[`name:${language}`]: item.name};
-        } else{
-            edits[subdivisionName][osmType][osmId] = {name: item.nameTags["name:" + language]};
+            edits[subdivisionName][osmType][osmId] = { [`name:${language}`]: item.name };
+        } else {
+            edits[subdivisionName][osmType][osmId] = { name: item.nameTags['name:' + language] };
         }
     } else {
-        edits[subdivisionName][osmType][osmId] = item["suggestedFixes"];
+        edits[subdivisionName][osmType][osmId] = item['suggestedFixes'];
     }
 
     recordItemClick(`${osmType}/${osmId}`);

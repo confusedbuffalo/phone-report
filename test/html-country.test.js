@@ -22,10 +22,10 @@ jest.unstable_mockModule('fs', () => {
                 // Otherwise, let the real fs read the template for eta
                 return actualFs.readFileSync(filePath, encoding);
             }),
-            existsSync: jest.fn((filePath) => {
+            existsSync: jest.fn(filePath => {
                 return actualFs.existsSync(filePath);
             }),
-        }
+        },
     };
 });
 
@@ -37,7 +37,7 @@ jest.unstable_mockModule('../src/i18n.js', () => ({
         if (key === 'osmPhoneNumberValidation' && locale === 'nl-NL') return 'OSM Telefoon&shy;nummer&shy;validatie';
         return key;
     },
-    getTranslations: (locale) => {
+    getTranslations: locale => {
         return {
             exampleKey: 'Example Translation',
             currentLocale: locale,
@@ -52,22 +52,24 @@ describe('generateCountryIndexHtml', () => {
         jest.clearAllMocks();
     });
 
-    it("should correctly escape HTML in templates but pass raw names to the client script", async () => {
+    it('should correctly escape HTML in templates but pass raw names to the client script', async () => {
         const divisionName = "Provence-Alpes-Côte d'Azur";
         const countryData = {
-            name: "France",
+            name: 'France',
             slug: 'france',
             locale: 'fr-FR',
             totalCount: 100,
             invalidCount: 10,
             autoFixableCount: 5,
             groupedDivisionStats: {
-                [divisionName]: [{
-                    name: 'Subdivision A',
-                    slug: 'subdivision-a',
-                    invalidCount: 5,
-                    totalCount: 50
-                }]
+                [divisionName]: [
+                    {
+                        name: 'Subdivision A',
+                        slug: 'subdivision-a',
+                        invalidCount: 5,
+                        totalCount: 50,
+                    },
+                ],
             },
         };
 
@@ -91,22 +93,24 @@ describe('generateCountryIndexHtml', () => {
         expect(Object.keys(parsedStats)[0]).toBe(divisionName);
     });
 
-    it("should correctly not escape shy hyphens in headings", async () => {
-        const divisionName = "Europees Nederland";
+    it('should correctly not escape shy hyphens in headings', async () => {
+        const divisionName = 'Europees Nederland';
         const countryData = {
-            name: "Nederland",
+            name: 'Nederland',
             slug: 'nederland',
             locale: 'nl-NL',
             totalCount: 100,
             invalidCount: 10,
             autoFixableCount: 5,
             groupedDivisionStats: {
-                [divisionName]: [{
-                    name: 'Subdivision A',
-                    slug: 'subdivision-a',
-                    invalidCount: 5,
-                    totalCount: 50
-                }]
+                [divisionName]: [
+                    {
+                        name: 'Subdivision A',
+                        slug: 'subdivision-a',
+                        invalidCount: 5,
+                        totalCount: 50,
+                    },
+                ],
             },
         };
 

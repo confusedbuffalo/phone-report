@@ -4,8 +4,8 @@ import { jest } from '@jest/globals';
 jest.unstable_mockModule('fs', () => ({
     default: {
         readFileSync: jest.fn(() => JSON.stringify({})),
-        existsSync: jest.fn(() => false)
-    }
+        existsSync: jest.fn(() => false),
+    },
 }));
 
 const { getBestPreset, getMatchScore, getGeometry } = await import('../src/preset-matcher.js');
@@ -24,7 +24,7 @@ const cableTags = {
 };
 const cableItem = {
     type: 'way', // Should result in 'line' geometry
-    allTags: cableTags
+    allTags: cableTags,
 };
 
 // Item with tags for the defibrillator and indoor presets (point geometry)
@@ -37,17 +37,16 @@ const defibrillatorTags = {
 };
 const defibrillatorItem = {
     type: 'node', // Should result in 'point' geometry
-    allTags: defibrillatorTags
+    allTags: defibrillatorTags,
 };
 
 const industrialLanduseTags = {
-    landuse: 'industrial'
-}
+    landuse: 'industrial',
+};
 const industrialLanduseItem = {
     type: 'way',
-    allTags: industrialLanduseTags
-}
-
+    allTags: industrialLanduseTags,
+};
 
 // Define the mock presets used for matching, including all conflicting pairs
 const mockPresets = {
@@ -57,34 +56,34 @@ const mockPresets = {
         icon: 'maki-defibrillator',
         geometry: ['point', 'vertex'],
         tags: {
-            'emergency': 'defibrillator' // Specific match
+            emergency: 'defibrillator', // Specific match
         },
     },
     // 2. Indoor (High Base Score + Wildcard Match)
-    'indoor': {
+    indoor: {
         id: 'indoor',
         icon: 'temaki-room',
         geometry: ['point', 'vertex', 'line', 'area'],
         tags: {
-            'indoor': '*' // Wildcard match
+            indoor: '*', // Wildcard match
         },
-        matchScore: 0.8 // High base score
+        matchScore: 0.8, // High base score
     },
     // 3. Seamark (Wildcard Match)
-    'seamark': {
+    seamark: {
         id: 'seamark',
         icon: 'maki-harbor',
         geometry: ['point', 'vertex', 'line', 'area'],
         tags: {
-            'seamark:type': '*'
+            'seamark:type': '*',
         },
     },
     // 4. Line (Generic)
-    'line': {
+    line: {
         id: 'line',
         geometry: ['line'],
         tags: {},
-        matchScore: 0.1
+        matchScore: 0.1,
     },
     // 5. Comm/Cable (Specific Match, highest score)
     'comm/cable': {
@@ -92,27 +91,27 @@ const mockPresets = {
         icon: 'iD-icon-communication-cable',
         geometry: ['line'],
         tags: {
-            'communication': 'line',
-            'submarine': 'yes'
+            communication: 'line',
+            submarine: 'yes',
         },
-        matchScore: 2
+        matchScore: 2,
     },
     // landuse
-    'landuse': {
+    landuse: {
         id: 'landuse',
         geometry: ['area'],
         tags: {
-            'landuse': '*'
+            landuse: '*',
         },
         matchScore: 0.9,
     },
     // specific landuse
     'landuse/industrial': {
         id: 'landuse/industrial',
-        icon: "maki-industry",
-        geometry: [ 'area' ],
+        icon: 'maki-industry',
+        geometry: ['area'],
         tags: {
-            'landuse': 'industrial'
+            landuse: 'industrial',
         },
         matchScore: 0.9,
     },
@@ -121,28 +120,25 @@ const mockPresets = {
 // Global helper to inject mock presets into the logic during testing
 global.getMockPresets = () => mockPresets;
 
-
 describe('Preset Matching Logic', () => {
-
     // Test the specific match score function
     describe('getMatchScore', () => {
-        
         test('should prioritize a specific tag match generic match score', () => {
             const geometry = getGeometry(defibrillatorItem); // 'point'
-            
+
             const defibPreset = mockPresets['emergency/defibrillator'];
             expect(getMatchScore(defibPreset, defibrillatorItem.allTags, geometry)).toBe(1.0);
-            
+
             const indoorPreset = mockPresets.indoor;
             expect(getMatchScore(indoorPreset, defibrillatorItem.allTags, geometry)).toBe(0.76);
         });
-        
+
         test('should correctly score the "seamark" preset (Wildcard Match)', () => {
             const geometry = getGeometry(cableItem); // 'line'
             const preset = mockPresets.seamark;
             expect(getMatchScore(preset, cableItem.allTags, geometry)).toBe(0.5);
         });
-        
+
         test('should correctly score the "comm/cable" preset (Specific Match)', () => {
             const geometry = getGeometry(cableItem); // 'line'
             const preset = mockPresets['comm/cable'];
@@ -152,7 +148,6 @@ describe('Preset Matching Logic', () => {
 
     // Test the main function
     describe('getBestPreset', () => {
-        
         test('should choose the highly specific preset (defibrillator) over the high-base-score preset (indoor)', () => {
             const bestPreset = getBestPreset(defibrillatorItem, 'en');
             expect(bestPreset.id).toBe('emergency/defibrillator');
@@ -173,13 +168,13 @@ describe('Preset Matching Logic', () => {
 
         test('should select "seamark" if it is the highest scorer, beating the generic "line" preset', () => {
             const competitionPresets = {
-                'seamark': mockPresets.seamark,      // Score: 1.0
-                'line': mockPresets.line             // Score: 0.1
+                seamark: mockPresets.seamark, // Score: 1.0
+                line: mockPresets.line, // Score: 0.1
             };
             global.getMockPresets = () => competitionPresets;
-            
+
             const bestPreset = getBestPreset(cableItem, 'en');
-            
+
             expect(bestPreset.id).toBe('seamark');
             expect(bestPreset.icon).toBe('maki-harbor');
         });

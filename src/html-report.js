@@ -14,7 +14,17 @@ const { disassembler } = pkgDisassembler;
 import pkgStringer from 'stream-json/stringer.js';
 const { stringer } = pkgStringer;
 import { Eta } from 'eta';
-import { OSM_EDITORS, ALL_EDITOR_IDS, DEFAULT_EDITORS_DESKTOP, DEFAULT_EDITORS_MOBILE, CHANGESET_TAGS, GITHUB_LINK, MINIFY_OPTIONS, IS_TEST_MODE, BUILD_DIR } from './constants.js';
+import {
+    OSM_EDITORS,
+    ALL_EDITOR_IDS,
+    DEFAULT_EDITORS_DESKTOP,
+    DEFAULT_EDITORS_MOBILE,
+    CHANGESET_TAGS,
+    GITHUB_LINK,
+    MINIFY_OPTIONS,
+    IS_TEST_MODE,
+    BUILD_DIR,
+} from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
 import { translate } from './i18n.js';
 import { getPhoneDiffHtml, getDiffTagsHtml, getHoursDiffHtml } from './diff-renderer.js';
@@ -23,12 +33,11 @@ import { IconManager } from './icon-manager.js';
 import { phoneTagToUse } from './phone-processor.js';
 import { diffChars } from 'diff';
 
-
 /**
  * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
  * @param {Object} item - The invalid number data item.
  * @returns {string | null}
-*/
+ */
 export function createJosmFixUrl(item) {
     if (!item.autoFixable) {
         return null;
@@ -61,26 +70,30 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
 
     const regionNames = new Intl.DisplayNames([locale], { type: 'region' });
 
-    return Object.keys(item.validForeignNumbers).map(key => {
-        const foreignRows = [];
-        for (const [phone, code] of Object.entries(item.validForeignNumbers[key])) {
-            const flagHtml = iconManager.getIconHtml(`Flagpedia-${code.toLowerCase()}`);
+    return Object.keys(item.validForeignNumbers)
+        .map(key => {
+            const foreignRows = [];
+            for (const [phone, code] of Object.entries(item.validForeignNumbers[key])) {
+                const flagHtml = iconManager.getIconHtml(`Flagpedia-${code.toLowerCase()}`);
 
-            // Add title tag for country/region name
-            const flagName = regionNames.of(code);
+                // Add title tag for country/region name
+                const flagName = regionNames.of(code);
 
-            const spanPrefix = '<span';
-            const flagIconAndTitle = flagHtml.startsWith(spanPrefix)
-                ? `${spanPrefix} title="${escapeHTML(flagName)}" ${flagHtml.slice(spanPrefix.length)}`
-                : flagHtml;
+                const spanPrefix = '<span';
+                const flagIconAndTitle = flagHtml.startsWith(spanPrefix)
+                    ? `${spanPrefix} title="${escapeHTML(flagName)}" ${flagHtml.slice(spanPrefix.length)}`
+                    : flagHtml;
 
-            foreignRows.push(`<span class="inline-flex items-center">${flagIconAndTitle}${escapeHTML(phone)}</span>`)
-        }
+                foreignRows.push(
+                    `<span class="inline-flex items-center">${flagIconAndTitle}${escapeHTML(phone)}</span>`
+                );
+            }
 
-        return {
-            [key]: foreignRows.join(';'),
-        };
-    }).filter(Boolean)
+            return {
+                [key]: foreignRows.join(';'),
+            };
+        })
+        .filter(Boolean);
 }
 
 /**
@@ -90,89 +103,99 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
  * @returns {Object}
  */
 function createPhoneFixRows(item, locale) {
-    return Object.keys(item.invalidNumbers).map(key => {
-        const originalNumber = item.invalidNumbers[key];
-        const suggestedFix = item.suggestedFixes[key];
-        const isDuplicateKey = key in item.duplicateNumbers;
-        const isMismatchKey = key in item.mismatchTypeNumbers;
-        const suggestedRowKey = translate('suggestedFix', locale);
+    return Object.keys(item.invalidNumbers)
+        .map(key => {
+            const originalNumber = item.invalidNumbers[key];
+            const suggestedFix = item.suggestedFixes[key];
+            const isDuplicateKey = key in item.duplicateNumbers;
+            const isMismatchKey = key in item.mismatchTypeNumbers;
+            const suggestedRowKey = translate('suggestedFix', locale);
 
-        const duplicateLabel = isDuplicateKey ? `<span class="label label-number-problem">${translate("duplicateNumber", locale)}</span>` : '';
-        const notMobileLabel = isMismatchKey ? `<span class="label label-number-problem">${translate("notMobileNumber", locale)}</span>` : '';
-        const problemLabel = duplicateLabel + notMobileLabel;
+            const duplicateLabel = isDuplicateKey
+                ? `<span class="label label-number-problem">${translate('duplicateNumber', locale)}</span>`
+                : '';
+            const notMobileLabel = isMismatchKey
+                ? `<span class="label label-number-problem">${translate('notMobileNumber', locale)}</span>`
+                : '';
+            const problemLabel = duplicateLabel + notMobileLabel;
 
-        const tagToUse = item.phoneTagToUse;
-        const numberMovingToEmptyTag = !(item.invalidNumbers.hasOwnProperty(tagToUse)) && (item.suggestedFixes.hasOwnProperty(tagToUse));
+            const tagToUse = item.phoneTagToUse;
+            const numberMovingToEmptyTag =
+                !item.invalidNumbers.hasOwnProperty(tagToUse) && item.suggestedFixes.hasOwnProperty(tagToUse);
 
-        // Internal duplicate (in same tag)
-        if (isDuplicateKey && item.duplicateNumbers[key] === key) {
-            const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
-            return {
-                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
-                [suggestedRowKey]: newDiff
-            };
-        }
-
-        if (suggestedFix) {
-            const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
-
-            let originalRowValue;
-            if (problemLabel) {
-                originalRowValue = `<span class="list-item-old-value">${oldDiff}${problemLabel}</span>`;
-            } else if (originalNumber) {
-                originalRowValue = oldDiff;
-            } else {
-                // e.g. phone:mnemonic being added as new tag
-                const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
+            // Internal duplicate (in same tag)
+            if (isDuplicateKey && item.duplicateNumbers[key] === key) {
+                const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
                 return {
-                    [newTagDiff]: newDiff
+                    [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
+                    [suggestedRowKey]: newDiff,
                 };
             }
 
-            if (numberMovingToEmptyTag) {
-                // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
-                const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
-                const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getPhoneDiffHtml('', item.suggestedFixes[tagToUse]);
+            if (suggestedFix) {
+                const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
+
+                let originalRowValue;
+                if (problemLabel) {
+                    originalRowValue = `<span class="list-item-old-value">${oldDiff}${problemLabel}</span>`;
+                } else if (originalNumber) {
+                    originalRowValue = oldDiff;
+                } else {
+                    // e.g. phone:mnemonic being added as new tag
+                    const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
+                    return {
+                        [newTagDiff]: newDiff,
+                    };
+                }
+
+                if (numberMovingToEmptyTag) {
+                    // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
+                    const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
+                    const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getPhoneDiffHtml(
+                        '',
+                        item.suggestedFixes[tagToUse]
+                    );
+                    return {
+                        [key]: originalRowValue,
+                        [suggestedRowKey]: newDiff,
+                        [newTagDiff]: newMovingDiff,
+                    };
+                }
+
                 return {
                     [key]: originalRowValue,
                     [suggestedRowKey]: newDiff,
-                    [newTagDiff]: newMovingDiff
+                };
+            } else if (isDuplicateKey) {
+                const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
+                return {
+                    [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`,
+                };
+            } else if (isMismatchKey && !numberMovingToEmptyTag) {
+                const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
+                return {
+                    [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
+                };
+            } else if (item.autoFixable) {
+                // Mobile is being moved to standard key, which did not exist before
+                if (numberMovingToEmptyTag) {
+                    const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
+                    const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
+                    return {
+                        [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
+                        [newTagDiff]: newDiff,
+                    };
+                }
+                return {
+                    [key]: `<span>${escapeHTML(originalNumber)}</span>`,
+                };
+            } else {
+                return {
+                    [key]: `<span>${escapeHTML(originalNumber)}</span>`,
                 };
             }
-
-            return {
-                [key]: originalRowValue,
-                [suggestedRowKey]: newDiff
-            };
-        } else if (isDuplicateKey) {
-            const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
-            return {
-                [key]: `<span class="list-item-old-value">${oldDiff}${duplicateLabel}</span>`
-            }
-        } else if (isMismatchKey && !numberMovingToEmptyTag) {
-            const { oldDiff } = getPhoneDiffHtml(originalNumber, suggestedFix);
-            return {
-                [key]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`
-            }
-        } else if (item.autoFixable) {
-            // Mobile is being moved to standard key, which did not exist before
-            if (numberMovingToEmptyTag) {
-                const { oldTagDiff, newTagDiff } = getDiffTagsHtml(key, tagToUse);
-                const { oldDiff, newDiff } = getPhoneDiffHtml(originalNumber, item.suggestedFixes[tagToUse]);
-                return {
-                    [oldTagDiff]: `<span class="list-item-old-value">${oldDiff}${notMobileLabel}</span>`,
-                    [newTagDiff]: newDiff
-                }
-            }
-            return {
-                [key]: `<span>${escapeHTML(originalNumber)}</span>`
-            };
-        } else {
-            return {
-                [key]: `<span>${escapeHTML(originalNumber)}</span>`
-            };
-        }
-    }).filter(Boolean);
+        })
+        .filter(Boolean);
 }
 
 /**
@@ -185,10 +208,12 @@ function createNameFixRows(item, locale) {
     const escapedNameTags = Object.fromEntries(
         Object.entries(item.nameTags).map(([key, value]) => [key, escapeHTML(value)])
     );
-    return [{
-        ...(item.name && { name: escapeHTML(item.name) }),
-        ...escapedNameTags
-    }];
+    return [
+        {
+            ...(item.name && { name: escapeHTML(item.name) }),
+            ...escapedNameTags,
+        },
+    ];
 }
 
 /**
@@ -198,24 +223,26 @@ function createNameFixRows(item, locale) {
  * @returns {Object}
  */
 function createHoursFixRows(item, locale) {
-    return Object.keys(item.invalidHours).map(key => {
-        const originalValue = item.invalidHours[key];
-        const suggestedFix = item.suggestedFixes[key];
-        const suggestedRowKey = translate('suggestedFix', locale);
+    return Object.keys(item.invalidHours)
+        .map(key => {
+            const originalValue = item.invalidHours[key];
+            const suggestedFix = item.suggestedFixes[key];
+            const suggestedRowKey = translate('suggestedFix', locale);
 
-        if (suggestedFix) {
-            const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);
+            if (suggestedFix) {
+                const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);
 
-            return {
-                [key]: oldDiff,
-                [suggestedRowKey]: newDiff
-            };
-        } else {
-            return {
-                [key]: escapeHTML(originalValue),
-            };
-        }
-    }).filter(Boolean);
+                return {
+                    [key]: oldDiff,
+                    [suggestedRowKey]: newDiff,
+                };
+            } else {
+                return {
+                    [key]: escapeHTML(originalValue),
+                };
+            }
+        })
+        .filter(Boolean);
 }
 
 /**
@@ -233,7 +260,7 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
         return null;
     }
 
-    item = { ...item, ...(reportType === 'phone' && { phoneTagToUse: phoneTagToUse(item.allTags) }) }
+    item = { ...item, ...(reportType === 'phone' && { phoneTagToUse: phoneTagToUse(item.allTags) }) };
 
     item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
 
@@ -245,7 +272,9 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
         item.iconHtml = iconHtml;
     }
 
-    item.disusedLabel = isDisused(item) ? `<span class="label label-disused">${translate('disused', locale)}</span>` : '';
+    item.disusedLabel = isDisused(item)
+        ? `<span class="label label-disused">${translate('disused', locale)}</span>`
+        : '';
 
     if (reportType === 'phone' && item.isForeignItem) {
         item.fixRows = createPhoneForeignFixRows(item, locale, iconManager);
@@ -328,7 +357,7 @@ export function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdiv
     const singleLevelDivision = safeCountryName === divisionSlug || divisionSlug === subdivisionSlug;
     const finalSubdivisionSlug = singleLevelDivision ? subdivisionSlug : path.join(divisionSlug, subdivisionSlug);
     const filePath = path.join(safeCountryName, finalSubdivisionSlug);
-    return filePath
+    return filePath;
 }
 
 /**
@@ -341,7 +370,15 @@ export function getSubdivisionRelativeFilePath(countryName, divisionSlug, subdiv
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {Date} timestamp - The timestamp of the data
  */
-export async function generateHtmlReport(reportType, countryData, subdivisionStats, tmpFilePath, translations, botEnabled, timestamp) {
+export async function generateHtmlReport(
+    reportType,
+    countryData,
+    subdivisionStats,
+    tmpFilePath,
+    translations,
+    botEnabled,
+    timestamp
+) {
     const countryName = countryData.name;
     const locale = countryData.locale;
     const officialLanguages = countryData.officialLanguages;
@@ -349,8 +386,13 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
     const iconManager = new IconManager();
 
     const safeCountryName = safeName(countryName);
-    const singleLevelDivision = safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
-    const relativeFilePath = getSubdivisionRelativeFilePath(countryName, subdivisionStats.divisionSlug, subdivisionStats.slug);
+    const singleLevelDivision =
+        safeCountryName === subdivisionStats.divisionSlug || subdivisionStats.divisionSlug === subdivisionStats.slug;
+    const relativeFilePath = getSubdivisionRelativeFilePath(
+        countryName,
+        subdivisionStats.divisionSlug,
+        subdivisionStats.slug
+    );
     const htmlFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.html`;
     const dataFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.json`;
 
@@ -367,15 +409,11 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
             return clientItem;
         }),
         disassembler(),
-        stringer(stringerOptions)
+        stringer(stringerOptions),
     ]);
 
     try {
-        await pipeline(
-            inputStream,
-            chainedStream,
-            outputStream
-        );
+        await pipeline(inputStream, chainedStream, outputStream);
         console.debug(`Output data written to ${dataFilePath}`);
     } catch (err) {
         console.error('An error occurred during streaming:', err);
@@ -394,27 +432,31 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
             getEditLink: editor.getEditLink,
             onClick: onClickString,
             // Pre-evaluate the string using the locale
-            editInString: editor.editInString(locale)
+            editInString: editor.editInString(locale),
         };
     }
 
     const clientOsmEditorsScript = `
-        const OSM_EDITORS = ${JSON.stringify(OSM_EDITORS_CLIENT, (key, value) => {
-        // Use a custom replacer function to handle functions (convert them to strings)
-        if (typeof value === 'function') {
-            // Converts the function back to a string so it can be re-evaluated client-side
-            const functionString = value.toString();
-            let cleanedString = functionString.replace(/[\n\t\r]/g, ' ');
-            cleanedString = cleanedString.replace(/ {2,}/g, ' ');
-            cleanedString = cleanedString.trim();
-            return cleanedString;
-        }
-        return value;
-    }, 4)};
+        const OSM_EDITORS = ${JSON.stringify(
+            OSM_EDITORS_CLIENT,
+            (key, value) => {
+                // Use a custom replacer function to handle functions (convert them to strings)
+                if (typeof value === 'function') {
+                    // Converts the function back to a string so it can be re-evaluated client-side
+                    const functionString = value.toString();
+                    let cleanedString = functionString.replace(/[\n\t\r]/g, ' ');
+                    cleanedString = cleanedString.replace(/ {2,}/g, ' ');
+                    cleanedString = cleanedString.trim();
+                    return cleanedString;
+                }
+                return value;
+            },
+            4
+        )};
     `;
 
     const eta = new Eta({
-        views: path.join(process.cwd(), "src", "templates"),
+        views: path.join(process.cwd(), 'src', 'templates'),
         cache: true,
     });
 
@@ -440,7 +482,7 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
         officialLanguages,
     };
 
-    const htmlContent = eta.render("report", templateData);
+    const htmlContent = eta.render('report', templateData);
 
     let finalHtml = htmlContent;
 
@@ -456,4 +498,3 @@ export async function generateHtmlReport(reportType, countryData, subdivisionSta
     await fsPromises.writeFile(htmlFilePath, finalHtml);
     console.log(`Generated report for ${subdivisionStats.name} at ${htmlFilePath}`);
 }
-

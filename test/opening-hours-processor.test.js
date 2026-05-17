@@ -64,7 +64,11 @@ describe('validateHoursTag', () => {
     });
 
     test('No spaces after semicolon is valid', () => {
-        const result = validateHoursTag('Mo,We,Th 09:30-18:30;Tu,Fr 09:30-20:30;Sa 09:00-18:30;Su 09:30-18:00', 'opening_hours', 'en');
+        const result = validateHoursTag(
+            'Mo,We,Th 09:30-18:30;Tu,Fr 09:30-20:30;Sa 09:00-18:30;Su 09:30-18:00',
+            'opening_hours',
+            'en'
+        );
         expect(result.isInvalid).toBe(false);
     });
 
@@ -135,11 +139,11 @@ describe('validateOpeningHours', () => {
     });
 
     // Helper to wrap elements into GeoJSON-like objects with Map properties
-    const createGeoJson = (tags, lat=0.0, lon=0.0, type = 'node') => ({
+    const createGeoJson = (tags, lat = 0.0, lon = 0.0, type = 'node') => ({
         type: 'Feature',
         geometry: {
             type: 'Point',
-            coordinates: [lon, lat]
+            coordinates: [lon, lat],
         },
         properties: {
             ...tags,
@@ -147,14 +151,12 @@ describe('validateOpeningHours', () => {
             '@type': type,
             '@user': 'test-user',
             '@timestamp': '1776196800',
-            '@changeset': '12345'
-        }
+            '@changeset': '12345',
+        },
     });
 
     test('Parse a single valid opening hours', async () => {
-        const elements = [
-            createGeoJson({ opening_hours: 'Mo-Fr 08:00-17:00' })
-        ];
+        const elements = [createGeoJson({ opening_hours: 'Mo-Fr 08:00-17:00' })];
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
 
@@ -169,7 +171,7 @@ describe('validateOpeningHours', () => {
                 opening_hours: 'Mo-Fr 08:00-17:00',
                 'opening_hours:kitchen': 'Mo-Fr 16:00-17:00',
                 'opening_hours:drive_through': 'Mo-Fr 10:00-12:00',
-            })
+            }),
         ];
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
@@ -180,9 +182,7 @@ describe('validateOpeningHours', () => {
     });
 
     test('Fix a single invalid opening hours', async () => {
-        const elements = [
-            createGeoJson({ opening_hours: 'MON-FRI 08:00-17:00' })
-        ];
+        const elements = [createGeoJson({ opening_hours: 'MON-FRI 08:00-17:00' })];
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
 
@@ -195,10 +195,10 @@ describe('validateOpeningHours', () => {
         const invalidItem = invalidItems[0];
 
         expect(invalidItem.invalidHours).toEqual({
-            'opening_hours': 'MON-FRI 08:00-17:00',
+            opening_hours: 'MON-FRI 08:00-17:00',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'opening_hours': 'Mo-Fr 08:00-17:00',
+            opening_hours: 'Mo-Fr 08:00-17:00',
         });
         expect(invalidItem.warnings['opening_hours']).toBeDefined();
     });
@@ -209,7 +209,7 @@ describe('validateOpeningHours', () => {
                 opening_hours: 'MON-FRI 08:00-17:00',
                 'opening_hours:kitchen': 'Monday-Friday 16:00-17:00',
                 'opening_hours:drive_through': 'Monday to Friday 10:00-12:00',
-            })
+            }),
         ];
 
         const result = await validateOpeningHours(Readable.from(elements), 'en', tmpFilePath);
@@ -223,12 +223,12 @@ describe('validateOpeningHours', () => {
         const invalidItem = invalidItems[0];
 
         expect(invalidItem.invalidHours).toEqual({
-            'opening_hours': 'MON-FRI 08:00-17:00',
+            opening_hours: 'MON-FRI 08:00-17:00',
             'opening_hours:kitchen': 'Monday-Friday 16:00-17:00',
             'opening_hours:drive_through': 'Monday to Friday 10:00-12:00',
         });
         expect(invalidItem.suggestedFixes).toEqual({
-            'opening_hours': 'Mo-Fr 08:00-17:00',
+            opening_hours: 'Mo-Fr 08:00-17:00',
             'opening_hours:kitchen': 'Mo-Fr 16:00-17:00',
             'opening_hours:drive_through': 'Mo-Fr 10:00-12:00',
         });

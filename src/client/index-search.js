@@ -31,10 +31,10 @@ function updateSelection() {
     });
 }
 
-searchInput.addEventListener('input', (e) => {
+searchInput.addEventListener('input', e => {
     const query = e.target.value.toLowerCase();
     activeIndex = -1; // Reset selection on new input
-    
+
     if (!query) {
         resultsContainer.classList.add('hidden');
         currentMatches = [];
@@ -72,9 +72,9 @@ searchInput.addEventListener('input', (e) => {
     }
 });
 
-searchInput.addEventListener('keydown', (e) => {
+searchInput.addEventListener('keydown', e => {
     const items = resultsContainer.querySelectorAll('.autocomplete-row');
-    
+
     if (e.key === 'ArrowDown') {
         e.preventDefault();
         activeIndex = (activeIndex + 1) % items.length;
@@ -94,6 +94,6 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
-document.addEventListener('click', (e) => {
+document.addEventListener('click', e => {
     if (e.target !== searchInput) resultsContainer.classList.add('hidden');
 });
