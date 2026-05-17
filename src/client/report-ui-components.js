@@ -42,8 +42,8 @@ export function createListItem(item) {
         </div>` : '';
 
     const helpLabel = item.name ?
-        `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameTo')}</span>` :
-        `<span data-editor-id="apply-fix" class="label label-help">${translate('copyNameFrom')}</span>`;
+        `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameTo')}</span>` :
+        `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameFrom')}</span>`;
 
     const buttonLayout = ['phone', 'hours'].includes(reportType)
         ? [
