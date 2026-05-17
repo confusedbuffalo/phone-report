@@ -98,13 +98,15 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('invalidHours', locale),
                 numberClass: 'stats-box-number-invalid',
-                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)])
+                percentage: translate('invalidPercentageOfTotal', locale, [getFormattedPercentage(data.invalidCount, data.totalCount, locale)]),
+                href: (!includeProgress && data.invalidCount > 0) ? '#invalidSection' : null,
             },
             {
                 value: data.autoFixableCount.toLocaleString(locale),
                 label: translate('potentiallyFixable', locale),
                 numberClass: 'stats-box-number-fixable',
-                percentage: translate('fixablePercentageOfInvalid', locale, [getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale)])
+                percentage: translate('fixablePercentageOfInvalid', locale, [getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale)]),
+                href: (!includeProgress && data.autoFixableCount > 0) ? '#fixableSection' : null,
             }
         ];
     } else {
