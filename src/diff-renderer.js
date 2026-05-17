@@ -622,9 +622,6 @@ export function getHoursDiffHtml(oldString, newString) {
         }
     });
 
-    console.log(oldDiff)
-    // console.log(newDiff)
-
     const { oldDiffHtml, newDiffHtml } = getDiffHtml(oldDiff, newDiff);
 
     return { oldDiff: oldDiffHtml, newDiff: newDiffHtml };
