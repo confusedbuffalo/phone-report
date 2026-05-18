@@ -33,6 +33,7 @@ import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } fro
 import { IconManager } from './icon-manager.js';
 import { phoneTagToUse } from './phone-processor.js';
 import { diffChars } from 'diff';
+import { validatePhoneNumberLength } from 'libphonenumber-js/max';
 
 /**
  * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
@@ -98,12 +99,35 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
 }
 
 /**
+ * Gets the appropriate translated text for the length result from validatePhoneNumberLength.
+ * @param {String} lengthResult - The result from validatePhoneNumberLength.
+ * @returns {String}
+ */
+function getLengthProblemText(lengthResult) {
+    switch (lengthResult) {
+        case 'TOO_SHORT':
+            return translate('tooShort', locale);
+        case 'TOO_LONG':
+            return translate('tooLong', locale);
+        case 'INVALID_COUNTRY':
+            return translate('invalidCountry', locale);
+        case 'INVALID_LENGTH':
+            return translate('invalidLength', locale);
+        case 'NOT_A_NUMBER':
+            return translate('notNumber', locale);
+        default:
+            return '';
+    }
+}
+
+/**
  * Creates the fix rows for an invalid phone number item.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
+ * @param {string} countryCode - The country code for the item
  * @returns {Object}
  */
-function createPhoneFixRows(item, locale) {
+function createPhoneFixRows(item, locale, countryCode) {
     return Object.keys(item.invalidNumbers)
         .map(key => {
             const originalNumber = item.invalidNumbers[key];
@@ -191,8 +215,16 @@ function createPhoneFixRows(item, locale) {
                     [key]: `<span>${escapeHTML(originalNumber)}</span>`,
                 };
             } else {
+                let lengthProblemLabel = '';
+                try {
+                    const lengthResult = validatePhoneNumberLength(originalNumber);
+                    const lengthProblemText = getLengthProblemText(lengthResult);
+                    lengthProblemLabel = `<span class="label label-number-problem">${lengthProblemText}</span>`;
+                } catch {
+                    // parsing failed
+                }
                 return {
-                    [key]: `<span>${escapeHTML(originalNumber)}</span>`,
+                    [key]: `<span>${escapeHTML(originalNumber)}${lengthProblemLabel}</span>`,
                 };
             }
         })
@@ -251,11 +283,12 @@ function createHoursFixRows(item, locale) {
  * @param {'phone' | 'name' | 'hours'} reportType - The type of report being created.
  * @param {Object} item - The invalid number data item.
  * @param {string} locale - The locale for the text
+ * @param {string} countryCode - The country code for the item
  * @param {boolean} botEnabled - Whether or not the safe fix bot is enabled for this area
  * @param {IconManager} iconManager - The icon manager instance for this report.
  * @returns {Object}
  */
-function createClientItems(reportType, item, locale, botEnabled, iconManager) {
+function createClientItems(reportType, item, locale, countryCode, botEnabled, iconManager) {
     // Skip safe edit items if the bot is enabled here
     if (reportType === 'phone' && botEnabled && item.safeEdit) {
         return null;
@@ -293,7 +326,7 @@ function createClientItems(reportType, item, locale, botEnabled, iconManager) {
     const fixer = fixRowsFunctions[reportType];
     if (!fixer) throw new Error(`Unsupported report type: ${reportType}`);
 
-    item.fixRows = fixer(item, locale);
+    item.fixRows = fixer(item, locale, countryCode);
 
     item.josmFixUrl = createJosmFixUrl(item);
 
@@ -406,7 +439,14 @@ export async function generateHtmlReport(
         parser(),
         streamArray(),
         new ItemTransformer(item => {
-            const clientItem = createClientItems(reportType, item, locale, botEnabled, iconManager);
+            const clientItem = createClientItems(
+                reportType,
+                item,
+                locale,
+                countryData.countryCode,
+                botEnabled,
+                iconManager
+            );
             return clientItem;
         }),
         disassembler(),
