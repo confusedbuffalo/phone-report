@@ -442,14 +442,13 @@ async function processCountry(countryData) {
                         `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
                     );
                     await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
-                    await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
+                    await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), null, subData);
                     fs.rmSync(tmpReportPbfFilePath, { force: true });
                 }
 
                 fs.rmSync(subPbfFilePath, { force: true });
 
                 const dataTimestamp = await getOsmTimestamp(pbfUrl);
-                subData.timestamp = dataTimestamp;
                 subData.timestamp = dataTimestamp;
                 if (!countryData.timestamp) {
                     countryData.timestamp = dataTimestamp;
