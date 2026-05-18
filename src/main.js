@@ -441,7 +441,7 @@ async function processCountry(countryData) {
                         process.cwd(),
                         `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
                     );
-                    await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
+                    await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
                     await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
                     fs.rmSync(tmpReportPbfFilePath, { force: true });
                 });
