@@ -17,6 +17,21 @@ describe('validateHoursTag', () => {
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
     });
 
+    test('Opening hours with lower case off is valid', () => {
+        const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su off', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Opening hours with title case off is valid', () => {
+        const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Off', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('Opening hours with title case closed is valid', () => {
+        const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Closed', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('Opening hours with three-letter days is invalid but fixable', () => {
         const result = validateHoursTag('Mon-Fri 08:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
