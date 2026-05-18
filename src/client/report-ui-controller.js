@@ -176,12 +176,17 @@ export function renderNumbers() {
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
     if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
+        const evaluationToolLink = `<a href="${OPENING_HOURS_EVALUATION_TOOL_URL}" target="_blank" rel="noopener noreferrer" class="description-link">${translate('evaluationTool')}</a>`;
+        const evaluationToolSentence =
+            reportType === 'hours' ? ' ' + translate('checkOpeningHoursFormat', { '%l': evaluationToolLink }) : '';
+
         if (['phone', 'hours'].includes(reportType) && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
                 'fixableSection',
                 sortedItems.fixable,
                 translate(reportType === 'phone' ? 'fixableNumbersHeader' : 'fixableHoursHeader'),
-                translate(reportType === 'phone' ? 'fixableNumbersDescription' : 'fixableHoursDescription'),
+                translate(reportType === 'phone' ? 'fixableNumbersDescription' : 'fixableHoursDescription') +
+                    evaluationToolSentence,
                 currentPage['fixable'],
                 page => (currentPage['fixable'] = page),
                 'fixable'
@@ -205,7 +210,7 @@ export function renderNumbers() {
                         : reportType === 'name'
                           ? 'incompleteNamesDescription'
                           : 'invalidHoursDescription'
-                ),
+                ) + evaluationToolSentence,
                 currentPage['invalid'],
                 page => (currentPage['invalid'] = page),
                 'invalid'

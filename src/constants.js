@@ -351,6 +351,7 @@ export const POLY_DIR = path.join(__dirname, '..', 'poly');
 export const OSM_DIR = path.join(__dirname, '..', 'osm');
 
 export const GITHUB_LINK = 'https://github.com/confusedbuffalo/phone-report/';
+export const OPENING_HOURS_EVALUATION_TOOL_URL = 'https://openingh.openstreetmap.de/evaluation_tool/';
 export const HOST_URL = {
     phone: 'https://confusedbuffalo.github.io/phone-report/',
     name: 'https://names-report.pages.dev/',
