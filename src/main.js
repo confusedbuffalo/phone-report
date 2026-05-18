@@ -305,7 +305,9 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
     const validate = VALIDATORS[reportType];
     if (!validate) throw new Error(`Unsupported report type: ${reportType}`);
 
-    const validationResult = await validate(elementStream, subdivision.countryCode, tmpFilePath);
+    const countryOption = reportType === 'hours' ? subdivision.locale : subdivision.countryCode;
+
+    const validationResult = await validate(elementStream, countryOption, tmpFilePath);
 
     if (reportType === 'phone' && botEnabled) {
         validationResult.invalidCount -= validationResult.safeEditCount;
