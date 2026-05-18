@@ -473,7 +473,7 @@
     "Ireland": {
         "countryCode": "IE",
         "locale": "en-GB",
-        "safeAutoFixBotEnabled": false,
+        "safeAutoFixBotEnabled": true,
         "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/ireland-latest.osm.pbf",
         "divisionMap": {
             "Connacht": {
@@ -667,7 +667,7 @@
     "Norge": {
         "countryCode": "NO",
         "locale": "nb-NO",
-        "safeAutoFixBotEnabled": false,
+        "safeAutoFixBotEnabled": true,
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/norway.osm.pbf",
         "divisions": {
             "Agder": 10155517,
@@ -690,7 +690,7 @@
     "Polska": {
         "countryCode": "PL",
         "locale": "pl-PL",
-        "safeAutoFixBotEnabled": false,
+        "safeAutoFixBotEnabled": true,
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/poland.osm.pbf",
         "divisions": {
             "Dolnośląskie": 224457,
