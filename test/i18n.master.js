@@ -80,6 +80,12 @@ export const MASTER_KEYS = {
     fixableHoursHeader: [],
     fixableHoursDescription: [],
     invalidHoursDescription: [],
+    evaluationTool: [],
+    tooShort: [],
+    tooLong: [],
+    invalidCountry: [],
+    invalidLength: [],
+    notNumber: [],
 
     // --- Keys with Required Placeholders ---
     editIn: ['%e'],
@@ -92,6 +98,8 @@ export const MASTER_KEYS = {
     invalidHoursOutOf: ['%i', '%f', '%t'],
 
     numberDetailsNamesDataFrom: ['%o'],
+
+    checkOpeningHoursFormat: ['%l'],
 
     reportSubtitleForCountry: ['%c'],
     reportSubtitleNamesForCountry: ['%c'],
