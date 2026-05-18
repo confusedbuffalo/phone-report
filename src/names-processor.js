@@ -12,6 +12,8 @@ import { createBaseItem } from './data-processor.js';
  * missingNamesCount: number
  * }} An object containing the breakdown of record counts.
  */
+const NAME_LOCALIZED_REGEX = /^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/;
+
 export async function validateNames(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
@@ -26,16 +28,20 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
-        const nameTags = Object.keys(tags).reduce((acc, key) => {
-            if (key.match(/^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/)) {
-                acc[key] = tags[key];
+        const nameTags = {};
+        let nameTagsCount = 0;
+        for (const key in tags) {
+            if (key.startsWith('name:')) {
+                if (NAME_LOCALIZED_REGEX.test(key)) {
+                    nameTags[key] = tags[key];
+                    nameTagsCount++;
+                }
             }
-            return acc;
-        }, {});
+        }
 
         const primaryName = tags['name'];
 
-        if (Object.keys(nameTags).length === 0) continue;
+        if (nameTagsCount === 0) continue;
 
         totalCount++;
 
