@@ -2,6 +2,11 @@ import fs from 'fs';
 import { createBaseItem } from './data-processor.js';
 import { ALL_HOURS_TAGS } from './constants.js';
 import opening_hours from 'opening_hours';
+import { LRUCache } from 'lru-cache';
+
+const cache = new LRUCache({
+    max: 10000,
+});
 
 function replaceValidSpacing(str) {
     // e.g. Su, Mo
@@ -20,6 +25,12 @@ function replaceValidSpacing(str) {
 }
 
 export function validateHoursTag(hoursTagValue, tag, locale) {
+    const cacheKey = `${hoursTagValue}|${tag}|${locale}`;
+    const cachedResult = cache.get(cacheKey);
+    if (cachedResult) {
+        return structuredClone(cachedResult);
+    }
+
     const tagValidationResult = {
         isInvalid: false,
         isAutoFixable: true,
@@ -45,7 +56,8 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         tagValidationResult.warnings = error;
     }
 
-    return tagValidationResult;
+    cache.set(cacheKey, tagValidationResult);
+    return structuredClone(tagValidationResult);
 }
 
 /**
