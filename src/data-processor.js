@@ -183,8 +183,11 @@ export function createBaseItem(element) {
     const tags = element.properties;
 
     let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
-    if (website && !website.startsWith('http://') && !website.startsWith('https://')) {
-        website = `http://${website}`;
+    if (website) {
+        website = website.trim();
+        if (!website.toLowerCase().startsWith('http://') && !website.toLowerCase().startsWith('https://')) {
+            website = `http://${website}`;
+        }
     }
 
     const { lat, lon } = getRepresentativeLocation(element.geometry);
