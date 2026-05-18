@@ -455,9 +455,9 @@ async function processCountry(countryData) {
                     countryData.timestamp = dataTimestamp;
                 }
 
-                if (testMode) {
-                    break;
-                }
+                // if (testMode) {
+                //     break;
+                // }
             }
         }
     }
