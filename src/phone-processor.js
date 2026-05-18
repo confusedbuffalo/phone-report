@@ -913,13 +913,11 @@ function processMismatches(item, countryCode) {
  * @returns {boolean}
  */
 export function isSafeItemEdit(item, countryCode) {
+    const hasMismatches = item.mismatchTypeNumbers instanceof Map && item.mismatchTypeNumbers.size !== 0;
+    const hasDuplicates = item.duplicateNumbers instanceof Map && item.duplicateNumbers.size !== 0;
+
     // Not safe if there are any mismatch type numbers or duplicate numbers
-    if (
-        !item.autoFixable ||
-        item.hasTypeMismatch ||
-        (item.mismatchTypeNumbers && item.mismatchTypeNumbers instanceof Map && item.mismatchTypeNumbers.size !== 0) ||
-        (item.duplicateNumbers && item.duplicateNumbers instanceof Map && item.duplicateNumbers.size !== 0)
-    ) {
+    if (!item.autoFixable || item.hasTypeMismatch || hasMismatches || hasDuplicates) {
         return false;
     }
 
@@ -928,26 +926,11 @@ export function isSafeItemEdit(item, countryCode) {
         return false;
     }
 
-    // Ensure every key in one map exists in the other.
-    for (const key of item.invalidNumbers.keys()) {
-        if (!item.suggestedFixes.has(key)) {
-            return false;
-        }
-    }
-
-    let isSafe = true;
-
-    for (const [key, invalidValue] of item.invalidNumbers.entries()) {
+    // Ensure every invalid number has a corresponding suggested fix and that the edit is safe
+    return Array.from(item.invalidNumbers.entries()).every(([key, invalidValue]) => {
         const suggestedValue = item.suggestedFixes.get(key);
-
-        isSafe = isSafe && isSafeEdit(invalidValue, suggestedValue, countryCode);
-
-        if (!isSafe) {
-            return false;
-        }
-    }
-
-    return isSafe;
+        return suggestedValue !== undefined && isSafeEdit(invalidValue, suggestedValue, countryCode);
+    });
 }
 
 /**
