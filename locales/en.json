@@ -114,5 +114,7 @@
     "fixableHoursDescription": "These opening hours are essentially valid but are not in the standard format in some way. The suggested fix is how the hours are interpretted by a standard processor. Not all &apos;auto&apos; fixes are necessarily valid, so please do not blindly click on all the fix links without first verifying the change.",
     "invalidHoursDescription": "These opening hours are all invalid and cannot be understood. The website could be used to check for the correct hours, or a survey may be necessary.",
     "hasInvalidHours": "%n has invalid opening hours, what should they be?",
-    "invalidHoursOutOf": "%i invalid opening hours (%f potentially fixable) out of %t"
+    "invalidHoursOutOf": "%i invalid opening hours (%f potentially fixable) out of %t",
+    "evaluationTool": "evaluation tool",
+    "checkOpeningHoursFormat": "You may find this %l useful to check the opening hours format."
 }

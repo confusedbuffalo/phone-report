@@ -31,8 +31,27 @@
 
     function translate(key, substitutions = {}) {
         let str = footerTranslations[key] || 'MISSING_KEY:' + key;
-        if (str.includes('%n') && substitutions['%n'] !== undefined) str = str.replace('%n', substitutions['%n']);
-        if (str.includes('%t') && substitutions['%t'] !== undefined) str = str.replace('%t', substitutions['%t']);
+        const placeholders = {
+            '%n': substitutions['%n'],
+            '%t': substitutions['%t'],
+            '%l': substitutions['%l'],
+            '%i': substitutions['%i'],
+            '%f': substitutions['%f'],
+            '%c': substitutions['%c'],
+            '%e': substitutions['%e'],
+            '%o': substitutions['%o'],
+            '%d': substitutions['%d'],
+            '%z': substitutions['%z'],
+            '%a': substitutions['%a'],
+            '%p': substitutions['%p'],
+        };
+
+        for (const [placeholder, value] of Object.entries(placeholders)) {
+            if (str.includes(placeholder) && value !== undefined) {
+                str = str.replace(placeholder, value);
+            }
+        }
+
         return str;
     }
 

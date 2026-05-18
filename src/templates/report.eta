@@ -155,6 +155,7 @@
         const DATA_LAST_UPDATED = '<%= it.subdivisionStats.lastUpdated %>';
         const STORAGE_KEY = 'osm_report_editors';
         const subdivisionName = <%~ JSON.stringify(it.subdivisionStats.name) %>;
+        const OPENING_HOURS_EVALUATION_TOOL_URL = '<%= it.OPENING_HOURS_EVALUATION_TOOL_URL %>';
         const CHANGESET_TAGS = <%~ JSON.stringify(it.CHANGESET_TAGS[it.reportType]) %>;
         const OFFICIAL_LANGUAGES = <%~ JSON.stringify(it.officialLanguages) %>;
 
