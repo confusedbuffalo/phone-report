@@ -462,12 +462,12 @@ async function processCountry(countryData) {
         }
     }
 
-    REPORT_TYPES.forEach(reportType => {
+    for (const reportType of REPORT_TYPES) {
         const outputDir = path.join(BUILD_DIR[reportType], safeName(countryName));
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
         }
-    });
+    }
 
     const groupedDivisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, {}]));
 
@@ -484,13 +484,13 @@ async function processCountry(countryData) {
             clientTranslations
         );
 
-        REPORT_TYPES.forEach(reportType => {
+        for (const reportType of REPORT_TYPES) {
             groupedDivisionStats[reportType][rawDivisionName] = divisionStats[reportType];
 
             Object.keys(totals[reportType]).forEach(countType => {
                 totals[reportType][countType] += divisionTotals[reportType][countType];
             });
-        });
+        }
     }
 
     const parsedTimestamp = parseOsmTimestamp(countryData.timestamp);
@@ -505,7 +505,7 @@ async function processCountry(countryData) {
 
     const countryStats = {};
 
-    REPORT_TYPES.forEach(reportType => {
+    for (const reportType of REPORT_TYPES) {
         countryStats[reportType] = {
             ...baseCountryStats,
             groupedDivisionStats: groupedDivisionStats[reportType],
@@ -513,16 +513,16 @@ async function processCountry(countryData) {
         COUNT_TYPES[reportType].forEach(countType => {
             countryStats[reportType][countType] = totals[reportType][countType];
         });
-    });
+    }
 
     if (countryStats.phone) {
         countryStats.phone.botEnabled = countryData.safeAutoFixBotEnabled;
     }
 
-    REPORT_TYPES.forEach(async reportType => {
+    for (const reportType of REPORT_TYPES) {
         saveCountryHistory(reportType, countryStats[reportType]);
         await generateCountryIndexHtml(reportType, countryStats[reportType]);
-    });
+    }
 
     return countryStats;
 }
@@ -621,18 +621,18 @@ async function main() {
         countryData.name = countryKey;
         countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
         const countryStats = await processCountry(countryData);
-        REPORT_TYPES.forEach(reportType => {
+        for (const reportType of REPORT_TYPES) {
             allCountryStats[reportType].push(countryStats[reportType]);
-        });
+        }
 
         if (testMode) {
             break;
         }
     }
 
-    REPORT_TYPES.forEach(async reportType => {
+    for (const reportType of REPORT_TYPES) {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);
-    });
+    }
 
     console.log('Full build process completed successfully.');
 }
