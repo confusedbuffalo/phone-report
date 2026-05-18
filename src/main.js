@@ -436,7 +436,7 @@ async function processCountry(countryData) {
 
                 await downloadPbf(pbfUrl, subPbfFilePath);
 
-                REPORT_TYPES.forEach(async reportType => {
+                for (const reportType of REPORT_TYPES) {
                     const tmpReportPbfFilePath = path.join(
                         process.cwd(),
                         `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
@@ -444,7 +444,7 @@ async function processCountry(countryData) {
                     await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
                     await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
                     fs.rmSync(tmpReportPbfFilePath, { force: true });
-                });
+                }
 
                 fs.rmSync(subPbfFilePath, { force: true });
 
