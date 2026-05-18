@@ -355,7 +355,7 @@ export const OPENING_HOURS_EVALUATION_TOOL_URL = 'https://openingh.openstreetmap
 export const HOST_URL = {
     phone: 'https://confusedbuffalo.github.io/phone-report/',
     name: 'https://names-report.pages.dev/',
-    hours: 'https://opening-hours-report.pages.dev/',
+    hours: 'https://opening-hours.pages.dev/',
 };
 
 const PACKAGE_NAME = packageInfo.name;
