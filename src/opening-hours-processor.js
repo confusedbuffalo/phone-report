@@ -14,6 +14,8 @@ function replaceValidSpacing(str) {
     result = result.replace(/((?<=\w)\s+(?=\d))/g, '');
     // consecutive spaces
     result = result.replace(/\s+/g, ' ');
+    // title case
+    result = result.replace('Off', 'off').replace('Closed', 'closed');
     return result;
 }
 
