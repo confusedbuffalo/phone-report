@@ -171,7 +171,7 @@ function renderList() {
                           .replace('%i', groupInvalidFormatted)
                           .replace('%f', groupFixableFormatted)
                           .replace('%t', groupTotalFormatted)
-                    : reportType === 'names'
+                    : reportType === 'name'
                       ? T_CLIENT.incompleteNamesOutOf
                             .replace('%i', groupInvalidFormatted)
                             .replace('%t', groupTotalFormatted)
