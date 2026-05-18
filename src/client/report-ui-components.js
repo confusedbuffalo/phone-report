@@ -257,7 +257,10 @@ function createButtons(item, clickedClass) {
         ? `<span data-editor-id="fix-label" class="label ${clickedClass ? clickedClass : 'label-fixable'}">${translate('fixable')}</span>`
         : '';
 
-    const websiteButton = item.website
+    const isSafeWebsite =
+        item.website &&
+        (item.website.toLowerCase().startsWith('http://') || item.website.toLowerCase().startsWith('https://'));
+    const websiteButton = isSafeWebsite
         ? `<a href="${escapeHTML(item.website)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>`
         : '';
 
