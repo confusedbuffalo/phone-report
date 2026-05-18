@@ -86,6 +86,13 @@ jobs:
             - name: Install Dependencies
               run: npm install
 
+            - name: Run Semantic Release
+              if: env.BUILD_TYPE == 'full'
+              id: semantic
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: npx semantic-release
+
             - name: Run Full Build Process
               run: npm run build
 
