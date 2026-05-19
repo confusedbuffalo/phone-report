@@ -257,3 +257,17 @@ describe('generateHtmlReport', () => {
         expect(writtenContent).toContain(expectedOfficialLanguages);
     });
 });
+
+const { getLengthProblemText } = await import('../src/html-report.js');
+
+describe('generateHtmlReport', () => {
+    test('Label short number as too short', async () => {
+        const result = getLengthProblemText('12345', 'en', 'GB');
+        expect(result).toEqual('tooShort');
+    });
+
+    test('Label long number as too long', async () => {
+        const result = getLengthProblemText('0123456789012', 'en', 'GB');
+        expect(result).toEqual('tooLong');
+    });
+});
