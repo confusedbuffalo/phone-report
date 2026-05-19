@@ -118,7 +118,7 @@ export const OSM_EDITORS = {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
             return `${baseUrl}?objects=${item.type[0]}${item.id}&relation_members=true`;
         },
-        editInString: locale => translate('editIn', locale, ['JOSM']),
+        editInString: locale => translate('editIn', locale, { editor: 'JOSM' }),
         onClick: function (editorId) {
             return `openInJosm(OSM_EDITORS['${editorId}'].getEditLink(item), event)`;
         },
@@ -128,21 +128,21 @@ export const OSM_EDITORS = {
             const baseUrl = 'https://www.openstreetmap.org/edit?editor=id';
             return `${baseUrl}&${item.type}=${item.id}#map=19/${item.lat}/${item.lon}`;
         },
-        editInString: locale => translate('editIn', locale, ['iD']),
+        editInString: locale => translate('editIn', locale, { editor: 'iD' }),
     },
     Rapid: {
         getEditLink: function (item) {
             const baseUrl = 'https://rapideditor.org/edit#map=19';
             return `${baseUrl}/${item.lat}/${item.lon}&id=${item.type[0]}${item.id}`;
         },
-        editInString: locale => translate('editIn', locale, ['Rapid']),
+        editInString: locale => translate('editIn', locale, { editor: 'Rapid' }),
     },
     Level0: {
         getEditLink: function (item) {
             const baseUrl = 'https://level0.osmz.ru/?url=';
             return `${baseUrl}${item.type}/${item.id}`;
         },
-        editInString: locale => translate('editIn', locale, ['Level0']),
+        editInString: locale => translate('editIn', locale, { editor: 'Level0' }),
     },
     Geo: {
         getEditLink: function (item) {

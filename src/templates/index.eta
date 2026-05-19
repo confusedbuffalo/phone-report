@@ -71,9 +71,9 @@
                     const formattedTotal = country.totalCount.toLocaleString(itemLocale);
 
                     const description = it.reportType === 'phone' ?
-                        it.translate('invalidNumbersOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal])
-                            : it.reportType === 'name' ? it.translate('incompleteNamesOutOf', itemLocale, [formattedInvalid, formattedTotal])
-                                : it.translate('invalidHoursOutOf', itemLocale, [formattedInvalid, country.autoFixableCount.toLocaleString(itemLocale), formattedTotal]);
+                        it.translate('invalidNumbersOutOf', itemLocale, { invalid: formattedInvalid, fixable: country.autoFixableCount.toLocaleString(itemLocale), total: formattedTotal })
+                            : it.reportType === 'name' ? it.translate('incompleteNamesOutOf', itemLocale, { incomplete: formattedInvalid, total: formattedTotal })
+                                : it.translate('invalidHoursOutOf', itemLocale, { invalid: formattedInvalid, fixable: country.autoFixableCount.toLocaleString(itemLocale), total: formattedTotal });
                 %>
                     <a href="./<%= countryPageName %>" class="country-link">
                         <div class="country-link-content">

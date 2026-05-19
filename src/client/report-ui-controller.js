@@ -178,7 +178,7 @@ export function renderNumbers() {
     if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
         const evaluationToolLink = `<a href="${OPENING_HOURS_EVALUATION_TOOL_URL}" target="_blank" rel="noopener noreferrer" class="description-link">${translate('evaluationTool')}</a>`;
         const evaluationToolSentence =
-            reportType === 'hours' ? ' ' + translate('checkOpeningHoursFormat', { '%l': evaluationToolLink }) : '';
+            reportType === 'hours' ? ' ' + translate('checkOpeningHoursFormat', { link: evaluationToolLink }) : '';
 
         if (['phone', 'hours'].includes(reportType) && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
@@ -317,7 +317,7 @@ function renderPaginatedSection(
                 ${translate('previous')}
             </button>
             <span class="page-numbers">
-                ${translate('pageOf', { '%n': currentPage, '%t': totalPages })}
+                ${translate('pageOf', { page: currentPage, total: totalPages })}
             </span>
             <button id="nextPage${filterType}" data-action="page" data-page-change="1" data-section="${filterType}"
                     class="page-btn
@@ -484,7 +484,7 @@ function openUploadModal() {
         totalChanges += editCountForCounty;
     }
 
-    uploadModalTitle.innerHTML = translate('uploadChanges', { '%n': totalChanges });
+    uploadModalTitle.innerHTML = translate('uploadChanges', { count: totalChanges });
 
     // Reset buttons etc. in case of previous upload in this session
     uploadBtn.classList.add('cursor-pointer');
@@ -538,7 +538,7 @@ function disableCreateNoteWithMessage(message) {
  * @returns {void}
  */
 export function openNoteModal(item) {
-    noteModalTitle.innerHTML = translate('createNoteFor', { '%n': item.featureTypeName });
+    noteModalTitle.innerHTML = translate('createNoteFor', { name: item.featureTypeName });
 
     // Reset buttons etc.
     addNoteBtn.classList.add('cursor-pointer');
@@ -571,15 +571,15 @@ export function openNoteModal(item) {
 
         noteComment =
             invalidWithoutFix.length > 1
-                ? translate('hasInvalidPlural', { '%n': item.featureTypeName })
-                : translate('hasInvalidSingular', { '%n': item.featureTypeName });
+                ? translate('hasInvalidPlural', { name: item.featureTypeName })
+                : translate('hasInvalidSingular', { name: item.featureTypeName });
 
         noteComment += '\n\n';
         noteComment += invalidNumbersList;
     } else if (reportType === 'name') {
         noteComment = item.name
-            ? translate('hasIncompleteName', { '%n': item.featureTypeName })
-            : translate('hasMissingName', { '%n': item.featureTypeName });
+            ? translate('hasIncompleteName', { name: item.featureTypeName })
+            : translate('hasMissingName', { name: item.featureTypeName });
 
         const namesList = item.fixRows
             .flatMap(obj => Object.entries(obj).map(([key, value]) => `${key} = ${value}`))
@@ -599,7 +599,7 @@ export function openNoteModal(item) {
             })
             .join('\n');
 
-        noteComment = translate('hasInvalidHours', { '%n': item.featureTypeName });
+        noteComment = translate('hasInvalidHours', { name: item.featureTypeName });
 
         noteComment += '\n\n';
         noteComment += invalidHoursList;
@@ -659,7 +659,7 @@ function closeUploadModal() {
  * @returns {void}
  */
 function openEditsModal(count) {
-    editsModalTitle.innerHTML = translate('restoreChanges', { '%n': count });
+    editsModalTitle.innerHTML = translate('restoreChanges', { count: count });
 
     editsModal.classList.remove('hidden');
     setTimeout(() => {

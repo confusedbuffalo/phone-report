@@ -20,8 +20,8 @@ const translationFiles = fs
 // List of all expected keys
 const masterKeys = Object.keys(MASTER_KEYS);
 
-// Regex to find ANY placeholder (%letter)
-const PLACEHOLDER_REGEX = /%[a-z]/g;
+// Regex to find ANY placeholder ({key})
+const PLACEHOLDER_REGEX = /{(\w+)}/g;
 
 // Regex to find common, disallowed HTML characters (e.g., <, >, &, ", ')
 const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
@@ -58,7 +58,7 @@ describe('Localization File Integrity Tests', () => {
                 if (!translationString) return;
 
                 // Find all placeholders used in the current translation string
-                const actualPlaceholders = (translationString.match(PLACEHOLDER_REGEX) || []).map(p => p.toLowerCase()); // Ensure consistent case
+                const actualPlaceholders = (translationString.match(PLACEHOLDER_REGEX) || []).map(p => p.slice(1, -1)); // Extract key from {key}
 
                 // Check for missing required placeholders
                 requiredPlaceholders.forEach(requiredP => {
@@ -148,46 +148,46 @@ describe('i18n Module Functionality', () => {
             expect(translate('this_key_does_not_exist', 'en-GB')).toBe('MISSING_KEY:this_key_does_not_exist');
         });
 
-        test('should handle simple single-argument substitution for %c', () => {
+        test('should handle simple single-argument substitution for country', () => {
             const expected = 'OSM Phone Number Validation Report - Testland';
             const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).countryReportTitle;
-            expect(master).toContain('%c'); // Ensure master key is correct
-            expect(translate('countryReportTitle', 'en', ['Testland'])).toBe(expected);
+            expect(master).toContain('{country}'); // Ensure master key is correct
+            expect(translate('countryReportTitle', 'en', { country: 'Testland' })).toBe(expected);
         });
 
-        test('should handle single-argument substitution for %e', () => {
+        test('should handle single-argument substitution for editor', () => {
             const expected = 'Edit in JOSM';
             const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).editIn;
-            expect(master).toContain('%e'); // Ensure master key is correct
-            expect(translate('editIn', 'en', ['JOSM'])).toBe(expected);
+            expect(master).toContain('{editor}'); // Ensure master key is correct
+            expect(translate('editIn', 'en', { editor: 'JOSM' })).toBe(expected);
         });
 
-        test('should handle single-argument substitution for %p', () => {
+        test('should handle single-argument substitution for percent', () => {
             const expected = '12.34% of total';
             const master = JSON.parse(
                 fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')
             ).invalidPercentageOfTotal;
-            expect(master).toContain('%p'); // Ensure master key is correct
-            expect(translate('invalidPercentageOfTotal', 'en', ['12.34'])).toBe(expected);
+            expect(master).toContain('{percent}'); // Ensure master key is correct
+            expect(translate('invalidPercentageOfTotal', 'en', { percent: '12.34' })).toBe(expected);
         });
 
         test('should handle multi-argument substitution for invalidNumbersOutOf', () => {
             const expected = '10 invalid numbers (5 potentially fixable) out of 100';
             const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).invalidNumbersOutOf;
-            expect(master).toContain('%i');
-            expect(master).toContain('%f');
-            expect(master).toContain('%t');
-            expect(translate('invalidNumbersOutOf', 'en', ['10', '5', '100'])).toBe(expected);
+            expect(master).toContain('{invalid}');
+            expect(master).toContain('{fixable}');
+            expect(master).toContain('{total}');
+            expect(translate('invalidNumbersOutOf', 'en', { invalid: '10', fixable: '5', total: '100' })).toBe(expected);
         });
 
         test('should handle multi-argument substitution for dataSourcedTemplate', () => {
             const expected = 'Data sourced on Date at Time UTC (Now)';
             const master = JSON.parse(fs.readFileSync(path.join(localesDir, 'en.json'), 'utf8')).dataSourcedTemplate;
-            expect(master).toContain('%d');
-            expect(master).toContain('%t');
-            expect(master).toContain('%z');
-            expect(master).toContain('%a');
-            expect(translate('dataSourcedTemplate', 'en', ['Date', 'Time', 'UTC', 'Now'])).toBe(expected);
+            expect(master).toContain('{date}');
+            expect(master).toContain('{time}');
+            expect(master).toContain('{zone}');
+            expect(master).toContain('{ago}');
+            expect(translate('dataSourcedTemplate', 'en', { date: 'Date', time: 'Time', zone: 'UTC', ago: 'Now' })).toBe(expected);
         });
     });
 

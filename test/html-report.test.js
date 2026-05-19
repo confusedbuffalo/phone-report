@@ -49,7 +49,7 @@ const Stream = (await import('stream')).default;
 
 jest.unstable_mockModule('../src/i18n.js', () => ({
     translate: (key, locale, args) => {
-        if (args) return `${key}: ${args.join(',')}`;
+        if (args) return `${key}: ${Object.values(args).join(',')}`;
         return key;
     },
     getTranslations: locale => ({}),
