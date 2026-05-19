@@ -182,16 +182,19 @@ export function isArea(geometry) {
 export function createBaseItem(element) {
     const tags = element.properties;
 
-    let website = WEBSITE_TAGS.map(tag => tags[tag]).find(url => url);
-    if (website) {
-        website = website.trim();
-        if (!website.toLowerCase().startsWith('http://') && !website.toLowerCase().startsWith('https://')) {
-            website = `http://${website}`;
+    let website;
+    for (const tag of WEBSITE_TAGS) {
+        if (tags[tag]) {
+            website = tags[tag].trim();
+            if (!website.toLowerCase().startsWith('http://') && !website.toLowerCase().startsWith('https://')) {
+                website = `http://${website}`;
+            }
+            break;
         }
     }
 
     const { lat, lon } = getRepresentativeLocation(element.geometry);
-    const couldBeArea = isArea(element.geometry);
+    const couldBeArea = element.geometry.type === 'Point' ? false : isArea(element.geometry);
     const elementTimestamp = tags['@timestamp'] ? new Date(tags['@timestamp'] * 1000).toISOString() : 0;
 
     return {
