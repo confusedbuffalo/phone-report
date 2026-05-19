@@ -9,19 +9,25 @@ const cache = new LRUCache({
 });
 
 function replaceValidSpacing(str) {
-    // e.g. Su, Mo
-    let result = str.replace(/([,;])\s+/g, '$1');
-    // e.g. Mo - Th
-    result = result.replace(/\s*(\-)\s*/g, '$1');
-    // e.g. Su [1]
-    result = result.replace(/((?<=\w)\s+(?=\[))/g, '');
-    // e.g. Fr10:00
-    result = result.replace(/((?<=\w)\s+(?=\d))/g, '');
-    // consecutive spaces
-    result = result.replace(/\s+/g, ' ');
-    // title case
-    result = result.replaceAll('Off', 'off').replaceAll('Closed', 'closed');
-    return result;
+    return (
+        str
+            // e.g. Su, Mo
+            .replace(/\s*([,;])\s*/g, '$1')
+            // e.g. Mo - Th
+            .replace(/\s*(\-)\s*/g, '$1')
+            // e.g. Su [1]
+            .replace(/((?<=\w)\s+(?=\[))/g, '')
+            // e.g. [1] 10:00
+            .replace(/((?<=\])\s+(?=\d))/g, '')
+            // e.g. Fr10:00
+            .replace(/((?<=\w)\s+(?=\d))/g, '')
+            // consecutive spaces
+            .replace(/\s+/g, ' ')
+            // title case
+            .replaceAll('Off', 'off')
+            .replaceAll('Closed', 'closed')
+            .replaceAll('Easter', 'easter')
+    );
 }
 
 export function validateHoursTag(hoursTagValue, tag, locale) {

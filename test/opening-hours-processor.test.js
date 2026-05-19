@@ -37,6 +37,11 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('Opening hours with title case Easter is valid', () => {
+        const result = validateHoursTag('Easter-Oct 31 Mo-Su 10:00-17:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('Opening hours with three-letter days is invalid but fixable', () => {
         const result = validateHoursTag('Mon-Fri 08:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
@@ -97,6 +102,11 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('Space before comma is valid', () => {
+        const result = validateHoursTag('Mo-Sa 12:00-14:30 , 17:00-21:30', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('Spaces between days is valid', () => {
         const result = validateHoursTag('Mo-Th, Sa 10:00-17:00; Fr 10:00-18:00; Su 11:00-15:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
@@ -124,6 +134,11 @@ describe('validateHoursTag', () => {
 
     test('Space between days and week modifier is valid', () => {
         const result = validateHoursTag('Su [1,3] 08:00-14:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('No space after week modifier is valid', () => {
+        const result = validateHoursTag('Su[1,3]08:00-14:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
     });
 
