@@ -469,13 +469,12 @@ function getDiffHtml(oldDiff, newDiff) {
 
     mergedOldDiff.forEach(part => {
         const colorClass = part.removed ? 'diff-removed' : 'diff-unchanged';
-        oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
+        oldDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value)}</span>`;
     });
 
     mergedNewDiff.forEach(part => {
         const colorClass = part.added ? 'diff-added' : 'diff-unchanged';
-        // Use nbsp so that it always displays, even when there are multiple spaces or when a line would break
-        newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value).replace(/ /g, '&nbsp;')}</span>`;
+        newDiffHtml += `<span class="${colorClass}">${escapeHTML(part.value)}</span>`;
     });
 
     return { oldDiffHtml, newDiffHtml };
@@ -492,12 +491,12 @@ export function getPhoneDiffHtml(oldString, newString) {
     if (!oldString) {
         return {
             oldDiff: null,
-            newDiff: `<span class="diff-added">${escapeHTML(newString).replace(/ /g, '&nbsp;')}</span>`,
+            newDiff: `<span class="diff-added">${escapeHTML(newString)}</span>`,
         };
     }
     if (!newString) {
         return {
-            oldDiff: `<span class="diff-removed">${escapeHTML(oldString).replace(/ /g, '&nbsp;')}</span>`,
+            oldDiff: `<span class="diff-removed">${escapeHTML(oldString)}</span>`,
             newDiff: null,
         };
     }
