@@ -99,32 +99,42 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
 }
 
 /**
- * Gets the appropriate translated text for the length result from validatePhoneNumberLength.
+ * Gets the appropriate translated text for a length issue with a phone number.
  * @param {String} lengthResult - The result from validatePhoneNumberLength.
+ * @param {string} locale - The locale for the text.
+ * @param {string} countryCode - The country code to parse the phone number against.
  * @returns {String}
  */
-function getLengthProblemText(lengthResult) {
-    switch (lengthResult) {
-        case 'TOO_SHORT':
-            return translate('tooShort', locale);
-        case 'TOO_LONG':
-            return translate('tooLong', locale);
-        case 'INVALID_COUNTRY':
-            return translate('invalidCountry', locale);
-        case 'INVALID_LENGTH':
-            return translate('invalidLength', locale);
-        case 'NOT_A_NUMBER':
-            return translate('notNumber', locale);
-        default:
-            return '';
+export function getLengthProblemText(originalNumber, locale, countryCode) {
+    try {
+        const lengthResult = validatePhoneNumberLength(originalNumber, countryCode);
+        console.log(lengthResult);
+        switch (lengthResult) {
+            case 'TOO_SHORT':
+                console.log('tooshort');
+                return translate('tooShort', locale);
+            case 'TOO_LONG':
+                return translate('tooLong', locale);
+            case 'INVALID_COUNTRY':
+                return translate('invalidCountry', locale);
+            case 'INVALID_LENGTH':
+                return translate('invalidLength', locale);
+            case 'NOT_A_NUMBER':
+                return translate('notNumber', locale);
+            default:
+                return '';
+        }
+    } catch {
+        // parsing failed
+        return '';
     }
 }
 
 /**
  * Creates the fix rows for an invalid phone number item.
  * @param {Object} item - The invalid number data item.
- * @param {string} locale - The locale for the text
- * @param {string} countryCode - The country code for the item
+ * @param {string} locale - The locale for the text.
+ * @param {string} countryCode - The country code for the item.
  * @returns {Object}
  */
 function createPhoneFixRows(item, locale, countryCode) {
@@ -215,14 +225,10 @@ function createPhoneFixRows(item, locale, countryCode) {
                     [key]: `<span>${escapeHTML(originalNumber)}</span>`,
                 };
             } else {
-                let lengthProblemLabel = '';
-                try {
-                    const lengthResult = validatePhoneNumberLength(originalNumber);
-                    const lengthProblemText = getLengthProblemText(lengthResult);
-                    lengthProblemLabel = `<span class="label label-number-problem">${lengthProblemText}</span>`;
-                } catch {
-                    // parsing failed
-                }
+                const lengthProblemText = getLengthProblemText(originalNumber, locale, countryCode);
+                const lengthProblemLabel = lengthProblemText
+                    ? `<span class="label label-number-problem">${lengthProblemText}</span>`
+                    : '';
                 return {
                     [key]: `<span>${escapeHTML(originalNumber)}${lengthProblemLabel}</span>`,
                 };
