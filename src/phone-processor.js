@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { parsePhoneNumber } from 'libphonenumber-js/max';
+import { LRUCache } from 'lru-cache';
 import {
     EXCLUSIONS,
     MOBILE_TAGS,
@@ -24,6 +25,10 @@ import {
     INVALID_SPACING_CHARACTERS_REGEX_TW,
 } from './constants.js';
 import { createBaseItem } from './data-processor.js';
+
+const phoneValidationCache = new LRUCache({
+    max: 10000,
+});
 
 const MobileStatus = {
     MOBILE: 'mobile',
@@ -1009,7 +1014,23 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             if (tag === 'mobile' && phoneTagValue === 'yes') continue;
             if (tag === 'phone' && phoneTagValue === 'no') continue;
 
-            const validationResult = validateSingleTag(phoneTagValue, baseCountryCode, tags, tag);
+            // Only cache if the number cannot be an exclusion (to avoid dependency on osmTags context)
+            const nationalNumberOnly = phoneTagValue.replace(/[^\d]/g, '');
+            const countryExclusions = EXCLUSIONS[baseCountryCode];
+            const canBeExclusion = countryExclusions && countryExclusions[nationalNumberOnly];
+
+            const cacheKey = `${tag}|${baseCountryCode}|${phoneTagValue}`;
+            let validationResult = !canBeExclusion ? phoneValidationCache.get(cacheKey) : null;
+
+            if (validationResult) {
+                validationResult = { ...validationResult };
+            } else {
+                validationResult = validateSingleTag(phoneTagValue, baseCountryCode, tags, tag);
+                if (!canBeExclusion) {
+                    phoneValidationCache.set(cacheKey, { ...validationResult });
+                }
+            }
+
             totalCount += validationResult.numberOfValues;
 
             const validatedNumbers = validationResult.validNumbersList;
