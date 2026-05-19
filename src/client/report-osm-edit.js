@@ -17,7 +17,7 @@ import {
     renderNumbers,
     toggleUploadingSpinner,
 } from './report-ui-controller.js';
-import { escapeHTML } from './report-utils.js';
+import { calculateBufferedBBox, escapeHTML } from './report-utils.js';
 
 const redirectUrl = `${CHANGESET_TAGS.host}land.html`;
 
