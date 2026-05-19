@@ -66,9 +66,8 @@ export function translate(key, locale, args = []) {
         return translation;
     }
 
-    let output = translation;
-
-    // Perform positional replacement based on the defined placeholders.
+    // Create a map for quick placeholder lookup and positional matching
+    const replacements = {};
     placeholders.forEach((placeholder, index) => {
         if (args[index] !== undefined) {
             let value = args[index];
@@ -76,11 +75,15 @@ export function translate(key, locale, args = []) {
             if (placeholder === '%p') {
                 value = `${value}%`;
             }
-            output = output.replace(placeholder, value);
+            replacements[placeholder] = value;
         }
     });
 
-    return output;
+    // Replace all placeholders in a single pass
+    const escapedPlaceholders = placeholders.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const regex = new RegExp(escapedPlaceholders.join('|'), 'g');
+
+    return translation.replace(regex, match => replacements[match] ?? match);
 }
 
 /**

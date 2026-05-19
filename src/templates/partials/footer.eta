@@ -30,8 +30,8 @@
     const footerTranslations = <%~ JSON.stringify(it.translations) %>;
 
     function translate(key, substitutions = {}) {
-        let str = footerTranslations[key] || 'MISSING_KEY:' + key;
-        const placeholders = {
+        const str = footerTranslations[key] || 'MISSING_KEY:' + key;
+        const replacements = {
             '%n': substitutions['%n'],
             '%t': substitutions['%t'],
             '%l': substitutions['%l'],
@@ -46,13 +46,9 @@
             '%p': substitutions['%p'],
         };
 
-        for (const [placeholder, value] of Object.entries(placeholders)) {
-            if (str.includes(placeholder) && value !== undefined) {
-                str = str.replace(placeholder, value);
-            }
-        }
-
-        return str;
+        // Replace all placeholders in a single pass
+        const regex = /%[ntlifceodzap]/g;
+        return str.replace(regex, match => replacements[match] ?? match);
     }
 
     function updateTimeAgo() {
