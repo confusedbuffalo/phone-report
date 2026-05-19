@@ -31,7 +31,7 @@
                     <div class="sort-controls">
                         <span class="sort-label"><%= it.translate('sortBy', it.locale) %></span>
                         <button id="sort-percentage" data-sort="percentage" class="sort-btn sort-btn-style"><%= it.translate('invalidPercentage', it.locale) %></button>
-                        <button id="sort-invalid" data-sort="invalidCount" class="sort-btn sort-btn-style"><%= it.translate('invalidCount', it.locale) %></button>
+                        <button id="sort-invalid" data-sort="invalidCount" class="sort-btn sort-btn-style"><%~ it.translate('invalidCount', it.locale) %></button>
                         <button id="sort-name" data-sort="name" class="sort-btn sort-btn-style"><%= it.translate('name', it.locale) %></button>
                     </div>
                     <div class="checkbox-container">
