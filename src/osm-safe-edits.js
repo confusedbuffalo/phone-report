@@ -460,7 +460,7 @@ async function processSafeEdits() {
                         stats.uploaded++;
                         await sleep(500);
                     } catch (err) {
-                        console.error(`Upload failed for ${filePath}:`, err.message);
+                        console.error(`Upload failed for ${filePath}:`, err);
                     }
                 } else {
                     stats.skipped++;
