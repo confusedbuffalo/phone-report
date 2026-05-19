@@ -30,16 +30,21 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const nameTags = {};
         let nameTagsCount = 0;
+        const primaryName = tags['name'];
+        let hasPrimaryNameMatch = false;
+
         for (const key in tags) {
             if (key.startsWith('name:')) {
                 if (NAME_LOCALIZED_REGEX.test(key)) {
-                    nameTags[key] = tags[key];
+                    const tagValue = tags[key];
+                    nameTags[key] = tagValue;
                     nameTagsCount++;
+                    if (primaryName && tagValue === primaryName) {
+                        hasPrimaryNameMatch = true;
+                    }
                 }
             }
         }
-
-        const primaryName = tags['name'];
 
         if (nameTagsCount === 0) continue;
 
@@ -59,7 +64,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         // Condition 1: There is no 'name' tag
         // Condition 2: There are localised names (name:*) and none of them match the primary name
-        let isInvalid = !primaryName || !Object.values(nameTags).includes(primaryName);
+        let isInvalid = !primaryName || !hasPrimaryNameMatch;
 
         if (isInvalid) {
             const langMap = {
