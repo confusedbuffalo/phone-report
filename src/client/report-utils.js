@@ -142,7 +142,7 @@ export function escapeHTML(str) {
  * @param {number} bufferMetres - The desired buffer distance in metres.
  * @returns {number[]} - The bounding box array: [minLon, minLat, maxLon, maxLat]
  */
-function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
+export function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
     // Earth's radius in metres.
     const R = 6371000;
 
@@ -169,15 +169,7 @@ function getFirstNonNullValue(obj) {
         return '';
     }
 
-    const values = Object.values(obj);
-
-    for (const value of values) {
-        if (value !== null && value !== undefined) {
-            return value; // Return the first one found
-        }
-    }
-
-    return '';
+    return Object.values(obj).find(value => value !== null && value !== undefined) ?? '';
 }
 
 /**
@@ -192,18 +184,21 @@ export function getSortedItems(filterType) {
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
     const targetItems = appState.reportData.filter(item => {
-        const isWanted =
-            filterType === 'foreign'
-                ? item.isForeignItem
-                : filterType === 'fixable'
-                  ? item.autoFixable
-                  : reportType === 'phone'
-                    ? !item.autoFixable && !item.isForeignItem // 'invalid' phone case
-                    : reportType === 'hours'
-                      ? !item.autoFixable
-                      : filterType === 'missing'
-                        ? !item.name
-                        : item.name; // names report
+        let isWanted;
+        if (filterType === 'foreign') {
+            isWanted = item.isForeignItem;
+        } else if (filterType === 'fixable') {
+            isWanted = item.autoFixable;
+        } else if (reportType === 'phone') {
+            isWanted = !item.autoFixable && !item.isForeignItem; // 'invalid' phone case
+        } else if (reportType === 'hours') {
+            isWanted = !item.autoFixable;
+        } else if (filterType === 'missing') {
+            isWanted = !item.name;
+        } else {
+            isWanted = item.name; // names report
+        }
+
         const isNotInUploadedChanges = !uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id];
         const isNotInCurrentEdits = !edits?.[subdivisionName]?.[item.type]?.[item.id];
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
