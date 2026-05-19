@@ -377,7 +377,7 @@ export const CHANGESET_TAGS = {
     hours: {
         comment: 'Fix opening hours issues',
         created_by: PACKAGE_STRING,
-        host: HOST_URL.name,
+        host: HOST_URL.hours,
     },
 };
 

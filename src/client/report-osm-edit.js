@@ -19,7 +19,7 @@ import {
 } from './report-ui-controller.js';
 import { escapeHTML } from './report-utils.js';
 
-const redirectUrl = `${CHANGESET_TAGS[reportType]}land.html`;
+const redirectUrl = `${CHANGESET_TAGS.host}land.html`;
 
 /**
  * Sends a command to the JOSM Remote Control API.
