@@ -305,7 +305,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
     const validate = VALIDATORS[reportType];
     if (!validate) throw new Error(`Unsupported report type: ${reportType}`);
 
-    const countryOption = reportType === 'hours' ? subdivision.locale : subdivision.countryCode;
+    const countryOption = reportType === 'hours' ? countryData.locale : subdivision.countryCode;
 
     const validationResult = await validate(elementStream, countryOption, tmpFilePath);
 
