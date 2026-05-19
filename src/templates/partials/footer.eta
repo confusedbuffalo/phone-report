@@ -6,7 +6,7 @@
 <p id="data-timestamp-container" 
    class="footer-text"
    data-timestamp="<%= timestampMs %>">
-    <%~ it.translate('dataSourcedTemplate', it.locale, [formattedDate, formattedTime, 'UTC', it.translate('timeAgoJustNow', it.locale)]) %>
+    <%~ it.translate('dataSourcedTemplate', it.locale, { date: formattedDate, time: formattedTime, zone: 'UTC', ago: it.translate('timeAgoJustNow', it.locale) }) %>
 </p>
 
 <p class="footer-text">
@@ -17,7 +17,7 @@
 </p>
 
 <p class="footer-text">
-    <%~ it.translate('numberDetailsNamesDataFrom', it.locale, [osmLink]) %>
+    <%~ it.translate('numberDetailsNamesDataFrom', it.locale, { source: osmLink }) %>
 </p>
 
 <% if (it.includeIconAttribution) { %>
@@ -30,25 +30,10 @@
     const footerTranslations = <%~ JSON.stringify(it.translations) %>;
 
     function translate(key, substitutions = {}) {
-        const str = footerTranslations[key] || 'MISSING_KEY:' + key;
-        const replacements = {
-            '%n': substitutions['%n'],
-            '%t': substitutions['%t'],
-            '%l': substitutions['%l'],
-            '%i': substitutions['%i'],
-            '%f': substitutions['%f'],
-            '%c': substitutions['%c'],
-            '%e': substitutions['%e'],
-            '%o': substitutions['%o'],
-            '%d': substitutions['%d'],
-            '%z': substitutions['%z'],
-            '%a': substitutions['%a'],
-            '%p': substitutions['%p'],
-        };
-
-        // Replace all placeholders in a single pass
-        const regex = /%[ntlifceodzap]/g;
-        return str.replace(regex, match => replacements[match] ?? match);
+        const translation = footerTranslations[key] || 'MISSING_KEY:' + key;
+        return translation.replace(/{(\w+)}/g, (match, p1) => {
+            return substitutions[p1] !== undefined ? substitutions[p1] : match;
+        });
     }
 
     function updateTimeAgo() {
@@ -64,12 +49,12 @@
             ? timeFormatter.format(-totalMinutes, 'minute') 
             : timeFormatter.format(-Math.floor(totalMinutes / 60), 'hour');
 
-        const template = footerTranslations['dataSourcedTemplate'] || 'Data sourced on %d at %t %z (%a)';
-        container.innerHTML = template
-            .replace('%d', clientFormattedDate)
-            .replace('%t', clientFormattedTime)
-            .replace('%z', 'UTC')
-            .replace('%a', timeAgoText);
+        container.innerHTML = translate('dataSourcedTemplate', {
+            date: clientFormattedDate,
+            time: clientFormattedTime,
+            zone: 'UTC',
+            ago: timeAgoText
+        });
     }
 
     updateTimeAgo();

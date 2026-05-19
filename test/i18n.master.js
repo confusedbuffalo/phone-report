@@ -68,7 +68,6 @@ export const MASTER_KEYS = {
     incompleteNamesDescription: [],
     osmIncompleteNamesValidation: [],
     reportSubtitleNames: [],
-    incompleteNamesReport: [],
     noIncompleteNames: [],
     duplicateNameTo: [],
     duplicateNameFrom: [],
@@ -88,41 +87,41 @@ export const MASTER_KEYS = {
     notNumber: [],
 
     // --- Keys with Required Placeholders ---
-    editIn: ['%e'],
+    editIn: ['editor'],
 
-    invalidPercentageOfTotal: ['%p'],
-    fixablePercentageOfInvalid: ['%p'],
+    invalidPercentageOfTotal: ['percent'],
+    fixablePercentageOfInvalid: ['percent'],
 
-    invalidNumbersOutOf: ['%i', '%f', '%t'],
-    incompleteNamesOutOf: ['%i', '%t'],
-    invalidHoursOutOf: ['%i', '%f', '%t'],
+    invalidNumbersOutOf: ['invalid', 'fixable', 'total'],
+    incompleteNamesOutOf: ['incomplete', 'total'],
+    invalidHoursOutOf: ['invalid', 'fixable', 'total'],
 
-    numberDetailsNamesDataFrom: ['%o'],
+    numberDetailsNamesDataFrom: ['source'],
 
-    checkOpeningHoursFormat: ['%l'],
+    checkOpeningHoursFormat: ['link'],
 
-    reportSubtitleForCountry: ['%c'],
-    reportSubtitleNamesForCountry: ['%c'],
-    reportSubtitleHoursForCountry: ['%c'],
-    dataSourcedTemplate: ['%d', '%t', '%z', '%a'],
+    reportSubtitleForCountry: ['country'],
+    reportSubtitleNamesForCountry: ['country'],
+    reportSubtitleHoursForCountry: ['country'],
+    dataSourcedTemplate: ['date', 'time', 'zone', 'ago'],
 
-    pageOf: ['%n', '%t'],
+    pageOf: ['page', 'total'],
 
-    uploadChanges: ['%n'],
-    restoreChanges: ['%n'],
-    changesetCreated: ['%n'],
-    createNoteFor: ['%n'],
-    noteIsClose: ['%n'],
-    noteCreated: ['%n'],
-    hasInvalidSingular: ['%n'],
-    hasInvalidPlural: ['%n'],
-    hasIncompleteName: ['%n'],
-    hasMissingName: ['%n'],
-    hasInvalidHours: ['%n'],
+    uploadChanges: ['count'],
+    restoreChanges: ['count'],
+    changesetCreated: ['id'],
+    createNoteFor: ['name'],
+    noteIsClose: ['id'],
+    noteCreated: ['id'],
+    hasInvalidSingular: ['name'],
+    hasInvalidPlural: ['name'],
+    hasIncompleteName: ['name'],
+    hasMissingName: ['name'],
+    hasInvalidHours: ['name'],
 
-    // Page Titles (uses %c for country name)
+    // Page Titles (uses country for country name)
     mainIndexTitle: [], // Static title
-    countryReportTitle: ['%c'],
-    countryReportTitleNames: ['%c'],
-    countryReportTitleHours: ['%c'],
+    countryReportTitle: ['country'],
+    countryReportTitleNames: ['country'],
+    countryReportTitleHours: ['country'],
 };

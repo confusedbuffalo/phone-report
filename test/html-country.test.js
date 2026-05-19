@@ -33,7 +33,7 @@ const fs = (await import('fs')).default;
 
 jest.unstable_mockModule('../src/i18n.js', () => ({
     translate: (key, locale, args) => {
-        if (args) return `${key}: ${args.join(',')}`;
+        if (args) return `${key}: ${Object.values(args).join(',')}`;
         if (key === 'osmPhoneNumberValidation' && locale === 'nl-NL') return 'OSM Telefoon&shy;nummer&shy;validatie';
         return key;
     },

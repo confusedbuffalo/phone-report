@@ -4,7 +4,7 @@ import { jest } from '@jest/globals';
 jest.unstable_mockModule('../src/i18n.js', () => ({
     translate: (key, locale, subs) => {
         if (subs) {
-            return `${key}[${subs.join(',')}]`;
+            return `${key}[${Object.values(subs).join(',')}]`;
         }
         return `${key}`;
     },
