@@ -20,7 +20,7 @@ function replaceValidSpacing(str) {
     // consecutive spaces
     result = result.replace(/\s+/g, ' ');
     // title case
-    result = result.replace('Off', 'off').replace('Closed', 'closed');
+    result = result.replaceAll('Off', 'off').replaceAll('Closed', 'closed');
     return result;
 }
 

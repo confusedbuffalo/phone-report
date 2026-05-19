@@ -27,6 +27,11 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(false);
     });
 
+    test('Opening hours with title case off multiple times is valid', () => {
+        const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Off; PH Off', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('Opening hours with title case closed is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Closed', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
