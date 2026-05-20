@@ -1,8 +1,31 @@
 import { addNote, openInJosm, login, logout, checkAndSubmit } from './report-osm-edit.js';
-// prettier-ignore
-import { addNoteBtn, commentBox, editsModal, noteCancelBtn, noteCloseBtnBottom, noteModal, settingsMenu, uploadBtn, uploadCancelBtn, uploadCloseBtnBottom, pageSize, currentPage, sortKey, undoData, appState } from './report-state.js';
-// prettier-ignore
-import { applyFix, discardEdits, recordItemClick, redoChange, saveSettings, setButtonsAsClicked, undoChange } from './report-storage.js';
+import {
+    addNoteBtn,
+    commentBox,
+    editsModal,
+    noteCancelBtn,
+    noteCloseBtnBottom,
+    noteModal,
+    settingsMenu,
+    uploadBtn,
+    uploadCancelBtn,
+    uploadCloseBtnBottom,
+    pageSize,
+    currentPage,
+    sortKey,
+    undoData,
+    appState,
+    uploadModal,
+} from './report-state.js';
+import {
+    applyFix,
+    discardEdits,
+    recordItemClick,
+    redoChange,
+    saveSettings,
+    setButtonsAsClicked,
+    undoChange,
+} from './report-storage.js';
 import { changePage, getItemWithIndex, handleSort } from './report-ui-actions.js';
 import { createListItem, createSaveRow, decodeHtmlEntities } from './report-ui-components.js';
 import { getFilterType, getSortedItems } from './report-utils.js';
