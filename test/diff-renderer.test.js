@@ -1156,6 +1156,21 @@ describe('getPhoneDiffHtml', () => {
         expect(result.newDiff).toBe(expectedSuggested);
     });
 
+    test('Slash as space', () => {
+        const original = '+48/12/430-12-34';
+        const suggested = '+48 12 430 12 34';
+
+        const result = getPhoneDiffHtml(original, suggested);
+
+        const expectedOriginal =
+            '<span class="diff-unchanged">+48</span><span class="diff-removed">/</span><span class="diff-unchanged">12</span><span class="diff-removed">/</span><span class="diff-unchanged">430</span><span class="diff-removed">-</span><span class="diff-unchanged">12</span><span class="diff-removed">-</span><span class="diff-unchanged">34</span>';
+        expect(result.oldDiff).toBe(expectedOriginal);
+
+        const expectedSuggested =
+            '<span class="diff-unchanged">+48</span><span class="diff-added"> </span><span class="diff-unchanged">12</span><span class="diff-added"> </span><span class="diff-unchanged">430</span><span class="diff-added"> </span><span class="diff-unchanged">12</span><span class="diff-added"> </span><span class="diff-unchanged">34</span>';
+        expect(result.newDiff).toBe(expectedSuggested);
+    });
+
     test('Slash denoting multiple endings', () => {
         const original = '+212522941234/35';
         const suggested = '+212 5 22 94 12 34; +212 5 22 94 12 35';

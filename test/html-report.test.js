@@ -55,11 +55,9 @@ jest.unstable_mockModule('../src/i18n.js', () => ({
     getTranslations: locale => ({}),
 }));
 
+const actualDiffRenderer = await import('../src/diff-renderer.js');
 jest.unstable_mockModule('../src/diff-renderer.js', () => ({
-    getPhoneDiffHtml: (original, suggested) => ({
-        oldDiff: original,
-        newDiff: suggested,
-    }),
+    ...actualDiffRenderer,
     getHoursDiffHtml: (original, suggested) => ({
         oldDiff: original,
         newDiff: suggested,
@@ -279,5 +277,41 @@ describe('generateHtmlReport', () => {
 
         const slashResult = getLengthProblemText('012345 / 098765', 'en', 'GB');
         expect(slashResult).toEqual('');
+    });
+});
+
+const { createPhoneFixRows } = await import('../src/html-report.js');
+
+describe('createPhoneFixRows', () => {
+    const itemWithSlash = {
+        type: 'node',
+        id: 1234567890,
+        user: 'example',
+        timestamp: '2021-03-27T19:23:29.000Z',
+        changeset: 123456789,
+        website: 'http://www.pro.net.pl/',
+        lat: 50.0834058,
+        lon: 19.9013057,
+        couldBeArea: false,
+        name: 'Pro-Holding',
+        invalidNumbers: {
+            phone: '+48/12/430-12-34',
+        },
+        suggestedFixes: {
+            phone: '+48 12 430 12 34',
+        },
+        hasTypeMismatch: false,
+        mismatchTypeNumbers: {},
+        duplicateNumbers: {},
+        validForeignNumbers: {},
+        autoFixable: true,
+        safeEdit: false,
+    };
+
+    test('Create correct diff for number with slash used as space', async () => {
+        const result = createPhoneFixRows(itemWithSlash, 'pl-PL', 'PL');
+        expect(result[0].phone).toEqual(
+            '<span class="diff-unchanged">+48</span><span class="diff-removed">/</span><span class="diff-unchanged">12</span><span class="diff-removed">/</span><span class="diff-unchanged">430</span><span class="diff-removed">-</span><span class="diff-unchanged">12</span><span class="diff-removed">-</span><span class="diff-unchanged">34</span>'
+        );
     });
 });

@@ -138,7 +138,7 @@ export function getLengthProblemText(originalNumber, locale, countryCode) {
  * @param {string} countryCode - The country code for the item.
  * @returns {Object}
  */
-function createPhoneFixRows(item, locale, countryCode) {
+export function createPhoneFixRows(item, locale, countryCode) {
     return Object.keys(item.invalidNumbers)
         .map(key => {
             const originalNumber = item.invalidNumbers[key];
