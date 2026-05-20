@@ -119,9 +119,6 @@ export const OSM_EDITORS = {
             return `${baseUrl}?objects=${item.type[0]}${item.id}&relation_members=true`;
         },
         editInString: locale => translate('editIn', locale, { editor: 'JOSM' }),
-        onClick: function (editorId) {
-            return `openInJosm(OSM_EDITORS['${editorId}'].getEditLink(item), event)`;
-        },
     },
     iD: {
         getEditLink: function (item) {
