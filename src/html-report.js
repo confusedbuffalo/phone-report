@@ -108,10 +108,8 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
 export function getLengthProblemText(originalNumber, locale, countryCode) {
     try {
         const lengthResult = validatePhoneNumberLength(originalNumber, countryCode);
-        console.log(lengthResult);
         switch (lengthResult) {
             case 'TOO_SHORT':
-                console.log('tooshort');
                 return translate('tooShort', locale);
             case 'TOO_LONG':
                 return translate('tooLong', locale);
