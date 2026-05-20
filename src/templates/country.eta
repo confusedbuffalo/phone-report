@@ -49,10 +49,8 @@
     </div>
     <script src="../background-colour.js"></script>
     <script>
-        const groupedDivisionStats = <%~ JSON.stringify(it.countryData.groupedDivisionStats) %>;
-        const safeCountryName = '<%~ it.safeName(it.countryData.name) %>';
-        const reportType = '<%~ it.reportType %>';
+        window.__CONFIG__ = <%~ JSON.stringify(it.countryConfig) %>;
     </script>
-    <script src="../country-page.js"></script>
+    <script type="module" src="../country-page.js"></script>
 </body>
 </html>

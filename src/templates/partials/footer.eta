@@ -24,39 +24,12 @@
     <%~ it.getIconAttributionHtml(it.locale) %>
 <% } %>
 
-<script>
+<script type="module">
+    import { updateTimeAgo } from '<%= it.reportConfig ? (it.singleLevelDivision ? '../' : '../../') : (it.countryConfig || it.country) ? '../' : './' %>footer.js';
+
     const clientFormattedDate = '<%= formattedDate %>';
     const clientFormattedTime = '<%= formattedTime %>';
-    const footerTranslations = <%~ JSON.stringify(it.translations) %>;
 
-    function translate(key, substitutions = {}) {
-        const translation = footerTranslations[key] || 'MISSING_KEY:' + key;
-        return translation.replace(/{(\w+)}/g, (match, p1) => {
-            return substitutions[p1] !== undefined ? substitutions[p1] : match;
-        });
-    }
-
-    function updateTimeAgo() {
-        const container = document.getElementById('data-timestamp-container');
-        if (!container) return;
-
-        const dataTimestampMs = parseInt(container.getAttribute('data-timestamp'), 10);
-        const dataDate = new Date(dataTimestampMs);
-        const totalMinutes = Math.floor((new Date() - dataDate) / (1000 * 60));
-
-        const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
-        const timeAgoText = totalMinutes < 60 
-            ? timeFormatter.format(-totalMinutes, 'minute') 
-            : timeFormatter.format(-Math.floor(totalMinutes / 60), 'hour');
-
-        container.innerHTML = translate('dataSourcedTemplate', {
-            date: clientFormattedDate,
-            time: clientFormattedTime,
-            zone: 'UTC',
-            ago: timeAgoText
-        });
-    }
-
-    updateTimeAgo();
-    setInterval(updateTimeAgo, 60000);
+    updateTimeAgo(clientFormattedDate, clientFormattedTime);
+    setInterval(() => updateTimeAgo(clientFormattedDate, clientFormattedTime), 60000);
 </script>

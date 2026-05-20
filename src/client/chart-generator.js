@@ -1,3 +1,5 @@
+import { reportCountryKey } from './config.js';
+
 let chartData = null;
 let progressChart = null;
 let progressChartPercent = null;
@@ -11,7 +13,7 @@ function getAxisColour() {
 function updateCharts(days) {
     if (!chartData) return;
 
-    const allData = REPORT_COUNTRY_KEY === 'ALL' ? chartData.countries : chartData.divisions;
+    const allData = reportCountryKey === 'ALL' ? chartData.countries : chartData.divisions;
     const regionKeys = Object.keys(allData);
 
     const allDates = new Set();
@@ -65,132 +67,138 @@ function updateCharts(days) {
     const colours = generateColours(regionKeys.length);
 
     // Chart for raw counts
-    const ctxCount = document.getElementById('progressChart').getContext('2d');
-    const countDatasets = regionKeys.map((region, index) => {
-        const regionHistory = allData[region];
-        const displayName = regionHistory.length > 0 ? regionHistory[0].name || region : region;
-        const dataPoints = labels.map(date => {
-            const entry = regionHistory.find(d => d.date === date);
-            return entry ? entry.invalidCount : null;
+    const progressChartEl = document.getElementById('progressChart');
+    if (progressChartEl) {
+        const ctxCount = progressChartEl.getContext('2d');
+        const countDatasets = regionKeys.map((region, index) => {
+            const regionHistory = allData[region];
+            const displayName = regionHistory.length > 0 ? regionHistory[0].name || region : region;
+            const dataPoints = labels.map(date => {
+                const entry = regionHistory.find(d => d.date === date);
+                return entry ? entry.invalidCount : null;
+            });
+            return {
+                label: displayName,
+                data: dataPoints,
+                fill: false,
+                borderColor: colours[index],
+                pointBackgroundColor: colours[index],
+                tension: 0.1,
+                yAxisID: 'y',
+            };
         });
-        return {
-            label: displayName,
-            data: dataPoints,
-            fill: false,
-            borderColor: colours[index],
-            pointBackgroundColor: colours[index],
-            tension: 0.1,
-            yAxisID: 'y',
-        };
-    });
 
-    progressChart = new Chart(ctxCount, {
-        type: 'line',
-        data: { labels: labels, datasets: countDatasets },
-        options: {
-            animation: false,
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: axisColour },
-                    grid: {
-                        color: semiTransparentGridColour,
-                        borderColor: axisColour,
+        progressChart = new Chart(ctxCount, {
+            type: 'line',
+            data: { labels: labels, datasets: countDatasets },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: axisColour },
+                        grid: {
+                            color: semiTransparentGridColour,
+                            borderColor: axisColour,
+                        },
+                    },
+                    x: {
+                        ticks: { color: axisColour },
+                        grid: {
+                            color: semiTransparentGridColour,
+                            borderColor: axisColour,
+                        },
                     },
                 },
-                x: {
-                    ticks: { color: axisColour },
-                    grid: {
-                        color: semiTransparentGridColour,
-                        borderColor: axisColour,
-                    },
-                },
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: axisColour,
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                    },
-                },
-            },
-        },
-    });
-
-    // Chart for percentage
-    const ctxPercent = document.getElementById('progressChartPercent').getContext('2d');
-    const percentDatasets = regionKeys.map((region, index) => {
-        const regionHistory = allData[region];
-        const displayName = regionHistory.length > 0 ? regionHistory[0].name || region : region;
-        const dataPoints = labels.map(date => {
-            const entry = regionHistory.find(d => d.date === date);
-            if (entry && entry.totalCount > 0) {
-                return ((entry.invalidCount / entry.totalCount) * 100).toFixed(2);
-            }
-            return null;
-        });
-        return {
-            label: displayName,
-            data: dataPoints,
-            fill: false,
-            borderColor: colours[index],
-            pointBackgroundColor: colours[index],
-            tension: 0.1,
-        };
-    });
-
-    progressChartPercent = new Chart(ctxPercent, {
-        type: 'line',
-        data: { labels: labels, datasets: percentDatasets },
-        options: {
-            animation: false,
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    min: 0,
-                    ticks: {
-                        color: axisColour,
-                        callback: value => value + '%',
-                    },
-                    grid: {
-                        color: semiTransparentGridColour,
-                        borderColor: axisColour,
-                    },
-                },
-                x: {
-                    ticks: { color: axisColour },
-                    grid: {
-                        color: semiTransparentGridColour,
-                        borderColor: axisColour,
-                    },
-                },
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: axisColour,
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                    },
-                },
-                tooltip: {
-                    callbacks: {
-                        label: context => {
-                            let label = context.dataset.label || '';
-                            if (label) label += ': ';
-                            if (context.parsed.y !== null) label += context.parsed.y + '%';
-                            else label += 'No Data';
-                            return label;
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: axisColour,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
                         },
                     },
                 },
             },
-        },
-    });
+        });
+    }
+
+    // Chart for percentage
+    const progressChartPercentEl = document.getElementById('progressChartPercent');
+    if (progressChartPercentEl) {
+        const ctxPercent = progressChartPercentEl.getContext('2d');
+        const percentDatasets = regionKeys.map((region, index) => {
+            const regionHistory = allData[region];
+            const displayName = regionHistory.length > 0 ? regionHistory[0].name || region : region;
+            const dataPoints = labels.map(date => {
+                const entry = regionHistory.find(d => d.date === date);
+                if (entry && entry.totalCount > 0) {
+                    return ((entry.invalidCount / entry.totalCount) * 100).toFixed(2);
+                }
+                return null;
+            });
+            return {
+                label: displayName,
+                data: dataPoints,
+                fill: false,
+                borderColor: colours[index],
+                pointBackgroundColor: colours[index],
+                tension: 0.1,
+            };
+        });
+
+        progressChartPercent = new Chart(ctxPercent, {
+            type: 'line',
+            data: { labels: labels, datasets: percentDatasets },
+            options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        min: 0,
+                        ticks: {
+                            color: axisColour,
+                            callback: value => value + '%',
+                        },
+                        grid: {
+                            color: semiTransparentGridColour,
+                            borderColor: axisColour,
+                        },
+                    },
+                    x: {
+                        ticks: { color: axisColour },
+                        grid: {
+                            color: semiTransparentGridColour,
+                            borderColor: axisColour,
+                        },
+                    },
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: axisColour,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                        },
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) label += context.parsed.y + '%';
+                                else label += 'No Data';
+                                return label;
+                            },
+                        },
+                    },
+                },
+            },
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -199,12 +207,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const rangeMinLabel = document.getElementById('rangeMin');
     const rangeMaxLabel = document.getElementById('rangeMax');
 
+    if (!timeRangeSlider) return;
+
     fetch('./history-data.json')
         .then(response => response.json())
         .then(data => {
             chartData = data;
 
-            const allData = REPORT_COUNTRY_KEY === 'ALL' ? data.countries : data.divisions;
+            const allData = reportCountryKey === 'ALL' ? data.countries : data.divisions;
             const allDates = new Set();
             Object.values(allData).forEach(regionArray => {
                 regionArray.forEach(d => allDates.add(d.date));

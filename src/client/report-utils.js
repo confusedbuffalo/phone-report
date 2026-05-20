@@ -1,4 +1,5 @@
 import { appState, sortDirection, sortKey, UPLOADED_ITEMS_KEY } from './report-state.js';
+import { reportType, subdivisionName } from './config.js';
 
 /**
  * Sorts an array of report items based on a specified key and direction.

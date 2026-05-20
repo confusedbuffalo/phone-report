@@ -1,3 +1,6 @@
+import { reportType, locale, groupedDivisionStats, safeCountryName } from './config.js';
+import { translate } from './i18n.js';
+
 /**
  * Escapes special HTML characters in a string.
  * @param {string} str - The string to escape.
@@ -25,7 +28,6 @@ function escapeHTML(str) {
     });
 }
 
-const locale = document.documentElement.lang;
 const listContainer = document.getElementById('division-list');
 const sortButtons = document.querySelectorAll('.sort-btn');
 const showEmptyCheckbox = document.getElementById('show-empty');
@@ -70,7 +72,6 @@ for (const divisionName in groupedDivisionStats) {
  * Updates the visual styles of the sort buttons to indicate which one is active.
  */
 function updateButtonStyles() {
-    const isDark = document.documentElement.classList.contains('dark');
     sortButtons.forEach(button => {
         const isActive = button.dataset.sort === currentSort;
         button.classList.toggle('sort-btn-style-active', isActive);
@@ -103,8 +104,6 @@ function createCollapseIcon() {
  * and filter settings. It handles both grouped and flat list layouts.
  */
 function renderList() {
-    const TARGET_LI_CLASS = 'list-item';
-
     let divisionNames = Object.keys(groupedDivisionStats);
 
     // Sort the division groups themselves based on the current sort order
@@ -346,7 +345,9 @@ function renderList() {
         listContainer.appendChild(li);
     }
     updateButtonStyles();
-    applyColors();
+    if (typeof applyColors === 'function') {
+        applyColors();
+    }
 }
 
 sortButtons.forEach(button => {

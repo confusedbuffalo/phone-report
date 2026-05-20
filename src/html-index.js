@@ -88,6 +88,13 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
         cache: true,
     });
 
+    const indexConfig = {
+        reportType,
+        locale,
+        translations,
+        searchIndex: buildSearchIndex(),
+    };
+
     const templateData = {
         locale,
         reportType,
@@ -98,6 +105,7 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
         buildSearchIndex,
         getIconAttributionHtml,
         GITHUB_LINK,
+        indexConfig,
     };
 
     const htmlContent = eta.render('index', templateData);

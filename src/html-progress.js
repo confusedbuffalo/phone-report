@@ -41,6 +41,13 @@ export async function generateProgressPage(reportType, country = null, locale = 
 
     const translations = getTranslations(locale);
 
+    const progressConfig = {
+        reportType,
+        locale,
+        translations,
+        reportCountryKey: country ? country : 'ALL',
+    };
+
     const templateData = {
         reportType,
         locale,
@@ -50,6 +57,7 @@ export async function generateProgressPage(reportType, country = null, locale = 
         translations,
         getIconAttributionHtml,
         GITHUB_LINK,
+        progressConfig,
     };
 
     const htmlContent = eta.render('progress', templateData);

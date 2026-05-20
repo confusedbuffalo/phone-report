@@ -20,6 +20,14 @@ export async function generateCountryIndexHtml(reportType, countryData) {
 
     const locale = countryData.locale;
 
+    const countryConfig = {
+        reportType,
+        locale,
+        translations: getTranslations(locale),
+        groupedDivisionStats: countryData.groupedDivisionStats,
+        safeCountryName: safeName(countryData.name),
+    };
+
     const templateData = {
         reportType,
         createStatsBox,
@@ -32,6 +40,7 @@ export async function generateCountryIndexHtml(reportType, countryData) {
         getIconAttributionHtml,
         GITHUB_LINK,
         translations: getTranslations(locale),
+        countryConfig,
     };
 
     const htmlContent = eta.render('country', templateData);

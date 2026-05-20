@@ -252,9 +252,8 @@ describe('generateHtmlReport', () => {
         const expectedSubtitle = `<h2 class="page-subtitle">O&#039;Fallon</h2>`;
         expect(writtenContent).toContain(expectedSubtitle);
 
-        // Check for the official languages in the file
-        const expectedOfficialLanguages = `const OFFICIAL_LANGUAGES = ["en"];`;
-        expect(writtenContent).toContain(expectedOfficialLanguages);
+        // Check for the official languages in the config
+        expect(writtenContent).toContain('"officialLanguages":["en"]');
     });
 });
 
