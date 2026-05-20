@@ -173,17 +173,16 @@ function getFirstNonNullValue(obj) {
 }
 
 /**
- * Retrieves the subset of report items (either autofixable or manual fix)
- * that have not been marked as edited or uploaded, and applies the current
- * section-specific sorting parameters.
- * @param {'fixable' | 'invalid' | 'foreign'} filterType - The category of items to retrieve.
- * @returns {Array<Object>} A new, sorted array of items for the specified section.
+ * Filters the report data to retrieve items belonging to a specific category
+ * that have not yet been marked as edited or uploaded.
+ * @param {'fixable' | 'invalid' | 'foreign' | 'missing'} filterType - The category of items to retrieve.
+ * @returns {Array<Object>} An array of filtered report items.
  */
-export function getSortedItems(filterType) {
+export function getFilteredItems(filterType) {
     const edits = JSON.parse(localStorage.getItem('edits')) || {};
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
-    const targetItems = appState.reportData.filter(item => {
+    return appState.reportData.filter(item => {
         let isWanted;
         if (filterType === 'foreign') {
             isWanted = item.isForeignItem;
@@ -203,9 +202,18 @@ export function getSortedItems(filterType) {
         const isNotInCurrentEdits = !edits?.[subdivisionName]?.[item.type]?.[item.id];
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
     });
+}
 
-    const sortedItems = sortItems(targetItems, sortKey[filterType], sortDirection[filterType]);
-    return sortedItems;
+/**
+ * Retrieves the subset of report items (either autofixable or manual fix)
+ * that have not been marked as edited or uploaded, and applies the current
+ * section-specific sorting parameters.
+ * @param {'fixable' | 'invalid' | 'foreign' | 'missing'} filterType - The category of items to retrieve.
+ * @returns {Array<Object>} A new, sorted array of items for the specified section.
+ */
+export function getSortedItems(filterType) {
+    const targetItems = getFilteredItems(filterType);
+    return sortItems(targetItems, sortKey[filterType], sortDirection[filterType]);
 }
 
 /**
@@ -234,15 +242,12 @@ export function filterCreatedNotes(createdNotes, reportData) {
  * @returns {string} The filter type that will find the item.
  */
 export function getFilterType(osmType, osmId) {
-    const targetItem = appState.reportData.filter(item => {
-        return item.type === osmType && item.id === osmId;
-    });
-    if (targetItem.length !== 1) {
-        console.log('No item or too many items found');
+    const item = appState.reportData.find(item => item.type === osmType && item.id === osmId);
+
+    if (!item) {
+        console.log('No item found');
         return;
     }
-
-    const item = targetItem[0];
 
     if (item.autoFixable) {
         return 'fixable';

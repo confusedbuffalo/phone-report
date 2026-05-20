@@ -1,11 +1,11 @@
 import { appState, currentPage, pageSize, sortDirection, sortKey } from './report-state.js';
 import { renderNumbers } from './report-ui-controller.js';
-import { getSortedItems } from './report-utils.js';
+import { getFilteredItems, getSortedItems } from './report-utils.js';
 
 /**
  * Handles pagination control logic by calculating the new current page,
  * updating the relevant global state variable, triggering a full re-render and smoothly scrolling to the section.
- * @param {('fixable'|'invalid'|'foreign')} section - The section being navigated ('Fixable' for autofixable, 'Invalid' for manual fix).
+ * @param {('fixable'|'invalid'|'foreign'|'missing')} section - The section being navigated.
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 export function changePage(section, delta) {
@@ -14,14 +14,8 @@ export function changePage(section, delta) {
         console.error('Cannot change page before data is loaded.');
         return;
     }
-    const totalPages =
-        section === 'fixable'
-            ? Math.ceil(appState.reportData.filter(item => item.autoFixable).length / pageSize)
-            : section === 'foreign'
-              ? Math.ceil(appState.reportData.filter(item => item.isForeignItem).length / pageSize)
-              : Math.ceil(
-                    appState.reportData.filter(item => !item.autoFixable && !item.isForeignItem).length / pageSize
-                ); // invalid
+    const totalItems = getFilteredItems(section).length;
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
     currentPage[section] = Math.max(1, Math.min(totalPages, currentPage[section] + delta));
     renderNumbers();
