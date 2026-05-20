@@ -473,11 +473,9 @@ export async function generateHtmlReport(
 
     for (const editorId in OSM_EDITORS) {
         const editor = OSM_EDITORS[editorId];
-        const onClickString = editor.onClick ? editor.onClick(editorId) : undefined;
 
         OSM_EDITORS_CLIENT[editorId] = {
             getEditLink: editor.getEditLink,
-            onClick: onClickString,
             // Pre-evaluate the string using the locale
             editInString: editor.editInString(locale),
         };

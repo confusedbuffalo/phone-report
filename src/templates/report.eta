@@ -168,10 +168,6 @@
                 const functionBody = funcString.substring(funcString.indexOf('{') + 1, funcString.lastIndexOf('}'));
                 editor.getEditLink = new Function('item', functionBody);
             }
-            if (editor.onClick) {
-                const onClickBody = editor.onClick;
-                editor.onClick = new Function('event', onClickBody);
-            }
         }
     </script>
     <script src="<%= it.singleLevelDivision ? '' : '../' %>../vendor/osm-api.min.js"></script>
