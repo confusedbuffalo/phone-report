@@ -52,6 +52,7 @@ jobs:
 
         env:
             BUILD_TYPE: ${{ (github.event_name == 'pull_request' || github.event_name == 'push') && 'simplified' || 'full' }}
+            NO_DEBUG: true
 
         steps:
             - name: Generate GitHub App Token

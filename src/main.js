@@ -1,3 +1,7 @@
+if (process.env.NO_DEBUG === 'true') {
+    console.debug = () => {};
+}
+
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -359,7 +363,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
  */
 async function processDivision(rawDivisionName, countryData, clientTranslations) {
     const divisionName = rawDivisionName;
-    console.log(`Processing subdivisions for ${divisionName}...`);
+    console.debug(`Processing subdivisions for ${divisionName}...`);
 
     const subdivisions = getSubdivisions(countryData, rawDivisionName);
 

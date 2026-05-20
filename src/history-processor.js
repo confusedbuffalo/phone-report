@@ -1,3 +1,7 @@
+if (process.env.NO_DEBUG === 'true') {
+    console.debug = () => {};
+}
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -125,7 +129,7 @@ export function processHistory(reportType) {
         fs.mkdirSync(outputDir, { recursive: true });
         fs.writeFileSync(outputPath, JSON.stringify(aggregatedCountryData, null));
 
-        console.log(`History data for ${countrySlug} processed and saved to ${outputPath}`);
+        console.debug(`History data for ${countrySlug} processed and saved to ${outputPath}`);
     }
 
     // Convert overall data from a map to a sorted array

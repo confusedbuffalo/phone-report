@@ -44,11 +44,17 @@ export function translate(key, locale, substitutions = {}) {
 }
 
 /**
- * Gets the entire translation dictionary for a locale.
+ * Gets the entire translation dictionary for a locale, filling in missing keys from the default locale.
  * @param {string} locale - The target locale (e.g., 'fr-FR').
- * @returns {Object} The translation dictionary or an empty object.
+ * @returns {Object} The translation dictionary with fallback keys.
  */
 export function getTranslations(locale) {
-    // Fallback to the default locale if the specific one is missing
-    return locales[locale] || locales[DEFAULT_LOCALE] || {};
+    const defaultDict = locales[DEFAULT_LOCALE] || {};
+    const requestedDict = locales[locale] || {};
+
+    // Merge them: requested keys will overwrite default keys
+    return {
+        ...defaultDict,
+        ...requestedDict,
+    };
 }

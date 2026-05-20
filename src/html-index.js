@@ -123,5 +123,5 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
 
     const fileName = path.join(BUILD_DIR[reportType], 'index.html');
     await fsPromises.writeFile(fileName, finalHtml);
-    console.log('Main index.html generated.');
+    console.log(`${reportType}: Main index.html generated.`);
 }

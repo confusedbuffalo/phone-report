@@ -454,7 +454,6 @@ async function processSafeEdits() {
                 }
 
                 if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0) {
-                    // console.debug(`Uploading edits for ${countryName}, subdivision: ${data.subdivisionName}`);
                     try {
                         await uploadSafeChanges(filePath);
                         stats.uploaded++;
