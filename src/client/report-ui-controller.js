@@ -29,7 +29,7 @@ import {
 import { changePage, getItemWithIndex, handleSort } from './report-ui-actions.js';
 import { createListItem, createSaveRow, decodeHtmlEntities } from './report-ui-components.js';
 import { getFilterType, getSortedItems } from './report-utils.js';
-import { reportType, subdivisionName, openingHoursEvaluationToolUrl, allEditorIds } from './config.js';
+import { reportType, subdivisionName, openingHoursEvaluationToolUrl, allEditorIds, changesetTags } from './config.js';
 import { translate } from './i18n.js';
 
 let firstLoad = true;
