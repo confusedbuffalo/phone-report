@@ -91,16 +91,17 @@ function getFeatureType(item) {
  * descriptive name from presets, or falls back to a formatted feature type.
  * @param {object} item - An OSM object including allTags.
  * @param {string} locale - The locale for translating preset names.
+ * @param {object} [preset] - An optional pre-fetched preset object.
  * @returns {string} A displayable name for the feature.
  */
-export function getFeatureTypeName(item, locale) {
+export function getFeatureTypeName(item, locale, preset) {
     if (item.name) {
         return `${item.name}`;
     }
 
-    const preset = getBestPreset(item, locale);
-    if (preset && preset.name) {
-        return preset.name;
+    const bestPreset = preset !== undefined ? preset : getBestPreset(item, locale);
+    if (bestPreset && bestPreset.name) {
+        return bestPreset.name;
     }
 
     const formattedType = item.type.replace(/\b\w/g, c => c.toUpperCase());
@@ -113,12 +114,13 @@ export function getFeatureTypeName(item, locale) {
  * to a generic icon based on the feature's geometry (point, line, area, or relation).
  * @param {Object} item - The OSM data item.
  * @param {string} locale - The locale used for preset matching.
+ * @param {object} [preset] - An optional pre-fetched preset object.
  * @returns {string} The icon name (e.g., 'iD-icon-point', 'maki-restaurant').
  */
-export function getFeatureIcon(item, locale) {
-    const preset = getBestPreset(item, locale);
-    if (preset && preset.icon) {
-        return preset.icon;
+export function getFeatureIcon(item, locale, preset) {
+    const bestPreset = preset !== undefined ? preset : getBestPreset(item, locale);
+    if (bestPreset && bestPreset.icon) {
+        return bestPreset.icon;
     }
     const geometry = getGeometry(item);
     if (geometry === 'point') {
