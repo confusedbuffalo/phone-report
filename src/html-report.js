@@ -25,6 +25,7 @@ import {
     MINIFY_OPTIONS,
     IS_TEST_MODE,
     BUILD_DIR,
+    UNIVERSAL_SPLIT_CAPTURE_REGEX,
 } from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
 import { getBestPreset } from './preset-matcher.js';
@@ -107,6 +108,7 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
  * @returns {String}
  */
 export function getLengthProblemText(originalNumber, locale, countryCode) {
+    if (originalNumber.match(UNIVERSAL_SPLIT_CAPTURE_REGEX)) return '';
     try {
         const lengthResult = validatePhoneNumberLength(originalNumber, countryCode);
         switch (lengthResult) {

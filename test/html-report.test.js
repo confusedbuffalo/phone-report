@@ -269,4 +269,15 @@ describe('generateHtmlReport', () => {
         const result = getLengthProblemText('0123456789012', 'en', 'GB');
         expect(result).toEqual('tooLong');
     });
+
+    test('Multiple numbers should not get a label', async () => {
+        const semicolonResult = getLengthProblemText('012345;098765', 'en', 'GB');
+        expect(semicolonResult).toEqual('');
+
+        const orResult = getLengthProblemText('012345 or 098765', 'en', 'GB');
+        expect(orResult).toEqual('');
+
+        const slashResult = getLengthProblemText('012345 / 098765', 'en', 'GB');
+        expect(slashResult).toEqual('');
+    });
 });
