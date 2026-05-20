@@ -1,3 +1,5 @@
+import { subdivisionName, dataLastUpdated, defaultEditorsMobile, defaultEditorsDesktop } from './config.js';
+
 export let pageSize = 50;
 
 export const currentPage = {
@@ -32,8 +34,8 @@ export const appState = {
     reportData: null,
 };
 
-export const CLICKED_ITEMS_KEY = `clickedItems_${DATA_LAST_UPDATED}`;
-export const UPLOADED_ITEMS_KEY = `uploaded_${DATA_LAST_UPDATED}`;
+export const CLICKED_ITEMS_KEY = `clickedItems_${dataLastUpdated}`;
+export const UPLOADED_ITEMS_KEY = `uploaded_${dataLastUpdated}`;
 
 export const settingsToggle = document.getElementById('settings-toggle');
 export const settingsMenu = document.getElementById('editor-settings-menu');
@@ -52,6 +54,6 @@ export const addNoteBtn = document.getElementById('add-note-btn');
 export const noteModal = document.getElementById('note-modal-overlay');
 
 const isMobileView = window.matchMedia('(max-width: 767px)').matches;
-export const DEFAULT_EDITORS = isMobileView ? DEFAULT_EDITORS_MOBILE : DEFAULT_EDITORS_DESKTOP;
+export const DEFAULT_EDITORS = isMobileView ? defaultEditorsMobile : defaultEditorsDesktop;
 
 export const languageNames = new Intl.DisplayNames([document.documentElement.lang], { type: 'language' });

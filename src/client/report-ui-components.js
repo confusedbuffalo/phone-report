@@ -1,6 +1,9 @@
 import { languageNames } from './report-state.js';
 import { isItemClicked } from './report-storage.js';
 import { escapeHTML } from './report-utils.js';
+import { translate } from './i18n.js';
+import { reportType, officialLanguages, subdivisionName } from './config.js';
+import { OSM_EDITORS, ALL_EDITOR_IDS } from './editors.js';
 
 export function createSaveRow() {
     return `
@@ -207,7 +210,7 @@ function createButtons(item, clickedClass) {
             })
             .join('\n');
     } else if (reportType === 'name' && item.name) {
-        fixButton = OFFICIAL_LANGUAGES.map(language => {
+        fixButton = officialLanguages.map(language => {
             const nameExists = `name:${language}` in item.nameTags;
             return `<button
                 data-action="complete-name"

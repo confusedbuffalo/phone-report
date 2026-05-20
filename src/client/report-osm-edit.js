@@ -18,8 +18,10 @@ import {
     toggleUploadingSpinner,
 } from './report-ui-controller.js';
 import { calculateBufferedBBox, escapeHTML } from './report-utils.js';
+import { reportType, subdivisionName, changesetTags } from './config.js';
+import { translate } from './i18n.js';
 
-const redirectUrl = `${CHANGESET_TAGS.host}land.html`;
+const redirectUrl = `${changesetTags.host}land.html`;
 
 /**
  * Sends a command to the JOSM Remote Control API.
@@ -221,7 +223,7 @@ async function uploadChanges() {
 
     if (modifications.length > 0) {
         const result = await OSM.uploadChangeset(
-            { ...CHANGESET_TAGS, ...{ comment: commentBox.value.trim() } },
+            { ...changesetTags, ...{ comment: commentBox.value.trim() } },
             { create: [], modify: modifications, delete: [] }
         );
         moveEditsToUploadedStorage();

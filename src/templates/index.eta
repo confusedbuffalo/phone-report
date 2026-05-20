@@ -100,8 +100,10 @@
         </div>
     </div>
     
-    <script>const searchIndex = <%~ JSON.stringify(it.buildSearchIndex()) %>;</script>
-    <script src="./index-search.js"></script>
+    <script>
+        window.__CONFIG__ = <%~ JSON.stringify(it.indexConfig) %>;
+    </script>
+    <script type="module" src="./index-search.js"></script>
     <script src="./background-colour.js"></script>
 </body>
 </html>

@@ -8,7 +8,6 @@
     <link href="<%= it.country ? '../' : './' %>styles.css" rel="stylesheet">
     <script src="<%= it.country ? '../' : './' %>theme.js"></script>
     <script src="<%= it.country ? '../' : './' %>vendor/chart.js"></script>
-    <script src="<%= it.country ? '../' : './' %>chart-generator.js"></script>
 </head>
 <body class="body-styles">
     <div class="page-container">
@@ -51,7 +50,8 @@
         </div>
     </div>
     <script>
-        const REPORT_COUNTRY_KEY = '<%= it.country ? it.country : "ALL" %>';
+        window.__CONFIG__ = <%~ JSON.stringify(it.progressConfig) %>;
     </script>
+    <script type="module" src="<%= it.country ? '../' : './' %>chart-generator.js"></script>
 </body>
 </html>

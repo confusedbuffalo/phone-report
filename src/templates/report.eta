@@ -147,28 +147,7 @@
         </div>
     </div>
     <script>
-        const reportType = '<%~ it.reportType %>';
-        const ALL_EDITOR_IDS = <%~ JSON.stringify(it.ALL_EDITOR_IDS) %>;
-        const DEFAULT_EDITORS_DESKTOP = <%~ JSON.stringify(it.DEFAULT_EDITORS_DESKTOP) %>;
-        const DEFAULT_EDITORS_MOBILE = <%~ JSON.stringify(it.DEFAULT_EDITORS_MOBILE) %>;
-        const DATA_FILE_PATH = './<%= it.subdivisionStats.slug %>.json';
-        const DATA_LAST_UPDATED = '<%= it.subdivisionStats.lastUpdated %>';
-        const STORAGE_KEY = 'osm_report_editors';
-        const subdivisionName = <%~ JSON.stringify(it.subdivisionStats.name) %>;
-        const OPENING_HOURS_EVALUATION_TOOL_URL = '<%= it.OPENING_HOURS_EVALUATION_TOOL_URL %>';
-        const CHANGESET_TAGS = <%~ JSON.stringify(it.CHANGESET_TAGS[it.reportType]) %>;
-        const OFFICIAL_LANGUAGES = <%~ JSON.stringify(it.officialLanguages) %>;
-
-        <%~ it.clientOsmEditorsScript %>
-
-        for (const editorId in OSM_EDITORS) {
-            const editor = OSM_EDITORS[editorId];
-            if (editor.getEditLink) {
-                const funcString = editor.getEditLink;
-                const functionBody = funcString.substring(funcString.indexOf('{') + 1, funcString.lastIndexOf('}'));
-                editor.getEditLink = new Function('item', functionBody);
-            }
-        }
+        window.__CONFIG__ = <%~ JSON.stringify(it.reportConfig) %>;
     </script>
     <script src="<%= it.singleLevelDivision ? '' : '../' %>../vendor/osm-api.min.js"></script>
     <script type="module" src="<%= it.singleLevelDivision ? '' : '../' %>../report-main.js"></script>

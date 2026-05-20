@@ -1,5 +1,5 @@
 import { initLogin } from './report-osm-edit.js';
-import { appState, commentBox, settingsMenu, settingsToggle } from './report-state.js';
+import { appState, settingsMenu, settingsToggle } from './report-state.js';
 import { loadSettings } from './report-storage.js';
 import {
     applyEditorVisibility,
@@ -9,6 +9,7 @@ import {
     handleGlobalClicks,
 } from './report-ui-controller.js';
 import { filterCreatedNotes } from './report-utils.js';
+import { dataFilePath, subdivisionName } from './config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
@@ -39,13 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function initReportPage() {
     try {
-        const response = await fetch(DATA_FILE_PATH);
+        const response = await fetch(dataFilePath);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         appState.reportData = await response.json();
     } catch (error) {
-        console.error('Failed to load phone validation data:', error);
+        console.error('Failed to load validation data:', error);
         // Display an error message to the user if data loading fails
         const container = document.getElementById('reportContainer');
         if (container) {

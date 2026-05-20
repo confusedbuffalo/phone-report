@@ -80,17 +80,17 @@ describe('generateCountryIndexHtml', () => {
         const escapedCountryName = escapeHTML(countryData.name);
         expect(writtenContent).toContain(`<title>countryReportTitle: ${escapedCountryName}</title>`);
 
-        // Verify the client-side script receives raw, unescaped division names
-        const scriptContentRegex = /<script>\s*const groupedDivisionStats = (\{.*?\});/s;
+        // Verify the client-side script receives raw, unescaped division names in the config
+        const scriptContentRegex = /<script>\s*window\.__CONFIG__ = (\{.*?\});/s;
         const match = writtenContent.match(scriptContentRegex);
         expect(match).not.toBeNull();
 
-        const statsJson = match[1];
-        const parsedStats = JSON.parse(statsJson);
+        const configJson = match[1];
+        const parsedConfig = JSON.parse(configJson);
 
         // Check that the key is the raw, unescaped name
-        expect(parsedStats[divisionName]).toBeDefined();
-        expect(Object.keys(parsedStats)[0]).toBe(divisionName);
+        expect(parsedConfig.groupedDivisionStats[divisionName]).toBeDefined();
+        expect(Object.keys(parsedConfig.groupedDivisionStats)[0]).toBe(divisionName);
     });
 
     it('should correctly not escape shy hyphens in headings', async () => {

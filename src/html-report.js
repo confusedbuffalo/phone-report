@@ -469,36 +469,21 @@ export async function generateHtmlReport(
 
     const svgSprite = iconManager.generateSvgSprite();
 
-    const OSM_EDITORS_CLIENT = {};
-
-    for (const editorId in OSM_EDITORS) {
-        const editor = OSM_EDITORS[editorId];
-
-        OSM_EDITORS_CLIENT[editorId] = {
-            getEditLink: editor.getEditLink,
-            // Pre-evaluate the string using the locale
-            editInString: editor.editInString(locale),
-        };
-    }
-
-    const clientOsmEditorsScript = `
-        const OSM_EDITORS = ${JSON.stringify(
-            OSM_EDITORS_CLIENT,
-            (key, value) => {
-                // Use a custom replacer function to handle functions (convert them to strings)
-                if (typeof value === 'function') {
-                    // Converts the function back to a string so it can be re-evaluated client-side
-                    const functionString = value.toString();
-                    let cleanedString = functionString.replace(/[\n\t\r]/g, ' ');
-                    cleanedString = cleanedString.replace(/ {2,}/g, ' ');
-                    cleanedString = cleanedString.trim();
-                    return cleanedString;
-                }
-                return value;
-            },
-            4
-        )};
-    `;
+    const reportConfig = {
+        reportType,
+        locale,
+        translations,
+        subdivisionName: subdivisionStats.name,
+        dataFilePath: `./${subdivisionStats.slug}.json`,
+        dataLastUpdated: subdivisionStats.lastUpdated,
+        openingHoursEvaluationToolUrl: OPENING_HOURS_EVALUATION_TOOL_URL,
+        changesetTags: CHANGESET_TAGS[reportType],
+        officialLanguages,
+        allEditorIds: ALL_EDITOR_IDS,
+        defaultEditorsDesktop: DEFAULT_EDITORS_DESKTOP,
+        defaultEditorsMobile: DEFAULT_EDITORS_MOBILE,
+        githubLink: GITHUB_LINK,
+    };
 
     const eta = new Eta({
         views: path.join(process.cwd(), 'src', 'templates'),
@@ -515,17 +500,11 @@ export async function generateHtmlReport(
         getFooterData,
         getIconAttributionHtml,
         GITHUB_LINK,
-        OPENING_HOURS_EVALUATION_TOOL_URL,
         singleLevelDivision,
         svgSprite,
         translations,
         timestamp,
-        ALL_EDITOR_IDS,
-        DEFAULT_EDITORS_DESKTOP,
-        DEFAULT_EDITORS_MOBILE,
-        CHANGESET_TAGS,
-        clientOsmEditorsScript,
-        officialLanguages,
+        reportConfig,
     };
 
     const htmlContent = eta.render('report', templateData);
