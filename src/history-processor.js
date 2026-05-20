@@ -125,7 +125,7 @@ export function processHistory(reportType) {
         fs.mkdirSync(outputDir, { recursive: true });
         fs.writeFileSync(outputPath, JSON.stringify(aggregatedCountryData, null));
 
-        console.log(`History data for ${countrySlug} processed and saved to ${outputPath}`);
+        console.debug(`History data for ${countrySlug} processed and saved to ${outputPath}`);
     }
 
     // Convert overall data from a map to a sorted array

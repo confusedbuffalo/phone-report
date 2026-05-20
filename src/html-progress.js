@@ -83,7 +83,11 @@ export async function generateProgressPage(reportType, country = null, locale = 
 
     await fsPromises.writeFile(outputPath, finalHtml);
 
-    console.log(`Progress page generated at ${outputPath}`);
+    if (country) {
+        console.debug(`Progress page generated at ${outputPath}`);
+    } else {
+        console.log(`${reportType}: Progress page generated at ${outputPath}`);
+    }
 }
 
 const __filename = fileURLToPath(import.meta.url);
