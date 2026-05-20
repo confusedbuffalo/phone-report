@@ -116,7 +116,7 @@ function createDetailsRow(label, number) {
     return `<div class="list-item-phone-label-container">
                 <span class="list-item-phone-label">${label}</span>
             </div>
-            <div class="list-item-phone-value-container whitespace-pre-wrap">${number}</div>`;
+            <div class="list-item-phone-value-container whitespace-pre-wrap wrap-anywhere">${number}</div>`;
 }
 
 /**
@@ -210,9 +210,10 @@ function createButtons(item, clickedClass) {
             })
             .join('\n');
     } else if (reportType === 'name' && item.name) {
-        fixButton = officialLanguages.map(language => {
-            const nameExists = `name:${language}` in item.nameTags;
-            return `<button
+        fixButton = officialLanguages
+            .map(language => {
+                const nameExists = `name:${language}` in item.nameTags;
+                return `<button
                 data-action="complete-name"
                 data-language="${escapeHTML(language)}"
                 data-item-type="${escapeHTML(item.type)}"
@@ -223,7 +224,8 @@ function createButtons(item, clickedClass) {
                 title="${escapeHTML(languageNames.of(language))}">
                 ${escapeHTML(language)}
             </button>`;
-        }).join('\n');
+            })
+            .join('\n');
     } else {
         fixButton = item.autoFixable
             ? `<button
