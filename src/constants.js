@@ -116,35 +116,35 @@ export const OSM_EDITORS = {
     JOSM: {
         getEditLink: function (item) {
             const baseUrl = 'http://127.0.0.1:8111/load_object';
-            return `${baseUrl}?objects=${item.type[0]}${item.id}&relation_members=true`;
+            return `${baseUrl}?objects=${encodeURIComponent(item.type[0])}${encodeURIComponent(item.id)}&relation_members=true`;
         },
         editInString: locale => translate('editIn', locale, { editor: 'JOSM' }),
     },
     iD: {
         getEditLink: function (item) {
             const baseUrl = 'https://www.openstreetmap.org/edit?editor=id';
-            return `${baseUrl}&${item.type}=${item.id}#map=19/${item.lat}/${item.lon}`;
+            return `${baseUrl}&${encodeURIComponent(item.type)}=${encodeURIComponent(item.id)}#map=19/${encodeURIComponent(item.lat)}/${encodeURIComponent(item.lon)}`;
         },
         editInString: locale => translate('editIn', locale, { editor: 'iD' }),
     },
     Rapid: {
         getEditLink: function (item) {
             const baseUrl = 'https://rapideditor.org/edit#map=19';
-            return `${baseUrl}/${item.lat}/${item.lon}&id=${item.type[0]}${item.id}`;
+            return `${baseUrl}/${encodeURIComponent(item.lat)}/${encodeURIComponent(item.lon)}&id=${encodeURIComponent(item.type[0])}${encodeURIComponent(item.id)}`;
         },
         editInString: locale => translate('editIn', locale, { editor: 'Rapid' }),
     },
     Level0: {
         getEditLink: function (item) {
             const baseUrl = 'https://level0.osmz.ru/?url=';
-            return `${baseUrl}${item.type}/${item.id}`;
+            return `${baseUrl}${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}`;
         },
         editInString: locale => translate('editIn', locale, { editor: 'Level0' }),
     },
     Geo: {
         getEditLink: function (item) {
             const baseUrl = 'geo:';
-            return `${baseUrl}${item.lat},${item.lon}`;
+            return `${baseUrl}${encodeURIComponent(item.lat)},${encodeURIComponent(item.lon)}`;
         },
         editInString: locale => translate('openLocation', locale),
     },

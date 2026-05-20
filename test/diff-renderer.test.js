@@ -716,6 +716,16 @@ describe('getDiffTagsHtml', () => {
         const expectedNew = '<span class="diff-added">phone</span>';
         expect(result.newTagDiff).toBe(expectedNew);
     });
+
+    test('should escape HTML characters in tag names to prevent XSS', () => {
+        const oldTag = '<script>alert(1)</script>';
+        const newTag = '"><img src=x onerror=alert(1)>';
+
+        const result = getDiffTagsHtml(oldTag, newTag);
+
+        expect(result.oldTagDiff).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+        expect(result.newTagDiff).toContain('&quot;&gt;&lt;img src=x onerror=alert(1)&gt;');
+    });
 });
 
 describe('getPhoneDiffHtml', () => {

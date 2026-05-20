@@ -31,13 +31,16 @@ export function createListItem(item) {
         clickedClass
     );
 
+    // item.iconName and item.iconHtml are pre-sanitized or escaped
     const iconHtml = item.iconName
-        ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${item.iconName}"></use></svg></span>`
+        ? `<span class="icon-svg-container"><svg class="icon-svg"><use href="#${escapeHTML(item.iconName)}"></use></svg></span>`
         : item.iconHtml;
 
+    // item.changeset and item.user are OSM metadata.
+    // We use encodeURIComponent for URL safety and escapeHTML for display text.
     const itemMetadata = item.user
         ? `
-        <a href="https://www.openstreetmap.org/changeset/${escapeHTML(item.changeset)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
+        <a href="https://www.openstreetmap.org/changeset/${encodeURIComponent(item.changeset)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${relativeTime}</a>
         <a href="https://www.openstreetmap.org/user/${encodeURIComponent(item.user)}" target="_blank" rel="noopener noreferrer" class="cursor-pointer">${escapeHTML(item.user)}</a>`
         : item.timestamp
           ? `<span>${relativeTime}</span>`
@@ -75,10 +78,12 @@ export function createListItem(item) {
         )
         .join('');
 
+    // Note: item.type and item.id are from OSM metadata.
+    // We use encodeURIComponent for URL components and escapeHTML for attribute safety.
     return `
-        <li class="report-list-item" data-item-id="${itemId}">
+        <li class="report-list-item" data-item-id="${escapeHTML(itemId)}">
             <div class="list-item-content-wrapper">
-                <a class="list-item-icon-circle-preview" href="https://www.openstreetmap.org/${item.type}/${item.id}" target="_blank" rel="noopener noreferrer">
+                <a class="list-item-icon-circle-preview" href="https://www.openstreetmap.org/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}" target="_blank" rel="noopener noreferrer">
                     ${iconHtml}
                 </a>
                 <div class="list-item-details-wrapper">
@@ -158,24 +163,26 @@ function createButtons(item, clickedClass) {
             return `
                 <button
                     data-action="josm"
-                    data-item-type="${item.type}"
-                    data-item-id="${item.id}"
-                    data-url="${editor.getEditLink(item)}"
-                    data-editor-id="${editorId}"
+                    data-item-type="${escapeHTML(item.type)}"
+                    data-item-id="${escapeHTML(item.id)}"
+                    data-url="${escapeHTML(editor.getEditLink(item))}"
+                    data-editor-id="${escapeHTML(editorId)}"
                     class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-editor'}">
                     ${editor.editInString}
                 </button>
         `;
         }
 
+        // item.type and item.id are used as data attributes for event delegation.
+        // editor.getEditLink(item) generates an external URL which is escaped for attribute safety.
         return `
             <a
-                href="${editor.getEditLink(item)}"
+                href="${escapeHTML(editor.getEditLink(item))}"
                 ${editorId === 'Geo' ? '' : 'target="_blank" rel="noopener noreferrer"'}
                 data-action="edit"
-                data-item-type="${item.type}"
-                data-item-id="${item.id}"
-                data-editor-id="${editorId}"
+                data-item-type="${escapeHTML(item.type)}"
+                data-item-id="${escapeHTML(item.id)}"
+                data-editor-id="${escapeHTML(editorId)}"
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-editor'}">
                 ${editor.editInString}
             </a>
@@ -189,13 +196,13 @@ function createButtons(item, clickedClass) {
                 const nameLanguage = key.slice(5);
                 return `<button
                 data-action="add-name"
-                data-language="${nameLanguage}"
-                data-item-type="${item.type}"
-                data-item-id="${item.id}"
+                data-language="${escapeHTML(nameLanguage)}"
+                data-item-type="${escapeHTML(item.type)}"
+                data-item-id="${escapeHTML(item.id)}"
                 data-editor-id="apply-fix"
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}"
-                title="${languageNames.of(nameLanguage)}">
-                ${nameLanguage}
+                title="${escapeHTML(languageNames.of(nameLanguage))}">
+                ${escapeHTML(nameLanguage)}
             </button>`;
             })
             .join('\n');
@@ -204,22 +211,22 @@ function createButtons(item, clickedClass) {
             const nameExists = `name:${language}` in item.nameTags;
             return `<button
                 data-action="complete-name"
-                data-language="${language}"
-                data-item-type="${item.type}"
-                data-item-id="${item.id}"
+                data-language="${escapeHTML(language)}"
+                data-item-type="${escapeHTML(item.type)}"
+                data-item-id="${escapeHTML(item.id)}"
                 data-editor-id="apply-fix"
                 ${nameExists ? 'disabled' : ''}
                 class="btn ${nameExists ? 'btn-disabled' : clickedClass ? clickedClass + ' cursor-pointer' : 'cursor-pointer btn-josm-fix'}"
-                title="${languageNames.of(language)}">
-                ${language}
+                title="${escapeHTML(languageNames.of(language))}">
+                ${escapeHTML(language)}
             </button>`;
         }).join('\n');
     } else {
         fixButton = item.autoFixable
             ? `<button
                 data-action="fix"
-                data-item-type="${item.type}"
-                data-item-id="${item.id}"
+                data-item-type="${escapeHTML(item.type)}"
+                data-item-id="${escapeHTML(item.id)}"
                 data-editor-id="apply-fix"
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
                 ${translate('applyFix')}
@@ -233,8 +240,8 @@ function createButtons(item, clickedClass) {
         ? ''
         : `<button
             data-action="add-note"
-            data-item-type="${item.type}"
-            data-item-id="${item.id}"
+            data-item-type="${escapeHTML(item.type)}"
+            data-item-id="${escapeHTML(item.id)}"
             data-editor-id="note-btn"
             class="btn cursor-pointer ${noteClickedClass}">
             ${translate('openNote')}
@@ -243,9 +250,9 @@ function createButtons(item, clickedClass) {
     const josmFixButton = item.josmFixUrl
         ? `<button 
             data-action="josm"
-            data-item-type="${item.type}"
-            data-item-id="${item.id}"
-            data-url="${item.josmFixUrl}"
+            data-item-type="${escapeHTML(item.type)}"
+            data-item-id="${escapeHTML(item.id)}"
+            data-url="${escapeHTML(item.josmFixUrl)}"
             data-editor-id="josm-fix"
             class="btn ${clickedClass ? clickedClass : 'btn-josm-fix'}">
             ${translate('fixInJOSM')}

@@ -2,6 +2,7 @@ import path from 'path';
 import { readFileSync, existsSync } from 'fs';
 import { ICONS_DIR } from './constants.js';
 import { fileURLToPath } from 'url';
+import { escapeHTML } from './html-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,7 +43,7 @@ export class IconManager {
                       .replace(/ stroke='[^']+'/g, '');
 
             symbols += `
-                <symbol id="${iconName}" viewBox="${viewBox}">
+                <symbol id="${escapeHTML(iconName)}" viewBox="${viewBox}">
                     ${cleanContent}
                 </symbol>
             `;
@@ -152,7 +153,7 @@ export class IconManager {
             this.addIconToSprite(iconName, content, viewBox);
             const svgClass = library === 'Flagpedia' ? 'flag-svg' : 'icon-svg';
             const svgContainerClass = library === 'Flagpedia' ? 'flag-svg-container' : 'icon-svg-container';
-            iconHtml = `<span class="${svgContainerClass}"><svg class="${svgClass}"><use href="#${iconName}"></use></svg></span>`;
+            iconHtml = `<span class="${svgContainerClass}"><svg class="${svgClass}"><use href="#${escapeHTML(iconName)}"></use></svg></span>`;
         } else {
             console.log(`Icon not found: ${library}-${icon}`);
         }
