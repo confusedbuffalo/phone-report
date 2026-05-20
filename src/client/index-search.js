@@ -1,4 +1,9 @@
 import { searchIndex } from './config.js';
+import { initThemeToggle } from './theme.js';
+import { applyColors } from './background-colour.js';
+
+initThemeToggle();
+applyColors();
 
 let activeIndex = -1;
 let currentMatches = [];

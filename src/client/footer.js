@@ -15,14 +15,25 @@ export function updateTimeAgo(formattedDate, formattedTime) {
     const totalMinutes = Math.floor((new Date() - dataDate) / (1000 * 60));
 
     const timeFormatter = new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' });
-    const timeAgoText = totalMinutes < 60
-        ? timeFormatter.format(-totalMinutes, 'minute')
-        : timeFormatter.format(-Math.floor(totalMinutes / 60), 'hour');
+    const timeAgoText =
+        totalMinutes < 60
+            ? timeFormatter.format(-totalMinutes, 'minute')
+            : timeFormatter.format(-Math.floor(totalMinutes / 60), 'hour');
 
     container.innerHTML = translate('dataSourcedTemplate', {
         date: formattedDate,
         time: formattedTime,
         zone: 'UTC',
-        ago: timeAgoText
+        ago: timeAgoText,
     });
+}
+
+/**
+ * Initializes the footer by performing an initial time-ago update and setting up an interval.
+ * @param {string} formattedDate - Pre-formatted date string from the server.
+ * @param {string} formattedTime - Pre-formatted time string from the server.
+ */
+export function initFooter(formattedDate, formattedTime) {
+    updateTimeAgo(formattedDate, formattedTime);
+    setInterval(() => updateTimeAgo(formattedDate, formattedTime), 60000);
 }

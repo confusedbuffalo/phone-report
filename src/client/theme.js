@@ -1,28 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * Initializes the theme toggle button logic.
+ * It updates the toggle icon visibility and sets up the click event listener.
+ */
+export function initThemeToggle() {
     const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
-    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
-    /**
-     * Sets the initial theme (dark or light) based on localStorage preference
-     * or the user's OS-level preference. It also updates the toggle icon visibility.
-     */
-    const setInitialTheme = () => {
-        if (
-            localStorage.getItem('color-theme') === 'dark' ||
-            (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
-        ) {
-            document.documentElement.classList.add('dark');
+    const updateIcons = () => {
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        if (document.documentElement.classList.contains('dark')) {
             if (themeToggleLightIcon) themeToggleLightIcon.classList.remove('hidden');
             if (themeToggleDarkIcon) themeToggleDarkIcon.classList.add('hidden');
         } else {
-            document.documentElement.classList.remove('dark');
             if (themeToggleDarkIcon) themeToggleDarkIcon.classList.remove('hidden');
             if (themeToggleLightIcon) themeToggleLightIcon.classList.add('hidden');
         }
     };
 
-    setInitialTheme();
+    // Initial icon state
+    updateIcons();
 
     if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', () => {
@@ -32,11 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
 
             // Toggle the icons
-            if (themeToggleDarkIcon) themeToggleDarkIcon.classList.toggle('hidden');
-            if (themeToggleLightIcon) themeToggleLightIcon.classList.toggle('hidden');
+            updateIcons();
 
             // Dispatch a custom event to notify other scripts of the theme change
             window.dispatchEvent(new Event('themeChanged'));
         });
     }
-});
+}

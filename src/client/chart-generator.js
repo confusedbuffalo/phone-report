@@ -1,4 +1,8 @@
 import { reportCountryKey } from './config.js';
+import { initThemeToggle } from './theme.js';
+import { getChart } from './chart-wrapper.js';
+
+initThemeToggle();
 
 let chartData = null;
 let progressChart = null;
@@ -10,7 +14,7 @@ function getAxisColour() {
     return isDarkMode ? '#9ca3af' : '#6b7280';
 }
 
-function updateCharts(days) {
+async function updateCharts(days) {
     if (!chartData) return;
 
     const allData = reportCountryKey === 'ALL' ? chartData.countries : chartData.divisions;
@@ -62,6 +66,7 @@ function updateCharts(days) {
     }
 
     // --- Otherwise, create the charts for the first time ---
+    const Chart = await getChart();
     const axisColour = getAxisColour();
     const semiTransparentGridColour = axisColour + '40';
     const colours = generateColours(regionKeys.length);

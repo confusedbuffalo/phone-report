@@ -8,7 +8,7 @@
     </title>
     <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="./styles.css" rel="stylesheet">
-    <script src="theme.js"></script>
+    <%~ include("./partials/theme-init") %>
 </head>
 <body class="body-styles">
     <div class="page-container">
@@ -104,6 +104,5 @@
         window.__CONFIG__ = <%~ JSON.stringify(it.indexConfig) %>;
     </script>
     <script type="module" src="./index-search.js"></script>
-    <script src="./background-colour.js"></script>
 </body>
 </html>

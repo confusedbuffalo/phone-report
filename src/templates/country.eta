@@ -6,7 +6,7 @@
     <title><%~ it.translate(it.reportType === 'phone' ? 'countryReportTitle' : it.reportType === 'name' ? 'countryReportTitleNames' : 'countryReportTitleHours', it.locale, { country: it.escapeHTML(it.countryData.name) }) %></title>
     <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="../styles.css" rel="stylesheet">
-    <script src="../theme.js"></script>
+    <%~ include("./partials/theme-init") %>
 </head>
 <body class="body-styles">
     <div class="page-container">
@@ -47,7 +47,6 @@
             <%~ include("./partials/footer", { ...it, includeIconAttribution: false, timestamp: it.countryData.timestamp }) %>
         </div>
     </div>
-    <script src="../background-colour.js"></script>
     <script>
         window.__CONFIG__ = <%~ JSON.stringify(it.countryConfig) %>;
     </script>

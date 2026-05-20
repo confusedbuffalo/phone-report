@@ -10,8 +10,10 @@ import {
 } from './report-ui-controller.js';
 import { filterCreatedNotes } from './report-utils.js';
 import { dataFilePath, subdivisionName } from './config.js';
+import { initThemeToggle } from './theme.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initThemeToggle();
     loadSettings();
     createSettingsCheckboxes();
     applyEditorVisibility();

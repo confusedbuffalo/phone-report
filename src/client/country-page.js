@@ -1,5 +1,9 @@
 import { reportType, locale, groupedDivisionStats, safeCountryName } from './config.js';
 import { translate } from './i18n.js';
+import { initThemeToggle } from './theme.js';
+import { applyColors } from './background-colour.js';
+
+initThemeToggle();
 
 /**
  * Escapes special HTML characters in a string.
@@ -345,9 +349,7 @@ function renderList() {
         listContainer.appendChild(li);
     }
     updateButtonStyles();
-    if (typeof applyColors === 'function') {
-        applyColors();
-    }
+    applyColors();
 }
 
 sortButtons.forEach(button => {
