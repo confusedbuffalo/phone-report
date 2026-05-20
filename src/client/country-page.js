@@ -164,21 +164,23 @@ function renderList() {
             const groupPercentageNumber = groupStats.total > 0 ? (groupStats.invalid / groupStats.total) * 100 : 0;
             const formattedGroupPercentage = groupPercentageNumber.toLocaleString(locale, percentageOptions);
 
-            // Client-side substitution using the embedded template literal
             const groupStatsLine =
                 reportType === 'phone'
-                    ? T_CLIENT.invalidNumbersOutOf
-                          .replace('{invalid}', groupInvalidFormatted)
-                          .replace('{fixable}', groupFixableFormatted)
-                          .replace('{total}', groupTotalFormatted)
+                    ? translate('invalidNumbersOutOf', {
+                          invalid: groupInvalidFormatted,
+                          fixable: groupFixableFormatted,
+                          total: groupTotalFormatted,
+                      })
                     : reportType === 'name'
-                      ? T_CLIENT.incompleteNamesOutOf
-                            .replace('{incomplete}', groupInvalidFormatted)
-                            .replace('{total}', groupTotalFormatted)
-                      : T_CLIENT.invalidHoursOutOf
-                            .replace('{invalid}', groupInvalidFormatted)
-                            .replace('{fixable}', groupFixableFormatted)
-                            .replace('{total}', groupTotalFormatted);
+                      ? translate('incompleteNamesOutOf', {
+                            incomplete: groupInvalidFormatted,
+                            total: groupTotalFormatted,
+                        })
+                      : translate('invalidHoursOutOf', {
+                            invalid: groupInvalidFormatted,
+                            fixable: groupFixableFormatted,
+                            total: groupTotalFormatted,
+                        });
 
             // --- End Group Stats Calculation ---
 
@@ -250,7 +252,7 @@ function renderList() {
 
                 const percentageLabel = document.createElement('p');
                 percentageLabel.className = 'summary-percentage-label';
-                percentageLabel.textContent = T_CLIENT.invalid;
+                percentageLabel.textContent = translate('invalid');
 
                 rightSide.appendChild(percentageText);
                 rightSide.appendChild(percentageLabel);
@@ -292,21 +294,23 @@ function renderList() {
                     subdivision.totalCount > 0 ? (subdivision.invalidCount / subdivision.totalCount) * 100 : 0;
                 const formattedPercentage = percentageNumber.toLocaleString(locale, percentageOptions);
 
-                // Client-side substitution using the embedded template literal
                 const itemStatsLine =
                     reportType === 'phone'
-                        ? T_CLIENT.invalidNumbersOutOf
-                              .replace('%i', formattedInvalidCount)
-                              .replace('%f', formattedFixableCount)
-                              .replace('%t', formattedTotalCount)
+                        ? translate('invalidNumbersOutOf', {
+                              invalid: formattedInvalidCount,
+                              fixable: formattedFixableCount,
+                              total: formattedTotalCount,
+                          })
                         : reportType === 'name'
-                          ? T_CLIENT.incompleteNamesOutOf
-                                .replace('%i', formattedInvalidCount)
-                                .replace('%t', formattedTotalCount)
-                          : T_CLIENT.invalidHoursOutOf
-                                .replace('%i', formattedInvalidCount)
-                                .replace('%f', formattedFixableCount)
-                                .replace('%t', formattedTotalCount);
+                          ? translate('incompleteNamesOutOf', {
+                                incomplete: formattedInvalidCount,
+                                total: formattedTotalCount,
+                            })
+                          : translate('invalidHoursOutOf', {
+                                invalid: formattedInvalidCount,
+                                fixable: formattedFixableCount,
+                                total: formattedTotalCount,
+                            });
 
                 const li = document.createElement('li');
                 li.className = 'subdivision-list-item';
@@ -323,7 +327,7 @@ function renderList() {
                             </div>
                             <div class="summary-right-side">
                                 <p class="summary-percentage">${formattedPercentage}<span class="country-percentage-symbol">%</span></p>
-                                <p class="summary-percentage-label">${T_CLIENT.invalid}</p>
+                                <p class="summary-percentage-label">${translate('invalid')}</p>
                             </div>
                         </div>
                     </a>
@@ -338,7 +342,7 @@ function renderList() {
         listContainer.innerHTML = '';
         const li = document.createElement('li');
         li.className = 'no-subdivisions-item';
-        li.textContent = T_CLIENT.noSubdivisionsFound;
+        li.textContent = translate('noSubdivisionsFound');
         listContainer.appendChild(li);
     }
     updateButtonStyles();

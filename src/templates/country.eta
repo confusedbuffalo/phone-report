@@ -52,13 +52,6 @@
         const groupedDivisionStats = <%~ JSON.stringify(it.countryData.groupedDivisionStats) %>;
         const safeCountryName = '<%~ it.safeName(it.countryData.name) %>';
         const reportType = '<%~ it.reportType %>';
-        const T_CLIENT = {
-            invalidNumbersOutOf: `<%= it.translate('invalidNumbersOutOf', it.locale) %>`,
-            incompleteNamesOutOf: `<%= it.translate('incompleteNamesOutOf', it.locale) %>`,
-            invalidHoursOutOf: `<%= it.translate('invalidHoursOutOf', it.locale) %>`,
-            invalid: `<%= it.translate('invalid', it.locale) %>`,
-            noSubdivisionsFound: `<%= it.translate('noSubdivisionsFound', it.locale) %>`
-        };
     </script>
     <script src="../country-page.js"></script>
 </body>
