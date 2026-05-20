@@ -27,6 +27,7 @@ import {
     BUILD_DIR,
 } from './constants.js';
 import { safeName, getFeatureTypeName, getFeatureIcon, isDisused } from './data-processor.js';
+import { getBestPreset } from './preset-matcher.js';
 import { translate } from './i18n.js';
 import { getPhoneDiffHtml, getDiffTagsHtml, getHoursDiffHtml } from './diff-renderer.js';
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
@@ -300,9 +301,10 @@ function createClientItems(reportType, item, locale, countryCode, botEnabled, ic
 
     item = { ...item, ...(reportType === 'phone' && { phoneTagToUse: phoneTagToUse(item.allTags) }) };
 
-    item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale));
+    const preset = getBestPreset(item, locale);
+    item.featureTypeName = escapeHTML(getFeatureTypeName(item, locale, preset));
 
-    const iconName = getFeatureIcon(item, locale);
+    const iconName = getFeatureIcon(item, locale, preset);
     const iconHtml = iconManager.getIconHtml(iconName);
     if (iconHtml.includes(iconName)) {
         item.iconName = iconName;
