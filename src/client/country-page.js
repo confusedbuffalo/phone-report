@@ -168,17 +168,17 @@ function renderList() {
             const groupStatsLine =
                 reportType === 'phone'
                     ? T_CLIENT.invalidNumbersOutOf
-                          .replace('%i', groupInvalidFormatted)
-                          .replace('%f', groupFixableFormatted)
-                          .replace('%t', groupTotalFormatted)
+                          .replace('{invalid}', groupInvalidFormatted)
+                          .replace('{fixable}', groupFixableFormatted)
+                          .replace('{total}', groupTotalFormatted)
                     : reportType === 'name'
                       ? T_CLIENT.incompleteNamesOutOf
-                            .replace('%i', groupInvalidFormatted)
-                            .replace('%t', groupTotalFormatted)
+                            .replace('{incomplete}', groupInvalidFormatted)
+                            .replace('{total}', groupTotalFormatted)
                       : T_CLIENT.invalidHoursOutOf
-                            .replace('%i', groupInvalidFormatted)
-                            .replace('%f', groupFixableFormatted)
-                            .replace('%t', groupTotalFormatted);
+                            .replace('{invalid}', groupInvalidFormatted)
+                            .replace('{fixable}', groupFixableFormatted)
+                            .replace('{total}', groupTotalFormatted);
 
             // --- End Group Stats Calculation ---
 
