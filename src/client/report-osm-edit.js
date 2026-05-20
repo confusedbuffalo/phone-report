@@ -20,6 +20,7 @@ import {
 import { calculateBufferedBBox, escapeHTML } from './report-utils.js';
 import { reportType, subdivisionName, changesetTags } from './config.js';
 import { translate } from './i18n.js';
+import { getOSM } from './osm-wrapper.js';
 
 const redirectUrl = `${changesetTags.host}land.html`;
 
@@ -50,11 +51,12 @@ export function openInJosm(url) {
  * Upon successful login, it calls initLogin. Displays an error on failure.
  * @returns {void}
  */
-export function login() {
+export async function login() {
     const errorDiv = document.querySelector('#error-div');
     errorDiv.innerText = '';
     errorDiv.hidden = true;
 
+    const OSM = await getOSM();
     OSM.login({
         mode: 'popup',
         clientId: 'bexjmcD0H12VKCGMYNmbIA10FYh1O96vgF4-1xH6qKs',
@@ -73,7 +75,8 @@ export function login() {
  * Triggers re-initialization of the login state.
  * @returns {void}
  */
-export function logout() {
+export async function logout() {
+    const OSM = await getOSM();
     OSM.logout();
     localStorage.removeItem('osm_display_name');
     initLogin();
@@ -85,7 +88,7 @@ export function logout() {
  * Handles errors if the user is not logged in or the request fails.
  * @returns {void}
  */
-function getUser() {
+async function getUser() {
     const logoutBtn = document.getElementById('logout-btn');
     const errorDiv = document.getElementById('error-div');
     const displayName = localStorage.getItem('osm_display_name');
@@ -95,6 +98,7 @@ function getUser() {
         return;
     }
 
+    const OSM = await getOSM();
     OSM.getUser('me')
         .then(result => {
             logoutBtn.textContent = `Logout ${result.display_name}`;
@@ -112,7 +116,8 @@ function getUser() {
  * login and logout buttons accordingly. Calls getUser if logged in.
  * @returns {void}
  */
-export function initLogin() {
+export async function initLogin() {
+    const OSM = await getOSM();
     if (OSM.isLoggedIn()) {
         document.getElementById('logout-btn').hidden = false;
         document.getElementById('login-btn').hidden = true;
@@ -193,6 +198,8 @@ async function uploadChanges() {
 
     const MAX_FEATURES_PER_FETCH = 500;
 
+    const OSM = await getOSM();
+
     for (const type of elementTypes) {
         const editsForType = subdivisionEdits[type];
 
@@ -242,6 +249,7 @@ async function uploadChanges() {
  */
 async function checkForNotes(lat, lon) {
     const bbox = calculateBufferedBBox(lat, lon, 5);
+    const OSM = await getOSM();
     const notesInArea = await OSM.getNotesForArea(bbox);
     return notesInArea;
 }
@@ -295,7 +303,7 @@ export function addNote(osmType, osmId) {
  * before, during, and after the creation or error.
  * @returns {void}
  */
-function checkAndCreateNote(itemId, lat, lon) {
+async function checkAndCreateNote(itemId, lat, lon) {
     const noteCommentBox = document.getElementById('note-comment');
     const comment = noteCommentBox.value.trim();
     const messageBox = document.getElementById('note-message-box');
@@ -313,6 +321,7 @@ function checkAndCreateNote(itemId, lat, lon) {
         noteCommentBox.disabled = true;
         noteCommentBox.classList.add('cursor-not-allowed');
 
+        const OSM = await getOSM();
         OSM.createNote(lat, lon, noteCommentBox.value.trim())
             .then(result => {
                 const successMessage = translate('noteCreated', {

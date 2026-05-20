@@ -6,8 +6,7 @@
     <title><%~ it.translate('progressHistory', it.locale) %></title>
     <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="<%= it.country ? '../' : './' %>styles.css" rel="stylesheet">
-    <script src="<%= it.country ? '../' : './' %>theme.js"></script>
-    <script src="<%= it.country ? '../' : './' %>vendor/chart.js"></script>
+    <%~ include("./partials/theme-init") %>
 </head>
 <body class="body-styles">
     <div class="page-container">

@@ -25,11 +25,7 @@
 <% } %>
 
 <script type="module">
-    import { updateTimeAgo } from '<%= it.reportConfig ? (it.singleLevelDivision ? '../' : '../../') : (it.countryConfig || it.country) ? '../' : './' %>footer.js';
+    import { initFooter } from '<%= it.reportConfig ? (it.singleLevelDivision ? '../' : '../../') : (it.countryConfig || it.country) ? '../' : './' %>footer.js';
 
-    const clientFormattedDate = '<%= formattedDate %>';
-    const clientFormattedTime = '<%= formattedTime %>';
-
-    updateTimeAgo(clientFormattedDate, clientFormattedTime);
-    setInterval(() => updateTimeAgo(clientFormattedDate, clientFormattedTime), 60000);
+    initFooter('<%= formattedDate %>', '<%= formattedTime %>');
 </script>

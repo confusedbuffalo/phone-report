@@ -5,7 +5,7 @@
  * @param {boolean} isDarkMode - True if the dark theme is active, false otherwise.
  * @returns {string} The calculated HSL color string.
  */
-function getBackgroundColor(percent, isDarkMode) {
+export function getBackgroundColor(percent, isDarkMode) {
     if (isDarkMode) {
         if (percent > 2) return 'hsl(0, 40%, 30%)';
         const hue = ((2 - percent) / 2) * 120;
@@ -21,7 +21,7 @@ function getBackgroundColor(percent, isDarkMode) {
  * Applies the calculated background colors to all elements with the 'color-indicator' class.
  * It reads the percentage from the 'data-percentage' attribute on each element.
  */
-function applyColors() {
+export function applyColors() {
     const isDarkMode = document.documentElement.classList.contains('dark');
     document.querySelectorAll('.color-indicator').forEach(el => {
         const percentage = parseFloat(el.dataset.percentage);
@@ -29,5 +29,7 @@ function applyColors() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', applyColors);
-window.addEventListener('themeChanged', applyColors);
+// Ensure it listens for the themeChanged event
+if (typeof window !== 'undefined') {
+    window.addEventListener('themeChanged', applyColors);
+}
