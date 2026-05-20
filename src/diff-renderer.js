@@ -395,13 +395,13 @@ export function getDiffTagsHtml(oldTag, newTag) {
         const actualNewTag = newTag.slice(8);
 
         return {
-            oldTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-removed">${actualOldTag}</span>`,
-            newTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-added">${actualNewTag}</span>`,
+            oldTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-removed">${escapeHTML(actualOldTag)}</span>`,
+            newTagDiff: `<span class="diff-unchanged">contact:</span><span class="diff-added">${escapeHTML(actualNewTag)}</span>`,
         };
     } else {
         return {
-            oldTagDiff: `<span class="diff-removed">${oldTag}</span>`,
-            newTagDiff: `<span class="diff-added">${newTag}</span>`,
+            oldTagDiff: `<span class="diff-removed">${escapeHTML(oldTag)}</span>`,
+            newTagDiff: `<span class="diff-added">${escapeHTML(newTag)}</span>`,
         };
     }
 }
