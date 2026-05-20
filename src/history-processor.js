@@ -1,3 +1,7 @@
+if (process.env.NO_DEBUG === 'true') {
+    console.debug = () => {};
+}
+
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

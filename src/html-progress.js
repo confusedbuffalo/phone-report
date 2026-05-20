@@ -1,3 +1,7 @@
+if (process.env.NO_DEBUG === 'true') {
+    console.debug = () => {};
+}
+
 import { promises as fsPromises } from 'fs';
 import path from 'path';
 import { Eta } from 'eta';
