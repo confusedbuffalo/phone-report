@@ -108,9 +108,7 @@ function createDetailsRow(label, number) {
     return `<div class="list-item-phone-label-container">
                 <span class="list-item-phone-label">${label}</span>
             </div>
-            <div class="list-item-phone-value-container whitespace-pre-wrap">
-                ${number}
-            </div>`;
+            <div class="list-item-phone-value-container whitespace-pre-wrap">${number}</div>`;
 }
 
 /**
