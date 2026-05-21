@@ -1,3 +1,20 @@
+## [5.1.3](https://github.com/confusedbuffalo/phone-report/compare/v5.1.2...v5.1.3) (2026-05-21)
+
+
+### Bug Fixes
+
+* Don't put problem labels for invalid number consisting of multiple numbers ([c20e772](https://github.com/confusedbuffalo/phone-report/commit/c20e7724082257ea05dae5234730a34bad7ef3ae))
+* Ensure raw metadata is escaped or encoded before being injected into links ([e9bfd02](https://github.com/confusedbuffalo/phone-report/commit/e9bfd021007e38be0a3805db65a0c2569ebb6d1d))
+* Fallback to default translations and remove bad hours history ([#348](https://github.com/confusedbuffalo/phone-report/issues/348)) ([fe3203e](https://github.com/confusedbuffalo/phone-report/commit/fe3203e9f1d0791cd46672e81d7321a3ed22fb5c))
+* Fix country page stats display ([7187631](https://github.com/confusedbuffalo/phone-report/commit/7187631328a351c0c91f37c6f0a4983a460fbd7f))
+* Fix extra spacing on report page ([09a0948](https://github.com/confusedbuffalo/phone-report/commit/09a0948ac5ef26b68f5bd06b26af4b8764023218))
+* Fix overflowing tag values ([0e8f243](https://github.com/confusedbuffalo/phone-report/commit/0e8f243e1109db01a19342037db5b956ce0ea262))
+
+
+### Performance Improvements
+
+* Remove duplicate preset parsing ([cac14f3](https://github.com/confusedbuffalo/phone-report/commit/cac14f3b15ee89cc812af4f501674f67b110bda3))
+
 ## [5.1.2](https://github.com/confusedbuffalo/phone-report/compare/v5.1.1...v5.1.2) (2026-05-20)
 
 
