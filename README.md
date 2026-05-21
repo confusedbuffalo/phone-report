@@ -2,7 +2,12 @@
 
 This project generates static websites that report on issues in OpenStreetMap (OSM) data, including invalid phone numbers, invalid opening hours and incomplete names. The goal is to identify and provide an easy way to fix incorrect data in OSM.
 
-The generated site for invalid phone numbers is available at https://confusedbuffalo.github.io/phone-report/, for invalid opening hours at https://head.opening-hours.pages.dev/ and for incomplete names at https://names-report.pages.dev/ and the data is usually updated once per day.
+The generated sites are available at:
+ - Invalid phone numbers: https://confusedbuffalo.github.io/phone-report/
+ - Invalid opening hours: https://opening-hours.pages.dev/
+ - Incomplete names: https://names-report.pages.dev/
+
+The data is usually updated once per day.
 
 ## How it works
 
