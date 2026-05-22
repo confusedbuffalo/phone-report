@@ -165,6 +165,31 @@ export function discardEdits() {
 }
 
 /**
+ * Determines the suggested fix object for an item, optionally with a language.
+ * @param {Object} item - The report item.
+ * @param {string|null} language - The language for name reports.
+ * @returns {Object} The suggested fix object.
+ */
+function getSuggestedFix(item, language) {
+    if (language) {
+        if (item.name) {
+            return { [`name:${language}`]: item.name };
+        } else {
+            return { name: item.nameTags['name:' + language] };
+        }
+    }
+    return item['suggestedFixes'];
+}
+
+/**
+ * Persists the current undo stack and position to localStorage.
+ */
+function persistUndoState() {
+    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
+    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
+}
+
+/**
  * Saves a proposed fix for an OpenStreetMap element to the local 'edits' storage.
  * It also marks the item as 'clicked' and adds the action to the undo stack.
  *
@@ -185,15 +210,7 @@ function saveChangeToStorage(osmType, osmId, language = null) {
         return item.id === osmId && item.type === osmType;
     });
 
-    if (language) {
-        if (item.name) {
-            edits[subdivisionName][osmType][osmId] = { [`name:${language}`]: item.name };
-        } else {
-            edits[subdivisionName][osmType][osmId] = { name: item.nameTags['name:' + language] };
-        }
-    } else {
-        edits[subdivisionName][osmType][osmId] = item['suggestedFixes'];
-    }
+    edits[subdivisionName][osmType][osmId] = getSuggestedFix(item, language);
 
     localStorage.setItem('edits', JSON.stringify(edits));
     addToUndo(osmType, osmId, language);
@@ -240,8 +257,7 @@ function addToUndo(osmType, osmId, language) {
         enableSave();
     }
     disableRedo();
-    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
-    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
+    persistUndoState();
 }
 
 /**
@@ -273,8 +289,7 @@ export function undoChange() {
 
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
-    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
-    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
+    persistUndoState();
 
     transitionInsertItem(osmType, osmId);
 }
@@ -300,23 +315,13 @@ export function redoChange() {
     });
 
     let edits = JSON.parse(localStorage.getItem('edits')) || {};
-
-    if (reportType === 'name') {
-        if (item.name) {
-            edits[subdivisionName][osmType][osmId] = { [`name:${language}`]: item.name };
-        } else {
-            edits[subdivisionName][osmType][osmId] = { name: item.nameTags['name:' + language] };
-        }
-    } else {
-        edits[subdivisionName][osmType][osmId] = item['suggestedFixes'];
-    }
+    edits[subdivisionName][osmType][osmId] = getSuggestedFix(item, language);
 
     recordItemClick(`${osmType}/${osmId}`);
 
     undoData.position += 1;
     setUpUndoRedoBtns();
-    localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
-    localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
+    persistUndoState();
 
     localStorage.setItem('edits', JSON.stringify(edits));
     setUpSaveBtn();
