@@ -20,7 +20,7 @@
                 </a>
                 <%~ include("./partials/theme-button") %>
             </div>
-            <h1 class="page-title"><%= it.translate('progressHistory', it.locale) %></h1>
+            <h1 class="page-title"><%~ it.translate('progressHistory', it.locale) %></h1>
         </header>
 
         <div class="card sticky top-0 z-50">
