@@ -15,7 +15,6 @@ import pkgStringer from 'stream-json/stringer.js';
 const { stringer } = pkgStringer;
 import { Eta } from 'eta';
 import {
-    OSM_EDITORS,
     ALL_EDITOR_IDS,
     DEFAULT_EDITORS_DESKTOP,
     DEFAULT_EDITORS_MOBILE,
