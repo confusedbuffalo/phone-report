@@ -21,6 +21,7 @@ export const MASTER_KEYS = {
     countryReports: [],
     progressHistory: [],
     backToAllCountries: [],
+    deselectAll: [],
     divisionalReports: [],
     showEmptyDivisions: [],
     sortBy: [],

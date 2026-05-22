@@ -34,6 +34,14 @@
             </div>
         </div>
         <div class="card">
+            <div class="flex justify-end mb-2">
+                <button id="deselectAll" class="btn btn-editor text-xs">
+                    <%= it.translate('deselectAll', it.locale) %>
+                </button>
+            </div>
+            <div id="customLegend" class="custom-legend-container"></div>
+        </div>
+        <div class="card">
             <div class="chart-container">
                 <canvas id="progressChart"></canvas>
             </div>

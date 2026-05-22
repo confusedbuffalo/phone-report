@@ -71,6 +71,8 @@ async function updateCharts(days) {
     const semiTransparentGridColour = axisColour + '40';
     const colours = generateColours(regionKeys.length);
 
+    renderCustomLegend(regionKeys, colours, allData);
+
     // Chart for raw counts
     const progressChartEl = document.getElementById('progressChart');
     if (progressChartEl) {
@@ -119,11 +121,7 @@ async function updateCharts(days) {
                 },
                 plugins: {
                     legend: {
-                        labels: {
-                            color: axisColour,
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                        },
+                        display: false,
                     },
                 },
             },
@@ -183,11 +181,7 @@ async function updateCharts(days) {
                 },
                 plugins: {
                     legend: {
-                        labels: {
-                            color: axisColour,
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                        },
+                        display: false,
                     },
                     tooltip: {
                         callbacks: {
@@ -256,6 +250,61 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error fetching data:', error));
 });
+
+function renderCustomLegend(regionKeys, colours, allData) {
+    const legendContainer = document.getElementById('customLegend');
+    const deselectAllBtn = document.getElementById('deselectAll');
+    if (!legendContainer) return;
+
+    legendContainer.innerHTML = '';
+
+    regionKeys.forEach((regionKey, index) => {
+        const regionHistory = allData[regionKey];
+        const displayName = regionHistory.length > 0 ? regionHistory[0].name || regionKey : regionKey;
+
+        const legendItem = document.createElement('div');
+        legendItem.className = 'custom-legend-item';
+        legendItem.dataset.index = index;
+
+        const colorBox = document.createElement('span');
+        colorBox.className = 'custom-legend-color';
+        colorBox.style.backgroundColor = colours[index];
+
+        const label = document.createElement('span');
+        label.className = 'custom-legend-label';
+        label.textContent = displayName;
+
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(label);
+
+        legendItem.addEventListener('click', () => {
+            if (!progressChart || !progressChartPercent) return;
+            const isHidden = !progressChart.isDatasetVisible(index);
+            if (isHidden) {
+                progressChart.show(index);
+                progressChartPercent.show(index);
+                legendItem.classList.remove('hidden-item');
+            } else {
+                progressChart.hide(index);
+                progressChartPercent.hide(index);
+                legendItem.classList.add('hidden-item');
+            }
+        });
+
+        legendContainer.appendChild(legendItem);
+    });
+
+    deselectAllBtn.onclick = () => {
+        if (!progressChart || !progressChartPercent) return;
+        regionKeys.forEach((_, index) => {
+            progressChart.hide(index);
+            progressChartPercent.hide(index);
+        });
+        document.querySelectorAll('.custom-legend-item').forEach(item => {
+            item.classList.add('hidden-item');
+        });
+    };
+}
 
 function generateColours(numColours) {
     const colours = [];
