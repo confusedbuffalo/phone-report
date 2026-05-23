@@ -273,7 +273,7 @@ export function addNote(osmType, osmId) {
                 .map(note => note.id)
                 .map(id =>
                     translate('noteIsClose', {
-                        id: `<a href="https://www.openstreetmap.org/note/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`,
+                        id: `<a href="https://www.openstreetmap.org/note/${encodeURIComponent(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`,
                     })
                 )
                 .join('\n');
@@ -325,7 +325,7 @@ async function checkAndCreateNote(itemId, lat, lon) {
         OSM.createNote(lat, lon, noteCommentBox.value.trim())
             .then(result => {
                 const successMessage = translate('noteCreated', {
-                    id: `<a href="https://www.openstreetmap.org/note/${escapeHTML(result.id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(result.id)}</a>`,
+                    id: `<a href="https://www.openstreetmap.org/note/${encodeURIComponent(result.id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(result.id)}</a>`,
                 });
                 messageBox.className = 'message-box-success';
                 messageBox.innerHTML = successMessage;
@@ -390,7 +390,7 @@ export function checkAndSubmit() {
                     const links = changesetIds
                         .map(
                             id =>
-                                `<a href="https://www.openstreetmap.org/changeset/${escapeHTML(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`
+                                `<a href="https://www.openstreetmap.org/changeset/${encodeURIComponent(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`
                         )
                         .join(', ');
                     const successMessage = translate('changesetCreated', { id: links });
