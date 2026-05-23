@@ -49,7 +49,6 @@ describe('replaceInvisibleChars', () => {
         expect(replaceInvisibleChars(text)).toBe('Hello World 123');
     });
 
-    // Test for core Zero-Width characters (U+200B, U+200C, U+200D)
     test('should replace Zero Width Space (U+200B) with ␣', () => {
         // "123(ZWSP)456"
         const input = '123\u200B456';
@@ -80,50 +79,42 @@ describe('replaceInvisibleChars', () => {
     });
 
     test('should replace Right-to-Left Mark (U+200F) with ␣', () => {
-        // "GHI(RLM)JKL"
         const input = 'GHI\u200FJKL';
         const expected = 'GHI␣JKL';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
-    // Test for Byte Order Mark / ZWNBSP (U+FEFF)
     test('should replace Byte Order Mark (U+FEFF) with ␣', () => {
-        // (BOM)START(BOM)END
         const input = '\uFEFFSTART\uFEFFEND';
         const expected = '␣START␣END';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace Soft Hyphen (U+00AD) with ␣', () => {
-        // "MNO(SFT)PQR"
         const input = 'MNO\u00ADPQR';
         const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace tab character with ␣', () => {
-        // "MNO(SFT)PQR"
         const input = 'MNO\tPQR';
         const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace thin space character with ␣', () => {
-        // "MNO(SFT)PQR"
         const input = 'MNO PQR';
         const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace first strong isolate (U+2068) character with ␣', () => {
-        // "MNO(PDI)PQR"
         const input = 'MNO\u2068PQR';
         const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);
     });
 
     test('should replace pop directional isolate (U+2069) character with ␣', () => {
-        // "MNO(PDI)PQR"
         const input = 'MNO\u2069PQR';
         const expected = 'MNO␣PQR';
         expect(replaceInvisibleChars(input)).toBe(expected);

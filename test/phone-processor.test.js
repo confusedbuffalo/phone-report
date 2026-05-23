@@ -1267,6 +1267,13 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
         expect(result.foreign).toBe(null);
     });
+
+    test('Should fix number with zero width joiner', () => {
+        const result = processSingleNumber('+1-88\u200D8-865-1234', 'US');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+1-888-865-1234');
+    });
 });
 
 // =====================================================================
