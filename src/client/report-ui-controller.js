@@ -631,7 +631,7 @@ export function openNoteModal(item) {
         noteComment += invalidHoursList;
     }
 
-    noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${item.type}/${item.id}\n`;
+    noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}\n`;
     noteComment += `via ${changesetTags.createdBy}`;
 
     noteCommentBox.value = decodeHtmlEntities(noteComment);
