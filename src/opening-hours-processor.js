@@ -30,6 +30,19 @@ function replaceValidSpacing(str) {
     );
 }
 
+/**
+ * Validates a single opening hours tag value.
+ * @param {string} hoursTagValue - The tag value for the opening hours string.
+ * @param {string} tag - The tag in which the opening hours string is defined (such as 'opening_hours' or 'service_times').
+ * @param {string} locale - The locale for warnings.
+ * @returns {{
+ * isInvalid: boolean,
+ * isAutoFixable: boolean,
+ * prettyValue: string,
+ * warnings: Array<string>,
+ * disconnected: boolean
+ * }} An object containing the validation result.
+ */
 export function validateHoursTag(hoursTagValue, tag, locale) {
     const cacheKey = `${hoursTagValue}|${tag}|${locale}`;
     const cachedResult = cache.get(cacheKey);
@@ -42,6 +55,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         isAutoFixable: true,
         prettyValue: null,
         warnings: null,
+        disconnected: true,
     };
 
     try {
@@ -52,8 +66,19 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         if (prettyValue !== hoursTagValue && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)) {
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
-            tagValidationResult.prettyValue = oh.prettifyValue();
+            tagValidationResult.prettyValue = prettyValue;
             tagValidationResult.warnings = oh.getWarnings();
+        }
+
+        if (oh.getWarnings()) {
+            const enOh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: 'en' });
+            if (enOh.getWarnings().join(',').includes('not connected')) {
+                tagValidationResult.isInvalid = true;
+                tagValidationResult.isAutoFixable = true;
+                tagValidationResult.prettyValue = prettyValue;
+                tagValidationResult.warnings = oh.getWarnings();
+                tagValidationResult.disconnected = true;
+            }
         }
     } catch (error) {
         // Totally invalid in some way
@@ -99,6 +124,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
                 invalidHours: new Map(),
                 suggestedFixes: new Map(),
                 warnings: new Map(),
+                disconnected: new Map(),
             };
         };
 
@@ -136,6 +162,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
                 currentItem.invalidHours.set(tag, hoursValue);
                 currentItem.suggestedFixes.set(tag, validationResult.prettyValue);
                 currentItem.warnings.set(tag, validationResult.warnings);
+                currentItem.disconnected.set(tag, validationResult.disconnected);
             }
         }
 
