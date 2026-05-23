@@ -99,6 +99,13 @@ describe('parseStandardExtension', () => {
         expect(result.hasStandardExtension).toBe(false);
     });
 
+    test('should parse a non-standard extension prefixed by "w."', () => {
+        const result = parseStandardExtension('+48 22 825 91 00 w. 106');
+        expect(result.coreNumber).toEqual('+48 22 825 91 00');
+        expect(result.extension).toEqual('106');
+        expect(result.hasStandardExtension).toBe(false);
+    });
+
     test('should parse a non-standard extension prefixed by "wew."', () => {
         const result = parseStandardExtension('+48 22 825 91 00 wew.106');
         expect(result.coreNumber).toEqual('+48 22 825 91 00');

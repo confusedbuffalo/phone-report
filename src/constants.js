@@ -167,7 +167,7 @@ export const EXCLUSIONS = {
 // PL: wew, wewn
 // It captures each of everything before the extension marker and everything after
 // strings are lowercased before checking against this
-export const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|poste|wewn?\.?)\s*)(\d*)\)?$/;
+export const EXTENSION_REGEX = /^(.*?)(\s*\(?(?:x|ext\.?|extension|poste|w\.|wewn?\.?)\s*)(\d*)\)?$/;
 export const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x'];
 
 export const DIN_FORMAT_COUNTRIES = ['AT', 'DE'];
