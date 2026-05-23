@@ -1,3 +1,15 @@
+# [5.2.0](https://github.com/confusedbuffalo/phone-report/compare/v5.1.3...v5.2.0) (2026-05-23)
+
+
+### Bug Fixes
+
+* Fix overflowing title on some progress pages ([5494273](https://github.com/confusedbuffalo/phone-report/commit/549427316c2bb564fa774caba23da27de6bc8c89))
+
+
+### Features
+
+* Add custom legend on progress pages fixes [#349](https://github.com/confusedbuffalo/phone-report/issues/349) ([0cd6e72](https://github.com/confusedbuffalo/phone-report/commit/0cd6e7223dc5bd04d5136a6e392d9de19d846696))
+
 ## [5.1.3](https://github.com/confusedbuffalo/phone-report/compare/v5.1.2...v5.1.3) (2026-05-21)
 
 
