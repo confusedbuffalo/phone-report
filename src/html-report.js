@@ -268,12 +268,21 @@ function createHoursFixRows(item, locale) {
             const suggestedFix = item.suggestedFixes[key];
             const suggestedRowKey = translate('suggestedFix', locale);
 
+            const disconnectedLabel = item.disconnected[key]
+                ? `<span class="label label-number-problem">${translate('overlappingRules', locale)}</span>`
+                : '';
+            const problemLabel = disconnectedLabel;
+
             if (suggestedFix) {
                 const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);
 
+                const newRow = problemLabel
+                    ? `<span class="list-item-old-value">${newDiff}${problemLabel}</span>`
+                    : newDiff;
+
                 return {
                     [key]: oldDiff,
-                    [suggestedRowKey]: newDiff,
+                    [suggestedRowKey]: newRow,
                 };
             } else {
                 return {

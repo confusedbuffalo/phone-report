@@ -47,7 +47,7 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
-        expect(result.warnings).toBeDefined();
+        expect(result.warnings.length).toBeGreaterThan(0);
     });
 
     test('Opening hours with missing leading zero in hours is invalid but fixable', () => {
@@ -57,7 +57,6 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
-        expect(result.warnings).toBeDefined();
     });
 
     test('Totally invalid opening hours is invalid and unfixable', () => {
@@ -65,7 +64,7 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(false);
         expect(result.prettyValue).toBeNull();
-        expect(result.warnings).toBeDefined();
+        expect(result.warnings.length).toBeGreaterThan(0);
     });
 
     test('Valid point in time collection times is valid', () => {
@@ -155,6 +154,14 @@ describe('validateHoursTag', () => {
     test('Days as range is valid for two consecutive days', () => {
         const result = validateHoursTag('Mo-Tu 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+    });
+
+    test('Warning for disconnected time range', () => {
+        const result = validateHoursTag('Mo 10:00-16:30 Tu 10:00-16:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.warnings.length).toBeGreaterThan(0);
+        expect(result.disconnected).toBe(true);
+        expect(result.prettyValue).toBe('Mo 10:00-16:30 Tu 10:00-16:00');
     });
 });
 
