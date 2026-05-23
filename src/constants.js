@@ -2,9 +2,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { translate } from './i18n.js';
-import { validateNumbers } from './phone-processor.js';
-import { validateNames } from './names-processor.js';
-import { validateOpeningHours } from './opening-hours-processor.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,12 +20,6 @@ export const COUNT_TYPES = {
     phone: ['invalidCount', 'autoFixableCount', 'foreignCount', 'safeEditCount', 'totalCount'],
     name: ['invalidCount', 'missingNamesCount', 'totalCount'],
     hours: ['invalidCount', 'autoFixableCount', 'totalCount'],
-};
-
-export const VALIDATORS = {
-    phone: validateNumbers,
-    name: validateNames,
-    hours: validateOpeningHours,
 };
 
 export const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -446,3 +437,5 @@ export const MINIFY_OPTIONS = {
     minifyCSS: true,
     minifyJS: true,
 };
+
+export const INVISIBLE_CHARACTERS = '\\u00AD\\u200B-\\u200F\\u202A-\\u202E\\u2060-\\u2064\\uFEFF\\u2068\\u2069';

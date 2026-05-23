@@ -23,6 +23,7 @@ import {
     INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE,
     CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
     INVALID_SPACING_CHARACTERS_REGEX_TW,
+    INVISIBLE_CHARACTERS,
 } from './constants.js';
 import { createBaseItem } from './data-processor.js';
 
@@ -112,8 +113,8 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     // Digits, spaces, plus, dash and hyphens and invisible spacing characters
     // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX = DIN_FORMAT_COUNTRIES.includes(countryCode)
-        ? /^[\d\s\(\)+\./\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/
-        : /^[\d\s\(\)+\.\-−‐‑‒–—\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]+$/;
+        ? new RegExp(`^[\\d\\s\\(\\)+\\./${INVISIBLE_CHARACTERS}]+$`)
+        : new RegExp(`^[\\d\\s\\(\\)+\\.\\-−‐‑‒–—${INVISIBLE_CHARACTERS}]+$`);
 
     if (!SAFE_CHARACTER_REGEX.test(originalNumberStr)) return false;
 
@@ -515,6 +516,8 @@ export function convertPhonewordToDigits(phoneword) {
     });
 }
 
+const invisibleCharactersRegex = new RegExp(`[${INVISIBLE_CHARACTERS}]`, 'g');
+
 /**
  * Validates a single phone number string using libphonenumber-js.
  * @param {string} numberStr - The phone number string to validate.
@@ -545,7 +548,10 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    if (numberStr.match(INVALID_SPACING_CHARACTERS_REGEX)) {
+    const invalidSpacingRegex =
+        countryCode === 'TW' ? INVALID_SPACING_CHARACTERS_REGEX_TW : INVALID_SPACING_CHARACTERS_REGEX;
+
+    if (!isInvalid && (numberStr.match(invalidSpacingRegex) || numberStr.match(invisibleCharactersRegex))) {
         isInvalid = true;
     }
 
@@ -566,11 +572,8 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         isInvalid = true;
     }
 
-    const invalidSpacingRegex =
-        countryCode === 'TW' ? INVALID_SPACING_CHARACTERS_REGEX_TW : INVALID_SPACING_CHARACTERS_REGEX;
-
     const { coreNumber, extension, hasStandardExtension } = getNumberAndExtension(
-        numberStr.replace(invalidSpacingRegex, ' '),
+        numberStr.replace(invalidSpacingRegex, ' ').replace(invisibleCharactersRegex, ''),
         countryCode
     );
     const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;

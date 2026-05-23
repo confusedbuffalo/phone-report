@@ -8,6 +8,7 @@ import {
     SEPARATOR_NEED_SPACE,
     SEPARATOR_OPTIONAL_SPACE,
     SEPARATOR_OPTIONAL_SPACE_DIN,
+    INVISIBLE_CHARACTERS,
 } from './constants.js';
 import { escapeHTML } from './html-utils.js';
 import { isWhatsappUrl, isSlashSpace } from './phone-processor.js';
@@ -58,11 +59,10 @@ export function consolidatePlusSigns(parts) {
 
 /**
  * Replaces invisible Unicode control characters (zero-width characters,
- * joiners, and directional marks) in a string with the visible space symbol (U+2423 '␣').
- * This is primarily used for displaying user input in a diff or log, ensuring
- * that characters which consume zero width (and would otherwise be invisible)
- * are clearly marked as present in the original string before being removed by
- * parsing/cleaning logic.
+ * joiners and directional marks) in a string with the visible space symbol (U+2423 '␣').
+ * This is ensures that characters which consume zero width (and would otherwise be
+ * invisible) are clearly marked as present in the original string before being removed
+ * by parsing/cleaning logic.
  * @param {string} text The input string potentially containing invisible Unicode characters.
  * @returns {string} The string with all specified invisible characters replaced by '␣'.
  */
@@ -71,7 +71,7 @@ export function replaceInvisibleChars(text) {
         ('');
     }
     // The pattern targets the common zero-width, joiner, and directional marks and spacing characters other than space itself.
-    const invisibleCharPattern = /(?![ ])\s|[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u2068\u2069]/g;
+    const invisibleCharPattern = new RegExp(`(?![ ])\\s|[${INVISIBLE_CHARACTERS}}]`, 'g');
     return text.replace(invisibleCharPattern, '␣');
 }
 

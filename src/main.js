@@ -10,16 +10,7 @@ import yaml from 'js-yaml';
 import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from 'url';
-import {
-    COUNTRIES,
-    OSM_DIR,
-    HISTORY_DIR,
-    IS_TEST_MODE,
-    REPORT_TYPES,
-    BUILD_DIR,
-    COUNT_TYPES,
-    VALIDATORS,
-} from './constants.js';
+import { COUNTRIES, OSM_DIR, HISTORY_DIR, IS_TEST_MODE, REPORT_TYPES, BUILD_DIR, COUNT_TYPES } from './constants.js';
 import { splitPbf, getOsmTimestamp, downloadPbf, filterPbf } from './osm-download.js';
 import { safeName } from './data-processor.js';
 import { generateCountryIndexHtml } from './html-country.js';
@@ -37,6 +28,12 @@ const BUILD_TYPE = process.env.BUILD_TYPE;
 // A test build will only fetch and process numbers for one subdivision of one division of one country
 // (the first found of each, using the countries data file)
 const testMode = BUILD_TYPE === 'simplified';
+
+const VALIDATORS = {
+    phone: validateNumbers,
+    name: validateNames,
+    hours: validateOpeningHours,
+};
 
 /**
  * Substitute any missing translations with default locale translation.
