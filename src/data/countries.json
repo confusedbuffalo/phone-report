@@ -1,4 +1,36 @@
 {
+    "Argentina": {
+        "countryCode": "AR",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/argentina.osm.pbf",
+        "divisions": {
+            "Buenos Aires": 1632167,
+            "Catamarca": 153545,
+            "Chaco": 153554,
+            "Chubut": 153548,
+            "Ciudad Autónoma de Buenos Aires": 3082668,
+            "Córdoba": 3592494,
+            "Corrientes": 153552,
+            "Entre Ríos": 153551,
+            "Formosa": 2849847,
+            "Jujuy": 153556,
+            "La Pampa": 153541,
+            "La Rioja": 153536,
+            "Mendoza": 153540,
+            "Misiones": 153553,
+            "Neuquén": 1606727,
+            "Río Negro": 153547,
+            "Salta": 2405230,
+            "San Juan": 153539,
+            "San Luis": 153538,
+            "Santa Cruz": 153549,
+            "Santa Fe": 153543,
+            "Santiago del Estero": 153544,
+            "Tierra del Fuego": 153550,
+            "Tucumán": 153558
+        }
+    },
     "Australia": {
         "countryCode": "AU",
         "locale": "en",
@@ -67,6 +99,36 @@
                 "relationId": 90348,
                 "countryCode": "BE-WAL"
             }
+        }
+    },
+    "Bolivia": {
+        "countryCode": "BO",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/bolivia.osm.pbf",
+        "divisions": {
+            "Beni": 405935,
+            "Chuquisaca": 396197,
+            "Cochabamba": 393562,
+            "La Paz": 400473,
+            "Oruro": 395910,
+            "Pando": 3358584,
+            "Potosí": 4509552,
+            "Santa Cruz": 3360565,
+            "Tarija": 396198
+        }
+    },
+    "Brasil": {
+        "countryCode": "BR",
+        "locale": "pt-PT",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/brazil.osm.pbf",
+        "divisions": {
+            "Região Centro-Oeste": 3359944,
+            "Região Nordeste": 3360429,
+            "Região Norte": 3360778,
+            "Região Sudeste": 3073228,
+            "Região Sul": 2844750
         }
     },
     "British Crown Dependencies and Overseas Territories": {
@@ -189,6 +251,71 @@
             "Yukon": 391455
         }
     },
+    "Chile": {
+        "countryCode": "CL",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/chile.osm.pbf",
+        "divisions": {
+            "Región de Tarapacá": 238393,
+            "Región de Antofagasta": 240932,
+            "Región de Atacama": 271889,
+            "Región de Coquimbo": 231672,
+            "Región de Valparaíso": 198847,
+            "Región del Libertador General Bernardo O'Higgins": 206487,
+            "Región del Maule": 239882,
+            "Región del Biobío": 252891,
+            "Región de la Araucanía": 296378,
+            "Región de Los Lagos": 274991,
+            "Región Aysén del General Carlos Ibáñez del Campo": 305693,
+            "Región de Magallanes y de la Antártica Chilena": 301542,
+            "Región Metropolitana de Santiago": 198848,
+            "Región de Los Ríos": 274988,
+            "Región de Arica y Parinacota": 238392,
+            "Región de Ñuble": 7421025
+        }
+    },
+    "Colombia": {
+        "countryCode": "CO",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/colombia.osm.pbf",
+        "divisions": {
+            "Amazonas": 1303962,
+            "Antioquia": 1315120,
+            "Arauca": 1388045,
+            "Archipiélago de San Andrés, Providencia y Santa Catalina": 2181889,
+            "Atlántico": 1315209,
+            "Bogotá, Distrito Capital": 12893646,
+            "Bolívar": 1316581,
+            "Boyacá": 1390144,
+            "Caldas": 396705,
+            "Caquetá": 1394843,
+            "Casanare": 1392025,
+            "Cauca": 1392085,
+            "Cesar": 1317223,
+            "Chocó": 1322131,
+            "Córdoba": 1321032,
+            "Cundinamarca": 1305533,
+            "Guainía": 1385038,
+            "Guaviare": 1380540,
+            "Huila": 1396291,
+            "La Guajira": 1321379,
+            "Magdalena": 1319097,
+            "Meta": 1305166,
+            "Nariño": 1380130,
+            "Norte de Santander": 1324192,
+            "Putumayo": 1375357,
+            "Quindío": 1331230,
+            "Risaralda": 1374221,
+            "Santander": 1372374,
+            "Sucre": 1320759,
+            "Tolima": 1309495,
+            "Valle del Cauca": 1322825,
+            "Vaupés": 1359366,
+            "Vichada": 1357098
+        }
+    },
     "Danmark": {
         "countryCode": "DK",
         "locale": "da-DK",
@@ -271,6 +398,38 @@
             "Thüringen": {
                 "Thüringen": 62366
             }
+        }
+    },
+    "Ecuador": {
+        "countryCode": "EC",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/ecuador.osm.pbf",
+        "divisions": {
+            "Azuay": 107886,
+            "Bolívar": 108899,
+            "Cañar": 108720,
+            "Carchi": 114048,
+            "Chimborazo": 108860,
+            "Cotopaxi": 963072,
+            "El Oro": 958681,
+            "Esmeraldas": 113237,
+            "Galápagos": 1628150,
+            "Guayas": 109468,
+            "Imbabura": 113982,
+            "Loja": 108088,
+            "Los Ríos": 109248,
+            "Manabí": 112910,
+            "Morona Santiago": 108521,
+            "Napo": 114276,
+            "Orellana": 114245,
+            "Pastaza": 113869,
+            "Pichincha": 113722,
+            "Santo Domingo de los Tsáchilas": 113721,
+            "Sucumbíos": 114574,
+            "Tungurahua": 113442,
+            "Zamora Chinchipe": 108326,
+            "Santa Elena": 109441
         }
     },
     "España": {
@@ -468,6 +627,24 @@
                     "countryCode": "WF"
                 }
             }
+        }
+    },
+    "Guyana": {
+        "countryCode": "GY",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/guyana.osm.pbf",
+        "divisions": {
+            "Potaro-Siparuni": 7108941,
+            "East Berbice-Corentyne": 7109048,
+            "Upper Takutu-Upper Essequibo": 7108944,
+            "Cuyuni-Mazaruni": 7108866,
+            "Upper Demerara-Berbice": 7109155,
+            "Barima-Waini": 7105826,
+            "Pomeroon-Supenaam": 7105874,
+            "Demerara-Mahaica": 7105917,
+            "Essequibo Islands": 7105894,
+            "Mahaica-Berbice": 7108958
         }
     },
     "Ireland": {
@@ -687,6 +864,65 @@
             "Østfold": 406060
         }
     },
+    "Paraguay": {
+        "countryCode": "PY",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/paraguay.osm.pbf",
+        "divisions": {
+            "Alto Paraguay": 389882,
+            "Alto Paraná": 389891,
+            "Amambay": 389886,
+            "Boquerón": 389883,
+            "Caaguazú": 389890,
+            "Caazapá": 389897,
+            "Canindeyú": 389888,
+            "Central": 389892,
+            "Concepción": 389885,
+            "Cordillera": 389889,
+            "Guairá": 389894,
+            "Itapúa": 389898,
+            "Misiones": 389896,
+            "Ñeembucú": 389895,
+            "Paraguarí": 389893,
+            "Presidente Hayes": 389884,
+            "San Pedro": 389887,
+            "Distrito Capital": 12556624
+        }
+    },
+    "Perú": {
+        "countryCode": "PE",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/peru.osm.pbf",
+        "divisions": {
+            "Amazonas": 1973462,
+            "Ancash": 1953170,
+            "Apurímac": 1929522,
+            "Arequipa": 1879287,
+            "Ayacucho": 1930901,
+            "Cajamarca": 1896111,
+            "Callao": 1944657,
+            "Cusco": 1923695,
+            "Huancavelica": 1933551,
+            "Huánuco": 1954493,
+            "Ica": 1899013,
+            "Junín": 1948258,
+            "La Libertad": 1967959,
+            "Lambayeque": 1969722,
+            "Lima": 1944659,
+            "Loreto": 1994077,
+            "Madre de Dios": 1891287,
+            "Moquegua": 1875889,
+            "Pasco": 1948452,
+            "Piura": 1986151,
+            "San Martín": 1971661,
+            "Puno": 1907899,
+            "Tacna": 1874307,
+            "Tumbes": 1986974,
+            "Ucayali": 1921996
+        }
+    },
     "Polska": {
         "countryCode": "PL",
         "locale": "pl-PL",
@@ -801,6 +1037,24 @@
             "North West": 349519,
             "Northern Cape": 86720,
             "Western Cape": 80501
+        }
+    },
+    "Suriname": {
+        "countryCode": "SR",
+        "locale": "nl-NL",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/suriname.osm.pbf",
+        "divisions": {
+            "Brokopondo": 5740849,
+            "Commewijne": 5740850,
+            "Coronie": 5740851,
+            "Marowijne": 5740852,
+            "Nickerie": 5740853,
+            "Para": 5740854,
+            "Paramaribo": 5740855,
+            "Saramacca": 5740856,
+            "Sipaliwini": 5740857,
+            "Wanica": 5740858
         }
     },
     "Sverige": {
@@ -1148,6 +1402,66 @@
                 "relationId": 161991,
                 "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/wyoming.osm.pbf"
             }
+        }
+    },
+    "Uruguay": {
+        "countryCode": "UY",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/uruguay.osm.pbf",
+        "divisions": {
+            "Artigas": 1617618,
+            "Canelones": 1625171,
+            "Cerro Largo": 1656175,
+            "Colonia": 1650769,
+            "Durazno": 1646018,
+            "Flores": 1645684,
+            "Florida": 1635164,
+            "Lavalleja": 1635124,
+            "Maldonado": 1635117,
+            "Montevideo": 1634207,
+            "Paysandú": 1662387,
+            "Río Negro": 1662476,
+            "Rivera": 1627812,
+            "Rocha": 1653142,
+            "Salto": 1614733,
+            "San José": 1635189,
+            "Soriano": 1646600,
+            "Tacuarembó": 1662265,
+            "Treinta y Tres": 1640982
+        }
+    },
+    "Venezuela": {
+        "countryCode": "VE",
+        "locale": "es-ES",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/south-america/venezuela.osm.pbf",
+        "divisions": {
+            "Amazonas": 2269815,
+            "Anzoátegui": 2267150,
+            "Apure": 3395162,
+            "Aragua": 272746,
+            "Barinas": 3763132,
+            "Bolívar": 2269155,
+            "Carabobo": 272745,
+            "Cojedes": 272662,
+            "Delta Amacuro": 272669,
+            "Falcón": 2269792,
+            "Guárico": 272663,
+            "Lara": 272744,
+            "Mérida": 272635,
+            "Miranda": 272673,
+            "Monagas": 272670,
+            "Nueva Esparta": 2269770,
+            "Portuguesa": 272661,
+            "Sucre": 272671,
+            "Táchira": 272633,
+            "Trujillo": 272634,
+            "Yaracuy": 272743,
+            "Zulia": 272632,
+            "La Guaira": 2442704,
+            "Distrito Capital": 2444378,
+            "Dependencias Federales": 3399075
         }
     }
 }
