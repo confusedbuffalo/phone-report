@@ -21,6 +21,8 @@ function replaceValidSpacing(str) {
             .replace(/((?<=\])\s+(?=\d))/g, '')
             // e.g. Fr10:00
             .replace(/((?<=\w)\s+(?=\d))/g, '')
+            // e.g. Sep:Sa
+            .replace(/(?<=\w)\s*(\:)\s*(?=\w)/g, '$1')
             // consecutive spaces
             .replace(/\s+/g, ' ')
             // title case

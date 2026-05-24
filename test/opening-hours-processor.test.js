@@ -163,6 +163,18 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
     });
 
+    test('No space between month and day with colon is valid', () => {
+        const result = validateHoursTag('Jul-Sep:Sa 15:00-19:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+    });
+
+    test('Spaces between month and day with colon is valid', () => {
+        const result = validateHoursTag('Jul-Sep : Sa 15:00-19:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+    });
+
     test('Comma separated days that could be a range is valid', () => {
         const result = validateHoursTag('Mo,Tu,We,Th 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
