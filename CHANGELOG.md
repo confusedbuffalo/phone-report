@@ -1,3 +1,20 @@
+# [5.3.0](https://github.com/confusedbuffalo/phone-report/compare/v5.2.0...v5.3.0) (2026-05-24)
+
+
+### Bug Fixes
+
+* Detect and fix "w." as marking an extension (PL) ([9ba375d](https://github.com/confusedbuffalo/phone-report/commit/9ba375dea34808c6f3024e1f29a2ee255782015c))
+* Ensure that invisible characters are detected and filtered out when processing phone numbers ([5a9e967](https://github.com/confusedbuffalo/phone-report/commit/5a9e96741b3e2af8223cf1fcc33f563316f4f822))
+* Ensure URLs consistently use encoded components ([dad2eaf](https://github.com/confusedbuffalo/phone-report/commit/dad2eaf57af8755309d762e13be3dfcca8fbcf64))
+* Fix English names in French history ([30410c8](https://github.com/confusedbuffalo/phone-report/commit/30410c8d9dbecb7f5213331865d99e42f805e00d))
+* Give country sort buttons initial style to avoid flash ([e9cc65b](https://github.com/confusedbuffalo/phone-report/commit/e9cc65b5da5eed64a3eadef1515991054e047c11))
+
+
+### Features
+
+* Add South American countries ([00785ab](https://github.com/confusedbuffalo/phone-report/commit/00785abd345694b38d3331e6fff898d4b873ab7e))
+* Add warning label for disconnected times used in one rule for opening hours ([48cdc0c](https://github.com/confusedbuffalo/phone-report/commit/48cdc0c498de6f275985a8a00a94a75d3fe8f533))
+
 # [5.2.0](https://github.com/confusedbuffalo/phone-report/compare/v5.1.3...v5.2.0) (2026-05-23)
 
 
