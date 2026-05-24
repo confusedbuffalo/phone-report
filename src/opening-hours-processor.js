@@ -75,9 +75,9 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 
         if (warnings) {
             const enOh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: 'en' });
+            // Warning for when disconnected ranges are used in one rule, e.g. 'Mo-Fr 09:00-17:00 Sa 09:00-12:00'
             if (enOh.getWarnings().join(',').includes('not connected')) {
                 tagValidationResult.isInvalid = true;
-                tagValidationResult.isAutoFixable = true;
                 tagValidationResult.prettyValue = prettyValue;
                 tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
