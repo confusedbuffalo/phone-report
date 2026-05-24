@@ -55,28 +55,29 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         isAutoFixable: true,
         prettyValue: null,
         warnings: null,
-        disconnected: true,
+        disconnected: false,
     };
 
     try {
         const oh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: locale });
 
         const prettyValue = oh.prettifyValue();
+        const warnings = oh.getWarnings().length ? oh.getWarnings() : null;
 
         if (prettyValue !== hoursTagValue && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)) {
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
             tagValidationResult.prettyValue = prettyValue;
-            tagValidationResult.warnings = oh.getWarnings();
+            tagValidationResult.warnings = warnings;
         }
 
-        if (oh.getWarnings()) {
+        if (warnings) {
             const enOh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: 'en' });
             if (enOh.getWarnings().join(',').includes('not connected')) {
                 tagValidationResult.isInvalid = true;
                 tagValidationResult.isAutoFixable = true;
                 tagValidationResult.prettyValue = prettyValue;
-                tagValidationResult.warnings = oh.getWarnings();
+                tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
             }
         }
@@ -84,7 +85,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         // Totally invalid in some way
         tagValidationResult.isInvalid = true;
         tagValidationResult.isAutoFixable = false;
-        tagValidationResult.warnings = error;
+        tagValidationResult.warnings = [error];
     }
 
     cache.set(cacheKey, tagValidationResult);
