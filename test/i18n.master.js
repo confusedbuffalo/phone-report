@@ -87,6 +87,7 @@ export const MASTER_KEYS = {
     invalidLength: [],
     notNumber: [],
     overlappingRules: [],
+    noInvalidHours: [],
 
     // --- Keys with Required Placeholders ---
     editIn: ['editor'],
