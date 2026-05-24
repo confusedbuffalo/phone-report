@@ -8,6 +8,7 @@ describe('validateHoursTag', () => {
     test('Valid opening hours is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with capitalised days is invalid but fixable', () => {
@@ -15,31 +16,37 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with lower case off is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su off', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with title case off is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Off', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with title case off multiple times is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Off; PH Off', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with title case closed is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00; Sa,Su Closed', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with title case Easter is valid', () => {
         const result = validateHoursTag('Easter-Oct 31 Mo-Su 10:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Opening hours with three-letter days is invalid but fixable', () => {
@@ -57,6 +64,7 @@ describe('validateHoursTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
+        expect(result.disconnected).toBe(false);
     });
 
     test('Totally invalid opening hours is invalid and unfixable', () => {
@@ -70,21 +78,25 @@ describe('validateHoursTag', () => {
     test('Valid point in time collection times is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-17:00', 'collection_times', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Valid range collection times is valid', () => {
         const result = validateHoursTag('Mo-Fr 08:00-08:30', 'collection_times', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Valid point in time service times is valid', () => {
         const result = validateHoursTag('Su 10:00', 'service_times', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Valid range collection times is valid', () => {
         const result = validateHoursTag('Su 10:00-12:00', 'service_times', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('No spaces after semicolon is valid', () => {
@@ -94,66 +106,79 @@ describe('validateHoursTag', () => {
             'en'
         );
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Spaces in time range is valid', () => {
         const result = validateHoursTag('Mo-Sa 12:00-14:30, 17:00-21:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Space before comma is valid', () => {
         const result = validateHoursTag('Mo-Sa 12:00-14:30 , 17:00-21:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Spaces between days is valid', () => {
         const result = validateHoursTag('Mo-Th, Sa 10:00-17:00; Fr 10:00-18:00; Su 11:00-15:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Spaces around a hyphen is valid', () => {
         const result = validateHoursTag('Mo - Th, Sa 10:00 - 17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Inconsistent spaces around a hyphen is valid', () => {
         const result = validateHoursTag('Mo- Th, Sa 10:00 -17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('No space between day and time is valid', () => {
         const result = validateHoursTag('Mo-Fr10:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Double spaces is valid', () => {
         const result = validateHoursTag('Mo-Fr  10:00-17:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Space between days and week modifier is valid', () => {
         const result = validateHoursTag('Su [1,3] 08:00-14:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('No space after week modifier is valid', () => {
         const result = validateHoursTag('Su[1,3]08:00-14:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Comma separated days that could be a range is valid', () => {
         const result = validateHoursTag('Mo,Tu,We,Th 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Comma separated days that could be a range is valid for two consecutive days', () => {
         const result = validateHoursTag('Mo,Tu 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Days as range is valid for two consecutive days', () => {
         const result = validateHoursTag('Mo-Tu 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
     });
 
     test('Warning for disconnected time range', () => {
