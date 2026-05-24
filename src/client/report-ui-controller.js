@@ -264,7 +264,7 @@ export function renderNumbers() {
     } else {
         // No invalid items found at all
         noInvalidContainer.innerHTML = `
-            <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : 'noIncompleteNames')}</p>
+            <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : reportType === 'name' ? 'noIncompleteNames' : noInvalidHours)}</p>
         `;
     }
 
