@@ -20,6 +20,9 @@ import { getTranslations } from './i18n.js';
 import { generateSafeEditFile } from './osm-safe-edits.js';
 import { minify } from 'terser';
 import { Transform } from 'stream';
+import { validateNumbers } from './phone-processor.js';
+import { validateNames } from './names-processor.js';
+import { validateOpeningHours } from './opening-hours-processor.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
