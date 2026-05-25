@@ -122,6 +122,13 @@ export async function initLogin() {
     if (OSM.isLoggedIn()) {
         document.getElementById('logout-btn').hidden = false;
         document.getElementById('login-btn').hidden = true;
+
+        // For upload modal
+        document.getElementById('modal-login-btn').hidden = true;
+        uploadBtn.disabled = false;
+        uploadBtn.classList.remove('cursor-not-allowed');
+        uploadBtn.classList.add('cursor-pointer');
+        document.getElementById('message-box').classList.add('hidden');
         getUser();
     } else {
         document.getElementById('logout-btn').hidden = true;
