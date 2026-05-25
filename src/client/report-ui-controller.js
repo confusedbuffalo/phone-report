@@ -633,7 +633,7 @@ export function openNoteModal(item) {
     }
 
     noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}\n`;
-    noteComment += `via ${changesetTags.createdBy}`;
+    noteComment += `via ${changesetTags.created_by}`;
 
     noteCommentBox.value = decodeHtmlEntities(noteComment);
 
