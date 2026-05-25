@@ -20,6 +20,7 @@ import {
 import {
     applyFix,
     discardEdits,
+    getEdits,
     recordItemClick,
     redoChange,
     saveSettings,
@@ -156,7 +157,7 @@ export function renderNumbers() {
     const missingContainer = document.getElementById('missingSection');
     const noInvalidContainer = document.getElementById('noInvalidSection');
 
-    const edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
 
     let editCount = {
         total: 0,
@@ -264,7 +265,7 @@ export function renderNumbers() {
     } else {
         // No invalid items found at all
         noInvalidContainer.innerHTML = `
-            <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : reportType === 'name' ? 'noIncompleteNames' : noInvalidHours)}</p>
+            <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : reportType === 'name' ? 'noIncompleteNames' : 'noInvalidHours')}</p>
         `;
     }
 
@@ -498,10 +499,10 @@ export function toggleUploadingSpinner(isLoading) {
  * @returns {void}
  */
 function openUploadModal() {
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     let totalChanges = 0;
 
-    if (edits.hasOwnProperty(subdivisionName)) {
+    if (Object.hasOwn(edits, subdivisionName)) {
         const subdivisionData = edits[subdivisionName];
         const osmTypeObjects = Object.values(subdivisionData);
         const editCountForCounty = osmTypeObjects.reduce((accumulator, currentOsmTypeObject) => {
@@ -931,7 +932,7 @@ function enableGrayBtn(element) {
 export function setUpSaveBtn() {
     const saveBtn = document.getElementById('save-btn');
     if (!saveBtn) return;
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     let count = 0;
     if (edits && edits[subdivisionName]) {
         for (const type in edits[subdivisionName]) {
