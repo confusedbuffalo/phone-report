@@ -6,7 +6,7 @@
 <p id="data-timestamp-container" 
    class="footer-text"
    data-timestamp="<%= timestampMs %>">
-    <%~ it.translate('dataSourcedTemplate', it.locale, { date: formattedDate, time: formattedTime, zone: 'UTC', ago: it.translate('timeAgoJustNow', it.locale) }) %>
+    <%~ it.translate('dataSourcedTemplate', it.locale, { date: formattedDate, time: formattedTime, zone: 'UTC', ago: '' }) %>
 </p>
 
 <p class="footer-text">
