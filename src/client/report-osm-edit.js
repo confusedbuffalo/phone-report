@@ -11,6 +11,7 @@ import {
 } from './report-state.js';
 import { getEdits, moveEditsToUploadedStorage } from './report-storage.js';
 import {
+    disableCreateNoteWithMessage,
     disableModalCloseListeners,
     enableModalCloseListeners,
     openNoteModal,
@@ -18,7 +19,7 @@ import {
     toggleUploadingSpinner,
 } from './report-ui-controller.js';
 import { calculateBufferedBBox, escapeHTML } from './report-utils.js';
-import { reportType, subdivisionName, changesetTags } from './config.js';
+import { subdivisionName, changesetTags } from './config.js';
 import { translate } from './i18n.js';
 import { getOSM } from './osm-wrapper.js';
 

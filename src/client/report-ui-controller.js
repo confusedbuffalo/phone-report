@@ -548,7 +548,7 @@ function openUploadModal() {
  * @param {object} message - The text of the message.
  * @returns {void}
  */
-function disableCreateNoteWithMessage(message) {
+export function disableCreateNoteWithMessage(message) {
     addNoteBtn.disabled = true;
     addNoteBtn.classList.add('cursor-not-allowed');
     addNoteBtn.classList.remove('cursor-pointer');

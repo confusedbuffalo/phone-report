@@ -197,7 +197,7 @@ export function diffPhoneNumbers(original, suggested) {
             // Both have another character the same (plus, space or dash), UNCHANGED
             originalDiff.push({ value: char, removed: false, added: false });
             suggestedRemainder = suggestedRemainder.slice(1);
-        } else if (suggestedRemainder.includes(char) && char.match(/[extension\.]/)) {
+        } else if (suggestedRemainder.includes(char) && char.match(/[extension.]/)) {
             // Extension letters
             while (suggestedRemainder != '' && char !== suggestedRemainder[0]) {
                 suggestedRemainder = suggestedRemainder.slice(1);
@@ -509,8 +509,8 @@ export function getPhoneDiffHtml(oldString, newString) {
     let splitRegex = UNIVERSAL_SPLIT_CAPTURE_REGEX;
     if (oldString.includes('/')) {
         try {
-            phoneNumber = parsePhoneNumber(newString);
-            countryCode = phoneNumber.country;
+            const phoneNumber = parsePhoneNumber(newString);
+            const countryCode = phoneNumber.country;
             if (isSlashSpace(oldString, countryCode)) {
                 splitRegex = UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN;
                 useDinSeparators = true;

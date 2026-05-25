@@ -14,7 +14,7 @@ function replaceValidSpacing(str) {
             // e.g. Su, Mo
             .replace(/\s*([,;])\s*/g, '$1')
             // e.g. Mo - Th
-            .replace(/\s*(\-)\s*/g, '$1')
+            .replace(/\s*(-)\s*/g, '$1')
             // e.g. Su [1]
             .replace(/((?<=\w)\s+(?=\[))/g, '')
             // e.g. [1] 10:00
@@ -22,7 +22,7 @@ function replaceValidSpacing(str) {
             // e.g. Fr10:00
             .replace(/((?<=\w)\s+(?=\d))/g, '')
             // e.g. Sep:Sa
-            .replace(/(?<=\w)\s*(\:)\s*(?=\w)/g, '$1')
+            .replace(/(?<=\w)\s*(:)\s*(?=\w)/g, '$1')
             // consecutive spaces
             .replace(/\s+/g, ' ')
             // title case
