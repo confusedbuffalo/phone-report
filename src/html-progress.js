@@ -23,7 +23,7 @@ const testMode = BUILD_TYPE === 'simplified';
  * @param {string} locale - The primary locale for the main page structure (e.g., 'en').
  */
 export async function generateProgressPage(reportType, country = null, locale = 'en-GB') {
-    const rootDir = BUILD_DIR[reportType];
+    const rootDir = path.join(BUILD_DIR, reportType);
     const historyDataPath = path.join(rootDir, 'history-data.json');
 
     try {
@@ -68,6 +68,9 @@ export async function generateProgressPage(reportType, country = null, locale = 
 
     let finalHtml = htmlContent;
 
+    const outputDir = country ? path.join(rootDir, country) : rootDir;
+    const outputPath = path.join(outputDir, 'progress.html');
+
     if (!IS_TEST_MODE) {
         try {
             finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
@@ -76,9 +79,6 @@ export async function generateProgressPage(reportType, country = null, locale = 
             // Fallback to unminified content
         }
     }
-
-    const outputDir = country ? path.join(rootDir, country) : rootDir;
-    const outputPath = path.join(outputDir, 'progress.html');
 
     await fsPromises.mkdir(outputDir, { recursive: true }).catch(err => {
         // Ignore the error if the directory already exists

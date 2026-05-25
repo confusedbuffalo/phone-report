@@ -47,6 +47,8 @@ export async function generateCountryIndexHtml(reportType, countryData) {
 
     let finalHtml = htmlContent;
 
+    const outputPath = path.join(BUILD_DIR, reportType, countryData.slug, 'index.html');
+
     if (!IS_TEST_MODE) {
         try {
             finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
@@ -56,8 +58,6 @@ export async function generateCountryIndexHtml(reportType, countryData) {
         }
     }
 
-    const outputDir = BUILD_DIR[reportType];
-    const pageFileName = path.join(outputDir, countryData.slug, 'index.html');
-    await fsPromises.writeFile(pageFileName, finalHtml);
-    console.log(`Report for ${countryData.name} generated at ${pageFileName}.`);
+    await fsPromises.writeFile(outputPath, finalHtml);
+    console.log(`Report for ${countryData.name} generated at ${outputPath}.`);
 }
