@@ -29,7 +29,7 @@ export function safeName(name) {
     // Note: If running in a very old JS environment that doesn't support \p{L}, this may fail.
     try {
         processedName = processedName.replace(/[^\p{L}\p{N}\s]+/gu, '-');
-    } catch (e) {
+    } catch {
         // Fallback for environments lacking full Unicode property support
         // This regex is less precise but covers most common use cases
         processedName = processedName.replace(/[^a-z0-9\s\u00C0-\uFFFF]+/g, '-');

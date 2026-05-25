@@ -1,5 +1,5 @@
 import { translate } from './i18n.js';
-import { ICON_ATTRIBUTION, GITHUB_LINK } from './constants.js';
+import { ICON_ATTRIBUTION } from './constants.js';
 
 const PERCENTAGE_OPTIONS = {
     minimumFractionDigits: 2,
@@ -27,7 +27,7 @@ function getFormattedPercentage(numerator, denominator, locale) {
  * @returns {string}
  */
 export function createStatsBox(reportType, data, locale, includeProgress = false) {
-    let statsData = [];
+    let statsData;
 
     if (reportType === 'phone') {
         statsData = [

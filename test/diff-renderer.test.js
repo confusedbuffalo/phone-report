@@ -1,4 +1,3 @@
-import { UNIVERSAL_SPLIT_CAPTURE_REGEX, UNIVERSAL_SPLIT_CAPTURE_REGEX_DIN } from '../src/constants.js';
 import {
     normalise,
     consolidatePlusSigns,

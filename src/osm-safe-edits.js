@@ -275,7 +275,7 @@ async function processFeatures(groupedData) {
     let modifications = [];
     const MAX_FEATURES_PER_FETCH = 500;
     for (const type in groupedData) {
-        if (groupedData.hasOwnProperty(type)) {
+        if (Object.hasOwn(groupedData, type)) {
             const { featureIds, fixes, invalid } = groupedData[type];
 
             if (featureIds.length > 0) {

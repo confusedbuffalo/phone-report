@@ -16,19 +16,14 @@ async function downloadSinglePack(packName, packDetails) {
     console.log(`\n--- Processing Pack: ${packName} ---`);
     console.log(`  Source: ${owner}/${repo}/${folder_path}`);
 
-    const headers = {
-        Authorization: `token ${process.env.GITHUB_TOKEN}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-    };
-
-    // 1. Get the list of files
+    // Get the list of files
     const response = await fetch(GITHUB_API_URL);
     if (!response.ok) {
         throw new Error(`Failed to fetch directory contents: ${response.statusText}`);
     }
     const files = await response.json();
 
-    // 2. Filter for SVG files and ensure the output directory exists
+    // Filter for SVG files and ensure the output directory exists
     const svgFiles = files.filter(file => file.type === 'file' && file.name.endsWith('.svg'));
     await fs.mkdir(FINAL_OUTPUT_DIR, { recursive: true });
 
@@ -37,7 +32,7 @@ async function downloadSinglePack(packName, packDetails) {
     let successCount = 0;
     const failedDownloads = []; // Array to store error messages for failed files
 
-    // 3. Download each SVG file
+    // Download each SVG file
     const downloadPromises = svgFiles.map(async file => {
         const rawUrl = file.download_url;
         const filePath = path.join(FINAL_OUTPUT_DIR, file.name);
@@ -53,12 +48,10 @@ async function downloadSinglePack(packName, packDetails) {
 
             successCount++;
         } catch (error) {
-            // Push the error details to the failures array
             failedDownloads.push(`  - FAILED ${file.name}: ${error.message}`);
         }
     });
 
-    // Wait for all downloads to complete
     await Promise.all(downloadPromises);
 
     const totalFiles = svgFiles.length;

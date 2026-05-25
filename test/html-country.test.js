@@ -118,7 +118,6 @@ describe('generateCountryIndexHtml', () => {
 
         // Verify the server-side template escapes the country name
         const writtenContent = fs.promises.writeFile.mock.calls[0][1];
-        const escapedCountryName = escapeHTML(countryData.name);
         expect(writtenContent).toContain(`<h1 class="page-title">OSM Telefoon&shy;nummer&shy;validatie</h1>`);
     });
 });

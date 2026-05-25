@@ -139,7 +139,7 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
         ) {
             return true;
         }
-    } catch (e) {
+    } catch {
         // Parsing failed due to an exception
     }
 
@@ -233,7 +233,7 @@ export function checkExclusions(phoneNumber, numberStr, countryCode, osmTags) {
         if (numberExclusions) {
             // Check if all required OSM tag key/value pair matches the input osmTags
             for (const key in numberExclusions) {
-                if (numberExclusions.hasOwnProperty(key)) {
+                if (Object.hasOwn(numberExclusions, key)) {
                     if (osmTags[key] === numberExclusions[key]) {
                         return {
                             isInvalid: !(normalisedOriginal === coreNationalNumber),
@@ -282,7 +282,7 @@ export function getNumberAndExtension(numberStr, countryCode) {
                         hasStandardExtension: isHyphen,
                     };
                 }
-            } catch (e) {
+            } catch {
                 // Parsing failed due to an exception
             }
         }
@@ -304,7 +304,7 @@ export function getNumberAndExtension(numberStr, countryCode) {
                         hasStandardExtension: isHash,
                     };
                 }
-            } catch (e) {
+            } catch {
                 // Parsing failed due to an exception
             }
         }
@@ -405,7 +405,7 @@ function insertMissingItalianZero(numberStr) {
         if (phoneNumber.isValid()) {
             return newNumberStr;
         }
-    } catch (e) {
+    } catch {
         return numberStr;
     }
     return numberStr;
@@ -444,7 +444,7 @@ export const isWhatsappUrl = urlString => {
             }
             return false;
         });
-    } catch (e) {
+    } catch {
         return false;
     }
 };
@@ -638,7 +638,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             }
 
             // Bad spacing: space after plus, multiple consecutive spaces/dashes
-            isInvalid = isInvalid || /^\+\s.*$/.test(numberStr) || /\s{2,}/.test(numberStr) || /\-{2,}/.test(numberStr);
+            isInvalid = isInvalid || /^\+\s.*$/.test(numberStr) || /\s{2,}/.test(numberStr) || /-{2,}/.test(numberStr);
 
             isInvalid = isInvalid || !numbersMatch;
 
@@ -663,7 +663,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             suggestedFix = null;
             autoFixable = false;
         }
-    } catch (e) {
+    } catch {
         // Parsing failed due to an exception (unfixable invalid number)
         isInvalid = true;
         autoFixable = false;

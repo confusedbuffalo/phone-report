@@ -128,14 +128,16 @@ export class IconManager {
             case 'temaki':
                 packageName = '@rapideditor/temaki';
                 break;
-            default: // iD, Roentgen and Flagpedia icons
+            default: {
+                // iD, Roentgen and Flagpedia icons
                 const basePath = path.resolve(ICONS_DIR, library);
                 iconPath = path.join(basePath, `${icon}.svg`);
+            }
         }
 
         if (packageName) {
             // This covers 'fas', 'far', 'maki', and 'temaki'
-            let svgSubPath = '';
+            let svgSubPath;
             if (faStyleDir) {
                 // Font Awesome Icons
                 svgSubPath = `svgs/${faStyleDir}/${icon}.svg`;

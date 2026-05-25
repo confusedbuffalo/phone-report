@@ -145,7 +145,7 @@ export function getMatchScore(preset, tags, geometry) {
         const value = preset.tags[key];
 
         // Fail if a required tag key is missing from the feature
-        if (!tags.hasOwnProperty(key)) {
+        if (!Object.hasOwn(tags, key)) {
             return -1;
         }
 

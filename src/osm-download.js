@@ -1,10 +1,9 @@
-import os from 'os';
 import axios from 'axios';
 import fs from 'fs';
 import { exec } from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
-import { POLY_DIR, OSM_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS } from './constants.js';
+import { POLY_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS } from './constants.js';
 import { getSubdivisionIds } from './fetch-polys.js';
 
 const execPromise = promisify(exec);
