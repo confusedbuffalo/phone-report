@@ -50,7 +50,7 @@ function buildSearchIndex() {
                     });
                 }
 
-                for (const [subName, relId] of Object.entries(subdivisions)) {
+                for (const subName of Object.keys(subdivisions)) {
                     // If names match (e.g., Berlin/Berlin), only add the deeper one
                     const isDuplicate = subName.toLowerCase() === divName.toLowerCase();
 

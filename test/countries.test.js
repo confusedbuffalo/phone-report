@@ -38,8 +38,8 @@ describe('Countries file tests', () => {
         });
 
         test(`[${countryKey}] must have divisions or divisionMap (but not both)`, () => {
-            const hasDivisions = countryData.hasOwnProperty('divisions');
-            const hasDivisionMap = countryData.hasOwnProperty('divisionMap');
+            const hasDivisions = Object.hasOwn(countryData, 'divisions');
+            const hasDivisionMap = Object.hasOwn(countryData, 'divisionMap');
 
             expect(hasDivisions !== hasDivisionMap).toBe(true);
         });
@@ -56,13 +56,13 @@ describe('Countries file tests', () => {
             }
         }
 
-        if (countryData.hasOwnProperty('divisions')) {
+        if (Object.hasOwn(countryData, 'divisions')) {
             test(`[${countryKey}] divisions is set up correctly`, () => {
                 Object.values(countryData.divisions).forEach(value => {
                     isNumberOrIdPbfObject(value);
                 });
             });
-        } else if (countryData.hasOwnProperty('divisionMap')) {
+        } else if (Object.hasOwn(countryData, 'divisionMap')) {
             test(`[${countryKey}] divisionMap is set up correctly`, () => {
                 Object.values(countryData.divisionMap).forEach(division => {
                     Object.values(division).forEach(value => {
@@ -73,16 +73,16 @@ describe('Countries file tests', () => {
         }
 
         test(`[${countryKey}] all regions must have an extract URL`, () => {
-            if (countryData.hasOwnProperty('pbfUrl')) {
+            if (Object.hasOwn(countryData, 'pbfUrl')) {
                 expect(typeof countryData.pbfUrl).toBe('string');
-            } else if (countryData.hasOwnProperty('divisions')) {
+            } else if (Object.hasOwn(countryData, 'divisions')) {
                 Object.values(countryData.divisions).forEach(value => {
-                    expect(value.hasOwnProperty('pbfUrl')).toBe(true);
+                    expect(Object.hasOwn(value, 'pbfUrl')).toBe(true);
                 });
             } else {
                 Object.values(countryData.divisionMap).forEach(division => {
                     Object.values(division).forEach(value => {
-                        expect(value.hasOwnProperty('pbfUrl')).toBe(true);
+                        expect(Object.hasOwn(value, 'pbfUrl')).toBe(true);
                     });
                 });
             }

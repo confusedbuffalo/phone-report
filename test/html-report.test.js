@@ -45,7 +45,6 @@ jest.unstable_mockModule('fs', () => {
 });
 
 const fs = (await import('fs')).default;
-const Stream = (await import('stream')).default;
 
 jest.unstable_mockModule('../src/i18n.js', () => ({
     translate: (key, locale, args) => {
