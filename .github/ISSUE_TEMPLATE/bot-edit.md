@@ -8,7 +8,7 @@ assignees: ''
 
 ### Country name
 
-### Approximate number of numbers fixed
+### Approximate number of phone numbers fixed
 
 <!--
 I need to see that the tool has been used enough that any issues with the fixes would have come up

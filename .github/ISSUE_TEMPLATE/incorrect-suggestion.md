@@ -6,9 +6,9 @@ labels: bug
 assignees: ''
 ---
 
-### Original phone number
+### Original value
 
-<!-- The number on the OSM element -->
+<!-- The tag on the OSM element -->
 
 ### Suggested fix
 
