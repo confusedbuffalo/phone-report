@@ -195,7 +195,7 @@ export const SEPARATOR_OPTIONAL_SPACE_DIN = [';', ',', '|'];
 export const SEPARATOR_NEED_SPACE = ['or', 'and', 'oder', 'y', 'ou'];
 
 const escapeRegex = string => {
-    return string.replace(/[-\/\\^$+?.()|[\]{}]/g, '\\$&');
+    return string.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&');
 };
 
 export const spaceOptionalGroups = SEPARATOR_OPTIONAL_SPACE.map(sep => {

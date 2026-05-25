@@ -287,7 +287,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
     const geojsonPath = path.join(OSM_DIR, reportType, `${subdivision.id}.geojsonseq`);
     try {
         await access(geojsonPath);
-    } catch (error) {
+    } catch {
         console.error(`Error: File not found at ${geojsonPath}`);
     }
 
@@ -434,8 +434,8 @@ async function processCountry(countryData) {
         countryData.timestamp = dataTimestamp;
     }
 
-    for (const [groupName, groupDivisions] of Object.entries(divisions)) {
-        for (const [subName, subData] of Object.entries(groupDivisions)) {
+    for (const groupDivisions of Object.values(divisions)) {
+        for (const subData of Object.values(groupDivisions)) {
             const pbfUrl = typeof subData === 'object' ? subData.pbfUrl : null;
             if (pbfUrl) {
                 const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);

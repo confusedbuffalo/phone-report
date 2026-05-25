@@ -25,7 +25,7 @@ export const sortKey = {
 
 export const undoData = {
     stack: JSON.parse(localStorage.getItem(`undoStack_${subdivisionName}`)) ?? [],
-    position: +localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0,
+    position: +(localStorage.getItem(`undoPosition_${subdivisionName}`) ?? 0),
 };
 
 export const appState = {

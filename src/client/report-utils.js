@@ -47,7 +47,7 @@ function sortItems(items, key, direction) {
                 valA = Object.keys(getFirstNonNullValue(a.validForeignNumbers))[0];
                 valB = Object.keys(getFirstNonNullValue(b.validForeignNumbers))[0];
                 break;
-            case 'fixable':
+            case 'fixable': {
                 // Get the value of the first key in suggestedFixes
                 // If there isn't one, get the first from invalid numbers
                 // (suggested might be null if the value is being removed)
@@ -65,6 +65,7 @@ function sortItems(items, key, direction) {
                 valA = firstA;
                 valB = firstB;
                 break;
+            }
             default:
                 return 0;
         }
