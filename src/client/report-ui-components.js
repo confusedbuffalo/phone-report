@@ -114,7 +114,7 @@ export function createListItem(item) {
  */
 function createDetailsRow(label, number) {
     return `<div class="list-item-phone-label-container">
-                <span class="list-item-phone-label">${escapeHTML(label)}</span>
+                <span class="list-item-phone-label">${label}</span>
             </div>
             <div class="list-item-phone-value-container whitespace-pre-wrap wrap-anywhere">${number}</div>`;
 }
