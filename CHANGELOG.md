@@ -1,3 +1,14 @@
+## [5.3.1](https://github.com/confusedbuffalo/phone-report/compare/v5.3.0...v5.3.1) (2026-05-25)
+
+
+### Bug Fixes
+
+* Add message for no invalid opening hours ([30a79cf](https://github.com/confusedbuffalo/phone-report/commit/30a79cfb3580c52d94ee6df75640ac69ce7d130c))
+* Consider any spacing between month and days with colon valid ([19911e2](https://github.com/confusedbuffalo/phone-report/commit/19911e21ff8a4fe0482a8f33c659a16423997da9))
+* Don't mark disconnected ranges as fixable if there is no fix ([9489689](https://github.com/confusedbuffalo/phone-report/commit/94896899396924c176996ccc7971fc30c6f6d86d))
+* Fix warning showing up for all invalid opening hours values ([e2764e5](https://github.com/confusedbuffalo/phone-report/commit/e2764e521d1c88232da622955594ee867e147ab5))
+* Use pointer cursor on modal buttons ([36136e3](https://github.com/confusedbuffalo/phone-report/commit/36136e3fc6e70a96c17d6c7e0b4d37bbeec182d8))
+
 # [5.3.0](https://github.com/confusedbuffalo/phone-report/compare/v5.2.0...v5.3.0) (2026-05-24)
 
 
