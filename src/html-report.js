@@ -33,7 +33,6 @@ import { getPhoneDiffHtml, getDiffTagsHtml, getHoursDiffHtml } from './diff-rend
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { IconManager } from './icon-manager.js';
 import { phoneTagToUse } from './phone-processor.js';
-import { diffChars } from 'diff';
 import { validatePhoneNumberLength } from 'libphonenumber-js/max';
 
 /**
@@ -156,7 +155,7 @@ export function createPhoneFixRows(item, locale, countryCode) {
 
             const tagToUse = item.phoneTagToUse;
             const numberMovingToEmptyTag =
-                !item.invalidNumbers.hasOwnProperty(tagToUse) && item.suggestedFixes.hasOwnProperty(tagToUse);
+                !Object.hasOwn(item.invalidNumbers, tagToUse) && Object.hasOwn(item.suggestedFixes, tagToUse);
 
             // Internal duplicate (in same tag)
             if (isDuplicateKey && item.duplicateNumbers[key] === key) {
@@ -177,7 +176,7 @@ export function createPhoneFixRows(item, locale, countryCode) {
                     originalRowValue = oldDiff;
                 } else {
                     // e.g. phone:mnemonic being added as new tag
-                    const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', key);
+                    const { newTagDiff } = getDiffTagsHtml('', key);
                     return {
                         [newTagDiff]: newDiff,
                     };
@@ -185,11 +184,8 @@ export function createPhoneFixRows(item, locale, countryCode) {
 
                 if (numberMovingToEmptyTag) {
                     // Old tag exists (multiple numbers) and number/s is being removed from it, to an empty tag
-                    const { oldTagDiff, newTagDiff } = getDiffTagsHtml('', tagToUse);
-                    const { oldDiff: oldMovingDiff, newDiff: newMovingDiff } = getPhoneDiffHtml(
-                        '',
-                        item.suggestedFixes[tagToUse]
-                    );
+                    const { newTagDiff } = getDiffTagsHtml('', tagToUse);
+                    const { newDiff: newMovingDiff } = getPhoneDiffHtml('', item.suggestedFixes[tagToUse]);
                     return {
                         [key]: originalRowValue,
                         [suggestedRowKey]: newDiff,
@@ -525,7 +521,7 @@ export async function generateHtmlReport(
         try {
             finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
         } catch (err) {
-            console.error(`Minification failed for ${outputPath}:`, err);
+            console.error(`Minification failed for ${htmlFilePath}:`, err);
             // Fallback to unminified content
         }
     }

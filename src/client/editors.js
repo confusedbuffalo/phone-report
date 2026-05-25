@@ -1,5 +1,4 @@
 import { translate } from './i18n.js';
-import { locale } from './config.js';
 
 /**
  * Definitions for OpenStreetMap editors supported by the application.
