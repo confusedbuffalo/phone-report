@@ -23,9 +23,9 @@ const masterKeys = Object.keys(MASTER_KEYS);
 // Regex to find ANY placeholder ({key})
 const PLACEHOLDER_REGEX = /{(\w+)}/g;
 
-// Regex to find common, disallowed HTML characters (e.g., <, >, &, ", ')
-const DISALLOWED_HTML_REGEX = /[<>"']/g; // Catches <, >, ", '
-const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;|apos;|quot;)/g; // Catches '&' unless followed by 'shy;', 'nbsp;' or 'apos;'
+// Regex to find common, disallowed HTML characters (e.g., <, >)
+const DISALLOWED_HTML_REGEX = /[<>]/g; // Catches <, >
+const DISALLOWED_HTML_AMPERSAND_REGEX = /&(?!shy;|nbsp;)/g; // Catches '&' unless followed by 'shy;' or 'nbsp;'
 
 describe('Localization File Integrity Tests', () => {
     // Check for missing or extra keys in all locale files
@@ -33,10 +33,9 @@ describe('Localization File Integrity Tests', () => {
         const currentKeys = Object.keys(content);
 
         test(`[${locale}] must contain all master keys and no extra keys`, () => {
-            // TODO: DISABLED: EXTRA NAME KEYS BEING ADDED, NOT YET TRANSLATED
-            // // Check for missing keys
-            // const missingKeys = masterKeys.filter(key => !currentKeys.includes(key));
-            // expect(missingKeys).toEqual([]);
+            // Check for missing keys
+            const missingKeys = masterKeys.filter(key => !currentKeys.includes(key));
+            expect(missingKeys).toEqual([]);
 
             // Check for extra keys
             const extraKeys = currentKeys.filter(key => !masterKeys.includes(key));
