@@ -325,7 +325,8 @@ function createClientItems(reportType, item, locale, countryCode, botEnabled, ic
     if (reportType === 'phone' && item.isForeignItem) {
         item.fixRows = createPhoneForeignFixRows(item, locale, iconManager);
 
-        const { allTags, ...clientItem } = item;
+        const clientItem = { ...item };
+        delete clientItem.allTags;
         return clientItem;
     }
 
@@ -342,7 +343,8 @@ function createClientItems(reportType, item, locale, countryCode, botEnabled, ic
 
     item.josmFixUrl = createJosmFixUrl(item);
 
-    const { allTags, ...clientItem } = item;
+    const clientItem = { ...item };
+    delete clientItem.allTags;
 
     return clientItem;
 }
