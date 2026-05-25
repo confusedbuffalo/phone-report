@@ -115,13 +115,18 @@ jobs:
               uses: actions/upload-artifact@v7
               with:
                   name: names-build
-                  path: names_build/
+                  path: build/name/
 
             - name: Upload Hours Pages Artifact
               uses: actions/upload-artifact@v7
               with:
                   name: hours-build
-                  path: hours_build/
+                  path: build/hours/
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v5
+              with:
+                  path: './build/phone'
 
             - name: Deploy names to Cloudflare
               uses: cloudflare/wrangler-action@v3
@@ -129,7 +134,7 @@ jobs:
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
-                  command: pages deploy names_build --project-name=names-report
+                  command: pages deploy build/name --project-name=names-report --commit-dirty=true
                   gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Deploy opening hours to Cloudflare
@@ -138,15 +143,10 @@ jobs:
               with:
                   apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_NAMES }}
                   accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID_NAMES }}
-                  command: pages deploy hours_build --project-name=opening-hours
+                  command: pages deploy build/hours --project-name=opening-hours --commit-dirty=true
                   gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Upload Pages artifact
-              uses: actions/upload-pages-artifact@v5
-              with:
-                  path: './public'
-
-            - name: Deploy to GitHub Pages
+            - name: Deploy phones to GitHub Pages
               if: env.BUILD_TYPE == 'full'
               id: deployment
               uses: actions/deploy-pages@v5

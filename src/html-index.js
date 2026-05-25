@@ -112,6 +112,8 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
 
     let finalHtml = htmlContent;
 
+    const outputPath = path.join(BUILD_DIR, reportType, 'index.html');
+
     if (!IS_TEST_MODE) {
         try {
             finalHtml = await minify(htmlContent, MINIFY_OPTIONS);
@@ -121,7 +123,6 @@ export async function generateMainIndexHtml(reportType, countryStats, locale, tr
         }
     }
 
-    const fileName = path.join(BUILD_DIR[reportType], 'index.html');
-    await fsPromises.writeFile(fileName, finalHtml);
+    await fsPromises.writeFile(outputPath, finalHtml);
     console.log(`${reportType}: Main index.html generated.`);
 }

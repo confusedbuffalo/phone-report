@@ -330,7 +330,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     fs.unlinkSync(geojsonPath);
 
-    const countryDir = path.join(BUILD_DIR[reportType], safeName(countryName));
+    const countryDir = path.join(BUILD_DIR, reportType, safeName(countryName));
     const divisionDir = path.join(countryDir, stats.divisionSlug);
     if (!fs.existsSync(divisionDir)) {
         fs.mkdirSync(divisionDir, { recursive: true });
@@ -468,7 +468,7 @@ async function processCountry(countryData) {
     }
 
     for (const reportType of REPORT_TYPES) {
-        const outputDir = path.join(BUILD_DIR[reportType], safeName(countryName));
+        const outputDir = path.join(BUILD_DIR, reportType, safeName(countryName));
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
         }
@@ -571,28 +571,29 @@ async function minifyJsFiles(directory) {
  */
 async function main() {
     const CLIENT_DIR = path.join(__dirname, 'client');
-    Object.values(BUILD_DIR).forEach(async dir => {
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir);
+    Object.values(REPORT_TYPES).forEach(async reportType => {
+        const buildDir = path.join(BUILD_DIR, reportType);
+        if (!fs.existsSync(buildDir)) {
+            fs.mkdirSync(buildDir, { recursive: true });
         }
         try {
             const filesToCopy = fs.readdirSync(CLIENT_DIR);
 
             filesToCopy.forEach(file => {
                 const source = path.join(CLIENT_DIR, file);
-                const destination = path.join(dir, file);
+                const destination = path.join(buildDir, file);
 
                 // Only copy files, ignore subdirectories (if any)
                 if (fs.statSync(source).isFile()) {
                     fs.copyFileSync(source, destination);
                 }
             });
-            console.log(`Successfully copied client directory contents to ${dir}`);
+            console.log(`Successfully copied client directory contents to ${buildDir}`);
         } catch (err) {
             console.error('Error copying files:', err);
         }
 
-        const VENDOR_DIR = path.join(dir, 'vendor');
+        const VENDOR_DIR = path.join(buildDir, 'vendor');
         if (!fs.existsSync(VENDOR_DIR)) {
             fs.mkdirSync(VENDOR_DIR);
         }
@@ -607,7 +608,7 @@ async function main() {
             path.join(VENDOR_DIR, 'chart.js')
         );
 
-        await minifyJsFiles(dir);
+        await minifyJsFiles(buildDir);
     });
 
     const officialLanguages = await downloadAndParseOfficialLanguages();

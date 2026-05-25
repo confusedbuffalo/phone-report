@@ -21,7 +21,7 @@ import { HISTORY_DIR, BUILD_DIR, REPORT_TYPES } from './constants.js';
  */
 export function processHistory(reportType) {
     const historyDir = path.join(HISTORY_DIR, reportType);
-    const rootOutputDir = BUILD_DIR[reportType];
+    const rootOutputDir = path.join(BUILD_DIR, reportType);
 
     if (!fs.existsSync(historyDir)) {
         console.log('History directory not found. Skipping history processing.');

@@ -10,19 +10,13 @@ const packageInfo = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'packa
 
 export const REPORT_TYPES = ['phone', 'name', 'hours'];
 
-export const BUILD_DIR = {
-    phone: path.join(__dirname, '..', 'public'),
-    name: path.join(__dirname, '..', 'names_build'),
-    hours: path.join(__dirname, '..', 'hours_build'),
-};
+export const BUILD_DIR = path.join(__dirname, '..', 'build');
 
 export const COUNT_TYPES = {
     phone: ['invalidCount', 'autoFixableCount', 'foreignCount', 'safeEditCount', 'totalCount'],
     name: ['invalidCount', 'missingNamesCount', 'totalCount'],
     hours: ['invalidCount', 'autoFixableCount', 'totalCount'],
 };
-
-export const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
 export const MOBILE_TAGS = ['mobile', 'contact:mobile', 'phone:mobile'];
 export const NON_MOBILE_TAGS = ['phone', 'contact:phone'];

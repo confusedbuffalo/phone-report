@@ -441,8 +441,8 @@ export async function generateHtmlReport(
         subdivisionStats.divisionSlug,
         subdivisionStats.slug
     );
-    const htmlFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.html`;
-    const dataFilePath = `${path.join(BUILD_DIR[reportType], relativeFilePath)}.json`;
+    const htmlFilePath = `${path.join(BUILD_DIR, reportType, relativeFilePath)}.html`;
+    const dataFilePath = `${path.join(BUILD_DIR, reportType, relativeFilePath)}.json`;
 
     const stringerOptions = { makeArray: true };
 
