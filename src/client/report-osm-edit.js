@@ -9,7 +9,7 @@ import {
     uploadCancelBtn,
     uploadCloseBtnBottom,
 } from './report-state.js';
-import { moveEditsToUploadedStorage } from './report-storage.js';
+import { getEdits, moveEditsToUploadedStorage } from './report-storage.js';
 import {
     disableModalCloseListeners,
     enableModalCloseListeners,
@@ -189,7 +189,7 @@ function applyEditsToFeatureTags(feature, elementEdits) {
  * @returns {Promise<number|undefined>} A promise that resolves with the new changeset ID if modifications were uploaded, or undefined if no modifications were submitted.
  */
 async function uploadChanges() {
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
 
     let modifications = [];
     const subdivisionEdits = edits[subdivisionName];

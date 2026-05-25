@@ -1,4 +1,11 @@
-import { appState, CLICKED_ITEMS_KEY, DEFAULT_EDITORS, undoData, UPLOADED_ITEMS_KEY } from './report-state.js';
+import {
+    appState,
+    CLICKED_ITEMS_KEY,
+    DEFAULT_EDITORS,
+    EDITS_KEY,
+    undoData,
+    UPLOADED_ITEMS_KEY,
+} from './report-state.js';
 import {
     enableRedo,
     disableRedo,
@@ -12,7 +19,7 @@ import {
     enableSave,
     disableUndo,
 } from './report-ui-controller.js';
-import { reportType, subdivisionName, storageKey } from './config.js';
+import { subdivisionName, storageKey } from './config.js';
 
 /**
  * Adds an item's ID to localStorage to mark it as clicked.
@@ -67,7 +74,7 @@ export function setButtonsAsClicked(itemId) {
 export function isItemClicked(itemId) {
     try {
         const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
-        return clickedItems.hasOwnProperty(itemId) && clickedItems[itemId];
+        return Object.hasOwn(clickedItems, itemId) && clickedItems[itemId];
     } catch (e) {
         console.error('Could not read clicked items from localStorage:', e);
         return false;
@@ -104,6 +111,31 @@ export function saveSettings() {
 }
 
 /**
+ * Retrieves the local 'edits' storage object.
+ * @returns {Object} The parsed edits object, or an empty object if none exists or on error.
+ */
+export function getEdits() {
+    try {
+        return JSON.parse(localStorage.getItem(EDITS_KEY)) || {};
+    } catch (e) {
+        console.error('Error reading edits from localStorage:', e);
+        return {};
+    }
+}
+
+/**
+ * Saves the local 'edits' storage object.
+ * @param {Object} edits - The edits object to save.
+ */
+export function saveEdits(edits) {
+    try {
+        localStorage.setItem(EDITS_KEY, JSON.stringify(edits));
+    } catch (e) {
+        console.error('Error saving edits to localStorage:', e);
+    }
+}
+
+/**
  * Moves the currently saved local edits for the current subdivision from the
  * 'edits' localStorage key to the 'uploaded' localStorage key, and then clears
  * the edits for the subdivision from the 'edits' key.
@@ -111,7 +143,7 @@ export function saveSettings() {
  * @returns {void}
  */
 export function moveEditsToUploadedStorage() {
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     let uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
     if (uploadedChanges && uploadedChanges[subdivisionName]) {
@@ -130,7 +162,7 @@ export function moveEditsToUploadedStorage() {
 
     localStorage.setItem(UPLOADED_ITEMS_KEY, JSON.stringify(uploadedChanges));
     delete edits[subdivisionName];
-    localStorage.setItem('edits', JSON.stringify(edits));
+    saveEdits(edits);
 }
 
 /**
@@ -139,7 +171,7 @@ export function moveEditsToUploadedStorage() {
  * @returns {void}
  */
 export function discardEdits() {
-    let edits = JSON.parse(localStorage.getItem('edits'));
+    const edits = getEdits();
     if (edits[subdivisionName]) {
         for (const osmType in edits[subdivisionName]) {
             for (const osmIdStr in edits[subdivisionName][osmType]) {
@@ -149,7 +181,7 @@ export function discardEdits() {
         }
 
         delete edits[subdivisionName];
-        localStorage.setItem('edits', JSON.stringify(edits));
+        saveEdits(edits);
 
         localStorage.removeItem(`undoPosition_${subdivisionName}`);
         localStorage.removeItem(`undoStack_${subdivisionName}`);
@@ -198,7 +230,7 @@ function persistUndoState() {
  * @returns {void}
  */
 function saveChangeToStorage(osmType, osmId, language = null) {
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     if (!edits[subdivisionName]) {
         edits[subdivisionName] = {};
     }
@@ -212,7 +244,7 @@ function saveChangeToStorage(osmType, osmId, language = null) {
 
     edits[subdivisionName][osmType][osmId] = getSuggestedFix(item, language);
 
-    localStorage.setItem('edits', JSON.stringify(edits));
+    saveEdits(edits);
     addToUndo(osmType, osmId, language);
     setUpSaveBtn();
 }
@@ -279,7 +311,7 @@ export function undoChange() {
         enableRedo();
     }
 
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     const undoneElement = undoData.stack[undoData.position];
     const osmType = undoneElement[0];
     const osmId = undoneElement[1];
@@ -287,7 +319,7 @@ export function undoChange() {
     delete edits[subdivisionName][osmType][osmId];
     clearItemClick(`${osmType}/${osmId}`);
 
-    localStorage.setItem('edits', JSON.stringify(edits));
+    saveEdits(edits);
     setUpSaveBtn();
     persistUndoState();
 
@@ -314,7 +346,7 @@ export function redoChange() {
         return item.id === osmId && item.type === osmType;
     });
 
-    let edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     edits[subdivisionName][osmType][osmId] = getSuggestedFix(item, language);
 
     recordItemClick(`${osmType}/${osmId}`);
@@ -323,7 +355,7 @@ export function redoChange() {
     setUpUndoRedoBtns();
     persistUndoState();
 
-    localStorage.setItem('edits', JSON.stringify(edits));
+    saveEdits(edits);
     setUpSaveBtn();
     transitionRemoveItem(osmType, osmId);
 }

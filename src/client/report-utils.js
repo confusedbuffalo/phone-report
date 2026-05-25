@@ -1,4 +1,5 @@
 import { appState, sortDirection, sortKey, UPLOADED_ITEMS_KEY } from './report-state.js';
+import { getEdits } from './report-storage.js';
 import { reportType, subdivisionName } from './config.js';
 
 /**
@@ -180,7 +181,7 @@ function getFirstNonNullValue(obj) {
  * @returns {Array<Object>} An array of filtered report items.
  */
 export function getFilteredItems(filterType) {
-    const edits = JSON.parse(localStorage.getItem('edits')) || {};
+    const edits = getEdits();
     const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
     return appState.reportData.filter(item => {

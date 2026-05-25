@@ -36,6 +36,7 @@ export const appState = {
 
 export const CLICKED_ITEMS_KEY = `clickedItems_${dataLastUpdated}`;
 export const UPLOADED_ITEMS_KEY = `uploaded_${dataLastUpdated}`;
+export const EDITS_KEY = 'edits';
 
 export const settingsToggle = document.getElementById('settings-toggle');
 export const settingsMenu = document.getElementById('editor-settings-menu');
