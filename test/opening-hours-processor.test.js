@@ -196,9 +196,19 @@ describe('validateHoursTag', () => {
     test('Warning for disconnected time range', () => {
         const result = validateHoursTag('Mo 10:00-16:30 Tu 10:00-16:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
         expect(result.warnings.length).toBeGreaterThan(0);
         expect(result.disconnected).toBe(true);
-        expect(result.prettyValue).toBe('Mo 10:00-16:30 Tu 10:00-16:00');
+        expect(result.prettyValue).toBeNull();
+    });
+
+    test('Warning for disconnected time range with partial fix', () => {
+        const result = validateHoursTag('Monday 10:00-16:30 Tuesday 10:00-16:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.warnings.length).toBeGreaterThan(0);
+        expect(result.disconnected).toBe(true);
+        expect(result.prettyValue).toEqual('Mo 10:00-16:30 Tu 10:00-16:00');
     });
 });
 

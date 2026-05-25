@@ -65,8 +65,10 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 
         const prettyValue = oh.prettifyValue();
         const warnings = oh.getWarnings().length ? oh.getWarnings() : null;
+        let valuesMatch = true;
 
         if (prettyValue !== hoursTagValue && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)) {
+            valuesMatch = false;
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
             tagValidationResult.prettyValue = prettyValue;
@@ -78,7 +80,8 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
             // Warning for when disconnected ranges are used in one rule, e.g. 'Mo-Fr 09:00-17:00 Sa 09:00-12:00'
             if (enOh.getWarnings().join(',').includes('not connected')) {
                 tagValidationResult.isInvalid = true;
-                tagValidationResult.prettyValue = prettyValue;
+                tagValidationResult.isAutoFixable = false;
+                tagValidationResult.prettyValue = valuesMatch ? null : prettyValue;
                 tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
             }
