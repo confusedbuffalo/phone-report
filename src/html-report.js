@@ -267,7 +267,10 @@ function createHoursFixRows(item, locale) {
             const disconnectedLabel = item.disconnected[key]
                 ? `<span class="label label-number-problem">${translate('overlappingRules', locale)}</span>`
                 : '';
-            const problemLabel = disconnectedLabel;
+            const ambiguousLabel = item.ambiguous[key]
+                ? `<span class="label label-number-problem">${translate('ambiguousHours', locale)}</span>`
+                : '';
+            const problemLabel = disconnectedLabel + ambiguousLabel;
 
             if (suggestedFix) {
                 const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);
