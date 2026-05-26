@@ -284,8 +284,12 @@ function createHoursFixRows(item, locale) {
                     [suggestedRowKey]: newRow,
                 };
             } else {
+                const originalRow = problemLabel
+                    ? `<span class="list-item-old-value">${escapeHTML(originalValue)}${problemLabel}</span>`
+                    : escapeHTML(originalValue);
+
                 return {
-                    [key]: escapeHTML(originalValue),
+                    [key]: originalRow,
                 };
             }
         })
