@@ -31,6 +31,8 @@ function standardiseOpeningHours(str) {
             .replace(/(?<=\w)\s*(:)\s*(?=\w)/g, '$1')
             // consecutive spaces
             .replace(/\s+/g, ' ')
+            // fallback separator
+            .replace(/\s*(||)\s*/g, '$1')
             // single digit month days or week numbers (unlikely to be ambiguous)
             .replace(/(?<=(?:(?<!\w)\w{3}|[Ww]eek))0(\d)(?!:)/g, '$1')
             // title case
