@@ -2,7 +2,65 @@ import { Readable } from 'stream';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { validateHoursTag, validateOpeningHours } from '../src/opening-hours-processor';
+import { isAmbiguousHours, validateHoursTag, validateOpeningHours } from '../src/opening-hours-processor';
+
+describe('isAmbiguousHours', () => {
+    test('Empty value is not ambiguous', () => {
+        const emptyNew = isAmbiguousHours('Mo-Fr 9:00-10:30', '', 'opening_hours', 'en');
+        expect(emptyNew).toBe(false);
+
+        const emptyOld = isAmbiguousHours('', 'Mo-Fr 9:00-10:30', 'opening_hours', 'en');
+        expect(emptyOld).toBe(false);
+
+        const emptyBoth = isAmbiguousHours('', '', 'opening_hours', 'en');
+        expect(emptyBoth).toBe(false);
+    });
+
+    test('Single-digit hour to hour less than 12 is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 9:00-10:30', 'Mo-Fr 09:00-10:30', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
+    test('Single-digit hour with missing space is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr9:00-10:30', 'Mo-Fr 09:00-10:30', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
+    test('Single-digit hour to with dot is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 4.00-5.00', 'Mo-Fr 04:00-05:00', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
+    test('Single-digit hour with am is not ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 3:00am-3:00pm', 'Mo-Fr 03:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Single-digit hour with a.m. is not ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 3:00 a.m.-3:00 p.m.', 'Mo-Fr 03:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Single-digit hour with P.M. is not ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 3:00A.M.-3:00P.M.', 'Mo-Fr 03:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Single-digit hour with am and no minutes is not ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 3am-4pm', 'Mo-Fr 03:00-16:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Adding missing zero to minutes is not ambiguous', () => {
+        const result = isAmbiguousHours('09:0-17:00', '09:00-17:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Adding missing zero to month day is not ambiguous', () => {
+        const result = isAmbiguousHours('Jan 1 09:00-17:00', 'Jan 01 09:00-17:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+});
 
 describe('validateHoursTag', () => {
     test('Valid opening hours is valid', () => {
@@ -65,6 +123,7 @@ describe('validateHoursTag', () => {
         expect(result.isAutoFixable).toBe(true);
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
         expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(true);
     });
 
     test('Totally invalid opening hours is invalid and unfixable', () => {
@@ -193,6 +252,26 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
     });
 
+    test('Single digit day is valid', () => {
+        const result = validateHoursTag('Mo-Fr 10:00-17:00; Jan 1 off', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+    });
+
+    test('Single digit day with some other issue is invalid', () => {
+        const result = validateHoursTag('Monday-Friday 10:00-17:00; Jan 1 off', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.prettyValue).toEqual('Mo-Fr 10:00-17:00; Jan 01 off');
+        expect(result.disconnected).toBe(false);
+    });
+
+    test('Single digit week number is valid', () => {
+        const result = validateHoursTag('week 1-12 Mo-Fr 10:00-17:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+    });
+
     test('Warning for disconnected time range', () => {
         const result = validateHoursTag('Mo 10:00-16:30 Tu 10:00-16:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
@@ -209,6 +288,15 @@ describe('validateHoursTag', () => {
         expect(result.warnings.length).toBeGreaterThan(0);
         expect(result.disconnected).toBe(true);
         expect(result.prettyValue).toEqual('Mo 10:00-16:30 Tu 10:00-16:00');
+    });
+
+    test('Warning for ambiguous single-digit hours', () => {
+        const result = validateHoursTag('Mo-Fr 9:00-10:30', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(true);
+        expect(result.prettyValue).toEqual('Mo-Fr 09:00-10:30');
     });
 });
 

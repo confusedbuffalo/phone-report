@@ -3,12 +3,18 @@ import { createBaseItem } from './data-processor.js';
 import { ALL_HOURS_TAGS } from './constants.js';
 import opening_hours from 'opening_hours';
 import { LRUCache } from 'lru-cache';
+import { diffChars } from 'diff';
 
 const cache = new LRUCache({
     max: 10000,
 });
 
-function replaceValidSpacing(str) {
+/**
+ * Standardises all valid spacing and acceptable capitalisation differences in an opening hours tag
+ * @param {string} str - The tag value for the opening hours string.
+ * @returns {string}
+ */
+function standardiseOpeningHours(str) {
     return (
         str
             // e.g. Su, Mo
@@ -25,11 +31,69 @@ function replaceValidSpacing(str) {
             .replace(/(?<=\w)\s*(:)\s*(?=\w)/g, '$1')
             // consecutive spaces
             .replace(/\s+/g, ' ')
+            // single digit month days or week numbers (unlikely to be ambiguous)
+            .replace(/(?<=(?:(?<!\w)\w{3}|[Ww]eek))0(\d)(?!:)/g, '$1')
             // title case
             .replaceAll('Off', 'off')
             .replaceAll('Closed', 'closed')
             .replaceAll('Easter', 'easter')
     );
+}
+
+/**
+ * Determine if a single-digit hour in an opening hours string is ambiguous
+ * @param {string} originalHours - The original tag value for the opening hours string.
+ * @param {string} newHours - The prettified tag value for the opening hours string.
+ * @param {string} tag - The tag in which the opening hours string is defined (such as 'opening_hours' or 'service_times').
+ * @param {string} locale - The locale for warnings.
+ * @returns {boolean}
+ */
+export function isAmbiguousHours(originalHours, newHours, tag, locale) {
+    if (!originalHours || !newHours) return false;
+
+    let isAmbiguous = false;
+
+    try {
+        const originalOh = new opening_hours(originalHours, null, { tag_key: tag, locale: locale });
+        const newOh = new opening_hours(newHours, null, { tag_key: tag, locale: locale });
+
+        if (!originalOh.isEqualTo(newOh)[0]) {
+            console.error(`Comparing two non-equal opening hours:\nOld: ${originalHours}\nNew: ${newHours}`);
+            return false;
+        }
+
+        const hoursDiff = diffChars(originalHours, newHours);
+
+        const numParts = hoursDiff.length;
+        for (let i = 0; i < numParts - 1; i++) {
+            const thisPart = hoursDiff[i];
+            const remainingNewValue = hoursDiff
+                .slice(i + 1, numParts)
+                .map(part => {
+                    const isNew = part.added || (!part.added && !part.removed);
+                    return isNew ? part.value.toLowerCase() : '';
+                })
+                .join('');
+            const remainingOldValue = hoursDiff
+                .slice(i + 1, numParts)
+                .map(part => {
+                    const isOld = part.removed || (!part.added && !part.removed);
+                    return isOld ? part.value.toLowerCase() : '';
+                })
+                .join('');
+            if (
+                thisPart.value.trim() === '0' &&
+                remainingNewValue.match(/^\d:.*$/) &&
+                !remainingOldValue.match(/^\d([.:]\d{1,2})?\s?[ap]\.?m\.?.*$/)
+            ) {
+                isAmbiguous = true;
+            }
+        }
+
+        return isAmbiguous;
+    } catch {
+        return false;
+    }
 }
 
 /**
@@ -42,7 +106,8 @@ function replaceValidSpacing(str) {
  * isAutoFixable: boolean,
  * prettyValue: string,
  * warnings: Array<string>,
- * disconnected: boolean
+ * disconnected: boolean,
+ * isAmbiguous: boolean,
  * }} An object containing the validation result.
  */
 export function validateHoursTag(hoursTagValue, tag, locale) {
@@ -58,6 +123,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         prettyValue: null,
         warnings: null,
         disconnected: false,
+        isAmbiguous: false,
     };
 
     try {
@@ -67,12 +133,19 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         const warnings = oh.getWarnings().length ? oh.getWarnings() : null;
         let valuesMatch = true;
 
-        if (prettyValue !== hoursTagValue && replaceValidSpacing(prettyValue) !== replaceValidSpacing(hoursTagValue)) {
+        if (
+            prettyValue !== hoursTagValue &&
+            standardiseOpeningHours(prettyValue) !== standardiseOpeningHours(hoursTagValue)
+        ) {
             valuesMatch = false;
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = true;
             tagValidationResult.prettyValue = prettyValue;
             tagValidationResult.warnings = warnings;
+        }
+
+        if (tagValidationResult.isInvalid && tagValidationResult.isAutoFixable) {
+            tagValidationResult.isAmbiguous = isAmbiguousHours(hoursTagValue, prettyValue, tag, locale);
         }
 
         if (warnings) {
@@ -131,6 +204,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
                 suggestedFixes: new Map(),
                 warnings: new Map(),
                 disconnected: new Map(),
+                ambiguous: new Map(),
             };
         };
 
@@ -169,6 +243,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
                 currentItem.suggestedFixes.set(tag, validationResult.prettyValue);
                 currentItem.warnings.set(tag, validationResult.warnings);
                 currentItem.disconnected.set(tag, validationResult.disconnected);
+                currentItem.ambiguous.set(tag, validationResult.isAmbiguous);
             }
         }
 
