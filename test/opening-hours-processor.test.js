@@ -234,6 +234,12 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
     });
 
+    test('No spaces around fallback separator is valid', () => {
+        const result = validateHoursTag('Mo-Fr 10:00-17:00||"by appointment"', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+    });
+
     test('Comma separated days that could be a range is valid', () => {
         const result = validateHoursTag('Mo,Tu,We,Th 10:00-16:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(false);
