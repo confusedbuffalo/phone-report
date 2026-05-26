@@ -1,3 +1,19 @@
+# [5.4.0](https://github.com/confusedbuffalo/phone-report/compare/v5.3.1...v5.4.0) (2026-05-26)
+
+
+### Bug Fixes
+
+* Avoid missing key in footer on initial load ([bc22a52](https://github.com/confusedbuffalo/phone-report/commit/bc22a52421ba786410690b02a481e828282d0051))
+* Disconnected hours rules are not autofixable ([95939e4](https://github.com/confusedbuffalo/phone-report/commit/95939e4ce04ed66b4d720cf99cbb0c165a7cad74))
+* Escape labels for mobile showing literal html ([b213f25](https://github.com/confusedbuffalo/phone-report/commit/b213f25f970229eb75c2e3d349003dd4ae093e04))
+* Fix via comment in notes ([2ce2727](https://github.com/confusedbuffalo/phone-report/commit/2ce2727ed82d1ed2bff9c61d472047992e4c0dd1))
+
+
+### Features
+
+* Add login button to upload modal ([c755014](https://github.com/confusedbuffalo/phone-report/commit/c755014b5e01a5a33e6bdbf3e4fc8ebeaaffb8a0))
+* Flatten IE regions ([9de3dd3](https://github.com/confusedbuffalo/phone-report/commit/9de3dd32ada50fce243918c9753c0b5cbe39e743))
+
 ## [5.3.1](https://github.com/confusedbuffalo/phone-report/compare/v5.3.0...v5.3.1) (2026-05-25)
 
 
