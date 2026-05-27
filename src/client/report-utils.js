@@ -167,7 +167,7 @@ export function calculateBufferedBBox(lat, lon, bufferMetres = 100) {
  * @param {Object} obj - The object to extract the value from (e.g., { "phone": "123" }).
  * @returns {string} The first non-null value, or an empty string if none is found.
  */
-function getFirstNonNullValue(obj) {
+export function getFirstNonNullValue(obj) {
     if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
         return '';
     }
