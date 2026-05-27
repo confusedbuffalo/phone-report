@@ -762,37 +762,37 @@ describe('processSingleNumber', () => {
         expect(result.typeMismatch).toBe(true);
     });
 
-    test('GB: toll free phone number without country code is invalid', () => {
+    test('GB: toll free phone number without country code is valid', () => {
         const result = processSingleNumber('0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
-        expect(result.isInvalid).toBe(true);
-        expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toEqual('+44 800 001234');
-    });
-
-    test('GB: toll free phone number with country code is valid', () => {
-        const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(false);
     });
 
-    test('GB: toll free phone number with dashes is fixable to international format', () => {
+    test('GB: toll free phone number with country code is invalid', () => {
+        const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('0800 001234');
+    });
+
+    test('GB: toll free phone number with dashes is fixable to national format', () => {
         const result = processSingleNumber('0800-00-1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('+44 800 001234');
+        expect(result.suggestedFix).toBe('0800 001234');
     });
 
-    test('GB: toll free phone number with country code and invalid formatting is fixable to international format', () => {
+    test('GB: toll free phone number with country code and invalid formatting is fixable to national format', () => {
         const result = processSingleNumber('(+44) 0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('+44 800 001234');
+        expect(result.suggestedFix).toBe('0800 001234');
     });
 
-    test('GB: toll free phone number with 00 and country code is fixable to international format', () => {
+    test('GB: toll free phone number with 00 and country code is fixable to national format', () => {
         const result = processSingleNumber('0044 0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('+44 800 001234');
+        expect(result.suggestedFix).toBe('0800 001234');
     });
 
     test('GB: a number with tabs is invalid but fixable', () => {
@@ -950,10 +950,9 @@ describe('processSingleNumber', () => {
     test('AU: fix a phonewords number', () => {
         const result = processSingleNumber('1300-TICKET', 'AU');
         expect(result.isInvalid).toBe(true);
-        // AU SHARED_COST is NOT in TOLL_FREE_AS_NATIONAL_COUNTRIES, so it gets +61 prefix
         expect(result.autoFixable).toBe(true);
         expect(result.validPhonewords).toBe(true);
-        expect(result.suggestedFix).toBe('+61 1300 842 538');
+        expect(result.suggestedFix).toBe('1300 842 538');
     });
 
     test('NZ: fix a phonewords number', () => {
@@ -969,8 +968,7 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.validPhonewords).toBe(true);
-        // SG is not in TOLL_FREE_AS_NATIONAL_COUNTRIES, so it should have +65 prefix
-        expect(result.suggestedFix).toBe('+65 1800 746 4276');
+        expect(result.suggestedFix).toBe('1800 746 4276');
     });
 
     // --- PL Tests ---
@@ -1087,16 +1085,18 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
-    test('DE: toll free number already in international format is valid', () => {
+    test('DE: toll free number in international format is invalid', () => {
         const result = processSingleNumber('+49 800 1234 567', SAMPLE_COUNTRY_CODE_DE);
-        expect(result.isInvalid).toBe(false);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
     test('AT: toll free number is valid', () => {
         const result = processSingleNumber('800 8481 0000', 'AT');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toEqual('+43 800 84810000');
+        expect(result.suggestedFix).toEqual('0800 84810000');
     });
 
     // --- FR Tests ---
@@ -1105,9 +1105,11 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
-    test('FR: shared cost number already in international format is valid', () => {
+    test('FR: shared cost number in international format is invalid', () => {
         const result = processSingleNumber('+33 820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
-        expect(result.isInvalid).toBe(false);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('0 820 39 39 00');
     });
 
     // --- IT Tests ---
@@ -1498,7 +1500,7 @@ describe('validateSingleTag', () => {
         expect(result.isInvalid).toBe(true);
         expect(result.isAutoFixable).toBe(true);
         expect(result.validPhonewords).toBe(true);
-        expect(result.suggestedNumbersList).toEqual(['+61 1300 842 538']);
+        expect(result.suggestedNumbersList).toEqual(['1300 842 538']);
     });
 
     test('US: give up with multiple phonewords in a single tag', () => {
@@ -1619,7 +1621,7 @@ describe('validateNumbers', () => {
     const VALID_MOBILE_2 = '+44 7712 900001';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
-    const VALID_TOLL_FREE = '+44 800 001234';
+    const VALID_TOLL_FREE = '0800 001234';
 
     // DE numbers
     const SLASH_IN_NUMBER_DE = '+498131/275715';
@@ -1666,28 +1668,6 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
-        });
-    });
-
-    test('AT: should identify a single fixable invalid toll free number (no country code) and provide suggested fix', async () => {
-        const elements = [createGeoJson(2002, { phone: '0800 6624 5324' })];
-
-        const result = await validateNumbers(Readable.from(elements), 'AT', tmpFilePath);
-
-        expect(result.totalCount).toBe(1);
-        expect(result.invalidCount).toBe(1);
-
-        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
-        expect(invalidItems).toHaveLength(1);
-        const invalidItem = invalidItems[0];
-
-        expect(invalidItem.id).toBe(2002);
-        expect(invalidItem.autoFixable).toBe(true);
-        expect(invalidItem.invalidNumbers).toEqual({
-            phone: '0800 6624 5324',
-        });
-        expect(invalidItem.suggestedFixes).toEqual({
-            phone: '+43 800 66245324',
         });
     });
 
@@ -2734,7 +2714,7 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'phone:mnemonic': '1300-TICKET',
-            phone: '+61 1300 842 538',
+            phone: '1300 842 538',
         });
     });
 
