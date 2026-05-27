@@ -21,6 +21,31 @@ describe('isAmbiguousHours', () => {
         expect(result).toBe(true);
     });
 
+    test('Single-digit hour (other than 0, 1 or 2) to hour greater than 12 is not ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 9:00-15:00', 'Mo-Fr 09:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Single-digit hour 0 to hour greater than 12 is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 0:00-15:00', 'Mo-Fr 00:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
+    test('Single-digit hour 1 to hour greater than 12 is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 1:00-15:00', 'Mo-Fr 01:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
+    test('Single-digit hour 2 to hour greater than 12 is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 2:00-15:00', 'Mo-Fr 02:00-15:00', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
+    test('Single-digit hour at end of range is ambiguous', () => {
+        const result = isAmbiguousHours('Mo-Fr 12:00-0:30', 'Mo-Fr 12:00-00:30', 'opening_hours', 'en');
+        expect(result).toBe(true);
+    });
+
     test('Single-digit hour with missing space is ambiguous', () => {
         const result = isAmbiguousHours('Mo-Fr9:00-10:30', 'Mo-Fr 09:00-10:30', 'opening_hours', 'en');
         expect(result).toBe(true);
@@ -58,6 +83,16 @@ describe('isAmbiguousHours', () => {
 
     test('Adding missing zero to month day is not ambiguous', () => {
         const result = isAmbiguousHours('Jan 1 09:00-17:00', 'Jan 01 09:00-17:00', 'opening_hours', 'en');
+        expect(result).toBe(false);
+    });
+
+    test('Adding missing zero to month day range is not ambiguous', () => {
+        const result = isAmbiguousHours(
+            'Jan 1-Apr 1: Mo-Fr 09:00-17:00',
+            'Jan 01-Apr 01: Mo-Fr 09:00-17:00',
+            'opening_hours',
+            'en'
+        );
         expect(result).toBe(false);
     });
 });
@@ -113,17 +148,6 @@ describe('validateHoursTag', () => {
         expect(result.isAutoFixable).toBe(true);
         expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
         expect(result.warnings.length).toBeGreaterThan(0);
-    });
-
-    test('Opening hours with missing leading zero in hours is invalid but fixable', () => {
-        // This must be kept, because sometimes there are things like "Mo-Fr 08:15-4:45"
-        // which would be corrected to "Mo-Fr 08:15-04:45", which is wrong, but needs to be flagged
-        const result = validateHoursTag('Mo-Fr 8:00-17:00', 'opening_hours', 'en');
-        expect(result.isInvalid).toBe(true);
-        expect(result.isAutoFixable).toBe(true);
-        expect(result.prettyValue).toBe('Mo-Fr 08:00-17:00');
-        expect(result.disconnected).toBe(false);
-        expect(result.isAmbiguous).toBe(true);
     });
 
     test('Totally invalid opening hours is invalid and unfixable', () => {
@@ -303,6 +327,15 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(true);
         expect(result.prettyValue).toEqual('Mo-Fr 09:00-10:30');
+    });
+
+    test('Single-digit not ambiguous hours has suggested fix but no warning', () => {
+        const result = validateHoursTag('Mo-Fr 9:00-15:00', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.prettyValue).toEqual('Mo-Fr 09:00-15:00');
     });
 });
 

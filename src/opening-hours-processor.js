@@ -42,6 +42,8 @@ function standardiseOpeningHours(str) {
     );
 }
 
+const amPmRegex = new RegExp(/^\d([.:]\d{1,2})?\s?[ap]\.?m\.?.*$/);
+
 /**
  * Determine if a single-digit hour in an opening hours string is ambiguous
  * @param {string} originalHours - The original tag value for the opening hours string.
@@ -69,25 +71,44 @@ export function isAmbiguousHours(originalHours, newHours, tag, locale) {
         const numParts = hoursDiff.length;
         for (let i = 0; i < numParts - 1; i++) {
             const thisPart = hoursDiff[i];
-            const remainingNewValue = hoursDiff
+
+            if (thisPart.value.trim() !== '0') continue;
+
+            const newValueSoFar = hoursDiff
+                .slice(0, i)
+                .map(part => {
+                    const isNew = part.added || (!part.added && !part.removed);
+                    return isNew ? part.value.toLowerCase() : '';
+                })
+                .join('');
+            const newValueRemaining = hoursDiff
                 .slice(i + 1, numParts)
                 .map(part => {
                     const isNew = part.added || (!part.added && !part.removed);
                     return isNew ? part.value.toLowerCase() : '';
                 })
                 .join('');
-            const remainingOldValue = hoursDiff
+            const oldValueRemaining = hoursDiff
                 .slice(i + 1, numParts)
                 .map(part => {
                     const isOld = part.removed || (!part.added && !part.removed);
                     return isOld ? part.value.toLowerCase() : '';
                 })
                 .join('');
-            if (
-                thisPart.value.trim() === '0' &&
-                remainingNewValue.match(/^\d:.*$/) &&
-                !remainingOldValue.match(/^\d([.:]\d{1,2})?\s?[ap]\.?m\.?.*$/)
-            ) {
+
+            const isHour =
+                newValueRemaining.match(/^\d:\d.*$/) ||
+                (newValueSoFar.match(/.*0$/) && newValueRemaining.match(/^:\d.*$/)); // diff of 0:15 to 00:15 shows the second zero as added
+
+            const isAmPm = oldValueRemaining.match(amPmRegex);
+
+            const thisHourMatch = newValueRemaining.match(/^(\d):\d\d/);
+            const thisHourAmbiguous = thisHourMatch && [0, 1, 2].includes(Number(thisHourMatch[1]));
+
+            const endHourMatch = newValueRemaining.match(/^\d:\d\d-(\d\d):\d\d/);
+            const is24Hour = endHourMatch && Number(endHourMatch[1]) < 12;
+
+            if (isHour && !isAmPm && (is24Hour || !endHourMatch || thisHourAmbiguous)) {
                 isAmbiguous = true;
             }
         }
