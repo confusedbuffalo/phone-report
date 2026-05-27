@@ -1,6 +1,6 @@
 import { languageNames } from './report-state.js';
 import { isItemClicked } from './report-storage.js';
-import { escapeHTML } from './report-utils.js';
+import { escapeHTML, getFirstNonNullValue } from './report-utils.js';
 import { translate } from './i18n.js';
 import { reportType, officialLanguages, subdivisionName } from './config.js';
 import { OSM_EDITORS, ALL_EDITOR_IDS } from './editors.js';
@@ -29,7 +29,7 @@ export function createListItem(item) {
 
     const relativeTime = getRelativeTime(item.timestamp);
 
-    const { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton } = createButtons(
+    const { websiteButton, josmFixButton, fixButton, editorButtons, noteButton, evaluationButton } = createButtons(
         item,
         clickedClass
     );
@@ -61,18 +61,23 @@ export function createListItem(item) {
         ? `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameTo')}</span>`
         : `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameFrom')}</span>`;
 
-    const buttonLayout = ['phone', 'hours'].includes(reportType)
-        ? [
-              [websiteButton, fixableLabel, fixButton, noteButton],
-              [josmFixButton, editorButtons],
-          ]
-        : [
-              [helpLabel, fixButton],
-              [websiteButton, fixableLabel, noteButton],
-              [josmFixButton, editorButtons],
-          ];
+    const buttonLayout = {
+        phone: [
+            [websiteButton, fixButton, noteButton],
+            [josmFixButton, editorButtons],
+        ],
+        hours: [
+            [websiteButton, evaluationButton, fixButton, noteButton],
+            [josmFixButton, editorButtons],
+        ],
+        name: [
+            [helpLabel, fixButton],
+            [websiteButton, noteButton],
+            [josmFixButton, editorButtons],
+        ],
+    };
 
-    const actionsContainer = buttonLayout
+    const actionsContainer = buttonLayout[reportType]
         .map(
             row => `
               <div class="flex flex-wrap gap-2 justify-end">
@@ -263,9 +268,6 @@ function createButtons(item, clickedClass) {
             ${translate('fixInJOSM')}
        </button>`
         : '';
-    const fixableLabel = item.autoFixable
-        ? `<span data-editor-id="fix-label" class="label ${clickedClass ? clickedClass : 'label-fixable'}">${translate('fixable')}</span>`
-        : '';
 
     const isSafeWebsite =
         item.website &&
@@ -274,7 +276,13 @@ function createButtons(item, clickedClass) {
         ? `<a href="${escapeHTML(item.website)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('website')}</a>`
         : '';
 
-    return { websiteButton, fixableLabel, josmFixButton, fixButton, editorButtons, noteButton };
+    const hoursForEvaluation = getFirstNonNullValue(item.invalidHours);
+    const evaluationButton =
+        reportType === 'hours' && hoursForEvaluation
+            ? `<a href="https://openingh.openstreetmap.de/evaluation_tool/?EXP=${encodeURIComponent(hoursForEvaluation)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('evaluationTool')}</a>`
+            : '';
+
+    return { websiteButton, josmFixButton, fixButton, editorButtons, noteButton, evaluationButton };
 }
 
 /**
