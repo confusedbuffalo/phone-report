@@ -1,3 +1,16 @@
+# [5.5.0](https://github.com/confusedbuffalo/phone-report/compare/v5.4.0...v5.5.0) (2026-05-27)
+
+
+### Bug Fixes
+
+* No spaces around opening hours fallback separator is valid ([d584a25](https://github.com/confusedbuffalo/phone-report/commit/d584a250c02bef87dad9d9d496ef96800373ef01))
+* Show problem labels for hours with no suggested fix ([f356d7a](https://github.com/confusedbuffalo/phone-report/commit/f356d7a05a8ce59f4f2c403cfcce4a4455bdce0d))
+
+
+### Features
+
+* Add initial basic warning for ambiguous single-digit hours ([eafeb51](https://github.com/confusedbuffalo/phone-report/commit/eafeb5196d420bb766fc119cd070a51d8a0173c4))
+
 # [5.4.0](https://github.com/confusedbuffalo/phone-report/compare/v5.3.1...v5.4.0) (2026-05-26)
 
 
