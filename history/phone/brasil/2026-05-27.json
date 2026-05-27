@@ -1,0 +1,71 @@
+{
+  "name": "Brasil",
+  "slug": "brasil",
+  "locale": "pt-PT",
+  "timestamp": "2026-05-26T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Brasil": [
+      {
+        "name": "Região Centro-Oeste",
+        "divisionSlug": "brasil",
+        "slug": "região-centro-oeste",
+        "lastUpdated": "2026-05-26T23:00:00.000Z",
+        "invalidCount": 2042,
+        "autoFixableCount": 1816,
+        "foreignCount": 5,
+        "safeEditCount": 1637,
+        "totalCount": 6471
+      },
+      {
+        "name": "Região Nordeste",
+        "divisionSlug": "brasil",
+        "slug": "região-nordeste",
+        "lastUpdated": "2026-05-26T23:00:00.000Z",
+        "invalidCount": 7464,
+        "autoFixableCount": 6392,
+        "foreignCount": 9,
+        "safeEditCount": 5972,
+        "totalCount": 25198
+      },
+      {
+        "name": "Região Norte",
+        "divisionSlug": "brasil",
+        "slug": "região-norte",
+        "lastUpdated": "2026-05-26T23:00:00.000Z",
+        "invalidCount": 1177,
+        "autoFixableCount": 957,
+        "foreignCount": 1,
+        "safeEditCount": 923,
+        "totalCount": 5810
+      },
+      {
+        "name": "Região Sudeste",
+        "divisionSlug": "brasil",
+        "slug": "região-sudeste",
+        "lastUpdated": "2026-05-26T23:00:00.000Z",
+        "invalidCount": 20848,
+        "autoFixableCount": 19051,
+        "foreignCount": 12,
+        "safeEditCount": 17354,
+        "totalCount": 52782
+      },
+      {
+        "name": "Região Sul",
+        "divisionSlug": "brasil",
+        "slug": "região-sul",
+        "lastUpdated": "2026-05-26T23:00:00.000Z",
+        "invalidCount": 20727,
+        "autoFixableCount": 20294,
+        "foreignCount": 11,
+        "safeEditCount": 18419,
+        "totalCount": 31004
+      }
+    ]
+  },
+  "invalidCount": 52258,
+  "autoFixableCount": 48510,
+  "foreignCount": 38,
+  "safeEditCount": 44305,
+  "totalCount": 121265,
+  "botEnabled": false
+}
