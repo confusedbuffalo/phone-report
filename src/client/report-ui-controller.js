@@ -20,7 +20,7 @@ import {
 import {
     applyFix,
     discardEdits,
-    getEdits,
+    getEditCounts,
     recordItemClick,
     redoChange,
     saveSettings,
@@ -157,22 +157,7 @@ export function renderNumbers() {
     const missingContainer = document.getElementById('missingSection');
     const noInvalidContainer = document.getElementById('noInvalidSection');
 
-    const edits = getEdits();
-
-    let editCount = {
-        total: 0,
-        invalid: 0,
-        missing: 0,
-    };
-    if (edits && edits[subdivisionName]) {
-        for (const type in edits[subdivisionName]) {
-            editCount.total += Object.keys(edits[subdivisionName][type]).length;
-            for (const edit in edits[subdivisionName][type]) {
-                editCount.invalid += edit.name === undefined;
-                editCount.missing += edit.name !== undefined;
-            }
-        }
-    }
+    const editCount = getEditCounts(subdivisionName);
     if (firstLoad) {
         if (editCount.total > 0) {
             openEditsModal(editCount.total);
@@ -499,19 +484,9 @@ export function toggleUploadingSpinner(isLoading) {
  * @returns {void}
  */
 function openUploadModal() {
-    const edits = getEdits();
-    let totalChanges = 0;
+    const editCount = getEditCounts(subdivisionName);
 
-    if (Object.hasOwn(edits, subdivisionName)) {
-        const subdivisionData = edits[subdivisionName];
-        const osmTypeObjects = Object.values(subdivisionData);
-        const editCountForCounty = osmTypeObjects.reduce((accumulator, currentOsmTypeObject) => {
-            return accumulator + Object.keys(currentOsmTypeObject).length;
-        }, 0);
-        totalChanges += editCountForCounty;
-    }
-
-    uploadModalTitle.innerHTML = translate('uploadChanges', { count: totalChanges });
+    uploadModalTitle.innerHTML = translate('uploadChanges', { count: editCount.total });
 
     // Reset buttons etc. in case of previous upload in this session
     uploadBtn.classList.add('cursor-pointer');
@@ -932,16 +907,11 @@ function enableGrayBtn(element) {
 export function setUpSaveBtn() {
     const saveBtn = document.getElementById('save-btn');
     if (!saveBtn) return;
-    const edits = getEdits();
-    let count = 0;
-    if (edits && edits[subdivisionName]) {
-        for (const type in edits[subdivisionName]) {
-            count += Object.keys(edits[subdivisionName][type]).length;
-        }
-    }
-    if (count > 0) {
+    const editCount = getEditCounts(subdivisionName);
+
+    if (editCount.total > 0) {
         enableSave();
-        saveBtn.innerText = `Save ${count}`;
+        saveBtn.innerText = `Save ${editCount.total}`;
     } else {
         disableSave();
         saveBtn.innerText = `Save`;
