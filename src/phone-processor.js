@@ -12,7 +12,6 @@ import {
     PHONE_TAG_PREFERENCE_ORDER,
     NANP_COUNTRY_CODES,
     ACCEPTABLE_EXTENSION_FORMATS,
-    TOLL_FREE_AS_NATIONAL_COUNTRIES,
     ALL_NUMBER_TAGS,
     FAX_TAGS,
     NON_STANDARD_COST_TYPES,
@@ -24,6 +23,7 @@ import {
     CAN_REFORMAT_NUMBER_WITHOUT_SPACES,
     INVALID_SPACING_CHARACTERS_REGEX_TW,
     INVISIBLE_CHARACTERS,
+    TOLL_FREE_AS_INTERNATIONAL_COUNTRIES,
 } from './constants.js';
 import { createBaseItem } from './data-processor.js';
 
@@ -321,12 +321,12 @@ export function getNumberAndExtension(numberStr, countryCode) {
  * Formats a single phone number to the appropriate national standard
  * @param {PhoneNumber} phoneNumber - The phone number object
  * @param {string} countryCode - The country code for formatting.
- * @param {boolean} tollFreeAsInternational - Whether or not toll free numbers should be formatted with a country code.
  * @returns {string} The formatted number
  */
-function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
+function getFormattedNumber(phoneNumber) {
     const countryCode = phoneNumber.country;
     const originalExt = phoneNumber.ext;
+    const tollFreeAsInternational = TOLL_FREE_AS_INTERNATIONAL_COUNTRIES.includes(countryCode);
 
     // Temporarily clear the extension to get the core number without libphonenumber's formatting
     if (originalExt) {
@@ -602,11 +602,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber) {
-            const tollFreeAsInternational =
-                !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode) ||
-                numberStr.includes('+') ||
-                numberStr.startsWith('00');
-            suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
+            suggestedFix = getFormattedNumber(phoneNumber);
         }
 
         if (phoneNumber && phoneNumber.isValid()) {
@@ -625,12 +621,10 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            let numbersMatch = false;
-            if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())) {
-                const normalisedTollFree = suggestedFix.replace(spacingRegex, '');
-                numbersMatch = normalisedOriginal === normalisedTollFree;
-            }
-            numbersMatch = numbersMatch || normalisedOriginal === normalisedParsed;
+            const normalisedTollFree = suggestedFix.replace(spacingRegex, '');
+            const numbersMatch = NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())
+                ? normalisedOriginal === normalisedTollFree
+                : normalisedOriginal === normalisedParsed;
 
             if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
                 // Targets numbers with no spaces after the country code
@@ -1052,10 +1046,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 hasInternalDuplicate = true;
                 suggestedFix = uniqueFormattedSet
                     .map(number => {
-                        return getFormattedNumber(
-                            parsePhoneNumber(number, baseCountryCode),
-                            !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
-                        );
+                        return getFormattedNumber(parsePhoneNumber(number, baseCountryCode));
                     })
                     .join('; ');
             }
@@ -1067,10 +1058,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 // Skip duplicate detection for whatsapp numbers
                 if (tag === 'contact:whatsapp') continue;
 
-                const normalisedNumber = getFormattedNumber(
-                    phoneNumber,
-                    !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
-                ).replace(getSpacingRegex(baseCountryCode), '');
+                const normalisedNumber = getFormattedNumber(phoneNumber).replace(getSpacingRegex(baseCountryCode), '');
 
                 // Correct the tag of a mismatch type number early
                 const normalisedMismatch = validationResult.mismatchTypeNumbers.map(number =>
@@ -1128,10 +1116,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                         const uniqueFormattedKeptSet = [...new Set(formattedKeptNumbers)];
                         const validatedKeptValue = uniqueFormattedKeptSet
                             .map(number => {
-                                return getFormattedNumber(
-                                    parsePhoneNumber(number, baseCountryCode),
-                                    !TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(baseCountryCode)
-                                );
+                                return getFormattedNumber(parsePhoneNumber(number, baseCountryCode));
                             })
                             .join('; ');
 

@@ -169,15 +169,6 @@ export const DIN_FORMAT_COUNTRIES = ['AT', 'DE'];
 // DIN format has hyphen then extension
 export const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
 
-export const TOLL_FREE_AS_NATIONAL_COUNTRIES = [
-    'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
-    'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
-    'IE', // https://community.openstreetmap.org/t/validating-phone-numbers-in-ireland/143173/4
-    'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
-    'NL', // https://github.com/confusedbuffalo/phone-report/issues/315
-    'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
-];
-
 export const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE'];
 
 // This regex is used for splitting by data-processor.js. It catches ALL valid and invalid separators:
@@ -414,6 +405,8 @@ export const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [
     'ZA',
 ];
 export const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT'];
+
+export const TOLL_FREE_AS_INTERNATIONAL_COUNTRIES = [...NANP_COUNTRY_CODES];
 
 export const COUNTRIES_WITH_PHONEWORDS = [...NANP_COUNTRY_CODES, 'AU', 'NZ', 'SG'];
 
