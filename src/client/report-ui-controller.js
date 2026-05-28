@@ -30,7 +30,7 @@ import {
 import { changePage, getItemWithIndex, handleSort } from './report-ui-actions.js';
 import { createListItem, createSaveRow, decodeHtmlEntities } from './report-ui-components.js';
 import { getFilterType, getSortedItems } from './report-utils.js';
-import { reportType, subdivisionName, openingHoursEvaluationToolUrl, allEditorIds, changesetTags } from './config.js';
+import { reportType, subdivisionName, allEditorIds, changesetTags } from './config.js';
 import { translate } from './i18n.js';
 
 let firstLoad = true;
@@ -187,17 +187,12 @@ export function renderNumbers() {
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
     if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
-        const evaluationToolLink = `<a href="${openingHoursEvaluationToolUrl}" target="_blank" rel="noopener noreferrer" class="description-link">${translate('evaluationTool')}</a>`;
-        const evaluationToolSentence =
-            reportType === 'hours' ? ' ' + translate('checkOpeningHoursFormat', { link: evaluationToolLink }) : '';
-
         if (['phone', 'hours'].includes(reportType) && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
                 'fixableSection',
                 sortedItems.fixable,
                 translate(reportType === 'phone' ? 'fixableNumbersHeader' : 'fixableHoursHeader'),
-                translate(reportType === 'phone' ? 'fixableNumbersDescription' : 'fixableHoursDescription') +
-                    evaluationToolSentence,
+                translate(reportType === 'phone' ? 'fixableNumbersDescription' : 'fixableHoursDescription'),
                 currentPage['fixable'],
                 page => (currentPage['fixable'] = page),
                 'fixable'
@@ -221,7 +216,7 @@ export function renderNumbers() {
                         : reportType === 'name'
                           ? 'incompleteNamesDescription'
                           : 'invalidHoursDescription'
-                ) + evaluationToolSentence,
+                ),
                 currentPage['invalid'],
                 page => (currentPage['invalid'] = page),
                 'invalid'
