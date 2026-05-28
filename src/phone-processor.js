@@ -125,7 +125,7 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
 
     // Confirm that the number is in the same country
     try {
-        const parsedNew = parsePhoneNumber(newNumberStr);
+        const parsedNew = parsePhoneNumber(newNumberStr, countryCode);
         if (parsedNew.country === countryCode && parsedNew.isValid()) {
             return true;
         }
