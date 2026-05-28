@@ -2827,6 +2827,14 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
     });
 
+    test('GB: should return true for a safe edit where for toll free number in international format', () => {
+        const originalNumber = '+44 800 00 1234';
+        const newNumber = '0800 001234';
+        const countryCode = 'GB';
+
+        expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
+    });
+
     test('GB: should return true when original number is already international but fixable', () => {
         const originalNumber = '+44.20.7946.0000';
         const newNumber = '+44 20 7946 0000';
