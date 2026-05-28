@@ -358,6 +358,37 @@ describe('validateNames', () => {
         expect(result.totalCount).toBe(0);
     });
 
+    describe('valid multilingual names', () => {
+        test.each([
+            { name: 'A / B', 'name:en': 'A', 'name:mi': 'B' },
+            { name: 'A / B', 'name:en': 'B', 'name:mi': 'A' },
+            { name: 'A;B', 'name:en': 'A', 'name:mi': 'B' },
+            { name: 'A (B)', 'name:en': 'A', 'name:mi': 'B' },
+        ])('%s', async tags => {
+            const elements = [createGeoJson(1001, tags)];
+            const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+            expect(result.totalCount).toBe(1);
+            expect(result.invalidCount).toBe(0);
+            expect(result.missingNamesCount).toBe(0);
+        });
+    });
+
+    describe('invalid multilingual names', () => {
+        test.each([
+            { name: 'A / B', 'name:en': 'A' },
+            { name: 'A / B', 'name:en': 'B', 'name:mi': 'B' },
+            { name: 'A;B', 'name:en': 'B;A' },
+        ])('%s', async tags => {
+            const elements = [createGeoJson(1001, tags)];
+            const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+            expect(result.totalCount).toBe(1);
+            expect(result.invalidCount).toBe(1);
+            expect(result.missingNamesCount).toBe(0);
+        });
+    });
+
     describe('undelimited multilingual names', () => {
         test.each([
             // DZ

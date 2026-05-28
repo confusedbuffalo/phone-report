@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { createBaseItem, mapReplacer } from './data-processor.js';
+import { splitCompoundName } from './name-utils.js';
 
 const NAME_LOCALIZED_REGEX = /^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/;
 
@@ -86,6 +87,16 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             });
 
             if (isValidCombo) isInvalid = false;
+
+            if (!(countryCode in BELGIUM_REGION_LANGUAGES)) {
+                // for all other regions, use a generic solution
+                // to check for multilingual names
+                const parts = splitCompoundName(primaryName);
+                const allNames = [...nameTags.values()];
+                if (parts.every(part => allNames.includes(part))) {
+                    isInvalid = false;
+                }
+            }
 
             const noDelimiter = UNDELIMITED_NAME_LANGUAGES[countryCode.split('-')[0]];
             if (primaryName && noDelimiter) {
