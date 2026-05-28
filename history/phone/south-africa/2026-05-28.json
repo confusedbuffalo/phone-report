@@ -1,0 +1,115 @@
+{
+  "name": "South Africa",
+  "slug": "south-africa",
+  "locale": "en-ZA",
+  "timestamp": "2026-05-28T00:00:00.000Z",
+  "groupedDivisionStats": {
+    "South Africa": [
+      {
+        "name": "Eastern Cape",
+        "divisionSlug": "south-africa",
+        "slug": "eastern-cape",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 48,
+        "autoFixableCount": 47,
+        "foreignCount": 1,
+        "safeEditCount": 0,
+        "totalCount": 2469
+      },
+      {
+        "name": "Free State",
+        "divisionSlug": "south-africa",
+        "slug": "free-state",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 10,
+        "autoFixableCount": 10,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 598
+      },
+      {
+        "name": "Gauteng",
+        "divisionSlug": "south-africa",
+        "slug": "gauteng",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 210,
+        "autoFixableCount": 196,
+        "foreignCount": 1,
+        "safeEditCount": 1,
+        "totalCount": 5368
+      },
+      {
+        "name": "KwaZulu-Natal",
+        "divisionSlug": "south-africa",
+        "slug": "kwazulu-natal",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 58,
+        "autoFixableCount": 56,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 3389
+      },
+      {
+        "name": "Limpopo",
+        "divisionSlug": "south-africa",
+        "slug": "limpopo",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 25,
+        "autoFixableCount": 23,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 703
+      },
+      {
+        "name": "Mpumalanga",
+        "divisionSlug": "south-africa",
+        "slug": "mpumalanga",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 13,
+        "autoFixableCount": 13,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 804
+      },
+      {
+        "name": "North West",
+        "divisionSlug": "south-africa",
+        "slug": "north-west",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 16,
+        "autoFixableCount": 13,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 581
+      },
+      {
+        "name": "Northern Cape",
+        "divisionSlug": "south-africa",
+        "slug": "northern-cape",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 8,
+        "autoFixableCount": 8,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 586
+      },
+      {
+        "name": "Western Cape",
+        "divisionSlug": "south-africa",
+        "slug": "western-cape",
+        "lastUpdated": "2026-05-28T00:00:00.000Z",
+        "invalidCount": 112,
+        "autoFixableCount": 107,
+        "foreignCount": 1,
+        "safeEditCount": 1,
+        "totalCount": 4932
+      }
+    ]
+  },
+  "invalidCount": 500,
+  "autoFixableCount": 473,
+  "foreignCount": 3,
+  "safeEditCount": 2,
+  "totalCount": 19430,
+  "botEnabled": true
+}
