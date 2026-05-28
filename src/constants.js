@@ -167,7 +167,7 @@ export const ACCEPTABLE_EXTENSION_FORMATS = [' ext. ', ' x', 'x'];
 export const DIN_FORMAT_COUNTRIES = ['AT', 'DE'];
 
 // DIN format has hyphen then extension
-export const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—]\s*)([^-]+)$/;
+export const DIN_EXTENSION_REGEX = /^(.*?)(\s*[-−‐‑‒–—ー]\s*)([^-]+)$/;
 
 export const NON_STANDARD_COST_TYPES = ['TOLL_FREE', 'SHARED_COST', 'PREMIUM_RATE'];
 

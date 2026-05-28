@@ -114,7 +114,7 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
     // AT and DE: no dashes or hyphens (due to extensions), but include slash (used as grouping separator)
     const SAFE_CHARACTER_REGEX = DIN_FORMAT_COUNTRIES.includes(countryCode)
         ? new RegExp(`^[\\d\\s\\(\\)+\\./${INVISIBLE_CHARACTERS}]+$`)
-        : new RegExp(`^[\\d\\s\\(\\)+\\.\\-−‐‑‒–—${INVISIBLE_CHARACTERS}]+$`);
+        : new RegExp(`^[\\d\\s\\(\\)+\\.\\-−‐‑‒–—ー${INVISIBLE_CHARACTERS}]+$`);
 
     if (!SAFE_CHARACTER_REGEX.test(originalNumberStr)) return false;
 
