@@ -1,6 +1,8 @@
 import fs from 'fs';
 import { createBaseItem } from './data-processor.js';
 
+const NAME_LOCALIZED_REGEX = /^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/;
+
 /**
  * Validates names.
  * @param {Array<Object>} elementStream - OSM elements with name tags.
@@ -12,8 +14,6 @@ import { createBaseItem } from './data-processor.js';
  * missingNamesCount: number
  * }} An object containing the breakdown of record counts.
  */
-const NAME_LOCALIZED_REGEX = /^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/;
-
 export async function validateNames(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
