@@ -400,6 +400,7 @@ export const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [
     'GP',
     'MF',
     'MQ',
+    'PY',
     'RE',
     'YT',
     'ZA',
