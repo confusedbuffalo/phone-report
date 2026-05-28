@@ -1,3 +1,16 @@
+# [5.6.0](https://github.com/confusedbuffalo/phone-report/compare/v5.5.0...v5.6.0) (2026-05-28)
+
+
+### Bug Fixes
+
+* All toll free and other similar non-standard cost numbers should be in national format worldwide except NANP ([c01dbcf](https://github.com/confusedbuffalo/phone-report/commit/c01dbcf77a507650e81d140496fdfa48e34df837))
+* More limited warning for ambiguous single-digit hours ([8faedc9](https://github.com/confusedbuffalo/phone-report/commit/8faedc979a33aee69c905e74f0ab6bfc3fe9f20b))
+
+
+### Features
+
+* Add link to hours evaluation tool for each item ([f75223c](https://github.com/confusedbuffalo/phone-report/commit/f75223c2c1bc2a008818a84be5129104683c4729))
+
 # [5.5.0](https://github.com/confusedbuffalo/phone-report/compare/v5.4.0...v5.5.0) (2026-05-27)
 
 
