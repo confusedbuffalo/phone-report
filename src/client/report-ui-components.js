@@ -2,7 +2,7 @@ import { languageNames } from './report-state.js';
 import { isItemClicked } from './report-storage.js';
 import { escapeHTML, getFirstNonNullValue } from './report-utils.js';
 import { translate } from './i18n.js';
-import { reportType, officialLanguages, subdivisionName } from './config.js';
+import { reportType, officialLanguages, subdivisionName, openingHoursEvaluationToolUrl } from './config.js';
 import { OSM_EDITORS, ALL_EDITOR_IDS } from './editors.js';
 
 export function createSaveRow() {
@@ -279,7 +279,7 @@ function createButtons(item, clickedClass) {
     const hoursForEvaluation = getFirstNonNullValue(item.invalidHours);
     const evaluationButton =
         reportType === 'hours' && hoursForEvaluation
-            ? `<a href="https://openingh.openstreetmap.de/evaluation_tool/?EXP=${encodeURIComponent(hoursForEvaluation)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('evaluationTool')}</a>`
+            ? `<a href="${openingHoursEvaluationToolUrl}?EXP=${encodeURIComponent(hoursForEvaluation)}" class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('evaluationTool')}</a>`
             : '';
 
     return { websiteButton, josmFixButton, fixButton, editorButtons, noteButton, evaluationButton };

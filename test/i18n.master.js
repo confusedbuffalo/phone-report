@@ -102,8 +102,6 @@ export const MASTER_KEYS = {
 
     numberDetailsNamesDataFrom: ['source'],
 
-    checkOpeningHoursFormat: ['link'],
-
     reportSubtitleForCountry: ['country'],
     reportSubtitleNamesForCountry: ['country'],
     reportSubtitleHoursForCountry: ['country'],
