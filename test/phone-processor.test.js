@@ -1283,6 +1283,11 @@ describe('processSingleNumber', () => {
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+1-888-865-1234');
     });
+
+    test('Toll free number with extension is valid in NANP', () => {
+        const result = processSingleNumber('+1-800-331-1234 x1', 'US');
+        expect(result.isInvalid).toBe(false);
+    });
 });
 
 // =====================================================================
