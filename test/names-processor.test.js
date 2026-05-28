@@ -332,4 +332,102 @@ describe('validateNames', () => {
         expect(result.invalidCount).toBe(1);
         expect(result.missingNamesCount).toBe(0);
     });
+
+    describe('undelimited multilingual names', () => {
+        test.each([
+            // DZ
+            {
+                country: 'DZ',
+                isValid: true,
+                name: "Wilaya d'Alger ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ ولاية الجزائر",
+                'name:fr': "Wilaya d'Alger",
+                'name:ber': 'ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ',
+                'name:ar': 'ولاية الجزائر',
+            },
+            {
+                country: 'DZ',
+                isValid: false,
+                name: "Wilaya d'Alger ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ ولاية الجزائر",
+                'name:fr': "Wilaya d'Alger",
+                // name:ber is missing
+                'name:ar': 'ولاية الجزائر',
+            },
+            {
+                country: 'DZ',
+                isValid: true,
+                name: 'ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ ولاية الجزائر',
+                'name:ber': 'ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ',
+                'name:ar': 'ولاية الجزائر',
+            },
+
+            // HK
+            {
+                country: 'HK',
+                isValid: true,
+                name: '干諾道中 Connaught Road Central',
+                'name:zh': '干諾道中',
+                'name:en': 'Connaught Road Central',
+            },
+            {
+                country: 'HK',
+                isValid: false,
+                name: '干諾道中 Connaught Road Central',
+                'name:zh-Hant': '干諾道中', // zh-Hant instead of zh
+                'name:en': 'Connaught Road Central',
+            },
+
+            // MA
+            {
+                country: 'MA',
+                isValid: true,
+                name: 'Province de Tiznit ⵜⴰⵙⴳⴰ ⵏ ⵜⵉⵣⵏⵉⵜ إقليم تزنيت',
+                'name:ar': 'إقليم تزنيت',
+                'name:fr': 'Province de Tiznit',
+                'name:zgh': 'ⵜⴰⵙⴳⴰ ⵏ ⵜⵉⵣⵏⵉⵜ',
+            },
+            {
+                country: 'MA',
+                isValid: false,
+                name: 'Province de Tiznit ⵜⴰⵙⴳⴰ ⵏ ⵜⵉⵣⵏⵉⵜ إقليم تزنيت',
+                'name:ar': 'إقليم تزنيت',
+                'name:fr': 'Province', // mismatched
+                'name:zgh': 'ⵜⴰⵙⴳⴰ ⵏ ⵜⵉⵣⵏⵉⵜ',
+            },
+
+            // NZ
+            {
+                country: 'NZ',
+                isValid: true,
+                name: 'Auckland Art Gallery Toi o Tāmaki',
+                'name:en': 'Auckland Art Gallery',
+                'name:mi': 'Toi o Tāmaki',
+            },
+            {
+                country: 'NZ',
+                isValid: true,
+                name: 'Toi o Tāmaki Auckland Art Gallery',
+                'name:en': 'Auckland Art Gallery',
+                'name:mi': 'Toi o Tāmaki',
+            },
+            {
+                country: 'NZ',
+                isValid: false,
+                name: 'Toi o Tāmaki,Auckland Art Gallery', // strange punctuation
+                'name:en': 'Auckland Art Gallery',
+                'name:mi': 'Toi o Tāmaki',
+            },
+        ])('%s', async ({ country, isValid, ...tags }) => {
+            const elements = [createGeoJson(1001, tags)];
+            const result = await validateNames(Readable.from(elements), country, tmpFilePath);
+            expect(result.totalCount).toBe(1);
+            expect(result.invalidCount).toBe(+!isValid);
+            expect(result.missingNamesCount).toBe(0);
+
+            // base case: confirm that this is invalid in any other country
+            const baseResult = await validateNames(Readable.from(elements), 'US', tmpFilePath);
+            expect(baseResult.totalCount).toBe(1);
+            expect(baseResult.invalidCount).toBe(1);
+            expect(baseResult.missingNamesCount).toBe(0);
+        });
+    });
 });
