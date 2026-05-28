@@ -153,7 +153,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen but the wrong way round is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'Dutch - French', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -173,7 +173,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen with one language missing is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French' })];
 
-        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -192,7 +192,7 @@ describe('validateNames', () => {
     test('French and Dutch names badly separated (slash) is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French / Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -212,7 +212,7 @@ describe('validateNames', () => {
     test('French and Dutch names badly separated (no spaces) is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French-Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BR-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
