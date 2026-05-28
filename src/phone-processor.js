@@ -586,9 +586,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             return exclusionResult;
         }
 
-        const normalisedOriginal = coreNumber.replace(spacingRegex, '');
-
-        let normalisedParsed = '';
+        const normalisedOriginal = standardisedNumber.replace(spacingRegex, '');
 
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
         if (isPolishPrefixed) {
@@ -606,7 +604,8 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber && phoneNumber.isValid()) {
-            normalisedParsed = phoneNumber.number.replace(spacingRegex, '');
+            const normalisedCoreParsed = phoneNumber.number.replace(spacingRegex, '');
+            const normalisedParsed = extension ? `${normalisedCoreParsed}x${extension}` : normalisedCoreParsed;
 
             if (couldBePhonewords) {
                 validPhonewords = true;
