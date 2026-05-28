@@ -80,6 +80,12 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
                     ['de', 'fr'],
                 ], // Flexible
             };
+            const noDelimiterMap = {
+                DZ: ['fr', 'ber', 'ar'],
+                HK: ['zh', 'en'],
+                MA: ['fr', 'zgh', 'ar'],
+                NZ: ['mi', 'en'],
+            };
 
             const validPairs = langMap[countryCode] || [];
 
@@ -91,6 +97,19 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             });
 
             if (isValidCombo) isInvalid = false;
+
+            const noDelimiter = noDelimiterMap[countryCode.split('-')[0]];
+            if (primaryName && noDelimiter) {
+                // in some regions, multilingual names are written with no delimiter
+
+                // check if deleting every name:* tag will leave us with an empty
+                // name=* tag. If yes, the name is considered valid in these regions.
+                let remaining = primaryName;
+                for (const lang of noDelimiter) {
+                    remaining = remaining.replace(nameTags[`name:${lang}`], '');
+                }
+                if (!remaining.trim()) isInvalid = false;
+            }
         }
 
         if (!primaryName) missingNamesCount++;
