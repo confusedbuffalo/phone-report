@@ -1,3 +1,21 @@
+# [5.7.0](https://github.com/confusedbuffalo/phone-report/compare/v5.6.0...v5.7.0) (2026-05-29)
+
+
+### Bug Fixes
+
+* Add prolonged sound mark as another incorrect hyphen type ([f3e5973](https://github.com/confusedbuffalo/phone-report/commit/f3e5973f603ad51f8f88bbee913028dcee206908))
+* add PY to incorrect leading plus fix ([021435b](https://github.com/confusedbuffalo/phone-report/commit/021435be1d21789dfacde09fd19d26b98f303583))
+* Autofix toll free numbers changing from international to national format ([2b09746](https://github.com/confusedbuffalo/phone-report/commit/2b097464c439d988b3b5d08f2e3c3297a7ba2bc0))
+* Remove evaluation tool text from description now that there are individual links ([d62bdf0](https://github.com/confusedbuffalo/phone-report/commit/d62bdf011324605c4a1a397833434551c64a32ec))
+* Toll free numbers with extensions were treated as invalid in NANP ([b26e224](https://github.com/confusedbuffalo/phone-report/commit/b26e224b34e337cbb49c70301415994e556e538f))
+
+
+### Features
+
+* BR: Use states instead of regions for divisions ([b39e032](https://github.com/confusedbuffalo/phone-report/commit/b39e0323c03c7de318010f98c049b77a836c28df))
+* enable safe fix bot in SE ([9de8476](https://github.com/confusedbuffalo/phone-report/commit/9de847639ead7936546abee7402698eb1a63b38f))
+* support undelimited multilingual names in some regions ([#375](https://github.com/confusedbuffalo/phone-report/issues/375)) ([5e44c96](https://github.com/confusedbuffalo/phone-report/commit/5e44c96e9f87e64ac4a3b338b12d5d8cf284a36c))
+
 # [5.6.0](https://github.com/confusedbuffalo/phone-report/compare/v5.5.0...v5.6.0) (2026-05-28)
 
 
