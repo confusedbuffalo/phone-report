@@ -1,3 +1,10 @@
+## [5.7.1](https://github.com/confusedbuffalo/phone-report/compare/v5.7.0...v5.7.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* Reconsider toll free formatting. ([0b15be8](https://github.com/confusedbuffalo/phone-report/commit/0b15be86f9ddbc9749d2e52a135ade5ffa8d2a6b))
+
 # [5.7.0](https://github.com/confusedbuffalo/phone-report/compare/v5.6.0...v5.7.0) (2026-05-29)
 
 
