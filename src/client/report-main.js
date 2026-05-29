@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', handleGlobalClicks);
+    document.addEventListener('auxclick', handleGlobalClicks);
 });
 
 /**
