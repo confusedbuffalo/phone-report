@@ -140,6 +140,16 @@ describe('validateNames', () => {
         });
     });
 
+    test('French and Dutch names separated by hyphen with both languages tagged is not valid in another country', async () => {
+        const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
+    });
+
     test('French and Dutch names separated by hyphen with both languages tagged is valid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
