@@ -220,6 +220,7 @@ describe('generateHtmlReport', () => {
             countryName: 'St. Kitts & Nevis',
             locale: 'en-US',
             officialLanguages: ['en'],
+            divisionLanguages: { 'XX-AB': ['en'], 'XX-CD': ['fr', 'de'] },
         };
         const subdivisionStats = {
             name: "O'Fallon",
@@ -232,7 +233,7 @@ describe('generateHtmlReport', () => {
         };
         const tmpFilePath = 'test.json';
 
-        await generateHtmlReport('phone', countryData, subdivisionStats, tmpFilePath, {});
+        await generateHtmlReport('phone', countryData, subdivisionStats, tmpFilePath, {}, 'KN');
 
         await new Promise(resolve => setTimeout(resolve, 10));
 
@@ -256,7 +257,7 @@ describe('generateHtmlReport', () => {
 
 const { getLengthProblemText } = await import('../src/html-report.js');
 
-describe('generateHtmlReport', () => {
+describe('getLengthProblemText', () => {
     test('Label short number as too short', async () => {
         const result = getLengthProblemText('12345', 'en', 'GB');
         expect(result).toEqual('tooShort');

@@ -432,11 +432,12 @@ export async function generateHtmlReport(
     tmpFilePath,
     translations,
     botEnabled,
-    timestamp
+    timestamp,
+    regionCode
 ) {
     const countryName = countryData.name;
     const locale = countryData.locale;
-    const officialLanguages = countryData.officialLanguages;
+    const officialLanguages = countryData.divisionLanguages[regionCode] ?? countryData.officialLanguages;
 
     const iconManager = new IconManager();
 
