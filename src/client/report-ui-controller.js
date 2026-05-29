@@ -40,10 +40,15 @@ const editsModalTitle = document.getElementById('edits-modal-title');
 const noteModalTitle = document.getElementById('note-modal-title');
 
 export function handleGlobalClicks(event) {
+    if (event.type === 'auxclick' && event.button !== 1) return;
+
     const target = event.target.closest('[data-action]');
     if (!target) return;
 
     const action = target.dataset.action;
+
+    // Only handle middle clicks for editor links
+    if (event.type === 'auxclick' && !['edit', 'josm'].includes(action)) return;
     const itemType = target.dataset.itemType;
     const itemId = Number(target.dataset.itemId);
 
