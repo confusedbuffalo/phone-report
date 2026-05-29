@@ -767,11 +767,9 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
-    test('GB: toll free phone number with country code is invalid', () => {
+    test('GB: toll free phone number with country code is valid', () => {
         const result = processSingleNumber('+44 800 00 1234', SAMPLE_COUNTRY_CODE_GB);
-        expect(result.isInvalid).toBe(true);
-        expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toEqual('0800 001234');
+        expect(result.isInvalid).toBe(false);
     });
 
     test('GB: toll free phone number with dashes is fixable to national format', () => {
@@ -781,18 +779,18 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('0800 001234');
     });
 
-    test('GB: toll free phone number with country code and invalid formatting is fixable to national format', () => {
+    test('GB: toll free phone number with country code and invalid formatting is fixable to international format', () => {
         const result = processSingleNumber('(+44) 0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('0800 001234');
+        expect(result.suggestedFix).toBe('+44 800 001234');
     });
 
-    test('GB: toll free phone number with 00 and country code is fixable to national format', () => {
+    test('GB: toll free phone number with 00 and country code is fixable to international format', () => {
         const result = processSingleNumber('0044 0800 00 1234', SAMPLE_COUNTRY_CODE_GB);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('0800 001234');
+        expect(result.suggestedFix).toBe('+44 800 001234');
     });
 
     test('GB: a number with tabs is invalid but fixable', () => {
@@ -1085,14 +1083,14 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
-    test('DE: toll free number in international format is invalid', () => {
+    test('DE: toll free number already in international format is invalid and fixable to national format', () => {
         const result = processSingleNumber('+49 800 1234 567', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
-    test('AT: toll free number is valid', () => {
+    test('AT: toll free number is valid and fixable to national format', () => {
         const result = processSingleNumber('800 8481 0000', 'AT');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
@@ -1105,7 +1103,7 @@ describe('processSingleNumber', () => {
         expect(result.isInvalid).toBe(false);
     });
 
-    test('FR: shared cost number in international format is invalid', () => {
+    test('FR: shared cost number in international format is invalid and fixable to national format', () => {
         const result = processSingleNumber('+33 820 39 39 00', SAMPLE_COUNTRY_CODE_FR);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
@@ -1626,7 +1624,7 @@ describe('validateNumbers', () => {
     const VALID_MOBILE_2 = '+44 7712 900001';
     const FIXABLE_MOBILE_INPUT = '07712  900000';
     const FIXABLE_MOBILE_SUGGESTED_FIX = '+44 7712 900000';
-    const VALID_TOLL_FREE = '0800 001234';
+    const VALID_TOLL_FREE = '+44 800 001234';
 
     // DE numbers
     const SLASH_IN_NUMBER_DE = '+498131/275715';
@@ -1673,6 +1671,28 @@ describe('validateNumbers', () => {
         });
         expect(invalidItem.suggestedFixes).toEqual({
             'contact:phone': FIXABLE_LANDLINE_SUGGESTED_FIX,
+        });
+    });
+
+    test('AT: should identify a single fixable invalid toll free number (no country code) and provide suggested fix', async () => {
+        const elements = [createGeoJson(2002, { phone: '(0800) 6624 5324' })];
+
+        const result = await validateNumbers(Readable.from(elements), 'AT', tmpFilePath);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(2002);
+        expect(invalidItem.autoFixable).toBe(true);
+        expect(invalidItem.invalidNumbers).toEqual({
+            phone: '(0800) 6624 5324',
+        });
+        expect(invalidItem.suggestedFixes).toEqual({
+            phone: '0800 66245324',
         });
     });
 
@@ -2560,7 +2580,6 @@ describe('validateNumbers', () => {
         const elements = [
             createGeoJson(123456, {
                 fax: FIXABLE_LANDLINE_INPUT,
-                name: 'Faxable',
             }),
         ];
 
@@ -2584,7 +2603,6 @@ describe('validateNumbers', () => {
         const elements = [
             createGeoJson(123456, {
                 fax: VALID_TOLL_FREE,
-                name: 'Toll Free Faxable',
             }),
         ];
 
@@ -2598,7 +2616,6 @@ describe('validateNumbers', () => {
         const elements = [
             createGeoJson(123456, {
                 fax: VALID_MOBILE,
-                name: 'Toll Free Faxable',
             }),
         ];
 
@@ -2613,7 +2630,6 @@ describe('validateNumbers', () => {
             createGeoJson(123456, {
                 phone: FIXABLE_MOBILE_INPUT,
                 fax: FIXABLE_LANDLINE_INPUT,
-                name: 'Faxable',
             }),
         ];
 
@@ -2829,7 +2845,7 @@ describe('isSafeEdit', () => {
 
     test('GB: should return true for a safe edit where for toll free number in international format', () => {
         const originalNumber = '+44 800 00 1234';
-        const newNumber = '0800 001234';
+        const newNumber = '+44 800 001234';
         const countryCode = 'GB';
 
         expect(isSafeEdit(originalNumber, newNumber, countryCode)).toBe(true);
@@ -2852,7 +2868,7 @@ describe('isSafeEdit', () => {
     });
 
     test('CA: should return true for a safe edit with toll free number', () => {
-        // Parsed as a US number by deafult, not possible to differentiate country for toll free numbers
+        // Parsed as a US number by default, not possible to differentiate country for toll free numbers
         const originalNumber = '18888651234';
         const newNumber = '+1-888-865-1234';
         const countryCode = 'CA';
