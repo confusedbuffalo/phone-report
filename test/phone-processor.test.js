@@ -1110,6 +1110,18 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('0 820 39 39 00');
     });
 
+    test('FR/RE: toll free number in international format is valid in a different country', () => {
+        const result = processSingleNumber('+33 800 39 39 00', 'RE');
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe('FR');
+    });
+
+    test('FR/US: toll free number in international format is valid in a different country', () => {
+        const result = processSingleNumber('+1-800-331-1234', 'FR');
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe('US');
+    });
+
     // --- IT Tests ---
     test('IT: international number with missing leading zero is invalid and fixable', () => {
         const result = processSingleNumber('+39712345678', 'IT');

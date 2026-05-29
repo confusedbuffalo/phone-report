@@ -601,11 +601,14 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber) {
-            const tollFreeAsInternational = TOLL_FREE_AS_INTERNATIONAL_COUNTRIES.includes(countryCode)
-                ? true
-                : FORCE_TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
-                  ? false
-                  : numberStr.includes('+') || numberStr.startsWith('00');
+            const tollFreeAsInternational =
+                phoneNumber.country.toLowerCase() !== countryCode.toLowerCase()
+                    ? true
+                    : TOLL_FREE_AS_INTERNATIONAL_COUNTRIES.includes(countryCode)
+                      ? true
+                      : FORCE_TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
+                        ? false
+                        : numberStr.includes('+') || numberStr.startsWith('00');
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
         }
 
