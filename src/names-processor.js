@@ -3,6 +3,26 @@ import { createBaseItem } from './data-processor.js';
 
 const NAME_LOCALIZED_REGEX = /^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/;
 
+const BELGIUM_REGION_LANGUAGES = {
+    'BE-BRU': [['fr', 'nl']], // Strict: Only FR - NL
+    'BE-VLG': [
+        ['nl', 'fr'],
+        ['fr', 'nl'],
+    ], // Flexible
+    'BE-WAL': [
+        ['fr', 'nl'],
+        ['nl', 'fr'],
+        ['fr', 'de'],
+        ['de', 'fr'],
+    ], // Flexible
+};
+const UNDELIMITED_NAME_LANGUAGES = {
+    DZ: ['fr', 'ber', 'ar'],
+    HK: ['zh', 'en'],
+    MA: ['fr', 'zgh', 'ar'],
+    NZ: ['mi', 'en'],
+};
+
 /**
  * Validates names.
  * @param {Array<Object>} elementStream - OSM elements with name tags.
@@ -28,8 +48,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
-        const nameTags = {};
-        let nameTagsCount = 0;
+        const nameTags = new Map();
         const primaryName = tags['name'];
         let hasPrimaryNameMatch = false;
 
@@ -37,8 +56,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             if (key.startsWith('name:')) {
                 if (NAME_LOCALIZED_REGEX.test(key)) {
                     const tagValue = tags[key];
-                    nameTags[key] = tagValue;
-                    nameTagsCount++;
+                    nameTags.set(key, tagValue);
                     if (primaryName && tagValue === primaryName) {
                         hasPrimaryNameMatch = true;
                     }
@@ -46,59 +64,27 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             }
         }
 
-        if (nameTagsCount === 0) continue;
+        if (nameTags.size === 0) continue;
 
         totalCount++;
-
-        let item = null;
-
-        const getOrCreateItem = () => {
-            if (item) return item;
-
-            item = {
-                ...createBaseItem(element),
-                nameTags: new Map(),
-            };
-            return item;
-        };
 
         // Condition 1: There is no 'name' tag
         // Condition 2: There are localised names (name:*) and none of them match the primary name
         let isInvalid = !primaryName || !hasPrimaryNameMatch;
 
         if (isInvalid) {
-            const langMap = {
-                'BE-BRU': [['fr', 'nl']], // Strict: Only FR - NL
-                'BE-VLG': [
-                    ['nl', 'fr'],
-                    ['fr', 'nl'],
-                ], // Flexible
-                'BE-WAL': [
-                    ['fr', 'nl'],
-                    ['nl', 'fr'],
-                    ['fr', 'de'],
-                    ['de', 'fr'],
-                ], // Flexible
-            };
-            const noDelimiterMap = {
-                DZ: ['fr', 'ber', 'ar'],
-                HK: ['zh', 'en'],
-                MA: ['fr', 'zgh', 'ar'],
-                NZ: ['mi', 'en'],
-            };
-
-            const validPairs = langMap[countryCode] || [];
+            const validPairs = BELGIUM_REGION_LANGUAGES[countryCode] || [];
 
             // Check if primaryName matches any allowed joined pair for the region
             const isValidCombo = validPairs.some(([langA, langB]) => {
-                const valA = nameTags[`name:${langA}`];
-                const valB = nameTags[`name:${langB}`];
+                const valA = nameTags.get(`name:${langA}`);
+                const valB = nameTags.get(`name:${langB}`);
                 return valA && valB && primaryName === `${valA} - ${valB}`;
             });
 
             if (isValidCombo) isInvalid = false;
 
-            const noDelimiter = noDelimiterMap[countryCode.split('-')[0]];
+            const noDelimiter = UNDELIMITED_NAME_LANGUAGES[countryCode.split('-')[0]];
             if (primaryName && noDelimiter) {
                 // in some regions, multilingual names are written with no delimiter
 
@@ -106,7 +92,10 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
                 // name=* tag. If yes, the name is considered valid in these regions.
                 let remaining = primaryName;
                 for (const lang of noDelimiter) {
-                    remaining = remaining.replace(nameTags[`name:${lang}`], '');
+                    const localizedName = nameTags.get(`name:${lang}`);
+                    if (localizedName) {
+                        remaining = remaining.replace(localizedName, '');
+                    }
                 }
                 if (!remaining.trim()) isInvalid = false;
             }
@@ -115,12 +104,11 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
         if (!primaryName) missingNamesCount++;
 
         if (isInvalid) {
-            const currentItem = getOrCreateItem(true);
-            currentItem.nameTags = nameTags;
-        }
-
-        if (item) {
             incompleteNames++;
+            const item = {
+                ...createBaseItem(element),
+                nameTags,
+            };
 
             if (!isFirstItem) {
                 fileStream.write(',\n');
