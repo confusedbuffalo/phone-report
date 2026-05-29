@@ -484,7 +484,7 @@ export function getWhatsappNumber(numberStr) {
             !pathname.startsWith('/message') &&
             !pathname.startsWith('/c')
         ) {
-            cleanNumberStr = pathname.startsWith('/') ? pathname.slice(1) : pathname;
+            cleanNumberStr = pathname.startsWith('/') ? '+' + pathname.slice(1) : '+' + pathname;
             isValidWhatsappUrl = false;
         }
     }

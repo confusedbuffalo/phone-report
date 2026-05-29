@@ -1215,8 +1215,27 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
     });
 
-    test('Whatsapp number in full link fixable', () => {
+    test('Whatsapp number in full link is fixable', () => {
         const result = processSingleNumber('https://wa.me/27123456789', SAMPLE_COUNTRY_CODE_ZA, {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+27 12 345 6789');
+    });
+
+    test('Whatsapp number with encoded plus in full link is fixable', () => {
+        const result = processSingleNumber(
+            'https://api.whatsapp.com/send?phone=%2B27123456789',
+            SAMPLE_COUNTRY_CODE_ZA,
+            {},
+            'contact:whatsapp'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+27 12 345 6789');
+    });
+
+    test('Whatsapp number in full link is fixable even in different country', () => {
+        const result = processSingleNumber('https://wa.me/27123456789', SAMPLE_COUNTRY_CODE_GB, {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
