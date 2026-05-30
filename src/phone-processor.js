@@ -529,14 +529,13 @@ const invisibleCharactersRegex = new RegExp(`[${INVISIBLE_CHARACTERS}]`, 'g');
  */
 export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     let suggestedFix = null,
+        standardisedSuggestedFix = null,
         phoneNumber = null,
         foreign = null;
     let autoFixable = true;
     let isInvalid = false,
         typeMismatch = false,
         validPhonewords = false;
-
-    const spacingRegex = getSpacingRegex(countryCode);
 
     if (numberStr.startsWith('++')) {
         numberStr = numberStr.slice(1);
@@ -582,6 +581,8 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     try {
         phoneNumber = parsePhoneNumber(standardisedNumber, countryCode);
 
+        const spacingRegex = getSpacingRegex(phoneNumber.country);
+
         const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
         if (exclusionResult) {
             return exclusionResult;
@@ -610,6 +611,10 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                         ? false
                         : numberStr.includes('+') || numberStr.startsWith('00');
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
+            const coreStandardised = parsePhoneNumber(coreNumber, countryCode)
+                .format(tollFreeAsInternational ? 'INTERNATIONAL' : 'NATIONAL')
+                .replace(/[^\d+]/g, '');
+            standardisedSuggestedFix = extension ? `${coreStandardised} x${extension}` : coreStandardised;
         }
 
         if (phoneNumber && phoneNumber.isValid()) {
@@ -629,7 +634,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            const normalisedTollFree = suggestedFix.replace(spacingRegex, '');
+            const normalisedTollFree = standardisedSuggestedFix.replace(spacingRegex, '');
             const numbersMatch = NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())
                 ? normalisedOriginal === normalisedTollFree
                 : normalisedOriginal === normalisedParsed;

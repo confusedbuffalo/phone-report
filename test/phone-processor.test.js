@@ -1090,6 +1090,11 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
+    test('DE: shared cost number with extension in national format is valid', () => {
+        const result = processSingleNumber('0180 4 370037-358', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('AT: toll free number is valid and fixable to national format', () => {
         const result = processSingleNumber('800 8481 0000', 'AT');
         expect(result.isInvalid).toBe(true);
