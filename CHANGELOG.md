@@ -1,3 +1,13 @@
+## [5.7.2](https://github.com/confusedbuffalo/phone-report/compare/v5.7.1...v5.7.2) (2026-05-30)
+
+
+### Bug Fixes
+
+* ensure that foreign toll free numbers are in international format ([17374b4](https://github.com/confusedbuffalo/phone-report/commit/17374b42894576a55a27f218f78207796b193a68))
+* make edit buttons go grey when middle clicked ([fcb2e17](https://github.com/confusedbuffalo/phone-report/commit/fcb2e178afca0b86019220539d934e4235af16c8))
+* suggest fix for foreign whatsapp numbers in urls ([e2d0817](https://github.com/confusedbuffalo/phone-report/commit/e2d081724c1aa6b67d4a4a36c2ac5d2c5ecd61a7))
+* Use official languages by region in names report ([827d9b7](https://github.com/confusedbuffalo/phone-report/commit/827d9b778d4576722d8d9608a54ee5a33ea95f96)), closes [#380](https://github.com/confusedbuffalo/phone-report/issues/380)
+
 ## [5.7.1](https://github.com/confusedbuffalo/phone-report/compare/v5.7.0...v5.7.1) (2026-05-29)
 
 
