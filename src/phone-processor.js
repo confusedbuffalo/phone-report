@@ -348,7 +348,9 @@ function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
 
     let result;
 
-    if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) && !tollFreeAsInternational) {
+    const phoneType = phoneNumber.getType();
+
+    if (NON_STANDARD_COST_TYPES.includes(phoneType) && !tollFreeAsInternational) {
         const coreFormattedNational = phoneNumber.format('NATIONAL');
         result = coreFormattedNational + extension;
     } else {
@@ -517,6 +519,22 @@ export function convertPhonewordToDigits(phoneword) {
     });
 }
 
+/**
+ * Validates a single phone number string using libphonenumber-js.
+ * @param {PhoneNumber} phoneNumber - The parsed PhoneNumber object.
+ * @param {string} countryCode - The country code used for validation.
+ * @param {string} numberStr - The original phone number string.
+ * @returns {boolean}
+ */
+function shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr) {
+    // https://community.openstreetmap.org/t/proposed-automated-edit-korrektur-von-telefonnummern-in-deutschland-basierend-auf-phonenumbervalidator/142498/12
+    if (countryCode === 'DE' && phoneNumber.getType() === 'SHARED_COST') return true;
+    if (phoneNumber.country.toLowerCase() !== countryCode.toLowerCase()) return true;
+    if (TOLL_FREE_AS_INTERNATIONAL_COUNTRIES.includes(countryCode)) return true;
+    if (FORCE_TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)) return false;
+    return numberStr.includes('+') || numberStr.startsWith('00');
+}
+
 const invisibleCharactersRegex = new RegExp(`[${INVISIBLE_CHARACTERS}]`, 'g');
 
 /**
@@ -602,14 +620,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber) {
-            const tollFreeAsInternational =
-                phoneNumber.country.toLowerCase() !== countryCode.toLowerCase()
-                    ? true
-                    : TOLL_FREE_AS_INTERNATIONAL_COUNTRIES.includes(countryCode)
-                      ? true
-                      : FORCE_TOLL_FREE_AS_NATIONAL_COUNTRIES.includes(countryCode)
-                        ? false
-                        : numberStr.includes('+') || numberStr.startsWith('00');
+            const tollFreeAsInternational = shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr);
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
             const coreStandardised = parsePhoneNumber(coreNumber, countryCode)
                 .format(tollFreeAsInternational ? 'INTERNATIONAL' : 'NATIONAL')

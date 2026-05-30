@@ -1070,7 +1070,7 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toBe('+49 4761 3163');
     });
 
-    test('DE: number starting with some other characters then 49 is invalid and unfixable', () => {
+    test('DE: number starting with some other characters than 49 is invalid and unfixable', () => {
         const result = processSingleNumber('-49 521 557666', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(false);
@@ -1083,6 +1083,11 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
+    test('DE: toll free number with extension in national format is valid', () => {
+        const result = processSingleNumber('0800 1234 567-123', SAMPLE_COUNTRY_CODE_DE);
+        expect(result.isInvalid).toBe(false);
+    });
+
     test('DE: toll free number already in international format is invalid and fixable to national format', () => {
         const result = processSingleNumber('+49 800 1234 567', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(true);
@@ -1090,8 +1095,16 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('0800 1234567');
     });
 
-    test('DE: shared cost number with extension in national format is valid', () => {
+    test('DE: shared cost number with extension in national format is fixable to international format', () => {
         const result = processSingleNumber('0180 4 370037-358', SAMPLE_COUNTRY_CODE_DE);
+        console.log(result);
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+49 180 4 370037-358');
+    });
+
+    test('DE: shared cost number with extension in international format is valid', () => {
+        const result = processSingleNumber('+49 180 4 370037-358', SAMPLE_COUNTRY_CODE_DE);
         expect(result.isInvalid).toBe(false);
     });
 
