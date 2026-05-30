@@ -21,6 +21,7 @@ permissions:
     pull-requests: write # Needed to post comments
     actions: read # Needed to list artifacts
     issues: write # Needed to make issues
+    deployments: write # Cloudflare wrangler makes deployments
 
 jobs:
     run-tests:
