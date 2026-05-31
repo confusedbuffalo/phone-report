@@ -25,6 +25,7 @@ import {
     INVALID_SPACING_CHARACTERS_REGEX_TW,
     INVISIBLE_CHARACTERS,
     TOLL_FREE_AS_INTERNATIONAL_COUNTRIES,
+    COUNTRIES_WITH_INCORRECT_HYPHENS_IN_NATIONAL,
 } from './constants.js';
 import { createBaseItem } from './data-processor.js';
 
@@ -352,7 +353,12 @@ function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
 
     if (NON_STANDARD_COST_TYPES.includes(phoneType) && !tollFreeAsInternational) {
         const coreFormattedNational = phoneNumber.format('NATIONAL');
-        result = coreFormattedNational + extension;
+        result =
+            countryCode === 'PE'
+                ? coreFormattedNational.replace(/[()]/g, '') + extension
+                : COUNTRIES_WITH_INCORRECT_HYPHENS_IN_NATIONAL.includes(countryCode)
+                  ? coreFormattedNational.replaceAll('-', ' ') + extension
+                  : coreFormattedNational + extension;
     } else {
         result = internationalNumber + extension;
     }
@@ -535,6 +541,41 @@ function shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr) {
     return numberStr.includes('+') || numberStr.startsWith('00');
 }
 
+const arFinalHyphenRegex = /^\+\d+-\d{4}$/;
+
+/**
+ * Validates a single phone number string using libphonenumber-js.
+ * @param {PhoneNumber} phoneNumber - The parsed PhoneNumber object.
+ * @param {string} coreNumber - The core number, without extension.
+ * @param {string|null} extension - The extension of the number.
+ * @param {string} countryCode - The country code for validation.
+ * @param {boolean} tollFreeAsInternational - Whether toll free numbers should be formatted in international format
+ * @returns {boolean}
+ */
+function numbersSemanticallyMatch(phoneNumber, coreNumber, extension, countryCode, tollFreeAsInternational) {
+    const standardisedNumber = extension ? `${coreNumber} x${extension}` : coreNumber;
+
+    const coreStandardised = parsePhoneNumber(coreNumber, countryCode)
+        .format(tollFreeAsInternational ? 'INTERNATIONAL' : 'NATIONAL')
+        .replace(/[^\d+]/g, '');
+    const standardisedSuggestedFix = extension ? `${coreStandardised} x${extension}` : coreStandardised;
+
+    const spacingRegex = getSpacingRegex(phoneNumber.country);
+
+    const normalisedOriginal = standardisedNumber.replace(spacingRegex, '');
+    const normalisedCoreParsed = phoneNumber.number.replace(spacingRegex, '');
+    const normalisedParsed = extension ? `${normalisedCoreParsed}x${extension}` : normalisedCoreParsed;
+    const normalisedTollFree = standardisedSuggestedFix.replace(spacingRegex, '');
+
+    if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())) {
+        return normalisedOriginal === normalisedTollFree;
+    }
+    if (countryCode === 'AR' && arFinalHyphenRegex.test(normalisedOriginal)) {
+        return true;
+    }
+    return normalisedOriginal === normalisedParsed;
+}
+
 const invisibleCharactersRegex = new RegExp(`[${INVISIBLE_CHARACTERS}]`, 'g');
 
 /**
@@ -546,9 +587,8 @@ const invisibleCharactersRegex = new RegExp(`[${INVISIBLE_CHARACTERS}]`, 'g');
  * @returns {{phoneNumber: phoneNumber, isInvalid: boolean, suggestedFix: string|null, autoFixable: boolean, typeMismatch: boolean, validPhonewords: boolean, foreign: string|null}}
  */
 export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
-    let suggestedFix = null,
-        standardisedSuggestedFix = null,
-        phoneNumber = null,
+    let suggestedFix;
+    let phoneNumber = null,
         foreign = null;
     let autoFixable = true;
     let isInvalid = false,
@@ -599,14 +639,10 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     try {
         phoneNumber = parsePhoneNumber(standardisedNumber, countryCode);
 
-        const spacingRegex = getSpacingRegex(phoneNumber.country);
-
         const exclusionResult = checkExclusions(phoneNumber, numberStr, countryCode, osmTags);
         if (exclusionResult) {
             return exclusionResult;
         }
-
-        const normalisedOriginal = standardisedNumber.replace(spacingRegex, '');
 
         const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
         if (isPolishPrefixed) {
@@ -619,22 +655,11 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             isInvalid = true;
         }
 
-        if (phoneNumber) {
+        if (phoneNumber && phoneNumber.isValid()) {
             const tollFreeAsInternational = shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr);
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
-            const coreStandardised = parsePhoneNumber(coreNumber, countryCode)
-                .format(tollFreeAsInternational ? 'INTERNATIONAL' : 'NATIONAL')
-                .replace(/[^\d+]/g, '');
-            standardisedSuggestedFix = extension ? `${coreStandardised} x${extension}` : coreStandardised;
-        }
 
-        if (phoneNumber && phoneNumber.isValid()) {
-            const normalisedCoreParsed = phoneNumber.number.replace(spacingRegex, '');
-            const normalisedParsed = extension ? `${normalisedCoreParsed}x${extension}` : normalisedCoreParsed;
-
-            if (couldBePhonewords) {
-                validPhonewords = true;
-            }
+            validPhonewords = !!couldBePhonewords;
 
             if (MOBILE_TAGS.includes(tag)) {
                 const mobileStatus = checkMobileStatus(phoneNumber);
@@ -645,10 +670,13 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 }
             }
 
-            const normalisedTollFree = standardisedSuggestedFix.replace(spacingRegex, '');
-            const numbersMatch = NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())
-                ? normalisedOriginal === normalisedTollFree
-                : normalisedOriginal === normalisedParsed;
+            const numbersMatch = numbersSemanticallyMatch(
+                phoneNumber,
+                coreNumber,
+                extension,
+                countryCode,
+                tollFreeAsInternational
+            );
 
             if (CAN_REFORMAT_NUMBER_WITHOUT_SPACES.includes(countryCode)) {
                 // Targets numbers with no spaces after the country code

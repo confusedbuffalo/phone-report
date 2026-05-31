@@ -1097,7 +1097,6 @@ describe('processSingleNumber', () => {
 
     test('DE: shared cost number with extension in national format is fixable to international format', () => {
         const result = processSingleNumber('0180 4 370037-358', SAMPLE_COUNTRY_CODE_DE);
-        console.log(result);
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
         expect(result.suggestedFix).toEqual('+49 180 4 370037-358');
@@ -1216,6 +1215,88 @@ describe('processSingleNumber', () => {
     test('TW: Hash extension with space is valid', () => {
         const result = processSingleNumber('+886 2 2938 2300 #630', 'TW');
         expect(result.isInvalid).toBe(false);
+    });
+
+    // --- National Toll Free Tests ---
+    test('SE: Toll free number in national format is fixed to spaces', () => {
+        const result = processSingleNumber('0771-369-123', 'SE');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('077 136 91 23');
+    });
+
+    test('BR: Shared cost number in national format is fixed to spaces', () => {
+        const result = processSingleNumber('4001-1234', 'BR');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('4001 1234');
+    });
+
+    test('PE: Toll free number in national format is fixed to spaces or brackets', () => {
+        const result = processSingleNumber('0800-12345', 'PE');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('0800 12345');
+    });
+
+    test('VE: Toll free number in national format is fixed to spaces', () => {
+        const result = processSingleNumber('0800-1234567', 'BR');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('0800 123 4567');
+    });
+
+    // --- AR Tests ---
+    describe('AR: All spaces as separators is valid', () => {
+        test.each([
+            '+54 11 4551 1234',
+            '+54 11 45511234',
+            '+54 1145511234',
+            '+54 388 423 1234',
+            '+54 388 4231234',
+            '+54 3884231234',
+            '+54 3543 43 1234',
+            '+54 3543 431234',
+            '+54 9 11 4551 1234',
+            '+54 9 388 423 1234',
+            '+54 9 3543 43 1234',
+            '0800 123 4567',
+        ])('%s', numberStr => {
+            const result = processSingleNumber(numberStr, 'AR');
+            expect(result.isInvalid).toBe(false);
+        });
+    });
+
+    describe('AR: Hyphen before the final group is valid', () => {
+        test.each([
+            '+54 11 4551-1234',
+            '+54 388 423-1234',
+            '+54 3543 43-1234',
+            '+54 9 11 4551-1234',
+            '+54 9 388 423-1234',
+            '+54 9 3543 43-1234',
+        ])('%s', numberStr => {
+            const result = processSingleNumber(numberStr, 'AR');
+            expect(result.isInvalid).toBe(false);
+        });
+    });
+
+    describe('AR: Hyphens in other positions is invalid and fixable to all spaces', () => {
+        test.each([
+            { numberStr: '+54 11-4551 1234', suggestedFix: '+54 11 4551 1234' },
+            { numberStr: '+54 11-4551-1234', suggestedFix: '+54 11 4551 1234' },
+            { numberStr: '+54 388-423 1234', suggestedFix: '+54 388 423 1234' },
+            { numberStr: '+54 388-423-1234', suggestedFix: '+54 388 423 1234' },
+            { numberStr: '+54 3543-43 1234', suggestedFix: '+54 3543 43 1234' },
+            { numberStr: '+54 3543-43-1234', suggestedFix: '+54 3543 43 1234' },
+            { numberStr: '+54-3543-43 1234', suggestedFix: '+54 3543 43 1234' },
+            { numberStr: '0800-123-4567', suggestedFix: '0800 123 4567' },
+        ])('%s', ({ numberStr, suggestedFix }) => {
+            const result = processSingleNumber(numberStr, 'AR');
+            expect(result.isInvalid).toBe(true);
+            expect(result.autoFixable).toBe(true);
+            expect(result.suggestedFix).toEqual(suggestedFix);
+        });
     });
 
     // --- WhatsApp Tests ---
