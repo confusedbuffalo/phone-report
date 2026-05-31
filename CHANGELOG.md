@@ -1,3 +1,11 @@
+## [5.7.3](https://github.com/confusedbuffalo/phone-report/compare/v5.7.2...v5.7.3) (2026-05-31)
+
+
+### Bug Fixes
+
+* shared cost numbers in DE are reachable internationally so need a country code ([85031a3](https://github.com/confusedbuffalo/phone-report/commit/85031a3db7dc7820aa48afb4178daaced4f5761c))
+* some phone numbers with extensions were incorrectly shown as invalid ([1174e07](https://github.com/confusedbuffalo/phone-report/commit/1174e07499f712080366cfb2182629d667ebd2cb))
+
 ## [5.7.2](https://github.com/confusedbuffalo/phone-report/compare/v5.7.1...v5.7.2) (2026-05-30)
 
 
