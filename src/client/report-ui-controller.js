@@ -535,28 +535,11 @@ export function disableCreateNoteWithMessage(message) {
 }
 
 /**
- * Displays the modal window for creating a note and checks if the user is logged into OSM.
+ * Generates the comment text for an OpenStreetMap note based on the item and report type.
  * @param {Object} item - The item to create a note for.
- * @returns {void}
+ * @returns {string} The generated note comment.
  */
-export function openNoteModal(item) {
-    noteModalTitle.innerHTML = translate('createNoteFor', { name: item.featureTypeName });
-
-    // Reset buttons etc.
-    addNoteBtn.classList.add('cursor-pointer');
-    addNoteBtn.classList.remove('cursor-progress');
-    addNoteBtn.classList.remove('cursor-not-allowed');
-    addNoteBtn.disabled = false;
-    addNoteBtn.classList.remove('hidden');
-
-    noteCancelBtn.classList.remove('hidden');
-    noteCloseBtnBottom.classList.add('hidden');
-
-    const noteCommentBox = document.getElementById('note-comment');
-
-    noteCommentBox.disabled = false;
-    noteCommentBox.classList.remove('cursor-not-allowed');
-
+function getNoteComment(item) {
     let noteComment;
 
     if (reportType === 'phone') {
@@ -609,6 +592,34 @@ export function openNoteModal(item) {
 
     noteComment += `\n\n#surveyme\nhttps://www.openstreetmap.org/${encodeURIComponent(item.type)}/${encodeURIComponent(item.id)}\n`;
     noteComment += `via ${changesetTags.created_by}`;
+
+    return noteComment;
+}
+
+/**
+ * Displays the modal window for creating a note and checks if the user is logged into OSM.
+ * @param {Object} item - The item to create a note for.
+ * @returns {void}
+ */
+export function openNoteModal(item) {
+    noteModalTitle.innerHTML = translate('createNoteFor', { name: item.featureTypeName });
+
+    // Reset buttons etc.
+    addNoteBtn.classList.add('cursor-pointer');
+    addNoteBtn.classList.remove('cursor-progress');
+    addNoteBtn.classList.remove('cursor-not-allowed');
+    addNoteBtn.disabled = false;
+    addNoteBtn.classList.remove('hidden');
+
+    noteCancelBtn.classList.remove('hidden');
+    noteCloseBtnBottom.classList.add('hidden');
+
+    const noteCommentBox = document.getElementById('note-comment');
+
+    noteCommentBox.disabled = false;
+    noteCommentBox.classList.remove('cursor-not-allowed');
+
+    const noteComment = getNoteComment(item);
 
     noteCommentBox.value = decodeHtmlEntities(noteComment);
 
