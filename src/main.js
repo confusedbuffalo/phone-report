@@ -628,7 +628,7 @@ async function main() {
         countryData.name = countryKey;
         countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
         countryData.divisionLanguages = Object.fromEntries(
-            Object.entries(officialLanguages).filter(([key, value]) => key.startsWith(countryData.countryCode))
+            Object.entries(officialLanguages).filter(([key, _value]) => key.startsWith(countryData.countryCode))
         );
         const countryStats = await processCountry(countryData);
         for (const reportType of REPORT_TYPES) {

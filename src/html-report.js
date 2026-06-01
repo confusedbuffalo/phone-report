@@ -236,10 +236,10 @@ export function createPhoneFixRows(item, locale, countryCode) {
 /**
  * Creates the fix rows for an invalid name item.
  * @param {Object} item - The invalid data item.
- * @param {string} locale - The locale for the text
+ * @param {string} _locale - The locale for the text
  * @returns {Object}
  */
-function createNameFixRows(item, locale) {
+function createNameFixRows(item, _locale) {
     const escapedNameTags = Object.fromEntries(
         Object.entries(item.nameTags).map(([key, value]) => [key, escapeHTML(value)])
     );

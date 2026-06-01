@@ -51,7 +51,7 @@ jest.unstable_mockModule('../src/i18n.js', () => ({
         if (args) return `${key}: ${Object.values(args).join(',')}`;
         return key;
     },
-    getTranslations: locale => ({}),
+    getTranslations: _locale => ({}),
 }));
 
 const actualDiffRenderer = await import('../src/diff-renderer.js');
