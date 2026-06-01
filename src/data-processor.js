@@ -213,3 +213,17 @@ export function createBaseItem(element) {
         allTags: tags,
     };
 }
+
+/**
+ * A replacer function for JSON.stringify that converts Map objects to plain objects.
+ * This ensures that nested Maps in report items are correctly serialized.
+ * @param {string} _key - The key being stringified.
+ * @param {*} value - The value being stringified.
+ * @returns {*} The value to be stringified.
+ */
+export function mapReplacer(_key, value) {
+    if (value instanceof Map) {
+        return Object.fromEntries(value);
+    }
+    return value;
+}
