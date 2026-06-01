@@ -1,3 +1,11 @@
+# [5.8.0](https://github.com/confusedbuffalo/phone-report/compare/v5.7.3...v5.8.0) (2026-06-01)
+
+
+### Features
+
+* allow AR numbers to have a final hyphen and fix more toll free formatting issues ([08f763c](https://github.com/confusedbuffalo/phone-report/commit/08f763cd61ecc842e4cc1d365a7f1ffaf7cf81d0))
+* flatten some FR divisions ([9a10ed4](https://github.com/confusedbuffalo/phone-report/commit/9a10ed41e1ab46359d581462eacc95c6dcf871a3))
+
 ## [5.7.3](https://github.com/confusedbuffalo/phone-report/compare/v5.7.2...v5.7.3) (2026-05-31)
 
 
