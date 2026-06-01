@@ -27,7 +27,7 @@ import {
     TOLL_FREE_AS_INTERNATIONAL_COUNTRIES,
     COUNTRIES_WITH_INCORRECT_HYPHENS_IN_NATIONAL,
 } from './constants.js';
-import { createBaseItem } from './data-processor.js';
+import { createBaseItem, mapReplacer } from './data-processor.js';
 
 const phoneValidationCache = new LRUCache({
     max: 10000,
@@ -1278,14 +1278,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             }
 
             // Convert Maps and nested Maps
-            fileStream.write(
-                JSON.stringify(finalItem, (key, value) => {
-                    if (value instanceof Map) {
-                        return Object.fromEntries(value);
-                    }
-                    return value;
-                })
-            );
+            fileStream.write(JSON.stringify(finalItem, mapReplacer));
             isFirstItem = false;
         }
 
@@ -1295,14 +1288,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             }
 
             // Convert Maps and nested Maps
-            fileStream.write(
-                JSON.stringify(foreignItem, (key, value) => {
-                    if (value instanceof Map) {
-                        return Object.fromEntries(value);
-                    }
-                    return value;
-                })
-            );
+            fileStream.write(JSON.stringify(foreignItem, mapReplacer));
             isFirstItem = false;
         }
     }

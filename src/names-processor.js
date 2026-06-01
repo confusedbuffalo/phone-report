@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { createBaseItem } from './data-processor.js';
+import { createBaseItem, mapReplacer } from './data-processor.js';
 
 const NAME_LOCALIZED_REGEX = /^name(?::([a-z]{2,3}(?:-[a-zA-Z]{4,})?(?:-[a-zA-Z]{4,})?))$/;
 
@@ -115,14 +115,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             }
 
             // Convert Maps and nested Maps
-            fileStream.write(
-                JSON.stringify(item, (key, value) => {
-                    if (value instanceof Map) {
-                        return Object.fromEntries(value);
-                    }
-                    return value;
-                })
-            );
+            fileStream.write(JSON.stringify(item, mapReplacer));
             isFirstItem = false;
         }
     }

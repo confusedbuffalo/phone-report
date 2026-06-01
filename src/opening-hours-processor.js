@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { createBaseItem } from './data-processor.js';
+import { createBaseItem, mapReplacer } from './data-processor.js';
 import { ALL_HOURS_TAGS } from './constants.js';
 import opening_hours from 'opening_hours';
 import { LRUCache } from 'lru-cache';
@@ -300,14 +300,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
             }
 
             // Convert Maps and nested Maps
-            fileStream.write(
-                JSON.stringify(item, (key, value) => {
-                    if (value instanceof Map) {
-                        return Object.fromEntries(value);
-                    }
-                    return value;
-                })
-            );
+            fileStream.write(JSON.stringify(item, mapReplacer));
             isFirstItem = false;
         }
     }
