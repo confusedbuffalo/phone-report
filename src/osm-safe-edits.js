@@ -27,6 +27,40 @@ const BOT_AUTH_TOKEN = process.env.BOT_AUTH_TOKEN;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
+ * Executes an OSM API call with a retry mechanism for transient 5xx errors.
+ *
+ * @param {Function} fn - A function that returns a promise (the OSM API call).
+ * @param {number} maxAttempts - Total number of attempts (default 3).
+ * @param {number} initialDelay - Initial delay in milliseconds (default 5000).
+ * @returns {Promise<any>} The result of the API call.
+ * @throws {Error} If all attempts fail or a non-retryable error occurs.
+ */
+async function withRetry(fn, maxAttempts = 3, initialDelay = 5000) {
+    let lastError;
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            lastError = error;
+            const status = error.cause;
+
+            // Only retry on 5xx errors and if we haven't exhausted attempts
+            if (status >= 500 && status < 600 && attempt < maxAttempts) {
+                const delay = initialDelay * Math.pow(2, attempt - 1);
+                console.warn(
+                    `OSM API call failed (status ${status}). Attempt ${attempt}/${maxAttempts}. Retrying in ${delay}ms...`
+                );
+                await sleep(delay);
+            } else {
+                // If it's not a 5xx error or we're out of attempts, throw
+                throw error;
+            }
+        }
+    }
+    throw lastError;
+}
+
+/**
  * A custom stream transform that takes a single object chunk and stringifies it
  * with 2-space indentation (pretty-printing).
  * @augments stream.Transform
@@ -286,7 +320,7 @@ async function processFeatures(groupedData) {
 
                 let allFeatures = [];
                 for (const chunk of featureIdChunks) {
-                    const features = await OSM.getFeatures(type, chunk);
+                    const features = await withRetry(() => OSM.getFeatures(type, chunk));
                     allFeatures.push(...features);
                 }
 
@@ -341,17 +375,19 @@ export async function uploadSafeChanges(filePath) {
         );
         const pageLink = `${HOST_URL}${relativePagePath}`;
 
-        const response = await OSM.uploadChangeset(
-            {
-                ...AUTO_CHANGESET_TAGS,
-                ...{
-                    comment:
-                        `${subdivisionData.subdivisionName} (${subdivisionData.countryName}): ` +
-                        AUTO_CHANGESET_TAGS.comment,
+        const response = await withRetry(() =>
+            OSM.uploadChangeset(
+                {
+                    ...AUTO_CHANGESET_TAGS,
+                    ...{
+                        comment:
+                            `${subdivisionData.subdivisionName} (${subdivisionData.countryName}): ` +
+                            AUTO_CHANGESET_TAGS.comment,
+                    },
+                    ...{ manual_review_needed: pageLink },
                 },
-                ...{ manual_review_needed: pageLink },
-            },
-            { create: [], modify: modifications, delete: [] }
+                { create: [], modify: modifications, delete: [] }
+            )
         );
 
         const changesetIds = Object.keys(response || {});
@@ -404,7 +440,7 @@ async function processSafeEdits() {
     // Configure with the auth token
     OSM.configure({ authHeader: `Bearer ${BOT_AUTH_TOKEN}` });
 
-    OSM.getUser('me')
+    withRetry(() => OSM.getUser('me'))
         .then(result => {
             console.debug(`Logged in as ${result.display_name}`);
         })
