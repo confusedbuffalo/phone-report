@@ -1240,10 +1240,22 @@ describe('processSingleNumber', () => {
     });
 
     test('VE: Toll free number in national format is fixed to spaces', () => {
-        const result = processSingleNumber('0800-1234567', 'BR');
+        const result = processSingleNumber('0800-1234567', 'VE');
         expect(result.isInvalid).toBe(true);
         expect(result.autoFixable).toBe(true);
-        expect(result.suggestedFix).toBe('0800 123 4567');
+        expect(result.suggestedFix).toBe('0800 1234567');
+    });
+
+    test('TR: UAN number in national format is valid', () => {
+        const result = processSingleNumber('444 1234', 'TR');
+        expect(result.isInvalid).toBe(false);
+    });
+
+    test('TR: UAN number in international format is fixed to national format', () => {
+        const result = processSingleNumber('+90 444 1234', 'TR');
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toBe('4441234');
     });
 
     // --- AR Tests ---
@@ -1293,6 +1305,57 @@ describe('processSingleNumber', () => {
             { numberStr: '0800-123-4567', suggestedFix: '0800 123 4567' },
         ])('%s', ({ numberStr, suggestedFix }) => {
             const result = processSingleNumber(numberStr, 'AR');
+            expect(result.isInvalid).toBe(true);
+            expect(result.autoFixable).toBe(true);
+            expect(result.suggestedFix).toEqual(suggestedFix);
+        });
+    });
+
+    // --- BR Tests ---
+    describe('BR: All spaces as separators is valid', () => {
+        test.each([
+            '+55 55 98473 1234',
+            '+55 55 984731234',
+            '+55 55984731234',
+            '+55 51 3221 4616',
+            '+55 51 32214616',
+            '+55 513221 4616',
+            '+55 84 9 9130 7963',
+            '+55 84 9 91307963',
+            '+55 84 991307963',
+            '+55 84991307963',
+        ])('%s', numberStr => {
+            const result = processSingleNumber(numberStr, 'BR');
+            expect(result.isInvalid).toBe(false);
+        });
+    });
+
+    describe('BR: Hyphen before the final group is valid', () => {
+        test.each([
+            '+55 55 98473-1234',
+            '+55 5598473-1234',
+            '+55 51 3221-4616',
+            '+55 513221-4616',
+            '+55 84 9 9130-7963',
+            '+55 84 99130-7963',
+            '+55 8499130-7963',
+        ])('%s', numberStr => {
+            const result = processSingleNumber(numberStr, 'BR');
+            expect(result.isInvalid).toBe(false);
+        });
+    });
+
+    describe('BR: Hyphens in other positions is invalid and fixable to all spaces', () => {
+        test.each([
+            { numberStr: '+55 55-98473-1234', suggestedFix: '+55 55 98473 1234' },
+            { numberStr: '+55 51-3221 1234', suggestedFix: '+55 51 3221 1234' },
+            { numberStr: '+55 51322112-34', suggestedFix: '+55 51 3221 1234' },
+            { numberStr: '+55-51-3221-1234', suggestedFix: '+55 51 3221 1234' },
+            { numberStr: '+55-84-9-9130-1234', suggestedFix: '+55 84 99130 1234' },
+            { numberStr: '+55-84-9-9130 1234', suggestedFix: '+55 84 99130 1234' },
+            { numberStr: '+55 84 9-9130-1234', suggestedFix: '+55 84 99130 1234' },
+        ])('%s', ({ numberStr, suggestedFix }) => {
+            const result = processSingleNumber(numberStr, 'BR');
             expect(result.isInvalid).toBe(true);
             expect(result.autoFixable).toBe(true);
             expect(result.suggestedFix).toEqual(suggestedFix);
