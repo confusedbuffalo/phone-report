@@ -40,6 +40,16 @@ const MobileStatus = {
 };
 
 /**
+ * Gets the array of non-standard cost types to be considered as used
+ * for national formatting for the given country.
+ * @param {string} countryCode
+ * @returns {string[]}
+ */
+function getNonStandardCostTypes(countryCode) {
+    return countryCode === 'TR' ? [...NON_STANDARD_COST_TYPES, 'UAN'] : NON_STANDARD_COST_TYPES;
+}
+
+/**
  * Checks if a phone number is a mobile number
  * @param {PhoneNumber} phoneNumber The libphonenumber-js PhoneNumber object.
  * @returns {string} One of the values from MobileStatus.
@@ -136,7 +146,7 @@ export function isSafeEdit(originalNumberStr, newNumberStr, countryCode) {
             // It is not possible to tell the country from the phone number in this case
             NANP_COUNTRY_CODES.includes(countryCode) &&
             parsedNew.isValid() &&
-            NON_STANDARD_COST_TYPES.includes(parsedNew.getType()) &&
+            getNonStandardCostTypes(countryCode).includes(parsedNew.getType()) &&
             parsedNew.country === 'US'
         ) {
             return true;
@@ -351,7 +361,7 @@ function getFormattedNumber(phoneNumber, tollFreeAsInternational = false) {
 
     const phoneType = phoneNumber.getType();
 
-    if (NON_STANDARD_COST_TYPES.includes(phoneType) && !tollFreeAsInternational) {
+    if (getNonStandardCostTypes(countryCode).includes(phoneType) && !tollFreeAsInternational) {
         const coreFormattedNational = phoneNumber.format('NATIONAL');
         result =
             countryCode === 'PE'
@@ -541,7 +551,7 @@ function shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr) {
     return numberStr.includes('+') || numberStr.startsWith('00');
 }
 
-const arFinalHyphenRegex = /^\+\d+-\d{4}$/;
+const arBrFinalHyphenRegex = /^\+\d+-\d{4}$/;
 
 /**
  * Validates a single phone number string using libphonenumber-js.
@@ -567,10 +577,10 @@ function numbersSemanticallyMatch(phoneNumber, coreNumber, extension, countryCod
     const normalisedParsed = extension ? `${normalisedCoreParsed}x${extension}` : normalisedCoreParsed;
     const normalisedTollFree = standardisedSuggestedFix.replace(spacingRegex, '');
 
-    if (NON_STANDARD_COST_TYPES.includes(phoneNumber.getType())) {
+    if (getNonStandardCostTypes(countryCode).includes(phoneNumber.getType())) {
         return normalisedOriginal === normalisedTollFree;
     }
-    if (countryCode === 'AR' && arFinalHyphenRegex.test(normalisedOriginal)) {
+    if (['AR', 'BR'].includes(countryCode) && arBrFinalHyphenRegex.test(normalisedOriginal)) {
         return true;
     }
     return normalisedOriginal === normalisedParsed;
@@ -696,7 +706,7 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             // It is not possible to tell the country from the phone number in this case
             const isNanpTollFree =
                 NANP_COUNTRY_CODES.includes(countryCode) &&
-                NON_STANDARD_COST_TYPES.includes(phoneNumber.getType()) &&
+                getNonStandardCostTypes(countryCode).includes(phoneNumber.getType()) &&
                 phoneNumber.country === 'US';
             foreign =
                 phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() && !isNanpTollFree

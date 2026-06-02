@@ -414,6 +414,7 @@ export const FORCE_TOLL_FREE_AS_NATIONAL_COUNTRIES = [
     'IT', // https://github.com/confusedbuffalo/phone-report/issues/217
     'NL', // https://github.com/confusedbuffalo/phone-report/issues/315
     'NZ', // https://community.openstreetmap.org/t/nz-check-and-fix-nz-phone-numbers/143168/4
+    'TR', // https://community.openstreetmap.org/t/proposed-automated-edit-of-phone-numbers-in-turkiye/144175/5
 ];
 
 export const TOLL_FREE_AS_INTERNATIONAL_COUNTRIES = [...NANP_COUNTRY_CODES];
