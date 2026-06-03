@@ -1,3 +1,11 @@
+# [5.9.0](https://github.com/confusedbuffalo/phone-report/compare/v5.8.0...v5.9.0) (2026-06-03)
+
+
+### Features
+
+* retry bot edits on 5xx errors up to 3 times ([df866f4](https://github.com/confusedbuffalo/phone-report/commit/df866f45fe1c0ab995b5dfd0ace1d10f66645d15))
+* TR 444 numbers should be national format and allow BR to have hyphen before final 4 digits ([f54dac0](https://github.com/confusedbuffalo/phone-report/commit/f54dac02beef9108747f8c8597b41c706353ee8b))
+
 # [5.8.0](https://github.com/confusedbuffalo/phone-report/compare/v5.7.3...v5.8.0) (2026-06-01)
 
 
