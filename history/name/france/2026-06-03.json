@@ -1,0 +1,358 @@
+{
+  "name": "France",
+  "slug": "france",
+  "locale": "fr-FR",
+  "timestamp": "2026-06-03T00:00:00.000Z",
+  "groupedDivisionStats": {
+    "Auvergne-Rhône-Alpes": [
+      {
+        "name": "Auvergne-Rhône-Alpes",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "auvergne-rhône-alpes",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 19359,
+        "missingNamesCount": 84,
+        "totalCount": 22007
+      }
+    ],
+    "Bourgogne – Franche-Comté": [
+      {
+        "name": "Bourgogne – Franche-Comté",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "bourgogne-franche-comté",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 2396,
+        "missingNamesCount": 12,
+        "totalCount": 3748
+      }
+    ],
+    "Bretagne": [
+      {
+        "name": "Côtes-d'Armor",
+        "divisionSlug": "bretagne",
+        "slug": "côtes-d-armor",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 3204,
+        "missingNamesCount": 98,
+        "totalCount": 42152
+      },
+      {
+        "name": "Ille-et-Vilaine",
+        "divisionSlug": "bretagne",
+        "slug": "ille-et-vilaine",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 9111,
+        "missingNamesCount": 129,
+        "totalCount": 52845
+      },
+      {
+        "name": "Finistère",
+        "divisionSlug": "bretagne",
+        "slug": "finistère",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 9999,
+        "missingNamesCount": 141,
+        "totalCount": 95703
+      },
+      {
+        "name": "Morbihan",
+        "divisionSlug": "bretagne",
+        "slug": "morbihan",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 41011,
+        "missingNamesCount": 99,
+        "totalCount": 57191
+      }
+    ],
+    "Centre-Val de Loire": [
+      {
+        "name": "Centre-Val de Loire",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "centre-val-de-loire",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 1389,
+        "missingNamesCount": 7,
+        "totalCount": 3189
+      }
+    ],
+    "Corse": [
+      {
+        "name": "Corse",
+        "divisionSlug": "corse",
+        "slug": "corse",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 2250,
+        "missingNamesCount": 74,
+        "totalCount": 5708
+      }
+    ],
+    "Grand Est": [
+      {
+        "name": "Grand Est",
+        "divisionSlug": "grand-est",
+        "slug": "grand-est",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 14882,
+        "missingNamesCount": 208,
+        "totalCount": 18773
+      }
+    ],
+    "Hauts-de-France": [
+      {
+        "name": "Hauts-de-France",
+        "divisionSlug": "hauts-de-france",
+        "slug": "hauts-de-france",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 1669,
+        "missingNamesCount": 109,
+        "totalCount": 2453
+      }
+    ],
+    "Ile-de-France": [
+      {
+        "name": "Ile-de-France",
+        "divisionSlug": "ile-de-france",
+        "slug": "ile-de-france",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 11104,
+        "missingNamesCount": 87,
+        "totalCount": 15471
+      }
+    ],
+    "Normandie": [
+      {
+        "name": "Normandie",
+        "divisionSlug": "normandie",
+        "slug": "normandie",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 2952,
+        "missingNamesCount": 668,
+        "totalCount": 4228
+      }
+    ],
+    "Nouvelle-Aquitaine": [
+      {
+        "name": "Nouvelle-Aquitaine",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "nouvelle-aquitaine",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 35914,
+        "missingNamesCount": 312,
+        "totalCount": 48753
+      }
+    ],
+    "Occitania": [
+      {
+        "name": "Occitania",
+        "divisionSlug": "occitania",
+        "slug": "occitania",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 29333,
+        "missingNamesCount": 206,
+        "totalCount": 36971
+      }
+    ],
+    "Pays de la Loire": [
+      {
+        "name": "Loire-Atlantique: Nantes",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique-nantes",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 35695,
+        "missingNamesCount": 37,
+        "totalCount": 37572
+      },
+      {
+        "name": "Loire-Atlantique: Saint-Nazaire",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique-saint-nazaire",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 16770,
+        "missingNamesCount": 18,
+        "totalCount": 17194
+      },
+      {
+        "name": "Loire-Atlantique: Châteaubriant-Ancenis",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique-châteaubriant-ancenis",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 10972,
+        "missingNamesCount": 5,
+        "totalCount": 11411
+      },
+      {
+        "name": "Maine-et-Loire",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "maine-et-loire",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 863,
+        "missingNamesCount": 0,
+        "totalCount": 1001
+      },
+      {
+        "name": "Mayenne",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "mayenne",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 184,
+        "missingNamesCount": 0,
+        "totalCount": 670
+      },
+      {
+        "name": "Vendée",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "vendée",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 968,
+        "missingNamesCount": 5,
+        "totalCount": 1096
+      },
+      {
+        "name": "Sarthe",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "sarthe",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 628,
+        "missingNamesCount": 2,
+        "totalCount": 1086
+      }
+    ],
+    "Provence-Alpes-Côte d'Azur": [
+      {
+        "name": "Provence-Alpes-Côte d'Azur",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "provence-alpes-côte-d-azur",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 35833,
+        "missingNamesCount": 279,
+        "totalCount": 38307
+      }
+    ],
+    "Guadeloupe": [
+      {
+        "name": "Guadeloupe",
+        "divisionSlug": "guadeloupe",
+        "slug": "guadeloupe",
+        "lastUpdated": "2026-06-02T22:19:39.000Z",
+        "invalidCount": 1424,
+        "missingNamesCount": 246,
+        "totalCount": 1622
+      }
+    ],
+    "Guyane": [
+      {
+        "name": "Guyane",
+        "divisionSlug": "guyane",
+        "slug": "guyane",
+        "lastUpdated": "2026-06-02T22:19:35.000Z",
+        "invalidCount": 315,
+        "missingNamesCount": 9,
+        "totalCount": 739
+      }
+    ],
+    "La Réunion": [
+      {
+        "name": "La Réunion",
+        "divisionSlug": "la-réunion",
+        "slug": "la-réunion",
+        "lastUpdated": "2026-06-02T23:49:35.000Z",
+        "invalidCount": 244,
+        "missingNamesCount": 9,
+        "totalCount": 446
+      }
+    ],
+    "Martinique": [
+      {
+        "name": "Martinique",
+        "divisionSlug": "martinique",
+        "slug": "martinique",
+        "lastUpdated": "2026-06-02T22:19:41.000Z",
+        "invalidCount": 328,
+        "missingNamesCount": 131,
+        "totalCount": 374
+      }
+    ],
+    "Mayotte": [
+      {
+        "name": "Mayotte",
+        "divisionSlug": "mayotte",
+        "slug": "mayotte",
+        "lastUpdated": "2026-06-02T23:49:55.000Z",
+        "invalidCount": 147,
+        "missingNamesCount": 4,
+        "totalCount": 292
+      }
+    ],
+    "Nouvelle-Calédonie": [
+      {
+        "name": "Nouvelle-Calédonie",
+        "divisionSlug": "nouvelle-calédonie",
+        "slug": "nouvelle-calédonie",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 222,
+        "missingNamesCount": 21,
+        "totalCount": 336
+      }
+    ],
+    "Polynésie française": [
+      {
+        "name": "Polynésie française",
+        "divisionSlug": "polynésie-française",
+        "slug": "polynésie-française",
+        "lastUpdated": "2026-06-03T00:00:00.000Z",
+        "invalidCount": 404,
+        "missingNamesCount": 38,
+        "totalCount": 1036
+      }
+    ],
+    "Saint-Barthélemy": [
+      {
+        "name": "Saint-Barthélemy",
+        "divisionSlug": "saint-barthélemy",
+        "slug": "saint-barthélemy",
+        "lastUpdated": "2026-06-03T05:14:51.000Z",
+        "invalidCount": 92,
+        "missingNamesCount": 1,
+        "totalCount": 99
+      }
+    ],
+    "Saint-Martin": [
+      {
+        "name": "Saint-Martin",
+        "divisionSlug": "saint-martin",
+        "slug": "saint-martin",
+        "lastUpdated": "2026-06-03T05:15:33.000Z",
+        "invalidCount": 95,
+        "missingNamesCount": 52,
+        "totalCount": 216
+      }
+    ],
+    "Saint-Pierre-et-Miquelon": [
+      {
+        "name": "Saint-Pierre-et-Miquelon",
+        "divisionSlug": "saint-pierre-et-miquelon",
+        "slug": "saint-pierre-et-miquelon",
+        "lastUpdated": "2026-06-02T08:46:04.000Z",
+        "invalidCount": 470,
+        "missingNamesCount": 0,
+        "totalCount": 487
+      }
+    ],
+    "Wallis-et-Futuna": [
+      {
+        "name": "Wallis-et-Futuna",
+        "divisionSlug": "wallis-et-futuna",
+        "slug": "wallis-et-futuna",
+        "lastUpdated": "2026-06-02T23:18:15.000Z",
+        "invalidCount": 17,
+        "missingNamesCount": 1,
+        "totalCount": 25
+      }
+    ]
+  },
+  "invalidCount": 290244,
+  "missingNamesCount": 3092,
+  "totalCount": 523201,
+  "autoFixableCount": 0,
+  "safeEditCount": 0
+}
