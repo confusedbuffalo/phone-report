@@ -1,0 +1,244 @@
+{
+  "name": "Italia",
+  "slug": "italia",
+  "locale": "it-IT",
+  "timestamp": "2026-06-04T00:00:00.000Z",
+  "groupedDivisionStats": {
+    "Centro": [
+      {
+        "name": "Lazio",
+        "divisionSlug": "centro",
+        "slug": "lazio",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 203,
+        "autoFixableCount": 118,
+        "foreignCount": 21,
+        "safeEditCount": 111,
+        "totalCount": 15025
+      },
+      {
+        "name": "Toscana",
+        "divisionSlug": "centro",
+        "slug": "toscana",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 274,
+        "autoFixableCount": 235,
+        "foreignCount": 17,
+        "safeEditCount": 230,
+        "totalCount": 12924
+      },
+      {
+        "name": "Umbria",
+        "divisionSlug": "centro",
+        "slug": "umbria",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 70,
+        "autoFixableCount": 56,
+        "foreignCount": 7,
+        "safeEditCount": 39,
+        "totalCount": 2588
+      },
+      {
+        "name": "Marche",
+        "divisionSlug": "centro",
+        "slug": "marche",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 37,
+        "autoFixableCount": 37,
+        "foreignCount": 5,
+        "safeEditCount": 34,
+        "totalCount": 6471
+      }
+    ],
+    "Isole": [
+      {
+        "name": "Sicilia",
+        "divisionSlug": "isole",
+        "slug": "sicilia",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 109,
+        "autoFixableCount": 88,
+        "foreignCount": 7,
+        "safeEditCount": 85,
+        "totalCount": 8957
+      },
+      {
+        "name": "Sardigna/Sardegna",
+        "divisionSlug": "isole",
+        "slug": "sardigna-sardegna",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 80,
+        "autoFixableCount": 75,
+        "foreignCount": 6,
+        "safeEditCount": 73,
+        "totalCount": 4249
+      }
+    ],
+    "Nord-Est": [
+      {
+        "name": "Emilia-Romagna",
+        "divisionSlug": "nord-est",
+        "slug": "emilia-romagna",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 137,
+        "autoFixableCount": 92,
+        "foreignCount": 6,
+        "safeEditCount": 83,
+        "totalCount": 11452
+      },
+      {
+        "name": "Veneto",
+        "divisionSlug": "nord-est",
+        "slug": "veneto",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 172,
+        "autoFixableCount": 103,
+        "foreignCount": 18,
+        "safeEditCount": 101,
+        "totalCount": 15795
+      },
+      {
+        "name": "Trentino-Alto Adige/Südtirol",
+        "divisionSlug": "nord-est",
+        "slug": "trentino-alto-adige-südtirol",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 94,
+        "autoFixableCount": 56,
+        "foreignCount": 18,
+        "safeEditCount": 53,
+        "totalCount": 15428
+      },
+      {
+        "name": "Friuli-Venezia Giulia",
+        "divisionSlug": "nord-est",
+        "slug": "friuli-venezia-giulia",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 61,
+        "autoFixableCount": 30,
+        "foreignCount": 12,
+        "safeEditCount": 28,
+        "totalCount": 7210
+      }
+    ],
+    "Nord-Ovest": [
+      {
+        "name": "Piemonte",
+        "divisionSlug": "nord-ovest",
+        "slug": "piemonte",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 124,
+        "autoFixableCount": 75,
+        "foreignCount": 14,
+        "safeEditCount": 65,
+        "totalCount": 16374
+      },
+      {
+        "name": "Lombardia",
+        "divisionSlug": "nord-ovest",
+        "slug": "lombardia",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 352,
+        "autoFixableCount": 167,
+        "foreignCount": 19,
+        "safeEditCount": 136,
+        "totalCount": 37172
+      },
+      {
+        "name": "Valle d'Aosta / Vallée d'Aoste",
+        "divisionSlug": "nord-ovest",
+        "slug": "valle-d-aosta-vallée-d-aoste",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 14,
+        "autoFixableCount": 2,
+        "foreignCount": 1,
+        "safeEditCount": 2,
+        "totalCount": 857
+      },
+      {
+        "name": "Liguria",
+        "divisionSlug": "nord-ovest",
+        "slug": "liguria",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 29,
+        "autoFixableCount": 14,
+        "foreignCount": 2,
+        "safeEditCount": 13,
+        "totalCount": 6437
+      }
+    ],
+    "Sud": [
+      {
+        "name": "Puglia",
+        "divisionSlug": "sud",
+        "slug": "puglia",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 163,
+        "autoFixableCount": 116,
+        "foreignCount": 5,
+        "safeEditCount": 111,
+        "totalCount": 7754
+      },
+      {
+        "name": "Basilicata",
+        "divisionSlug": "sud",
+        "slug": "basilicata",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 16,
+        "autoFixableCount": 12,
+        "foreignCount": 1,
+        "safeEditCount": 10,
+        "totalCount": 1361
+      },
+      {
+        "name": "Campania",
+        "divisionSlug": "sud",
+        "slug": "campania",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 159,
+        "autoFixableCount": 124,
+        "foreignCount": 6,
+        "safeEditCount": 94,
+        "totalCount": 6737
+      },
+      {
+        "name": "Molise",
+        "divisionSlug": "sud",
+        "slug": "molise",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 22,
+        "autoFixableCount": 21,
+        "foreignCount": 0,
+        "safeEditCount": 21,
+        "totalCount": 748
+      },
+      {
+        "name": "Abruzzo",
+        "divisionSlug": "sud",
+        "slug": "abruzzo",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 26,
+        "autoFixableCount": 17,
+        "foreignCount": 4,
+        "safeEditCount": 11,
+        "totalCount": 8381
+      },
+      {
+        "name": "Calabria",
+        "divisionSlug": "sud",
+        "slug": "calabria",
+        "lastUpdated": "2026-06-04T00:00:00.000Z",
+        "invalidCount": 65,
+        "autoFixableCount": 56,
+        "foreignCount": 6,
+        "safeEditCount": 46,
+        "totalCount": 2029
+      }
+    ]
+  },
+  "invalidCount": 2207,
+  "autoFixableCount": 1494,
+  "foreignCount": 175,
+  "safeEditCount": 1346,
+  "totalCount": 187949,
+  "botEnabled": false
+}
