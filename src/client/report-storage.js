@@ -7,17 +7,13 @@ import {
     UPLOADED_ITEMS_KEY,
 } from './report-state.js';
 import {
-    enableRedo,
-    disableRedo,
     renderNumbers,
     closeEditsModal,
     setUpSaveBtn,
     setUpUndoRedoBtns,
     transitionRemoveItem,
     transitionInsertItem,
-    enableUndo,
-    enableSave,
-    disableUndo,
+    setButtonState,
 } from './report-ui-controller.js';
 import { subdivisionName, storageKey } from './config.js';
 
@@ -310,12 +306,12 @@ function addToUndo(osmType, osmId, language) {
     undoData.stack.push([osmType, osmId, language]);
     undoData.position = undoData.stack.length;
     if (undoData.stack.length > 0 && undoBtn.disabled) {
-        enableUndo();
+        setButtonState('undo-btn', true);
     }
     if (OSM.isLoggedIn()) {
-        enableSave();
+        setButtonState('save-btn', true);
     }
-    disableRedo();
+    setButtonState('redo-btn', false);
     persistUndoState();
 }
 
@@ -331,11 +327,11 @@ export function undoChange() {
     }
     undoData.position -= 1;
     if (undoData.position === 0) {
-        disableUndo();
+        setButtonState('undo-btn', false);
     }
     const redoBtn = document.getElementById('redo-btn');
     if (redoBtn.disabled) {
-        enableRedo();
+        setButtonState('redo-btn', true);
     }
 
     const edits = getEdits();
