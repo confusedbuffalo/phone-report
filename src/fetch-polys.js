@@ -3,6 +3,7 @@ import path from 'path';
 import axios from 'axios';
 import { fileURLToPath } from 'url';
 import { COUNTRIES, POLY_DIR } from './constants.js';
+import { withRetry } from './osm-download.js';
 
 const BASE_URL = 'https://polygons.openstreetmap.fr/get_poly.py?id=';
 
@@ -71,7 +72,8 @@ async function fetchPoly(relationId) {
 
     try {
         console.log(`Fetching relation ${relationId}...`);
-        const response = await axios.get(`${BASE_URL}${relationId}&params=0`);
+        const url = `${BASE_URL}${relationId}&params=0`;
+        const response = await withRetry(() => axios.get(url), `Fetch poly for ${relationId}`);
 
         if (response.data.includes('None') || response.status !== 200) {
             console.error(`⚠️ Failed to get valid poly for ${relationId}`);

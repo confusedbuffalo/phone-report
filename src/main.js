@@ -11,7 +11,7 @@ import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from 'url';
 import { COUNTRIES, OSM_DIR, HISTORY_DIR, IS_TEST_MODE, REPORT_TYPES, BUILD_DIR, COUNT_TYPES } from './constants.js';
-import { splitPbf, getOsmTimestamp, downloadPbf, filterPbf } from './osm-download.js';
+import { splitPbf, getOsmTimestamp, downloadPbf, filterPbf, withRetry } from './osm-download.js';
 import { safeName } from './data-processor.js';
 import { generateCountryIndexHtml } from './html-country.js';
 import { generateMainIndexHtml } from './html-index.js';
@@ -60,7 +60,7 @@ async function downloadAndParseOfficialLanguages() {
     const url =
         'https://raw.githubusercontent.com/streetcomplete/countrymetadata/refs/heads/master/data/officialLanguages.yml';
     try {
-        const response = await axios.get(url);
+        const response = await withRetry(() => axios.get(url), `Fetch official languages from ${url}`);
         const rawYaml = response.data;
         const dataObject = yaml.load(rawYaml);
 
@@ -420,19 +420,25 @@ async function processCountry(countryData) {
     if (countryData.pbfUrl) {
         const tmpPbfFilePath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
 
-        await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
+        try {
+            await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
 
-        for (const reportType of REPORT_TYPES) {
-            const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
-            await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
-            await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
-            fs.rmSync(tmpReportPbfFilePath, { force: true });
+            for (const reportType of REPORT_TYPES) {
+                const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
+                await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
+                await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
+                fs.rmSync(tmpReportPbfFilePath, { force: true });
+            }
+
+            fs.rmSync(tmpPbfFilePath, { force: true });
+
+            const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
+            countryData.timestamp = dataTimestamp;
+        } catch (error) {
+            console.error(`Skipping country ${countryName} due to download failure: ${error.message}`);
+            fs.rmSync(tmpPbfFilePath, { force: true });
+            return null;
         }
-
-        fs.rmSync(tmpPbfFilePath, { force: true });
-
-        const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
-        countryData.timestamp = dataTimestamp;
     }
 
     for (const groupDivisions of Object.values(divisions)) {
@@ -441,24 +447,31 @@ async function processCountry(countryData) {
             if (pbfUrl) {
                 const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
 
-                await downloadPbf(pbfUrl, subPbfFilePath);
+                try {
+                    await downloadPbf(pbfUrl, subPbfFilePath);
 
-                for (const reportType of REPORT_TYPES) {
-                    const tmpReportPbfFilePath = path.join(
-                        process.cwd(),
-                        `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
-                    );
-                    await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
-                    await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), null, subData);
-                    fs.rmSync(tmpReportPbfFilePath, { force: true });
-                }
+                    for (const reportType of REPORT_TYPES) {
+                        const tmpReportPbfFilePath = path.join(
+                            process.cwd(),
+                            `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
+                        );
+                        await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
+                        await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), null, subData);
+                        fs.rmSync(tmpReportPbfFilePath, { force: true });
+                    }
 
-                fs.rmSync(subPbfFilePath, { force: true });
+                    fs.rmSync(subPbfFilePath, { force: true });
 
-                const dataTimestamp = await getOsmTimestamp(pbfUrl);
-                subData.timestamp = dataTimestamp;
-                if (!countryData.timestamp) {
-                    countryData.timestamp = dataTimestamp;
+                    const dataTimestamp = await getOsmTimestamp(pbfUrl);
+                    subData.timestamp = dataTimestamp;
+                    if (!countryData.timestamp) {
+                        countryData.timestamp = dataTimestamp;
+                    }
+                } catch (error) {
+                    const subdivisionName = typeof subData === 'object' ? subData.name : 'unknown';
+                    console.error(`Skipping subdivision ${subdivisionName} due to download failure: ${error.message}`);
+                    fs.rmSync(subPbfFilePath, { force: true });
+                    // No return here, just skip this subdivision
                 }
 
                 if (testMode) {
@@ -631,6 +644,10 @@ async function main() {
             Object.entries(officialLanguages).filter(([key, _value]) => key.startsWith(countryData.countryCode))
         );
         const countryStats = await processCountry(countryData);
+        if (!countryStats) {
+            continue;
+        }
+
         for (const reportType of REPORT_TYPES) {
             allCountryStats[reportType].push(countryStats[reportType]);
         }
