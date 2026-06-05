@@ -48,6 +48,9 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
         const tags = element.properties;
 
+        // https://github.com/confusedbuffalo/phone-report/issues/396
+        if (tags['boundary'] === 'administrative') continue;
+
         const nameTags = new Map();
         const primaryName = tags['name'];
         let hasPrimaryNameMatch = false;

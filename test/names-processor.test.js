@@ -343,6 +343,21 @@ describe('validateNames', () => {
         expect(result.missingNamesCount).toBe(0);
     });
 
+    test('Skip boundary=administrative', async () => {
+        const elements = [
+            createGeoJson(1001, {
+                name: 'Österreich - Slovensko',
+                'name:cd': 'Rakousko - Slovensko',
+                'name:de': 'Österreich - Slowakei',
+                boundary: 'administrative',
+            }),
+        ];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        expect(result.totalCount).toBe(0);
+    });
+
     describe('undelimited multilingual names', () => {
         test.each([
             // DZ
