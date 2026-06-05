@@ -9,28 +9,65 @@ import { getSubdivisionIds } from './fetch-polys.js';
 const execPromise = promisify(exec);
 
 /**
+ * Executes a function with a single retry for temporary network errors (timeout or 5xx).
+ * @param {Function} fn - The async function to execute.
+ * @param {string} label - A label for logging.
+ * @returns {Promise<any>}
+ */
+export async function withRetry(fn, label) {
+    const maxAttempts = 2;
+    const delay = 2000;
+    let lastError;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            lastError = error;
+            const isTimeout =
+                error.code === 'ETIMEDOUT' ||
+                error.code === 'ECONNABORTED' ||
+                error.message?.toLowerCase().includes('timeout');
+            const status = error.response?.status || error.status;
+            const is5xx = status >= 500 && status < 600;
+
+            if ((isTimeout || is5xx) && attempt < maxAttempts) {
+                console.warn(`${label} failed (${error.code || status}). Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                throw error;
+            }
+        }
+    }
+    throw lastError;
+}
+
+/**
  * Downloads a specified OSM PBF file and saves it to the given path.
  * @param {string} url - The URL of the .osm.pbf file.
  * @param {string} outputPath - Where to save the file.
  */
 export async function downloadPbf(url, outputPath) {
+    console.log(`Downloading: ${url}`);
     try {
-        console.log(`Downloading: ${url}`);
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream',
-        });
+        await withRetry(async () => {
+            const response = await axios({
+                url,
+                method: 'GET',
+                responseType: 'stream',
+            });
 
-        const writer = fs.createWriteStream(outputPath);
-        response.data.pipe(writer);
+            const writer = fs.createWriteStream(outputPath);
+            response.data.pipe(writer);
 
-        await new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
-            writer.on('error', reject);
-        });
+            await new Promise((resolve, reject) => {
+                writer.on('finish', resolve);
+                writer.on('error', reject);
+            });
+        }, `Download ${url}`);
     } catch (error) {
         console.error('Error download OSM file:', error.message);
+        throw error;
     }
 }
 
@@ -109,44 +146,53 @@ export async function splitPbf(filteredFilePath, outputDir, country = null, divi
  */
 export async function getOsmTimestamp(pbfUrl) {
     try {
-        // Handle Geofabrik and geo2day via HTTP Headers
-        if (pbfUrl.includes('geofabrik.de') || pbfUrl.includes('geo2day.com')) {
-            const response = await fetch(pbfUrl, { method: 'HEAD' });
-            const lastModified = response.headers.get('last-modified');
+        return await withRetry(async () => {
+            // Handle Geofabrik and geo2day via HTTP Headers
+            if (pbfUrl.includes('geofabrik.de') || pbfUrl.includes('geo2day.com')) {
+                const response = await fetch(pbfUrl, { method: 'HEAD' });
+                if (!response.ok && response.status >= 500) {
+                    throw { status: response.status, message: `HTTP error! status: ${response.status}` };
+                }
+                const lastModified = response.headers.get('last-modified');
 
-            if (lastModified) {
-                // Convert "Mon, 13 Apr 2026 00:00:00 GMT" to "2026-04-13T00:00:00.000Z"
-                return new Date(lastModified).toISOString();
+                if (lastModified) {
+                    // Convert "Mon, 13 Apr 2026 00:00:00 GMT" to "2026-04-13T00:00:00.000Z"
+                    return new Date(lastModified).toISOString();
+                }
+                return null;
             }
-            return null;
-        }
 
-        // Handle Sidecar Metadata Files
-        let metadataUrl;
-        let isOsmFr = false;
+            // Handle Sidecar Metadata Files
+            let metadataUrl;
+            let isOsmFr = false;
 
-        if (pbfUrl.includes('bbbike.org')) {
-            metadataUrl = pbfUrl + '.timestamp';
-        } else if (pbfUrl.includes('openstreetmap.fr')) {
-            metadataUrl = pbfUrl.replace('-latest.osm.pbf', '.state.txt').replace('.osm.pbf', '.state.txt');
-            isOsmFr = true;
-        } else {
-            throw new Error('Unsupported provider URL');
-        }
+            if (pbfUrl.includes('bbbike.org')) {
+                metadataUrl = pbfUrl + '.timestamp';
+            } else if (pbfUrl.includes('openstreetmap.fr')) {
+                metadataUrl = pbfUrl.replace('-latest.osm.pbf', '.state.txt').replace('.osm.pbf', '.state.txt');
+                isOsmFr = true;
+            } else {
+                throw new Error('Unsupported provider URL');
+            }
 
-        const response = await fetch(metadataUrl);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const response = await fetch(metadataUrl);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
 
-        const text = (await response.text()).trim();
+            const text = (await response.text()).trim();
 
-        if (isOsmFr) {
-            const match = text.match(/timestamp=(.+)/);
-            // Clean backslashes and standardise to ISO
-            const raw = match ? match[1].replace(/\\/g, '') : null;
-            return raw ? new Date(raw).toISOString() : null;
-        }
+            if (isOsmFr) {
+                const match = text.match(/timestamp=(.+)/);
+                // Clean backslashes and standardise to ISO
+                const raw = match ? match[1].replace(/\\/g, '') : null;
+                return raw ? new Date(raw).toISOString() : null;
+            }
 
-        return new Date(text).toISOString();
+            return new Date(text).toISOString();
+        }, `Fetch timestamp for ${pbfUrl}`);
     } catch (error) {
         console.error('Error fetching timestamp:', error);
         return null;
