@@ -1,3 +1,15 @@
+# [5.10.0](https://github.com/confusedbuffalo/phone-report/compare/v5.9.0...v5.10.0) (2026-06-06)
+
+
+### Bug Fixes
+
+* skip admin boundaries for names ([24ea151](https://github.com/confusedbuffalo/phone-report/commit/24ea151bccda4920027469094909cf6ec3ef9eb1))
+
+
+### Features
+
+* add retry for temporary downloading errors ([c6e23b9](https://github.com/confusedbuffalo/phone-report/commit/c6e23b9191d21031bdc77e23a9ce9011bbd37db0))
+
 # [5.9.0](https://github.com/confusedbuffalo/phone-report/compare/v5.8.0...v5.9.0) (2026-06-03)
 
 
