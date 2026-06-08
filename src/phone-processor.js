@@ -789,6 +789,8 @@ function expandSlashEnding(tagValue, countryCode, osmTags, tag) {
     return null;
 }
 
+const nanpStandardFormatRegex = /^\+\(?\d\d\d\)?[ -]\d\d\d[ -]\d\d\d\d$/;
+
 /**
  * Validates a whole phone number tag using libphonenumber-js.
  * @param {string} tagValue - The phone number value string to validate (possibly containing multiple numbers).
@@ -846,15 +848,29 @@ export function validateSingleTag(tagValue, countryCode, osmTags, tag) {
     numbers.forEach(numberStr => {
         tagValidationResult.numberOfValues++;
 
-        let validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+        let validationResult;
 
-        // Some editors prompt an initial plus, but some mappers then just put the phone number in using national format, which is invalid
+        if (NANP_COUNTRY_CODES.includes(countryCode) && nanpStandardFormatRegex.test(numberStr)) {
+            // see https://github.com/confusedbuffalo/phone-report/issues/295
+            const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
+            if (
+                noPlusValidationResult.phoneNumber &&
+                noPlusValidationResult.autoFixable &&
+                NANP_COUNTRY_CODES.includes(noPlusValidationResult.phoneNumber.country)
+            ) {
+                validationResult = noPlusValidationResult;
+            }
+        } else {
+            validationResult = processSingleNumber(numberStr, countryCode, osmTags, tag);
+        }
+
         if (
             validationResult.isInvalid &&
             !validationResult.autoFixable &&
             numberStr.startsWith('+') &&
             CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS.includes(countryCode)
         ) {
+            // Some editors prompt an initial plus, but some mappers then just put the phone number in using national format, which is invalid
             const noPlusValidationResult = processSingleNumber(numberStr.slice(1), countryCode, osmTags, tag);
             const countryCodePrefix = noPlusValidationResult.phoneNumber?.format('INTERNATIONAL').split(' ')[0];
             if (
