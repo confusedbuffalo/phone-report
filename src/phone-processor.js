@@ -554,7 +554,7 @@ function shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr) {
 const arBrFinalHyphenRegex = /^\+\d+-\d{4}$/;
 
 /**
- * Validates a single phone number string using libphonenumber-js.
+ * Determines if two phone numbers semantically match one another, regardless of spacing
  * @param {PhoneNumber} phoneNumber - The parsed PhoneNumber object.
  * @param {string} coreNumber - The core number, without extension.
  * @param {string|null} extension - The extension of the number.

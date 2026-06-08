@@ -1863,7 +1863,7 @@ describe('validateNumbers', () => {
     });
 
     test('should identify a single fixable invalid number (no country code) and provide suggested fix', async () => {
-        const elements = [createGeoJson(2002, { 'contact:phone': FIXABLE_LANDLINE_INPUT, name: 'Fixable Business' })];
+        const elements = [createGeoJson(2002, { 'contact:phone': FIXABLE_LANDLINE_INPUT })];
 
         const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
 
