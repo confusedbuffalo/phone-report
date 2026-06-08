@@ -1676,6 +1676,23 @@ describe('validateSingleTag', () => {
         expect(result.isAutoFixable).toBe(false);
     });
 
+    describe('US: incorrect leading plus in front of number that would be valid in a different coutry is fixable to +1 if it looks like standard NANP format', () => {
+        test.each(['+(516) 733-8400', '+516-733-8400', '+516 733 8400', '+516 733-8400'])('%s', numberStr => {
+            const result = validateSingleTag(numberStr, 'US');
+            expect(result.isInvalid).toBe(true);
+            expect(result.isAutoFixable).toBe(true);
+            expect(result.suggestedNumbersList).toEqual(['+1-516-733-8400']);
+        });
+    });
+
+    test('US: incorrect leading plus for number actually in different country in NANP is fixable if it looks like NANP format', () => {
+        // This is a number for CA
+        const result = validateSingleTag('+647-937-1234', 'US');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(true);
+        expect(result.suggestedNumbersList).toEqual(['+1-647-937-1234']);
+    });
+
     test('US: number starting 1+ is fixable', () => {
         const result = validateSingleTag('1+951 736 4567', 'US');
         expect(result.isInvalid).toBe(true);
@@ -3168,6 +3185,12 @@ describe('isSafeEdit', () => {
         expect(isSafeEdit(originalNumberDoubleSpace, newNumber, countryCode)).toBe(true);
 
         expect(isSafeEdit('+1-213-373--1234', '+1-213-373-1234', 'US')).toBe(true);
+    });
+
+    describe('US: incorrect leading plus is not a safe edit for numbers that would be valid in another country', () => {
+        test.each(['+(516) 733-8400', '+516-733-8400', '+516 733 8400', '+516 733-8400'])('%s', numberStr => {
+            expect(isSafeEdit(numberStr, '+1-516-733-8400', 'US')).toBe(false);
+        });
     });
 });
 
