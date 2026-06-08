@@ -16,9 +16,16 @@ const translationFiles = fs
     }));
 
 describe('Countries file tests', () => {
+    const getSortableName = countryName => {
+        const overrides = {
+            България: 'Bulgaria',
+        };
+        return overrides[countryName] || countryName;
+    };
+
     test('Countries should be arranged in alphabetical order', () => {
         const keys = Object.keys(COUNTRIES);
-        const sortedKeys = [...keys].sort((a, b) => a.localeCompare(b));
+        const sortedKeys = [...keys].sort((a, b) => getSortableName(a).localeCompare(getSortableName(b)));
         expect(keys).toEqual(sortedKeys);
     });
 
