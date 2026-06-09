@@ -968,7 +968,7 @@
     "Portugal": {
         "countryCode": "PT",
         "locale": "pt-PT",
-        "safeAutoFixBotEnabled": false,
+        "safeAutoFixBotEnabled": true,
         "pbfUrl": "https://download.openstreetmap.fr/extracts/europe/portugal-latest.osm.pbf",
         "divisions": {
             "Aveiro": 3920249,
@@ -1137,7 +1137,7 @@
     "Türkiye": {
         "countryCode": "TR",
         "locale": "en",
-        "safeAutoFixBotEnabled": false,
+        "safeAutoFixBotEnabled": true,
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/turkey.osm.pbf",
         "divisions": {
             "Ege Bölgesi": 2094170,
