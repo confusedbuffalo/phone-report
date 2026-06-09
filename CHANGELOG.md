@@ -1,3 +1,15 @@
+# [5.11.0](https://github.com/confusedbuffalo/phone-report/compare/v5.10.0...v5.11.0) (2026-06-09)
+
+
+### Bug Fixes
+
+* offer better fix for NANP numbers if formatted in a standard way even when technically valid in another country ([dc76a31](https://github.com/confusedbuffalo/phone-report/commit/dc76a316d9ac8471837fb0ba7bed7fdc14726171)), closes [#295](https://github.com/confusedbuffalo/phone-report/issues/295)
+
+
+### Features
+
+* add BG ([e05d517](https://github.com/confusedbuffalo/phone-report/commit/e05d517499920e608cfd79d4b8be1b95e2ff4728)), closes [#399](https://github.com/confusedbuffalo/phone-report/issues/399)
+
 # [5.10.0](https://github.com/confusedbuffalo/phone-report/compare/v5.9.0...v5.10.0) (2026-06-06)
 
 
