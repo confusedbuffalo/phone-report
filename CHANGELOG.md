@@ -1,3 +1,10 @@
+# [5.12.0](https://github.com/confusedbuffalo/phone-report/compare/v5.11.0...v5.12.0) (2026-06-10)
+
+
+### Features
+
+* enable bot in PT and TR ([252ac9c](https://github.com/confusedbuffalo/phone-report/commit/252ac9cdc12ef3648bd2b7abbedd92ddef84953d))
+
 # [5.11.0](https://github.com/confusedbuffalo/phone-report/compare/v5.10.0...v5.11.0) (2026-06-09)
 
 
