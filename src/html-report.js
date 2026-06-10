@@ -32,8 +32,8 @@ import { translate } from './i18n.js';
 import { getPhoneDiffHtml, getDiffTagsHtml, getHoursDiffHtml } from './diff-renderer.js';
 import { createStatsBox, escapeHTML, getFooterData, getIconAttributionHtml } from './html-utils.js';
 import { IconManager } from './icon-manager.js';
-import { phoneTagToUse } from './phone-processor.js';
 import { validatePhoneNumberLength } from 'libphonenumber-js/max';
+import { phoneTagToUse } from './phone-utils.js';
 
 /**
  * Creates the JOSM fix URL for a single invalid number item or null if it is not fixable.
