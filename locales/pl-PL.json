@@ -108,11 +108,12 @@
     "invalidHours": "Nieprawidłowe godziny",
     "fixableHoursHeader": "Możliwe do poprawienia godziny otwarcia",
     "fixableHoursDescription": "Te godziny otwarcia są w zasadzie prawidłowe, ale w jakiś sposób odbiegają od standardowego formatu. Sugerowana poprawka to sposób, w jaki godziny są interpretowane przez standardowy procesor. Nie wszystkie 'automatyczne' poprawki są koniecznie poprawne, więc proszę nie klikać na oślep we wszystkie linki do poprawek bez uprzedniego zweryfikowania zmiany.",
-    "invalidHoursDescription": "Wszystkie te godziny otwarcia są nieprawidłowe i nie można ich zrozumieć. Strona internetowa może zostać użyta do sprawdzenia poprawnych godzin lub konieczne może być przeprowadzenie wizji lokalnej.",
+    "invalidHoursDescription": "Te godziny otwarcia są w jakiś sposób nieprawidłowe. Niektóre są niezrozumiałe, podczas gdy inne mogą zostać źle zrozumiane i zawierają ostrzeżenie. W celu sprawdzenia poprawnych godzin można skorzystać ze strony internetowej lub konieczne może być przeprowadzenie rozeznania.",
     "hasInvalidHours": "{name} ma nieprawidłowe godziny otwarcia, jakie powinny być?",
     "invalidHoursOutOf": "{invalid} nieprawidłowych godzin otwarcia ({fixable} możliwych do poprawienia) z {total}",
     "evaluationTool": "Narzędzie do ewaluacji",
     "overlappingRules": "Nakładające się reguły",
     "noInvalidHours": "Nie znaleziono nieprawidłowych godzin otwarcia w tej podjednostce.",
-    "ambiguousHours": "Dwuznaczne godziny jednocyfrowe"
+    "ambiguousHours": "Dwuznaczne godziny jednocyfrowe",
+    "noDays": "Nie określono dni"
 }

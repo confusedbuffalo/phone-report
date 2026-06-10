@@ -108,11 +108,12 @@
     "invalidHours": "Horários inválidos",
     "fixableHoursHeader": "Horários de funcionamento corrigíveis",
     "fixableHoursDescription": "Estes horários de funcionamento são essencialmente válidos, mas não estão no formato padrão de alguma forma. A correção sugerida é a forma como as horas são interpretadas por um processador padrão. Nem todas as correções 'automáticas' são necessariamente válidas, por isso, por favor, não clique cegamente em todas as ligações de correção sem verificar primeiro a alteração.",
-    "invalidHoursDescription": "Estes horários de funcionamento são todos inválidos e não podem ser compreendidos. O sítio Web pode ser utilizado para verificar as horas corretas, ou pode ser necessário um levantamento no terreno.",
+    "invalidHoursDescription": "Estes horários de funcionamento são todos inválidos de alguma forma. Alguns não podem ser compreendidos, enquanto outros provavelmente serão compreendidos incorretamente e têm um aviso. O website poderá ser utilizado para verificar o horário correto, ou poderá ser necessária uma verificação.",
     "hasInvalidHours": "{name} tem horários de funcionamento inválidos, quais devem ser?",
     "invalidHoursOutOf": "{invalid} horários de funcionamento inválidos ({fixable} potencialmente corrigíveis) de {total}",
     "evaluationTool": "Ferramenta de avaliação",
     "overlappingRules": "Regras sobrepostas",
     "noInvalidHours": "Não foram encontrados horários de funcionamento inválidos nesta subdivisão.",
-    "ambiguousHours": "Horas de um dígito ambíguas"
+    "ambiguousHours": "Horas de um dígito ambíguas",
+    "noDays": "Nenhum dia especificado"
 }

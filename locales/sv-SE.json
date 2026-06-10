@@ -108,11 +108,12 @@
     "invalidHours": "Ogiltiga öppettider",
     "fixableHoursHeader": "Öppettider som kan åtgärdas",
     "fixableHoursDescription": "Dessa öppettider är i huvudsak giltiga men är inte i standardformat på något sätt. Den föreslagna åtgärden är hur timmarna tolkas av en standardprocessor. Inte alla 'auto'-åtgärder är nödvändigtvis giltiga, så klicka inte blint på alla åtgärdslänkar utan att först verifiera ändringen.",
-    "invalidHoursDescription": "Dessa öppettider är alla ogiltiga och kan inte förstås. Webbplatsen kan användas för att kontrollera de korrekta timmarna, eller så kan en undersökning på plats vara nödvändig.",
+    "invalidHoursDescription": "Dessa öppettider är alla ogiltiga på något sätt. Vissa kan inte förstås, medan andra troligen kommer att missförstås och har en varning. Webbplatsen kan användas för att kontrollera de rätta tiderna, eller så kan en undersökning vara nödvändig.",
     "hasInvalidHours": "{name} har ogiltiga öppettider, vad ska de vara?",
     "invalidHoursOutOf": "{invalid} ogiltiga öppettider ({fixable} potentiellt åtgärdbara) av {total}",
     "evaluationTool": "Utvärderingsverktyg",
     "overlappingRules": "Överlappande regler",
     "noInvalidHours": "Inga ogiltiga öppettider hittades i denna underindelning.",
-    "ambiguousHours": "Tvetydiga ensiffriga timmar"
+    "ambiguousHours": "Tvetydiga ensiffriga timmar",
+    "noDays": "Inga dagar angivna"
 }

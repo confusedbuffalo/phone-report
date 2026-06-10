@@ -2,7 +2,12 @@ import { Readable } from 'stream';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { isAmbiguousHours, validateHoursTag, validateOpeningHours } from '../src/opening-hours-processor';
+import {
+    hasDaysSpecified,
+    isAmbiguousHours,
+    validateHoursTag,
+    validateOpeningHours,
+} from '../src/opening-hours-processor';
 
 describe('isAmbiguousHours', () => {
     test('Empty value is not ambiguous', () => {
@@ -95,6 +100,37 @@ describe('isAmbiguousHours', () => {
         );
         expect(result).toBe(false);
     });
+});
+
+describe('hasDaysSpecified', () => {
+    test.each(['10:00', '9:00', '18:00', '9:00, 18:00', '10:00 "mass", 12:00 "worship"'])(
+        'Point in time "%s" has no days specified',
+        input => {
+            expect(hasDaysSpecified(input)).toBe(false);
+        }
+    );
+
+    test.each(['10:00-11:00', '9:00-10:00', '18:00-21:00', '10:00-18:30 "mass", 12:00-13:00 "we meet for worship"'])(
+        // note lower case 'we' in the last one
+        'Time range "%s" has no days specified',
+        input => {
+            expect(hasDaysSpecified(input)).toBe(false);
+        }
+    );
+
+    test.each(['Su 10:00', 'Mo 9:00', 'Tu 18:00', 'We,Th 9:00, 18:00', 'Fr-Su 10:00 "mass", 12:00 "worship"'])(
+        'Point in time "%s" has day/s specified',
+        input => {
+            expect(hasDaysSpecified(input)).toBe(true);
+        }
+    );
+
+    test.each(['Su 10:00-11:00', 'Mo 9:00-14:00', 'Tu 18:00-20:00', 'Fr-Su 10:00-11:00 "mass", 12:00-13:00 "worship"'])(
+        'Time range "%s" has day/s specified',
+        input => {
+            expect(hasDaysSpecified(input)).toBe(true);
+        }
+    );
 });
 
 describe('validateHoursTag', () => {
@@ -320,13 +356,23 @@ describe('validateHoursTag', () => {
         expect(result.prettyValue).toEqual('Mo 10:00-16:30 Tu 10:00-16:00');
     });
 
-    test('Warning for ambiguous single-digit hours', () => {
+    test('Warning for ambiguous single-digit hours, not autofixable', () => {
         const result = validateHoursTag('Mo-Fr 9:00-10:30', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
-        expect(result.isAutoFixable).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(true);
         expect(result.prettyValue).toEqual('Mo-Fr 09:00-10:30');
+    });
+
+    test('Warning for service times without days specified, not autofixable', () => {
+        const result = validateHoursTag('10:00-11:30', 'service_times', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(true);
+        expect(result.prettyValue).toEqual('10:00-11:30');
     });
 
     test('Single-digit not ambiguous hours has suggested fix but no warning', () => {
