@@ -108,11 +108,12 @@
     "invalidHours": "Ungültige Öffnungszeiten",
     "fixableHoursHeader": "Korrigierbare Öffnungszeiten",
     "fixableHoursDescription": "Diese Öffnungszeiten sind im Wesentlichen gültig, entsprechen aber in gewisser Weise nicht dem Standardformat. Die vorgeschlagene Korrektur entspricht der Interpretation der Stunden durch einen Standard-Prozessor. Nicht alle automatischen Korrekturen sind zwangsläufig gültig. Klicken Sie daher bitte nicht blindlings auf alle Korrektur-Links, ohne zuvor die Änderung zu überprüfen.",
-    "invalidHoursDescription": "Diese Öffnungszeiten sind alle ungültig und können nicht verstanden werden. Die Website könnte genutzt werden, um das korrekte Format zu prüfen, oder eine Erfassung vor Ort könnte erforderlich sein.",
+    "invalidHoursDescription": "Diese Öffnungszeiten sind alle in irgendeiner Weise ungültig. Einige können nicht verstanden werden, während andere wahrscheinlich falsch verstanden werden und mit einer Warnung versehen sind. Die Website könnte verwendet werden, um die korrekten Öffnungszeiten zu überprüfen, oder eine Überprüfung vor Ort könnte erforderlich sein.",
     "hasInvalidHours": "{name} hat ungültige Öffnungszeiten, wie sollten sie lauten?",
     "invalidHoursOutOf": "{invalid} ungültige Öffnungszeiten ({fixable} möglicherweise behebbar) von insgesamt {total}",
     "evaluationTool": "Auswertungswerkzeug",
     "overlappingRules": "Überlappende Regeln",
     "noInvalidHours": "In diesem Bereich wurden keine ungültigen Öffnungszeiten gefunden.",
-    "ambiguousHours": "Mehrdeutige einstellige Stunden"
+    "ambiguousHours": "Mehrdeutige einstellige Stunden",
+    "noDays": "Keine Tage angegeben"
 }

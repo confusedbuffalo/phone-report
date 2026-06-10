@@ -270,7 +270,10 @@ function createHoursFixRows(item, locale) {
             const ambiguousLabel = item.ambiguous[key]
                 ? `<span class="label label-number-problem">${translate('ambiguousHours', locale)}</span>`
                 : '';
-            const problemLabel = disconnectedLabel + ambiguousLabel;
+            const noDaysLabel = item.noDays[key]
+                ? `<span class="label label-number-problem">${translate('noDays', locale)}</span>`
+                : '';
+            const problemLabel = disconnectedLabel + ambiguousLabel + noDaysLabel;
 
             if (suggestedFix) {
                 const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);

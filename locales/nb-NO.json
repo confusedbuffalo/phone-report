@@ -108,11 +108,12 @@
     "invalidHours": "Ugyldige åpningstider",
     "fixableHoursHeader": "Åpningstider som kan rettes",
     "fixableHoursDescription": "Disse åpningstidene er i hovedsak gyldige, men er ikke i standardformat på en eller annen måte. Den foreslåtte rettingen er hvordan timene tolkes av en standardprosessor. Ikke alle 'auto'-rettinger er nødvendigvis gyldige, så vennligst ikke klikk blindt på alle rettelenker uten først å verifisere endringen.",
-    "invalidHoursDescription": "Disse åpningstidene er alle ugyldige og kan ikke forstås. Nettstedet kan brukes til å sjekke de riktige timene, eller en undersøkelse kan være nødvendig.",
+    "invalidHoursDescription": "Disse åpningstidene er alle ugyldige på en eller annen måte. Noen kan ikke forstås, mens andre sannsynligvis vil bli misforstått og har en advarsel. Nettsiden kan brukes til å sjekke de riktige åpningstidene, eller en undersøkelse kan være nødvendig.",
     "hasInvalidHours": "{name} har ugyldige åpningstider, hva skal de være?",
     "invalidHoursOutOf": "{invalid} ugyldige åpningstider ({fixable} potensielt rettbare) av {total}",
     "evaluationTool": "Evalueringsverktøy",
     "overlappingRules": "Overlappende regler",
     "noInvalidHours": "Ingen ugyldige åpningstider funnet i denne underinndelingen.",
-    "ambiguousHours": "Tvetydige ensifrede timer"
+    "ambiguousHours": "Tvetydige ensifrede timer",
+    "noDays": "Ingen dager spesifisert"
 }

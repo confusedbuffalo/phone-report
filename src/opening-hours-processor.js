@@ -55,6 +55,12 @@ function standardiseOpeningHours(str) {
     );
 }
 
+const hasDaysRegex = /Mo|Tu|We|Th|Fr|Sa|Su/;
+
+export function hasDaysSpecified(str) {
+    return hasDaysRegex.test(str);
+}
+
 const amPmRegex = /^\d([.:]\d{1,2})?\s?[ap]\.?m\.?.*$/i;
 const hourPattern1 = /^\d:\d/;
 const hourPattern2 = /0$/;
@@ -170,6 +176,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         warnings: null,
         disconnected: false,
         isAmbiguous: false,
+        noDays: false,
     };
 
     try {
@@ -192,6 +199,17 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 
         if (tagValidationResult.isInvalid && tagValidationResult.isAutoFixable) {
             tagValidationResult.isAmbiguous = isAmbiguousHours(hoursTagValue, prettyValue, tag, locale, oh);
+            if (tagValidationResult.isAmbiguous) {
+                // stop incorrect fixes being easily applied on the website
+                tagValidationResult.isAutoFixable = false;
+            }
+        }
+
+        if (tag === 'service_times' && !hasDaysSpecified(prettyValue)) {
+            tagValidationResult.isInvalid = true;
+            tagValidationResult.isAutoFixable = false;
+            tagValidationResult.noDays = true;
+            tagValidationResult.prettyValue = prettyValue;
         }
 
         if (warnings) {
@@ -252,6 +270,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
                 warnings: new Map(),
                 disconnected: new Map(),
                 ambiguous: new Map(),
+                noDays: new Map(),
             };
         };
 
@@ -291,6 +310,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
                 currentItem.warnings.set(tag, validationResult.warnings);
                 currentItem.disconnected.set(tag, validationResult.disconnected);
                 currentItem.ambiguous.set(tag, validationResult.isAmbiguous);
+                currentItem.noDays.set(tag, validationResult.noDays);
             }
         }
 

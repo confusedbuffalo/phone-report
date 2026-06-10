@@ -108,11 +108,12 @@
     "invalidHours": "Orari non validi",
     "fixableHoursHeader": "Orari di apertura correggibili",
     "fixableHoursDescription": "Questi orari di apertura sono essenzialmente validi ma non sono nel formato standard in qualche modo. La correzione suggerita è come gli orari vengono interpretati da un processore standard. Non tutte le correzioni 'automatiche' sono necessariamente valide, quindi per favore non cliccare ciecamente su tutti i link di correzione senza prima verificare la modifica.",
-    "invalidHoursDescription": "Questi orari di apertura sono tutti non validi e non possono essere compresi. Il sito web potrebbe essere utilizzato per verificare gli orari corretti, o potrebbe essere necessario un sopralluogo.",
+    "invalidHoursDescription": "Questi orari di apertura sono tutti non validi in qualche modo. Alcuni non possono essere compresi, mentre altri rischiano di essere compresi in modo errato e presentano un avviso. Il sito web potrebbe essere utilizzato per verificare gli orari corretti, oppure potrebbe essere necessario un sopralluogo.",
     "hasInvalidHours": "{name} ha orari di apertura non validi, quali dovrebbero essere?",
     "invalidHoursOutOf": "{invalid} orari di apertura non validi ({fixable} potenzialmente correggibili) su {total}",
     "evaluationTool": "Strumento di valutazione",
     "overlappingRules": "Regole sovrapposte",
     "noInvalidHours": "Nessun orario di apertura non valido trovato in questa suddivisione.",
-    "ambiguousHours": "Ore a cifra singola ambigue"
+    "ambiguousHours": "Ore a cifra singola ambigue",
+    "noDays": "Nessun giorno specificato"
 }
