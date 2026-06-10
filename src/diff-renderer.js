@@ -11,7 +11,7 @@ import {
     INVISIBLE_CHARACTERS,
 } from './constants.js';
 import { escapeHTML } from './html-utils.js';
-import { isWhatsappUrl, isSlashSpace } from './phone-processor.js';
+import { isSlashSpace, isWhatsappUrl } from './phone-utils.js';
 
 // We need custom diff logic, because if diffChars is used alone then it marks characters as
 // being added or removed when, semantically, they are just being moved.
