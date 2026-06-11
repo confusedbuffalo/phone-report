@@ -372,7 +372,17 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(false);
         expect(result.noDays).toBe(true);
-        expect(result.prettyValue).toEqual('10:00-11:30');
+        expect(result.prettyValue).toBeNull();
+    });
+
+    test('Warning for service times without days specified, not autofixable, but with suggestion', () => {
+        const result = validateHoursTag('9:00-13:00', 'service_times', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(true);
+        expect(result.prettyValue).toEqual('09:00-13:00');
     });
 
     test('Single-digit not ambiguous hours has suggested fix but no warning', () => {
