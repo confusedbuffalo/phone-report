@@ -11,8 +11,8 @@ import {
     NON_STANDARD_COST_TYPES,
     PHONE_TAG_PREFERENCE_ORDER,
     TOLL_FREE_AS_INTERNATIONAL_COUNTRIES,
-} from './constants';
-import { processSingleNumber } from './phone-processor';
+} from './constants.js';
+import { processSingleNumber } from './phone-processor.js';
 
 export const MobileStatus = {
     MOBILE: 'mobile',
