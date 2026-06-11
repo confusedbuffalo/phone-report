@@ -209,7 +209,9 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
             tagValidationResult.isInvalid = true;
             tagValidationResult.isAutoFixable = false;
             tagValidationResult.noDays = true;
-            tagValidationResult.prettyValue = prettyValue;
+            if (!valuesMatch) {
+                tagValidationResult.prettyValue = prettyValue;
+            }
         }
 
         if (warnings) {
