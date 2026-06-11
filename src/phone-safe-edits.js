@@ -1,7 +1,7 @@
 import { parsePhoneNumber } from 'libphonenumber-js/max';
-import { DIN_FORMAT_COUNTRIES, INVISIBLE_CHARACTERS, NANP_COUNTRY_CODES } from './constants';
-import { processSingleNumber } from './phone-processor';
-import { getNonStandardCostTypes } from './phone-utils';
+import { DIN_FORMAT_COUNTRIES, INVISIBLE_CHARACTERS, NANP_COUNTRY_CODES } from './constants.js';
+import { processSingleNumber } from './phone-processor.js';
+import { getNonStandardCostTypes } from './phone-utils.js';
 
 /**
  * Checks if a change is only to the formatting or adding a country code and
