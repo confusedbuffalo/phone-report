@@ -1,3 +1,10 @@
+# [5.13.0](https://github.com/confusedbuffalo/phone-report/compare/v5.12.0...v5.13.0) (2026-06-11)
+
+
+### Features
+
+* add warning for service times without a day specified and stop ambiguous hours being fixable ([4c1b443](https://github.com/confusedbuffalo/phone-report/commit/4c1b443a3cb602cdb5fc994be43cae96d9ad43b8))
+
 # [5.12.0](https://github.com/confusedbuffalo/phone-report/compare/v5.11.0...v5.12.0) (2026-06-10)
 
 
