@@ -373,7 +373,7 @@ export async function uploadSafeChanges(filePath) {
             subdivisionData.divisionSlug,
             subdivisionData.subdivisionSlug
         );
-        const pageLink = `${HOST_URL[’phone']}${relativePagePath}`;
+        const pageLink = `${HOST_URL['phone']}${relativePagePath}`;
 
         const response = await withRetry(() =>
             OSM.uploadChangeset(
