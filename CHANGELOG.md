@@ -1,3 +1,10 @@
+## [5.13.2](https://github.com/confusedbuffalo/phone-report/compare/v5.13.1...v5.13.2) (2026-06-13)
+
+
+### Bug Fixes
+
+* fix manual review link in bot changesets ([d24b3a9](https://github.com/confusedbuffalo/phone-report/commit/d24b3a97f4f6be6ffd9aa67dfa4d83414126b509))
+
 ## [5.13.1](https://github.com/confusedbuffalo/phone-report/compare/v5.13.0...v5.13.1) (2026-06-11)
 
 
