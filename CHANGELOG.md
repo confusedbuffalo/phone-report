@@ -1,3 +1,10 @@
+## [5.13.3](https://github.com/confusedbuffalo/phone-report/compare/v5.13.2...v5.13.3) (2026-06-13)
+
+
+### Bug Fixes
+
+* fix quote typo ([0427bf1](https://github.com/confusedbuffalo/phone-report/commit/0427bf1ff6ff93c1281735fc67b35dd3a2afbc38))
+
 ## [5.13.2](https://github.com/confusedbuffalo/phone-report/compare/v5.13.1...v5.13.2) (2026-06-13)
 
 
