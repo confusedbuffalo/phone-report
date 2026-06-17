@@ -58,6 +58,8 @@ function standardiseOpeningHours(str) {
 const hasDaysRegex = /Mo|Tu|We|Th|Fr|Sa|Su/;
 
 export function hasDaysSpecified(str) {
+    if (str === '24/7') return true;
+    if (str.at(0) === '"' && str.at(-1) === '"') return true;
     return hasDaysRegex.test(str);
 }
 
@@ -218,12 +220,18 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
             const ohToTest =
                 locale === 'en' ? oh : new opening_hours(hoursTagValue, null, { tag_key: tag, locale: 'en' });
             // Warning for when disconnected ranges are used in one rule, e.g. 'Mo-Fr 09:00-17:00 Sa 09:00-12:00'
-            if (ohToTest.getWarnings().join(',').includes('not connected')) {
+            if (ohToTest.getWarnings().join(',').toLowerCase().includes('not connected')) {
                 tagValidationResult.isInvalid = true;
                 tagValidationResult.isAutoFixable = false;
                 tagValidationResult.prettyValue = valuesMatch ? null : prettyValue;
                 tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
+            }
+            if (ohToTest.getWarnings().join(',').toLowerCase().includes('assuming')) {
+                tagValidationResult.isInvalid = true;
+                tagValidationResult.isAutoFixable = false;
+                tagValidationResult.prettyValue = valuesMatch ? null : prettyValue;
+                tagValidationResult.warnings = warnings;
             }
         }
     } catch (error) {
