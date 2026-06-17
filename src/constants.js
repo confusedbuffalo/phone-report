@@ -408,6 +408,7 @@ export const CAN_ADD_COUNTRY_CODE_TO_INCORRECT_LEADING_PLUS = [
 export const INCORRECT_PLUS_CAN_START_WITH_COUNTRY_CODE = ['BL', 'GF', 'GP', 'MF', 'MQ', 'RE', 'YT'];
 
 export const FORCE_TOLL_FREE_AS_NATIONAL_COUNTRIES = [
+    'BR', // https://community.openstreetmap.org/t/proposed-automated-edit-of-phone-numbers-in-brasil/144152/14
     'DE', // https://community.openstreetmap.org/t/telefonnummer-nebenstelle-kennzeichnen-phonenumbervalidator/137711/19
     'FR', // https://github.com/confusedbuffalo/phone-report/issues/18
     'IE', // https://community.openstreetmap.org/t/validating-phone-numbers-in-ireland/143173/4
