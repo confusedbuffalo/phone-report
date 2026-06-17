@@ -385,6 +385,24 @@ describe('validateHoursTag', () => {
         expect(result.prettyValue).toEqual('09:00-13:00');
     });
 
+    test('Service times 24/7 is valid and does not have no days warning', () => {
+        // see https://github.com/confusedbuffalo/phone-report/issues/411
+        const result = validateHoursTag('24/7', 'service_times', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
+
+    test('Service times with just a comment is valid and does not have no days warning', () => {
+        // see https://github.com/confusedbuffalo/phone-report/issues/411
+        const result = validateHoursTag('"One service each year"', 'service_times', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
+
     test('Single-digit not ambiguous hours has suggested fix but no warning', () => {
         const result = validateHoursTag('Mo-Fr 9:00-15:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
@@ -392,6 +410,22 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(false);
         expect(result.prettyValue).toEqual('Mo-Fr 09:00-15:00');
+    });
+
+    test('Assumptions have suggested fix but not autofixable', () => {
+        const resultSummer = validateHoursTag('Summer Mo-Fr 09:00-15:00', 'opening_hours', 'en');
+        expect(resultSummer.isInvalid).toBe(true);
+        expect(resultSummer.isAutoFixable).toBe(false);
+        expect(resultSummer.disconnected).toBe(false);
+        expect(resultSummer.isAmbiguous).toBe(false);
+        expect(resultSummer.prettyValue).toEqual('Jun-Aug Mo-Fr 09:00-15:00');
+
+        const resultWinter = validateHoursTag('winter', 'opening_hours', 'en');
+        expect(resultWinter.isInvalid).toBe(true);
+        expect(resultWinter.isAutoFixable).toBe(false);
+        expect(resultWinter.disconnected).toBe(false);
+        expect(resultWinter.isAmbiguous).toBe(false);
+        expect(resultWinter.prettyValue).toEqual('Dec-Feb');
     });
 });
 
