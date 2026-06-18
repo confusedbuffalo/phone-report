@@ -1,3 +1,17 @@
+# [5.14.0](https://github.com/confusedbuffalo/phone-report/compare/v5.13.3...v5.14.0) (2026-06-18)
+
+
+### Bug Fixes
+
+* don't show suggested fix for service times with warning when the imtes are the same ([d5bdb6c](https://github.com/confusedbuffalo/phone-report/commit/d5bdb6cf41b3daf57c6ffe6ffba3850c18c6f17a))
+* some valid service times should not have warnings for no days specified and move assumptions out of autofix ([139ae7e](https://github.com/confusedbuffalo/phone-report/commit/139ae7e2663e7b8d69899839f20e7f863db4e23e))
+
+
+### Features
+
+* enable bot in AR ([68d2e40](https://github.com/confusedbuffalo/phone-report/commit/68d2e40e754e18005507429edbbce6e568b1600a))
+* force BR toll free as national ([169d6f6](https://github.com/confusedbuffalo/phone-report/commit/169d6f68d35ab1d7eab7503a56e771f47e0f7ecd))
+
 ## [5.13.3](https://github.com/confusedbuffalo/phone-report/compare/v5.13.2...v5.13.3) (2026-06-13)
 
 
