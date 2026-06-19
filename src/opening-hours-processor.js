@@ -56,10 +56,12 @@ function standardiseOpeningHours(str) {
 }
 
 const hasDaysRegex = /Mo|Tu|We|Th|Fr|Sa|Su/;
+const hasDateRegex = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s?\d{1,2}(?!\d|:)/;
 
 export function hasDaysSpecified(str) {
     if (str === '24/7') return true;
     if (str.at(0) === '"' && str.at(-1) === '"') return true;
+    if (hasDateRegex.test(str)) return true;
     return hasDaysRegex.test(str);
 }
 
@@ -227,6 +229,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
                 tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
             }
+            // Assumptions are generally bad, such as "summer" = "Jun-Aug"
             if (ohToTest.getWarnings().join(',').toLowerCase().includes('assuming')) {
                 tagValidationResult.isInvalid = true;
                 tagValidationResult.isAutoFixable = false;

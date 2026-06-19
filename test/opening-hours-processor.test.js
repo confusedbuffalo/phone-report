@@ -403,6 +403,22 @@ describe('validateHoursTag', () => {
         expect(result.noDays).toBe(false);
     });
 
+    test('Service times with specific dates is valid and does not have no days warning', () => {
+        const result = validateHoursTag('Apr 25 05:00; Nov 11 10:30', 'service_times', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
+
+    test('Service times with months but not days has no days warning', () => {
+        const result = validateHoursTag('Apr-Oct 10:00; Nov-Mar 10:30', 'service_times', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(true);
+    });
+
     test('Single-digit not ambiguous hours has suggested fix but no warning', () => {
         const result = validateHoursTag('Mo-Fr 9:00-15:00', 'opening_hours', 'en');
         expect(result.isInvalid).toBe(true);
