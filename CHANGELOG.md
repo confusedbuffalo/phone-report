@@ -1,3 +1,10 @@
+## [5.14.1](https://github.com/confusedbuffalo/phone-report/compare/v5.14.0...v5.14.1) (2026-06-20)
+
+
+### Bug Fixes
+
+* Service times don't need days of the week if they are specified as dates. ([9689856](https://github.com/confusedbuffalo/phone-report/commit/9689856c1681f2eb83a6d062bf9bc78090c5278f)), closes [#421](https://github.com/confusedbuffalo/phone-report/issues/421)
+
 # [5.14.0](https://github.com/confusedbuffalo/phone-report/compare/v5.13.3...v5.14.0) (2026-06-18)
 
 
