@@ -875,7 +875,7 @@ export function setUpSaveBtn() {
 
     const saveBtn = document.getElementById('save-btn');
     if (saveBtn) {
-        saveBtn.innerText = hasEdits ? `Save ${editCount.total}` : `Save`;
+        saveBtn.innerText = hasEdits ? `${translate('save')} ${editCount.total}` : translate('save');
     }
 }
 
