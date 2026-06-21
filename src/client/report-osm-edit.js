@@ -95,14 +95,14 @@ async function getUser() {
     const displayName = localStorage.getItem('osm_display_name');
 
     if (displayName) {
-        logoutBtn.innerText = `Logout ${displayName}`;
+        logoutBtn.innerText = `${translate('logout')} ${displayName}`;
         return;
     }
 
     const OSM = await getOSM();
     OSM.getUser('me')
         .then(result => {
-            logoutBtn.textContent = `Logout ${result.display_name}`;
+            logoutBtn.textContent = `${translate('logout')} ${result.display_name}`;
             localStorage.setItem('osm_display_name', result.display_name);
             errorDiv.textContent = '';
             errorDiv.hidden = true;
