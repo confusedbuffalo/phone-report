@@ -117,13 +117,11 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
             return exclusionResult;
         }
 
-        const isPolishPrefixed = isPolishPrefixedNumber(phoneNumber, countryCode);
-        if (isPolishPrefixed) {
+        if (isPolishPrefixedNumber(phoneNumber, countryCode)) {
             phoneNumber = fixPolishPrefixedNumber(phoneNumber, countryCode);
             isInvalid = true;
         }
-        const isItalianMissingZero = isItalianMissingZeroNumber(phoneNumber, countryCode);
-        if (isItalianMissingZero) {
+        if (isItalianMissingZeroNumber(phoneNumber, countryCode)) {
             phoneNumber = parsePhoneNumber(insertMissingItalianZero(numberStr));
             isInvalid = true;
         }
