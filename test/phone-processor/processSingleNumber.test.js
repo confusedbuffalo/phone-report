@@ -673,6 +673,23 @@ describe('processSingleNumber', () => {
         });
     });
 
+    describe('ID: number starting with 62 is invalid and not fixable', () => {
+        test.each(['62435123456', '*62435123456', '62 435 123456'])('%s', numberStr => {
+            const result = processSingleNumber(numberStr, 'ID');
+            expect(result.isInvalid).toBe(true);
+            expect(result.autoFixable).toBe(false);
+        });
+    });
+
+    describe('ID: number starting with +62 and invalid in some way is still fixable', () => {
+        test.each(['+62(435)123456', '*+62435123456', '(+62) 435 123456'])('%s', numberStr => {
+            const result = processSingleNumber(numberStr, 'ID');
+            expect(result.isInvalid).toBe(true);
+            expect(result.autoFixable).toBe(true);
+            expect(result.suggestedFix).toEqual('+62 435 123456');
+        });
+    });
+
     // --- WhatsApp Tests ---
     test('Whatsapp number is fixable', () => {
         const result = processSingleNumber('27123456789', 'ZA', {}, 'contact:whatsapp');

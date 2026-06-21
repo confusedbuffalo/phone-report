@@ -49,6 +49,7 @@ const phoneValidationCache = new LRUCache({
 });
 
 const invisibleCharactersRegex = new RegExp(`[${INVISIBLE_CHARACTERS}]`, 'g');
+const invalidStartingDigits = { DE: '49', ID: '62' };
 
 /**
  * Validates a single phone number string using libphonenumber-js.
@@ -191,12 +192,13 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
     // DE numbers do not have fixed length and could start with 49, but maybe a + was missed off
     // so it is not clear what the correct fix should be, whether adding 0 or adding +
     // see https://github.com/confusedbuffalo/phone-report/issues/78 and https://github.com/confusedbuffalo/phone-report/issues/53
+    // ID has the same issue for 62... see https://github.com/confusedbuffalo/phone-report/issues/430
     if (
         isInvalid &&
         autoFixable &&
-        countryCode === 'DE' &&
-        coreNumber.replace(/[^\d]/g, '').startsWith('49') &&
-        !coreNumber.split('49')[0].includes('+')
+        Object.keys(invalidStartingDigits).includes(countryCode) &&
+        coreNumber.replace(/[^\d]/g, '').startsWith(invalidStartingDigits[countryCode]) &&
+        !coreNumber.split(invalidStartingDigits[countryCode])[0].includes('+')
     ) {
         autoFixable = false;
         suggestedFix = null;
