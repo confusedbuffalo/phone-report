@@ -1,3 +1,10 @@
+# [5.15.0](https://github.com/confusedbuffalo/phone-report/compare/v5.14.1...v5.15.0) (2026-06-21)
+
+
+### Features
+
+* add Indonesia ([#427](https://github.com/confusedbuffalo/phone-report/issues/427)) ([678287a](https://github.com/confusedbuffalo/phone-report/commit/678287a68370aeb8f4d1e5c348566ff9fe7ddf96))
+
 ## [5.14.1](https://github.com/confusedbuffalo/phone-report/compare/v5.14.0...v5.14.1) (2026-06-20)
 
 
