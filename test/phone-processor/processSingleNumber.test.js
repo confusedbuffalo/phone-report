@@ -690,6 +690,16 @@ describe('processSingleNumber', () => {
         });
     });
 
+    describe('ID: hyphens are a valid spacing character', () => {
+        test.each(['+62 435-123456', '+62-435-123456', '+62-435-123-456', '+62 435-123-456', '+62 435-123456'])(
+            '%s',
+            numberStr => {
+                const result = processSingleNumber(numberStr, 'ID');
+                expect(result.isInvalid).toBe(false);
+            }
+        );
+    });
+
     // --- WhatsApp Tests ---
     test('Whatsapp number is fixable', () => {
         const result = processSingleNumber('27123456789', 'ZA', {}, 'contact:whatsapp');
