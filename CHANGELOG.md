@@ -1,3 +1,17 @@
+# [5.16.0](https://github.com/confusedbuffalo/phone-report/compare/v5.15.0...v5.16.0) (2026-06-22)
+
+
+### Bug Fixes
+
+* allow hyphens as spacing characters in ID ([7f499b4](https://github.com/confusedbuffalo/phone-report/commit/7f499b4ddb91d8ffe70e33bc14cdbcdba0e652a5))
+* number in ID could start with 62, don't suggest fix for missing plus/zero ([3d60bef](https://github.com/confusedbuffalo/phone-report/commit/3d60befe66c98ab75d3d6c01c6990b5e46ad6757)), closes [#430](https://github.com/confusedbuffalo/phone-report/issues/430)
+* translate logout and save buttons ([5191e81](https://github.com/confusedbuffalo/phone-report/commit/5191e8178a1badc944b2f5d2205e2fb1cfc09cb0))
+
+
+### Features
+
+* enable bot in BR ([f5eb458](https://github.com/confusedbuffalo/phone-report/commit/f5eb4589d2bb6d7c5cb39189a8ca889fab088761))
+
 # [5.15.0](https://github.com/confusedbuffalo/phone-report/compare/v5.14.1...v5.15.0) (2026-06-21)
 
 
