@@ -1,3 +1,17 @@
+# [5.17.0](https://github.com/confusedbuffalo/phone-report/compare/v5.16.0...v5.17.0) (2026-06-23)
+
+
+### Bug Fixes
+
+* allow happy_hours to be yes or no ([6f7f2fb](https://github.com/confusedbuffalo/phone-report/commit/6f7f2fb5ef9fe84fb6b423e4b4e2c5b33a696639)), closes [#434](https://github.com/confusedbuffalo/phone-report/issues/434)
+* skip subdivision on download error ([ce7db4d](https://github.com/confusedbuffalo/phone-report/commit/ce7db4dc9788eb2cf94de52bbc83df38b062b064))
+* whatsapp numbers always need to be international format ([45c89a6](https://github.com/confusedbuffalo/phone-report/commit/45c89a699c402b3bc3dd16f95e7eed1fa06e63b0))
+
+
+### Features
+
+* fix longer alternate endings in BR ([bd039ee](https://github.com/confusedbuffalo/phone-report/commit/bd039ee1f3206f328a6861f104e513556ccfbf82))
+
 # [5.16.0](https://github.com/confusedbuffalo/phone-report/compare/v5.15.0...v5.16.0) (2026-06-22)
 
 
