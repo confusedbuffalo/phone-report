@@ -266,6 +266,20 @@ describe('validateSingleTag', () => {
         expect(result.isAutoFixable).toBe(false);
     });
 
+    describe('fix slash used for multiple endings after area code in BR', () => {
+        test.each([
+            { tagStr: '+55 27 3259 1234/3259 4321', numberList: ['+55 27 3259 1234', '+55 27 3259 4321'] },
+            { tagStr: '+55 27 3259 1234 /3259 4321', numberList: ['+55 27 3259 1234', '+55 27 3259 4321'] },
+            { tagStr: '+55 27 3259 1234 / 3259 4321', numberList: ['+55 27 3259 1234', '+55 27 3259 4321'] },
+            { tagStr: '(28) 3524-1234 / 3524-4321', numberList: ['+55 28 3524 1234', '+55 28 3524 4321'] },
+        ])('%s', ({ tagStr, numberList }) => {
+            const result = validateSingleTag(tagStr, 'BR');
+            expect(result.isInvalid).toBe(true);
+            expect(result.isAutoFixable).toBe(true);
+            expect(result.suggestedNumbersList).toEqual(numberList);
+        });
+    });
+
     test('slash as alternate endings is invalid if the core number is invalid', () => {
         const result = validateSingleTag('+21252294123/31', 'MA');
         expect(result.isInvalid).toBe(true);
