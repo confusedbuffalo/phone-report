@@ -216,10 +216,9 @@ export const isWhatsappUrl = urlString => {
 
 /**
  * Extracts a phone number from a string that may be a URL and determines if it is a valid non-number
- * (such as a channel or catalog link)
- * @param {PhoneNumber} phoneNumber - The phone number object
- * @param {string} countryCode - The country code being checked against
- * @returns {boolean}
+ * (such as a channel or catalog link).
+ * * @param {string} numberStr - The input string containing a phone number or WhatsApp URL.
+ * @returns {{cleanNumberStr: string, validNonNumber: boolean}} An object containing the extracted number and validity status.
  */
 export function getWhatsappNumber(numberStr) {
     let isValidWhatsappUrl = false;
@@ -259,7 +258,7 @@ export function getWhatsappNumber(numberStr) {
 }
 
 /**
- * Validates a single phone number string using libphonenumber-js.
+ * Determines if a toll free or special cost number should be formatted in international format.
  * @param {PhoneNumber} phoneNumber - The parsed PhoneNumber object.
  * @param {string} countryCode - The country code used for validation.
  * @param {string} numberStr - The original phone number string.
