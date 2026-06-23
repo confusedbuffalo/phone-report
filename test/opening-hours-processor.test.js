@@ -443,6 +443,22 @@ describe('validateHoursTag', () => {
         expect(resultWinter.isAmbiguous).toBe(false);
         expect(resultWinter.prettyValue).toEqual('Dec-Feb');
     });
+
+    test('happy_hours=no is valid', () => {
+        const result = validateHoursTag('no', 'happy_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
+
+    test('happy_hours=yes is valid', () => {
+        const result = validateHoursTag('yes', 'happy_hours', 'en');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
 });
 
 describe('validateOpeningHours', () => {
