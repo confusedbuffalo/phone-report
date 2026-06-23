@@ -289,6 +289,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
         await access(geojsonPath);
     } catch {
         console.error(`Error: File not found at ${geojsonPath}`);
+        return {};
     }
 
     const elementStream = createGeoJsonElementStream(geojsonPath);
@@ -391,10 +392,12 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
                 rawDivisionName,
                 clientTranslations
             );
-            divisionStats[reportType].push(reportStats);
-            Object.keys(divisionTotals[reportType]).forEach(countType => {
-                divisionTotals[reportType][countType] += reportStats[countType];
-            });
+            if (Object.keys(reportStats).length > 0) {
+                divisionStats[reportType].push(reportStats);
+                Object.keys(divisionTotals[reportType]).forEach(countType => {
+                    divisionTotals[reportType][countType] += reportStats[countType];
+                });
+            }
         }
     }
 
@@ -442,7 +445,7 @@ async function processCountry(countryData) {
     }
 
     for (const groupDivisions of Object.values(divisions)) {
-        for (const subData of Object.values(groupDivisions)) {
+        for (const [subdivisionName, subData] of Object.entries(groupDivisions)) {
             const pbfUrl = typeof subData === 'object' ? subData.pbfUrl : null;
             if (pbfUrl) {
                 const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
@@ -468,7 +471,6 @@ async function processCountry(countryData) {
                         countryData.timestamp = dataTimestamp;
                     }
                 } catch (error) {
-                    const subdivisionName = typeof subData === 'object' ? subData.name : 'unknown';
                     console.error(`Skipping subdivision ${subdivisionName} due to download failure: ${error.message}`);
                     fs.rmSync(subPbfFilePath, { force: true });
                     // No return here, just skip this subdivision
