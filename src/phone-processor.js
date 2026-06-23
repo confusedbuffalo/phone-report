@@ -127,7 +127,8 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
 
         if (phoneNumber && phoneNumber.isValid()) {
-            const tollFreeAsInternational = shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr);
+            const tollFreeAsInternational =
+                shouldTollFreeBeInternational(phoneNumber, countryCode, numberStr) || tag === 'contact:whatsapp';
             suggestedFix = getFormattedNumber(phoneNumber, tollFreeAsInternational);
 
             validPhonewords = !!couldBePhonewords;

@@ -741,6 +741,18 @@ describe('processSingleNumber', () => {
         expect(result.suggestedFix).toEqual('+27 12 345 6789');
     });
 
+    test('Valid WhatsApp link with toll free phone number is invalid and fixable to international format', () => {
+        const result = processSingleNumber(
+            'https://api.whatsapp.com/send?phone=5508000874000',
+            'BR',
+            {},
+            'contact:whatsapp'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.autoFixable).toBe(true);
+        expect(result.suggestedFix).toEqual('+55 800 087 4000');
+    });
+
     test('wa.me message link is valid in whatsapp key', () => {
         const result = processSingleNumber('https://wa.me/message/ZQ4YRTMO7OUAJ1', 'ZA', {}, 'contact:whatsapp');
         expect(result.isInvalid).toBe(false);
