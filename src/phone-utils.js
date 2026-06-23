@@ -335,9 +335,9 @@ export function expandSlashEnding(tagValue, countryCode, osmTags, tag) {
     const parts = tagValue.split('/').map(part => part.trim());
 
     // Only attempt two possible endings (original and alternative)
-    if (parts.length !== 2 || parts[1].length > 4) {
-        return null;
-    }
+    if (parts.length !== 2) return null;
+    // Could cause issues elsewhere, but BR has many long alternative endings (everything after area code)
+    if (parts[1].length > 4 && countryCode !== 'BR') return null;
 
     const validationResult = processSingleNumber(parts[0], countryCode, osmTags, tag);
 
