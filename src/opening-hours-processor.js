@@ -185,6 +185,12 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 
     if (tag === 'happy_hours' && ['yes', 'no'].includes(hoursTagValue.trim())) return tagValidationResult;
 
+    if (['service_times', 'opening_hours'].includes(tag) && hoursTagValue.trim() === 'no') {
+        tagValidationResult.isInvalid = true;
+        tagValidationResult.isAutoFixable = false;
+        return tagValidationResult;
+    }
+
     try {
         const oh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: locale });
 
