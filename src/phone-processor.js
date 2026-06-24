@@ -33,7 +33,9 @@ import {
     getNumberAndExtension,
     getSpacingRegex,
     getWhatsappNumber,
+    insertMissingBrazilianNine,
     insertMissingItalianZero,
+    isBrazilianMissingNineMobileNumber,
     isItalianMissingZeroNumber,
     isPolishPrefixedNumber,
     isSlashSpace,
@@ -123,6 +125,11 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
         }
         if (isItalianMissingZeroNumber(phoneNumber, countryCode)) {
             phoneNumber = parsePhoneNumber(insertMissingItalianZero(numberStr));
+            isInvalid = true;
+        }
+
+        if (isBrazilianMissingNineMobileNumber(phoneNumber, countryCode)) {
+            phoneNumber = parsePhoneNumber(insertMissingBrazilianNine(phoneNumber.number), countryCode);
             isInvalid = true;
         }
 

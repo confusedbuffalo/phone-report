@@ -673,6 +673,18 @@ describe('processSingleNumber', () => {
         });
     });
 
+    describe('BR: mobile number missing 9 after area code is invalid and fixable', () => {
+        test.each([
+            { numberStr: '+55 88 9925 1234', suggestedFix: '+55 88 99925 1234' },
+            { numberStr: '+55 77 9909 5678', suggestedFix: '+55 77 99909 5678' },
+        ])('%s', ({ numberStr, suggestedFix }) => {
+            const result = processSingleNumber(numberStr, 'BR');
+            expect(result.isInvalid).toBe(true);
+            expect(result.autoFixable).toBe(true);
+            expect(result.suggestedFix).toEqual(suggestedFix);
+        });
+    });
+
     describe('ID: number starting with 62 is invalid and not fixable', () => {
         test.each(['62435123456', '*62435123456', '62 435 123456'])('%s', numberStr => {
             const result = processSingleNumber(numberStr, 'ID');

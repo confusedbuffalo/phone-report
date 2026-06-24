@@ -3,6 +3,7 @@ import {
     convertPhonewordToDigits,
     getNumberAndExtension,
     getWhatsappNumber,
+    insertMissingBrazilianNine,
     keyToRemove,
     parseStandardExtension,
     phoneTagToUse,
@@ -645,5 +646,27 @@ describe('parseStandardExtension', () => {
         expect(result.coreNumber).toEqual('0800 123 4567');
         expect(result.extension).toBeNull();
         expect(result.hasStandardExtension).toBeNull();
+    });
+});
+
+describe('insertMissingBrazilianNine', () => {
+    test('insert missing 9 ', () => {
+        const result = insertMissingBrazilianNine('+558891234567');
+        expect(result).toEqual('+5588991234567');
+    });
+
+    test('return original when state code not followed by 8 or 9 ', () => {
+        const result = insertMissingBrazilianNine('+558831234567');
+        expect(result).toEqual('+558831234567');
+    });
+
+    test('return original for too short a number ', () => {
+        const result = insertMissingBrazilianNine('+558812345');
+        expect(result).toEqual('+558812345');
+    });
+
+    test('return original for different country code ', () => {
+        const result = insertMissingBrazilianNine('+448812345678');
+        expect(result).toEqual('+448812345678');
     });
 });

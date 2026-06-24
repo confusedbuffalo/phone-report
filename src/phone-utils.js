@@ -182,6 +182,39 @@ export function isItalianMissingZeroNumber(phoneNumber, countryCode) {
 }
 
 /**
+ * Determines if a phone number is a Brazilian mobile number that is missig the 9 after the state code
+ * @param {PhoneNumber} phoneNumber The PhoneNumber object of the number.
+ * @returns {boolean} Whether or not the number is a Brazilian mobile number missing a 9.
+ */
+export function isBrazilianMissingNineMobileNumber(phoneNumber, countryCode) {
+    // see https://community.openstreetmap.org/t/proposed-automated-edit-of-phone-numbers-in-brasil/144152/17
+    if (countryCode !== 'BR' || phoneNumber.isValid()) return false;
+    return phoneNumber.number !== insertMissingBrazilianNine(phoneNumber.number);
+}
+
+/**
+ * Inserts a 9 into a Brazilian mobile number where it is missing
+ * @param {string} numberStr The raw international formatted number, without spaces or other separators.
+ * @returns {string} The number with the 9 inserted if appropriate or the original number string otherwise.
+ */
+export function insertMissingBrazilianNine(numberStr) {
+    const missingNineRegex = /^(\+55\d\d)([89]\d{7})$/;
+    if (!numberStr.match(missingNineRegex)) return numberStr;
+
+    const newNumberStr = numberStr.replace(missingNineRegex, '$19$2');
+
+    try {
+        let phoneNumber = parsePhoneNumber(newNumberStr);
+        if (phoneNumber.isValid() && phoneNumber.getType() === 'MOBILE') {
+            return newNumberStr;
+        }
+    } catch {
+        return numberStr;
+    }
+    return numberStr;
+}
+
+/**
  * Checks if a given URL host is an exact match or a subdomain of one of the valid hosts.
  * @param {string} urlString The URL string to check.
  * @returns {boolean} True if the host is valid.
