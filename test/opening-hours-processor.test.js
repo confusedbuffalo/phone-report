@@ -459,6 +459,24 @@ describe('validateHoursTag', () => {
         expect(result.isAmbiguous).toBe(false);
         expect(result.noDays).toBe(false);
     });
+
+    test('opening_hours=no is invalid and unfixable', () => {
+        const result = validateHoursTag('no', 'opening_hours', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
+
+    test('service_times=no is invalid and unfixable', () => {
+        const result = validateHoursTag('no', 'service_times', 'en');
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
 });
 
 describe('validateOpeningHours', () => {
