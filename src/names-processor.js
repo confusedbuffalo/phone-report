@@ -88,7 +88,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
 
             if (isValidCombo) isInvalid = false;
 
-            if (!(countryCode in BELGIUM_REGION_LANGUAGES)) {
+            if (primaryName && !(countryCode in BELGIUM_REGION_LANGUAGES)) {
                 // for all other regions, use a generic solution
                 // to check for multilingual names
                 const parts = splitCompoundName(primaryName);

@@ -94,6 +94,29 @@ describe('validateNames', () => {
         expect(result.missingNamesCount).toBe(0);
     });
 
+    test('multilingual names with no primary name is invalid', async () => {
+        const elements = [createGeoJson(1001, { 'name:fr': 'Le Test', 'name:de': 'Das Test' })];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(1001);
+
+        expect(invalidItem.name).toBeUndefined();
+        expect(invalidItem.nameTags).toEqual({
+            'name:fr': 'Le Test',
+            'name:de': 'Das Test',
+        });
+    });
+
     test('name and different names with no matching is invalid', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:fr': 'Le Test', 'name:de': 'Das Test' })];
 
