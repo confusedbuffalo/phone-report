@@ -1,3 +1,10 @@
+## [5.18.1](https://github.com/confusedbuffalo/phone-report/compare/v5.18.0...v5.18.1) (2026-06-25)
+
+
+### Bug Fixes
+
+* fix and add test for missing names ([f5f8067](https://github.com/confusedbuffalo/phone-report/commit/f5f80670425fba964eb17f5eba0720a13117c32b))
+
 # [5.18.0](https://github.com/confusedbuffalo/phone-report/compare/v5.17.0...v5.18.0) (2026-06-25)
 
 
