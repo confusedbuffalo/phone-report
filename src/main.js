@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import axios from 'axios';
-import yaml from 'js-yaml';
+import load from 'js-yaml';
 import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
 import { fileURLToPath } from 'url';
@@ -62,7 +62,7 @@ async function downloadAndParseOfficialLanguages() {
     try {
         const response = await withRetry(() => axios.get(url), `Fetch official languages from ${url}`);
         const rawYaml = response.data;
-        const dataObject = yaml.load(rawYaml);
+        const dataObject = load(rawYaml);
 
         return dataObject;
     } catch (error) {
