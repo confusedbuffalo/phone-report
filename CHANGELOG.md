@@ -1,3 +1,16 @@
+# [5.18.0](https://github.com/confusedbuffalo/phone-report/compare/v5.17.0...v5.18.0) (2026-06-25)
+
+
+### Bug Fixes
+
+* don't suggest fix for opening_hours=no ([4d0de82](https://github.com/confusedbuffalo/phone-report/commit/4d0de829c29a413e36de8f5a676271fd88e0c878)), closes [#438](https://github.com/confusedbuffalo/phone-report/issues/438)
+
+
+### Features
+
+* suggest fix for BR mobile numbers missing 9 after state code ([#440](https://github.com/confusedbuffalo/phone-report/issues/440)) ([7a4d602](https://github.com/confusedbuffalo/phone-report/commit/7a4d602d703d5c37b699d2a65de8378b4c75ac0a))
+* support multilingual names ([#423](https://github.com/confusedbuffalo/phone-report/issues/423)) ([c12b2e0](https://github.com/confusedbuffalo/phone-report/commit/c12b2e0931e66a78373bfddaebd9679038fa761b))
+
 # [5.17.0](https://github.com/confusedbuffalo/phone-report/compare/v5.16.0...v5.17.0) (2026-06-23)
 
 
