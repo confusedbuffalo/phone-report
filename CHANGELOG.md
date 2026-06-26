@@ -1,3 +1,10 @@
+## [5.18.2](https://github.com/confusedbuffalo/phone-report/compare/v5.18.1...v5.18.2) (2026-06-26)
+
+
+### Bug Fixes
+
+* fix js-yaml import ([99a60ca](https://github.com/confusedbuffalo/phone-report/commit/99a60ca967bcc1789b9186b14435555d861a23c9))
+
 ## [5.18.1](https://github.com/confusedbuffalo/phone-report/compare/v5.18.0...v5.18.1) (2026-06-25)
 
 
