@@ -161,6 +161,12 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v5
 
+            - name: Download history artifact
+              uses: actions/download-artifact@v8
+              with:
+                  name: new-history-data
+                  path: history
+
             - name: Download safe edits artifact
               uses: actions/download-artifact@v8
               with:
@@ -176,6 +182,14 @@ jobs:
                   BOT_AUTH_TOKEN: ${{ secrets.BOT_AUTH_TOKEN }}
               run: npm run bot:autofix
               continue-on-error: true
+
+            - name: Upload Updated History Data Artifact
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  name: new-history-data
+                  path: history/
+                  overwrite: true
 
             - name: Create GitHub Issue on Bot Failure
               uses: dacbd/create-issue-action@main
@@ -196,8 +210,8 @@ jobs:
                   assignees: confusedbuffalo
 
     push-history:
-        needs: build-report
-        if: needs.build-report.outputs.is-full-build == 'true'
+        needs: [build-report, bot-edit]
+        if: always() && needs.build-report.outputs.is-full-build == 'true' && (needs.bot-edit.result == 'success' || needs.bot-edit.result == 'continue_on_error')
         runs-on: ubuntu-latest
 
         steps:

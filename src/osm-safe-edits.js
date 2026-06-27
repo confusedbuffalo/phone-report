@@ -10,7 +10,7 @@ import pkgStreamArray from 'stream-json/streamers/stream-array.js';
 const { streamArray } = pkgStreamArray;
 import { Transform } from 'stream';
 import { safeName } from './data-processor.js';
-import { SAFE_EDITS_DIR, HOST_URL, AUTO_CHANGESET_TAGS, COUNTRIES } from './constants.js';
+import { SAFE_EDITS_DIR, HOST_URL, AUTO_CHANGESET_TAGS, COUNTRIES, HISTORY_DIR } from './constants.js';
 import { getSubdivisionRelativeFilePath } from './html-report.js';
 import { fileURLToPath } from 'url';
 
@@ -25,6 +25,8 @@ const BOT_AUTH_TOKEN = process.env.BOT_AUTH_TOKEN;
  * Basic sleep utility to pause between uploads so as not to overload the OSM servers
  */
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const historicalEditsFile = 'historical-edits.json';
 
 /**
  * Executes an OSM API call with a retry mechanism for transient 5xx errors.
@@ -222,6 +224,131 @@ export async function generateSafeEditFile(countryName, subdivisionStats, tmpFil
 }
 
 /**
+ * @typedef {Object} OsmEdits
+ * @property {number[]} node - Unique numerical IDs for OpenStreetMap nodes.
+ * @property {number[]} way - Unique numerical IDs for OpenStreetMap ways.
+ * @property {number[]} relation - Unique numerical IDs for OpenStreetMap relations.
+ */
+
+/**
+ * Updates the historical edits JSON file by appending or overwriting today's edit data.
+ * * Reads the existing history file, merges the new data under the current ISO date key
+ * (YYYY-MM-DD), formats the output so that arrays stay on a single line for readability
+ * and writes it back to disk.
+ *
+ * @async
+ * @param {OsmEdits} todaysEdits - The edit data collected for the current day.
+ * @returns {Promise<void>} Resolves when the file has been successfully updated.
+ * @throws {Error} Throws an error if reading/writing fails for reasons other than the file not existing.
+ */
+async function updateHistoricalEdits(todaysEdits) {
+    const filePath = path.join(HISTORY_DIR, historicalEditsFile);
+
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    let historyData = {};
+
+    try {
+        const fileContent = await fsp.readFile(filePath, 'utf8');
+        historyData = JSON.parse(fileContent);
+    } catch (error) {
+        // If file doesn't exist (ENOENT), ignore and keep historyData as {}
+        if (error.code !== 'ENOENT') throw error;
+    }
+
+    const existingToday = historyData[todayStr] || { node: [], way: [], relation: [] };
+
+    historyData[todayStr] = {
+        node: Array.from(new Set([...(existingToday.node || []), ...(todaysEdits.node || [])])),
+        way: Array.from(new Set([...(existingToday.way || []), ...(todaysEdits.way || [])])),
+        relation: Array.from(new Set([...(existingToday.relation || []), ...(todaysEdits.relation || [])])),
+    };
+
+    await fsp.mkdir(HISTORY_DIR, { recursive: true });
+
+    // Custom JSON formatter to force arrays onto a single line
+    const formattedEntries = Object.entries(historyData).map(([date, types]) => {
+        return (
+            `  "${date}": {\n` +
+            `    "node": ${JSON.stringify(types.node || [])},\n` +
+            `    "way": ${JSON.stringify(types.way || [])},\n` +
+            `    "relation": ${JSON.stringify(types.relation || [])}\n` +
+            `  }`
+        );
+    });
+
+    const formattedJson = `{\n${formattedEntries.join(',\n')}\n}`;
+
+    await fsp.writeFile(filePath, formattedJson, 'utf8');
+}
+
+/**
+ * Reads historical edit data from a JSON file and aggregates a deduplicated list
+ * of OpenStreetMap element IDs (nodes, ways, and relations) from the past month.
+ *
+ * @async
+ * @function getHistoricalEdits
+ * @returns {Promise<{node: Set<number>, way: Set<number>, relation: Set<number>}>} An object containing Sets of IDs from the last rolling month.
+ * @throws {Error} Throws an error if the file cannot be read, parsed, or if directory operations fail.
+ */
+async function getHistoricalEdits() {
+    const filePath = path.join(HISTORY_DIR, historicalEditsFile);
+
+    let historicalEdits;
+
+    try {
+        const fileContent = await fsp.readFile(filePath, 'utf8');
+        historicalEdits = JSON.parse(fileContent);
+    } catch (error) {
+        // If file doesn't exist yet, return empty sets
+        if (error.code === 'ENOENT') {
+            return { node: new Set(), way: new Set(), relation: new Set() };
+        }
+        console.error('An error occurred when reading historical edits file:', error);
+        throw error;
+    }
+
+    try {
+        const today = new Date();
+        today.setMonth(today.getMonth() - 1);
+        const cutoffDateStr = today.toISOString().split('T')[0];
+
+        const nodeSet = new Set();
+        const waySet = new Set();
+        const relationSet = new Set();
+
+        for (const [date, data] of Object.entries(historicalEdits)) {
+            if (date >= cutoffDateStr) {
+                if (data.node) data.node.forEach(id => nodeSet.add(id));
+                if (data.way) data.way.forEach(id => waySet.add(id));
+                if (data.relation) data.relation.forEach(id => relationSet.add(id));
+            }
+        }
+
+        return {
+            node: nodeSet,
+            way: waySet,
+            relation: relationSet,
+        };
+    } catch (error) {
+        console.error('An error occurred when processing historical edits:', error);
+        throw error;
+    }
+}
+
+/**
+ * Determines if an OSM feature has been edited recently by the bot.
+ *
+ * @param {object} feature - The feature object (node, way, or relation) containing 'type' and 'id'.
+ * @param {object} recentHistoricalEdits The object of recent historical edits containing Sets.
+ * @returns {boolean} Whether a recent bot edit was made
+ */
+function hasRecentBotEdit(feature, recentHistoricalEdits) {
+    const typeSet = recentHistoricalEdits[feature.type];
+    return typeSet ? typeSet.has(feature.id) : false;
+}
+
+/**
  * Applies a set of tag edits (key-value pairs) to an OSM feature's 'tags' object.
  * If an edit value is explicitly set to null, the corresponding tag key is deleted
  * from the feature's tags.
@@ -229,9 +356,10 @@ export async function generateSafeEditFile(countryName, subdivisionStats, tmpFil
  * @param {object} feature - The feature object (node, way, or relation) containing the 'tags' object.
  * @param {object} elementEdits - The object of key-value edits to apply. A value of null indicates a deletion.
  * @param {object} originalValues - The object of key-value original tag values.
+ * @param {OsmEdits} recentHistoricalEdits The object of recent historical edits (created by getHistoricalEdits).
  * @returns {boolean} Whether any changes were made
  */
-function applyEditsToFeatureTags(feature, elementEdits, originalValues) {
+function applyEditsToFeatureTags(feature, elementEdits, originalValues, recentHistoricalEdits) {
     let changed = false;
 
     // visible is false for deleted objects and unset for normal objects
@@ -239,6 +367,11 @@ function applyEditsToFeatureTags(feature, elementEdits, originalValues) {
 
     // If a feature does not have any tags, it has dramatically changed since it was originally fetched
     if (isDeleted || !feature.tags || typeof feature.tags !== 'object') {
+        return false;
+    }
+
+    if (hasRecentBotEdit(feature, recentHistoricalEdits)) {
+        console.log(`Avoiding edit war for ${feature.type}/${feature.id}`);
         return false;
     }
 
@@ -302,10 +435,11 @@ function groupData(data) {
  * and tracks features that resulted in actual modifications.
  *
  * @param {Object<string, GroupedFixes>} groupedData An object keyed by type, containing IDs, fixes and original invalid values.
+ * @param {OsmEdits} recentHistoricalEdits The object of recent historical edits (created by getHistoricalEdits).
  * @returns {Promise<Array<object>>} A promise that resolves to an array of modified feature objects
  * ready for inclusion in an OSM changeset.
  */
-async function processFeatures(groupedData) {
+async function processFeatures(groupedData, recentHistoricalEdits) {
     let modifications = [];
     const MAX_FEATURES_PER_FETCH = 500;
     for (const type in groupedData) {
@@ -329,7 +463,12 @@ async function processFeatures(groupedData) {
                     const suggestedFixes = fixes.get(featureId);
                     const invalidNumbers = invalid.get(featureId);
                     if (suggestedFixes) {
-                        const changed = applyEditsToFeatureTags(feature, suggestedFixes, invalidNumbers);
+                        const changed = applyEditsToFeatureTags(
+                            feature,
+                            suggestedFixes,
+                            invalidNumbers,
+                            recentHistoricalEdits
+                        );
                         if (changed) {
                             modifications.push(feature);
                         } else {
@@ -349,19 +488,21 @@ async function processFeatures(groupedData) {
  * Reads a safe edits file, groups the edits, processes the features by applying fixes,
  * and uploads the resulting modifications to OSM as a changeset.
  *
- * @param {string} countryName The human-readable name of the country.
- * @param {SubdivisionStats} subdivisionStats The statistics/metadata for the current subdivision.
  * @param {string} filePath The path to the safe edits JSON file (created by generateSafeEditFile).
- * @returns {Promise<void>} A promise that resolves after the changes have been uploaded or skipped.
+ * @param {OsmEdits} recentHistoricalEdits The object of recent historical edits (created by getHistoricalEdits).
+ * @returns {Promise<OsmEdits>} A promise that resolves to an object containing the grouped features that were
+ * modified and uploaded or empty arrays if skipped.
  */
-export async function uploadSafeChanges(filePath) {
+export async function uploadSafeChanges(filePath, recentHistoricalEdits) {
     const content = await fsp.readFile(filePath, 'utf-8');
     const subdivisionData = JSON.parse(content);
 
     const edits = subdivisionData.edits;
 
     const groupedData = groupData(edits);
-    const modifications = await processFeatures(groupedData);
+    const modifications = await processFeatures(groupedData, recentHistoricalEdits);
+
+    const editsMade = { node: [], way: [], relation: [] };
 
     if (modifications.length > 0) {
         console.log(
@@ -397,7 +538,16 @@ export async function uploadSafeChanges(filePath) {
                 `Changeset ${id} created for ${subdivisionData.subdivisionName} (${subdivisionData.countryName})`
             );
         });
+
+        modifications.reduce((acc, feature) => {
+            if (acc[feature.type]) {
+                acc[feature.type].push(feature.id);
+            }
+            return acc;
+        }, editsMade);
     }
+
+    return editsMade;
 }
 
 /**
@@ -405,15 +555,15 @@ export async function uploadSafeChanges(filePath) {
  *
  * This asynchronous function performs the following steps:
  * 1. Recursively traverses the {@link SAFE_EDITS_DIR} to collect all generated safe edit JSON files.
- * 2. Reads the content and metadata of each file (country name, subdivision name).
- * 3. Checks the global {@link COUNTRIES} configuration to see if `safeAutoFixBotEnabled` is set to `true`
- * for the file's corresponding country.
- * 4. If enabled, it executes {@link uploadSafeChanges} for the file and collects the resulting Promise.
- * 5. Waits for all upload Promises to resolve using `Promise.allSettled`.
- * 6. Logs a detailed summary of the total files processed, successful uploads, and failed uploads.
+ * 2. Sequentially reads the content and metadata of each file (country name, edit counts).
+ * 3. Checks the global {@link COUNTRIES} configuration to verify if `safeAutoFixBotEnabled` is set to `true`
+ * for the file's corresponding country and that safe edits exist.
+ * 4. If enabled, it sequentially executes {@link uploadSafeChanges} for the file and introduces a brief pause.
+ * 5. Aggregates and logs a detailed summary of the total files processed, successful uploads and skipped files per country.
  *
  * @async
- * @returns {Promise<void>} A Promise that resolves when all file processing and upload attempts are complete.
+ * @throws {Error} Throws an error if directory traversal fails or if a file read/JSON parse error occurs.
+ * @returns {Promise<void>} A Promise that resolves when all files have been sequentially processed.
  */
 async function processSafeEdits() {
     const filesToProcess = [];
@@ -440,19 +590,21 @@ async function processSafeEdits() {
     // Configure with the auth token
     OSM.configure({ authHeader: `Bearer ${BOT_AUTH_TOKEN}` });
 
-    withRetry(() => OSM.getUser('me'))
-        .then(result => {
-            console.debug(`Logged in as ${result.display_name}`);
-        })
-        .catch(error => {
-            console.error('Could not identify with OSM API');
-            throw error;
-        });
+    try {
+        const user = await withRetry(() => OSM.getUser('me'));
+        console.debug(`Logged in as ${user.display_name}`);
+    } catch (error) {
+        console.error('Could not identify with OSM API. Aborting execution.');
+        throw error;
+    }
 
     try {
         console.debug(`Starting file collection in ${SAFE_EDITS_DIR}...`);
         await collectSafeEditFiles(SAFE_EDITS_DIR);
         console.debug(`Found ${filesToProcess.length} safe edit files.`);
+
+        const recentHistoricalEdits = await getHistoricalEdits();
+        const allEditsMade = { node: new Set(), way: new Set(), relation: new Set() };
 
         for (const filePath of filesToProcess) {
             try {
@@ -491,8 +643,13 @@ async function processSafeEdits() {
 
                 if (countryConfig.safeAutoFixBotEnabled === true && data.totalSafeEdits > 0) {
                     try {
-                        await uploadSafeChanges(filePath);
+                        const divisionEdits = await uploadSafeChanges(filePath, recentHistoricalEdits);
+
                         stats.uploaded++;
+                        divisionEdits.node.forEach(id => allEditsMade.node.add(id));
+                        divisionEdits.way.forEach(id => allEditsMade.way.add(id));
+                        divisionEdits.relation.forEach(id => allEditsMade.relation.add(id));
+
                         await sleep(500);
                     } catch (err) {
                         console.error(`Upload failed for ${filePath}:`, err);
@@ -506,6 +663,14 @@ async function processSafeEdits() {
             }
         }
 
+        const finalEditsMade = {
+            node: Array.from(allEditsMade.node),
+            way: Array.from(allEditsMade.way),
+            relation: Array.from(allEditsMade.relation),
+        };
+
+        await updateHistoricalEdits(finalEditsMade);
+
         console.log(`\n--- Country Processing Statistics ---`);
         for (const country in countryStats) {
             const stats = countryStats[country];
@@ -514,7 +679,7 @@ async function processSafeEdits() {
             console.log(`  Suggested Fixes: ${stats.totalSuggestedEdits}`);
             console.log(`  Safe Edits: ${stats.totalSafeEdits}`);
             console.log(`  Files Uploaded (Active Bot): ${stats.uploaded}`);
-            console.log(`  Files Skipped (No Edits/NoConfig/Bot Disabled): ${stats.skipped}`);
+            console.log(`  Files Skipped (No Edits/No Config/Bot Disabled): ${stats.skipped}`);
         }
 
         const uploadedCount = Object.values(countryStats).reduce((sum, stats) => sum + stats.uploaded, 0);
