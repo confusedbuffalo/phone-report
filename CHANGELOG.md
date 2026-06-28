@@ -1,3 +1,10 @@
+# [5.19.0](https://github.com/confusedbuffalo/phone-report/compare/v5.18.2...v5.19.0) (2026-06-28)
+
+
+### Features
+
+* track bot edits to avoid edit wars ([fac186c](https://github.com/confusedbuffalo/phone-report/commit/fac186c26fe7b3c9abec5b2b428f79e8de97839b))
+
 ## [5.18.2](https://github.com/confusedbuffalo/phone-report/compare/v5.18.1...v5.18.2) (2026-06-26)
 
 
