@@ -1,0 +1,115 @@
+{
+  "name": "Bolivia",
+  "slug": "bolivia",
+  "locale": "es-ES",
+  "timestamp": "2026-07-03T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Bolivia": [
+      {
+        "name": "Beni",
+        "divisionSlug": "bolivia",
+        "slug": "beni",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 56,
+        "autoFixableCount": 46,
+        "foreignCount": 0,
+        "safeEditCount": 44,
+        "totalCount": 89
+      },
+      {
+        "name": "Chuquisaca",
+        "divisionSlug": "bolivia",
+        "slug": "chuquisaca",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 87,
+        "autoFixableCount": 66,
+        "foreignCount": 1,
+        "safeEditCount": 65,
+        "totalCount": 177
+      },
+      {
+        "name": "Cochabamba",
+        "divisionSlug": "bolivia",
+        "slug": "cochabamba",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 368,
+        "autoFixableCount": 283,
+        "foreignCount": 1,
+        "safeEditCount": 262,
+        "totalCount": 3288
+      },
+      {
+        "name": "La Paz",
+        "divisionSlug": "bolivia",
+        "slug": "la-paz",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 659,
+        "autoFixableCount": 427,
+        "foreignCount": 3,
+        "safeEditCount": 412,
+        "totalCount": 2134
+      },
+      {
+        "name": "Oruro",
+        "divisionSlug": "bolivia",
+        "slug": "oruro",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 63,
+        "autoFixableCount": 49,
+        "foreignCount": 0,
+        "safeEditCount": 42,
+        "totalCount": 161
+      },
+      {
+        "name": "Pando",
+        "divisionSlug": "bolivia",
+        "slug": "pando",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 4,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 23
+      },
+      {
+        "name": "Potosí",
+        "divisionSlug": "bolivia",
+        "slug": "potosí",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 116,
+        "autoFixableCount": 95,
+        "foreignCount": 0,
+        "safeEditCount": 88,
+        "totalCount": 256
+      },
+      {
+        "name": "Santa Cruz",
+        "divisionSlug": "bolivia",
+        "slug": "santa-cruz",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 789,
+        "autoFixableCount": 614,
+        "foreignCount": 0,
+        "safeEditCount": 600,
+        "totalCount": 1224
+      },
+      {
+        "name": "Tarija",
+        "divisionSlug": "bolivia",
+        "slug": "tarija",
+        "lastUpdated": "2026-07-03T23:00:00.000Z",
+        "invalidCount": 62,
+        "autoFixableCount": 40,
+        "foreignCount": 0,
+        "safeEditCount": 37,
+        "totalCount": 132
+      }
+    ]
+  },
+  "invalidCount": 2204,
+  "autoFixableCount": 1620,
+  "foreignCount": 5,
+  "safeEditCount": 1550,
+  "totalCount": 7484,
+  "botEnabled": false
+}
