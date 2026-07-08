@@ -1,0 +1,185 @@
+{
+  "name": "Nederland",
+  "slug": "nederland",
+  "locale": "nl-NL",
+  "timestamp": "2026-07-08T00:00:00.000Z",
+  "groupedDivisionStats": {
+    "Europees Nederland": [
+      {
+        "name": "Drenthe",
+        "divisionSlug": "europees-nederland",
+        "slug": "drenthe",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 120,
+        "missingNamesCount": 0,
+        "totalCount": 178
+      },
+      {
+        "name": "Flevoland",
+        "divisionSlug": "europees-nederland",
+        "slug": "flevoland",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 24,
+        "missingNamesCount": 0,
+        "totalCount": 96
+      },
+      {
+        "name": "Fryslân (Friesland)",
+        "divisionSlug": "europees-nederland",
+        "slug": "fryslân-friesland",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 3593,
+        "missingNamesCount": 7,
+        "totalCount": 8744
+      },
+      {
+        "name": "Gelderland",
+        "divisionSlug": "europees-nederland",
+        "slug": "gelderland",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 339,
+        "missingNamesCount": 8,
+        "totalCount": 620
+      },
+      {
+        "name": "Groningen",
+        "divisionSlug": "europees-nederland",
+        "slug": "groningen",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 213,
+        "missingNamesCount": 3,
+        "totalCount": 385
+      },
+      {
+        "name": "Limburg",
+        "divisionSlug": "europees-nederland",
+        "slug": "limburg",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 847,
+        "missingNamesCount": 6,
+        "totalCount": 1490
+      },
+      {
+        "name": "Noord-Brabant",
+        "divisionSlug": "europees-nederland",
+        "slug": "noord-brabant",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 289,
+        "missingNamesCount": 0,
+        "totalCount": 449
+      },
+      {
+        "name": "Noord-Holland",
+        "divisionSlug": "europees-nederland",
+        "slug": "noord-holland",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 609,
+        "missingNamesCount": 21,
+        "totalCount": 1562
+      },
+      {
+        "name": "Overijssel",
+        "divisionSlug": "europees-nederland",
+        "slug": "overijssel",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 88,
+        "missingNamesCount": 1,
+        "totalCount": 285
+      },
+      {
+        "name": "Zuid-Holland",
+        "divisionSlug": "europees-nederland",
+        "slug": "zuid-holland",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 308,
+        "missingNamesCount": 1,
+        "totalCount": 977
+      },
+      {
+        "name": "Utrecht",
+        "divisionSlug": "europees-nederland",
+        "slug": "utrecht",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 161,
+        "missingNamesCount": 0,
+        "totalCount": 249
+      },
+      {
+        "name": "Zeeland",
+        "divisionSlug": "europees-nederland",
+        "slug": "zeeland",
+        "lastUpdated": "2026-07-08T00:00:00.000Z",
+        "invalidCount": 85,
+        "missingNamesCount": 4,
+        "totalCount": 295
+      }
+    ],
+    "Aruba": [
+      {
+        "name": "Aruba",
+        "divisionSlug": "aruba",
+        "slug": "aruba",
+        "lastUpdated": "2026-07-07T00:25:45.000Z",
+        "invalidCount": 785,
+        "missingNamesCount": 645,
+        "totalCount": 838
+      }
+    ],
+    "Curaçao": [
+      {
+        "name": "Curaçao",
+        "divisionSlug": "curaçao",
+        "slug": "curaçao",
+        "lastUpdated": "2026-07-07T00:26:43.000Z",
+        "invalidCount": 762,
+        "missingNamesCount": 594,
+        "totalCount": 818
+      }
+    ],
+    "Sint Maarten": [
+      {
+        "name": "Sint Maarten",
+        "divisionSlug": "sint-maarten",
+        "slug": "sint-maarten",
+        "lastUpdated": "2026-07-07T00:24:40.000Z",
+        "invalidCount": 79,
+        "missingNamesCount": 36,
+        "totalCount": 258
+      }
+    ],
+    "Caribisch Nederland": [
+      {
+        "name": "Bonaire",
+        "divisionSlug": "caribisch-nederland",
+        "slug": "bonaire",
+        "lastUpdated": "2026-07-07T00:25:45.000Z",
+        "invalidCount": 32,
+        "missingNamesCount": 11,
+        "totalCount": 53
+      },
+      {
+        "name": "Saba",
+        "divisionSlug": "caribisch-nederland",
+        "slug": "saba",
+        "lastUpdated": "2026-07-07T00:25:45.000Z",
+        "invalidCount": 19,
+        "missingNamesCount": 3,
+        "totalCount": 38
+      },
+      {
+        "name": "Sint Eustatius",
+        "divisionSlug": "caribisch-nederland",
+        "slug": "sint-eustatius",
+        "lastUpdated": "2026-07-07T00:25:45.000Z",
+        "invalidCount": 27,
+        "missingNamesCount": 8,
+        "totalCount": 38
+      }
+    ]
+  },
+  "invalidCount": 8380,
+  "missingNamesCount": 1348,
+  "totalCount": 17373,
+  "autoFixableCount": 0,
+  "safeEditCount": 0
+}
