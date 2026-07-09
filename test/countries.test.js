@@ -19,6 +19,7 @@ describe('Countries file tests', () => {
     const getSortableName = countryName => {
         const overrides = {
             България: 'Bulgaria',
+            Česko: 'Cesko',
         };
         return overrides[countryName] || countryName;
     };
