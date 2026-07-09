@@ -309,6 +309,22 @@
             "Yukon": 391455
         }
     },
+    "Česko": {
+        "countryCode": "CZ",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/czech-republic.osm.pbf",
+        "divisions": {
+            "Jihovýchod": 435510,
+            "Jihozápad": 435511,
+            "Moravskoslezsko": 435512,
+            "Praha": 435541,
+            "Severovýchod": 435513,
+            "Severozápad": 435516,
+            "Střední Čechy": 435515,
+            "Střední Morava": 435508
+        }
+    },
     "Chile": {
         "countryCode": "CL",
         "locale": "es-ES",
@@ -1084,6 +1100,31 @@
             "Northwest": 3831714,
             "Southeast": 3831715,
             "Southwest": 3831716
+        }
+    },
+    "Slovensko": {
+        "countryCode": "SK",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/slovakia.osm.pbf",
+        "divisionMap": {
+            "Západné Slovensko": {
+                "Nitriansky kraj": 388268,
+
+                "Trenčiansky kraj": 388267,
+                "Trnavský kraj": 388266
+            },
+            "Východné Slovensko": {
+                "Košický kraj": 388272,
+                "Prešovský kraj": 388271
+            },
+            "Bratislavský kraj": {
+                "Bratislavský kraj": 388265
+            },
+            "Stredné Slovensko": {
+                "Banskobystrický kraj": 388270,
+                "Žilinský kraj": 388269
+            }
         }
     },
     "South Africa": {
