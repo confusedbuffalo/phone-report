@@ -101,7 +101,9 @@ const SPACING_REGEX_DEFAULT = /\s/g;
  * @returns {RegExp} The regular expression to use for spacing validation.
  */
 export function getSpacingRegex(countryCode) {
-    return [...NANP_COUNTRY_CODES, 'ID'].includes(countryCode) ? SPACING_REGEX_NANP : SPACING_REGEX_DEFAULT;
+    // ID: https://github.com/confusedbuffalo/phone-report/pull/427
+    // JP: https://github.com/confusedbuffalo/phone-report/issues/466
+    return [...NANP_COUNTRY_CODES, 'ID', 'JP'].includes(countryCode) ? SPACING_REGEX_NANP : SPACING_REGEX_DEFAULT;
 }
 
 /**
