@@ -1,3 +1,11 @@
+# [5.20.0](https://github.com/confusedbuffalo/phone-report/compare/v5.19.0...v5.20.0) (2026-07-10)
+
+
+### Features
+
+* add CZ and SK ([43b6d66](https://github.com/confusedbuffalo/phone-report/commit/43b6d66b639836086fa6b37a86297c6b8d04d850))
+* add México ([#464](https://github.com/confusedbuffalo/phone-report/issues/464)) ([c38d720](https://github.com/confusedbuffalo/phone-report/commit/c38d7205a4093d2351b659dd40de7e0d671b5976))
+
 # [5.19.0](https://github.com/confusedbuffalo/phone-report/compare/v5.18.2...v5.19.0) (2026-06-28)
 
 
