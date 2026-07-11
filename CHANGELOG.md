@@ -1,3 +1,23 @@
+# [5.21.0](https://github.com/confusedbuffalo/phone-report/compare/v5.20.0...v5.21.0) (2026-07-11)
+
+
+### Bug Fixes
+
+* replace machine translated nl strings with en strings [#465](https://github.com/confusedbuffalo/phone-report/issues/465) ([c88244d](https://github.com/confusedbuffalo/phone-report/commit/c88244d6e2a5914432a8214926692148365907a9))
+
+
+### Features
+
+* add JP fixes [#466](https://github.com/confusedbuffalo/phone-report/issues/466) ([ec160f8](https://github.com/confusedbuffalo/phone-report/commit/ec160f81bd8598fd10d0b44360fac7aa8c4f85c2))
+
+# [5.20.0](https://github.com/confusedbuffalo/phone-report/compare/v5.19.0...v5.20.0) (2026-07-10)
+
+
+### Features
+
+* add CZ and SK ([43b6d66](https://github.com/confusedbuffalo/phone-report/commit/43b6d66b639836086fa6b37a86297c6b8d04d850))
+* add México ([#464](https://github.com/confusedbuffalo/phone-report/issues/464)) ([c38d720](https://github.com/confusedbuffalo/phone-report/commit/c38d7205a4093d2351b659dd40de7e0d671b5976))
+
 # [5.19.0](https://github.com/confusedbuffalo/phone-report/compare/v5.18.2...v5.19.0) (2026-06-28)
 
 
