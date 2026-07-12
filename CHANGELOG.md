@@ -1,3 +1,15 @@
+# [5.22.0](https://github.com/confusedbuffalo/phone-report/compare/v5.21.0...v5.22.0) (2026-07-12)
+
+
+### Bug Fixes
+
+* fix Estado de Mexico state name ([#469](https://github.com/confusedbuffalo/phone-report/issues/469)) ([dd5c2d8](https://github.com/confusedbuffalo/phone-report/commit/dd5c2d8d769b196799baf938a616284eb957b9b4))
+
+
+### Features
+
+* add HR ([ec459ac](https://github.com/confusedbuffalo/phone-report/commit/ec459ac14ebdf3a537bef16c53c83557fa7f3071))
+
 # [5.21.0](https://github.com/confusedbuffalo/phone-report/compare/v5.20.0...v5.21.0) (2026-07-11)
 
 
