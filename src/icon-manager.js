@@ -128,6 +128,9 @@ export class IconManager {
             case 'temaki':
                 packageName = '@rapideditor/temaki';
                 break;
+            case 'pinhead':
+                packageName = ' @waysidemapping/pinhead';
+                break;
             default: {
                 // iD, Roentgen and Flagpedia icons
                 const basePath = path.resolve(ICONS_DIR, library);
@@ -136,13 +139,15 @@ export class IconManager {
         }
 
         if (packageName) {
-            // This covers 'fas', 'far', 'maki', and 'temaki'
+            // This covers 'fas', 'far', 'maki', 'temaki' and 'pinhead'
             let svgSubPath;
             if (faStyleDir) {
                 // Font Awesome Icons
                 svgSubPath = `svgs/${faStyleDir}/${icon}.svg`;
             } else if (library === 'temaki') {
                 svgSubPath = `icons/${icon.replace('-', '_')}.svg`;
+            } else if (library === 'pinhead') {
+                svgSubPath = `dist/icons/${icon}.svg`;
             } else {
                 // Maki
                 svgSubPath = `icons/${icon}.svg`;

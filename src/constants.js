@@ -288,6 +288,12 @@ export const ICON_ATTRIBUTION = [
         link: 'https://github.com/openstreetmap/iD/tree/develop/svg/iD-sprite',
     },
     {
+        name: 'Pinhead Map Icons',
+        license: '(CC0 1.0)',
+        license_link: 'https://creativecommons.org/publicdomain/zero/1.0/',
+        link: 'https://github.com/waysidemapping/pinhead',
+    },
+    {
         name: 'Flag icons',
         license: 'Public Domain',
         link: 'https://flagpedia.net',
