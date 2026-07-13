@@ -299,12 +299,6 @@ function getSortButtonLayout(reportType, filterType) {
             { style: 'date', label: 'date' },
             { style: 'invalid', label: 'invalidNumber' },
         ];
-    } else if (reportType === 'hours' && filterType === 'fixable') {
-        return [
-            { style: 'name', label: 'name' },
-            { style: 'fixable', label: 'suggestedFix' },
-            { style: 'invalid', label: 'invalidHours' },
-        ];
     } else if (reportType === 'hours') {
         // invalid hours
         return [
