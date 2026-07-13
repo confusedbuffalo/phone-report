@@ -61,13 +61,15 @@ export function createListItem(item) {
         ? `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameTo')}</span>`
         : `<span data-editor-id="apply-fix" class="label label-help">${translate('duplicateNameFrom')}</span>`;
 
+    // prettier-ignore
     const buttonLayout = {
         phone: [
             [websiteButton, fixButton, noteButton],
             [josmFixButton, editorButtons],
         ],
         hours: [
-            [websiteButton, evaluationButton, fixButton, noteButton],
+            [evaluationButton, fixButton, noteButton],
+            [websiteButton],
             [josmFixButton, editorButtons],
         ],
         name: [
