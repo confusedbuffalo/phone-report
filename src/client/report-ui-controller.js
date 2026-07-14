@@ -267,6 +267,25 @@ export function renderNumbers() {
         );
     }
 
+    // Update stats box
+    const invalidCountElement = document.getElementById('stats-box-invalid-count');
+    if (invalidCountElement) {
+        const newInvalidCount = sortedItems.invalid.length + sortedItems.fixable.length;
+        invalidCountElement.textContent = newInvalidCount;
+    }
+
+    const fixableCountElement = document.getElementById('stats-box-fixable-count');
+    if (fixableCountElement) {
+        const newFixableCount = sortedItems.fixable.length;
+        fixableCountElement.textContent = newFixableCount;
+    }
+
+    const missingCountElement = document.getElementById('stats-box-missing-count');
+    if (missingCountElement) {
+        const newMissingCount = sortedItems.missing.length;
+        missingCountElement.textContent = newMissingCount;
+    }
+
     applyEditorVisibility();
     setUpSaveBtn();
     setUpUndoRedoBtns();
