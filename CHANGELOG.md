@@ -1,3 +1,10 @@
+## [5.23.2](https://github.com/confusedbuffalo/phone-report/compare/v5.23.1...v5.23.2) (2026-07-14)
+
+
+### Bug Fixes
+
+* fix bbbike download links ([2080bf1](https://github.com/confusedbuffalo/phone-report/commit/2080bf1d0d40b8527e173cada62cf9ae8cf1d34d))
+
 ## [5.23.1](https://github.com/confusedbuffalo/phone-report/compare/v5.23.0...v5.23.1) (2026-07-14)
 
 
