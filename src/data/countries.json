@@ -35,7 +35,7 @@
         "countryCode": "AU",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/australia.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/australia.osm.pbf",
         "divisions": {
             "Australian Capital Territory": 2354197,
             "Christmas Island": {
@@ -68,7 +68,7 @@
         "countryCode": "AT",
         "locale": "de-DE",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/austria.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/austria.osm.pbf",
         "divisions": {
             "Burgenland": 76909,
             "Kärnten": 52345,
@@ -85,7 +85,7 @@
         "countryCode": "BE",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/belgium.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/belgium.osm.pbf",
         "divisions": {
             "Vlaanderen": {
                 "relationId": 53134,
@@ -160,7 +160,7 @@
         "divisions": {
             "Akrotiri and Dhekelia": {
                 "relationId": 3263728,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/cyprus.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/cyprus.osm.pbf",
                 "countryCode": "CY"
             },
             "Anguilla ": {
@@ -205,7 +205,7 @@
             },
             "Isle of Man": {
                 "relationId": 62269,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/isle-of-man.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/isle-of-man.osm.pbf",
                 "countryCode": "IM"
             },
             "Jersey": {
@@ -244,7 +244,7 @@
         "countryCode": "BG",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/bulgaria.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/bulgaria.osm.pbf",
         "divisions": {
             "Област Стара Загора": 1300657,
             "Област Варна": 1437135,
@@ -280,7 +280,7 @@
         "countryCode": "CA",
         "locale": "en-CA",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/canada.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/canada.osm.pbf",
         "divisions": {
             "Alberta": 391186,
             "British Columbia": 390867,
@@ -394,7 +394,7 @@
         "countryCode": "DK",
         "locale": "da-DK",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/denmark.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/denmark.osm.pbf",
         "divisions": {
             "Region Nordjylland": 1319936,
             "Region Midtjylland": 1319935,
@@ -407,7 +407,7 @@
         "countryCode": "DE",
         "locale": "de-DE",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/germany.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/germany.osm.pbf",
         "divisionMap": {
             "Baden-Württemberg": {
                 "Regierungsbezirk Freiburg": 2106112,
@@ -510,7 +510,7 @@
         "countryCode": "ES",
         "locale": "es-ES",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/spain.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/spain.osm.pbf",
         "divisions": {
             "Andalucía": 349044,
             "Aragón": {
@@ -527,7 +527,7 @@
             },
             "Islas Canarias": {
                 "relationId": 349048,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/canary-islands.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/africa/canary-islands.osm.pbf"
             },
             "Cantabria": 349013,
             "Castilla-La Mancha": 349052,
@@ -564,7 +564,7 @@
         "countryCode": "FR",
         "locale": "fr-FR",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/france.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/france.osm.pbf",
         "divisionMap": {
             "Auvergne-Rhône-Alpes": {
                 "Auvergne-Rhône-Alpes": 3792877
@@ -652,14 +652,14 @@
             "Nouvelle-Calédonie": {
                 "Nouvelle-Calédonie": {
                     "relationId": 3407643,
-                    "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf",
+                    "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/new-caledonia.osm.pbf",
                     "countryCode": "NC"
                 }
             },
             "Polynésie française": {
                 "Polynésie française": {
                     "relationId": 3412620,
-                    "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf",
+                    "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/polynesie-francaise.osm.pbf",
                     "countryCode": "PF"
                 }
             },
@@ -802,7 +802,7 @@
         "countryCode": "IT",
         "locale": "it-IT",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/italy.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/italy.osm.pbf",
         "divisionMap": {
             "Centro": {
                 "Lazio": 40784,
@@ -840,7 +840,7 @@
         "countryCode": "JP",
         "locale": "en",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/asia/japan.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/asia/japan.osm.pbf",
         "divisions": {
             "中部地方 / Chubu": 532759,
             "中国地方 / Chugoku": 1842114,
@@ -856,7 +856,7 @@
         "countryCode": "LS",
         "locale": "en-ZA",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/lesotho.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/africa/lesotho.osm.pbf",
         "divisions": {
             "Lesotho": 2093234
         }
@@ -865,7 +865,7 @@
         "countryCode": "MA",
         "locale": "fr-MA",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/morocco.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/africa/morocco.osm.pbf",
         "divisions": {
             "Béni Mellal-Khénifra": 4734547,
             "Casablanca-Settat": 2424085,
@@ -925,7 +925,7 @@
         "countryCode": "NL",
         "locale": "nl-NL",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/netherlands.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/netherlands.osm.pbf",
         "divisionMap": {
             "Europees Nederland": {
                 "Drenthe": 47540,
@@ -1010,7 +1010,7 @@
         "countryCode": "NO",
         "locale": "nb-NO",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/norway.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/norway.osm.pbf",
         "divisions": {
             "Agder": 10155517,
             "Akershus": 406106,
@@ -1092,7 +1092,7 @@
         "countryCode": "PL",
         "locale": "pl-PL",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/poland.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/poland.osm.pbf",
         "divisions": {
             "Dolnośląskie": 224457,
             "Kujawsko-Pomorskie": 223407,
@@ -1144,7 +1144,7 @@
         "countryCode": "CH",
         "locale": "en",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/switzerland.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/switzerland.osm.pbf",
         "divisions": {
             "Aargau": 1686359,
             "Appenzell Ausserrhoden": 1686649,
@@ -1216,7 +1216,7 @@
         "countryCode": "ZA",
         "locale": "en-ZA",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/africa/south-africa.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/africa/south-africa.osm.pbf",
         "divisions": {
             "Eastern Cape": 4782250,
             "Free State": 92417,
@@ -1251,7 +1251,7 @@
         "countryCode": "SE",
         "locale": "sv-SE",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/sweden.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/sweden.osm.pbf",
         "divisions": {
             "Blekinge län": 54413,
             "Dalarnas län": 52834,
@@ -1280,7 +1280,7 @@
         "countryCode": "TW",
         "locale": "zh-TW",
         "safeAutoFixBotEnabled": false,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/asia/taiwan.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/asia/taiwan.osm.pbf",
         "divisions": {
             "Taipei / 臺北市": 1293250,
             "New Taipei / 新北市": 1527220,
@@ -1310,7 +1310,7 @@
         "countryCode": "TR",
         "locale": "en",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/turkey.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/turkey.osm.pbf",
         "divisions": {
             "Ege Bölgesi": 2094170,
             "Karadeniz Bölgesi": 1726294,
@@ -1325,7 +1325,7 @@
         "countryCode": "GB",
         "locale": "en-GB",
         "safeAutoFixBotEnabled": true,
-        "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/europe/united-kingdom.osm.pbf",
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/united-kingdom.osm.pbf",
         "divisionMap": {
             "England": {
                 "East Midlands": 151279,
@@ -1365,48 +1365,48 @@
         "divisions": {
             "Alabama": {
                 "relationId": 161950,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/alabama.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/alabama.osm.pbf"
             },
             "Alaska": {
                 "relationId": 1116270,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/alaska.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/alaska.osm.pbf"
             },
             "American Samoa": {
                 "relationId": 2177187,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
                 "countryCode": "AS"
             },
             "Arizona": {
                 "relationId": 162018,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/arizona.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/arizona.osm.pbf"
             },
             "Arkansas": {
                 "relationId": 161646,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/arkansas.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/arkansas.osm.pbf"
             },
             "California": {
                 "relationId": 165475,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/california.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/california.osm.pbf"
             },
             "Colorado": {
                 "relationId": 161961,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/colorado.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/colorado.osm.pbf"
             },
             "Connecticut": {
                 "relationId": 165794,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/connecticut.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/connecticut.osm.pbf"
             },
             "Delaware": {
                 "relationId": 162110,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/delaware.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/delaware.osm.pbf"
             },
             "District of Columbia": {
                 "relationId": 162069,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/district-of-columbia.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/district-of-columbia.osm.pbf"
             },
             "Florida": {
                 "relationId": 162050,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/florida.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/florida.osm.pbf"
             },
             "Georgia": {
                 "relationId": 161957,
@@ -1414,183 +1414,183 @@
             },
             "Guam": {
                 "relationId": 306001,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
                 "countryCode": "GU"
             },
             "Hawaii": {
                 "relationId": 166563,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/hawaii.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/hawaii.osm.pbf"
             },
             "Idaho": {
                 "relationId": 162116,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/idaho.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/idaho.osm.pbf"
             },
             "Illinois": {
                 "relationId": 122586,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/illinois.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/illinois.osm.pbf"
             },
             "Indiana": {
                 "relationId": 161816,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/indiana.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/indiana.osm.pbf"
             },
             "Iowa": {
                 "relationId": 161650,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/iowa.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/iowa.osm.pbf"
             },
             "Kansas": {
                 "relationId": 161644,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/kansas.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/kansas.osm.pbf"
             },
             "Kentucky": {
                 "relationId": 161655,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/kentucky.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/kentucky.osm.pbf"
             },
             "Louisiana": {
                 "relationId": 224922,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/louisiana.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/louisiana.osm.pbf"
             },
             "Maine": {
                 "relationId": 63512,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/maine.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/maine.osm.pbf"
             },
             "Maryland": {
                 "relationId": 162112,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/maryland.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/maryland.osm.pbf"
             },
             "Massachusetts": {
                 "relationId": 61315,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/massachusetts.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/massachusetts.osm.pbf"
             },
             "Michigan": {
                 "relationId": 165789,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/michigan.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/michigan.osm.pbf"
             },
             "Minnesota": {
                 "relationId": 165471,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/minnesota.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/minnesota.osm.pbf"
             },
             "Mississippi": {
                 "relationId": 161943,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/mississippi.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/mississippi.osm.pbf"
             },
             "Missouri": {
                 "relationId": 161638,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/missouri.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/missouri.osm.pbf"
             },
             "Montana": {
                 "relationId": 162115,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/montana.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/montana.osm.pbf"
             },
             "Nebraska": {
                 "relationId": 161648,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/nebraska.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/nebraska.osm.pbf"
             },
             "Nevada": {
                 "relationId": 165473,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/nevada.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/nevada.osm.pbf"
             },
             "New Hampshire": {
                 "relationId": 67213,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/new-hampshire.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/new-hampshire.osm.pbf"
             },
             "New Jersey": {
                 "relationId": 224951,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/new-jersey.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/new-jersey.osm.pbf"
             },
             "New Mexico": {
                 "relationId": 162014,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/new-mexico.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/new-mexico.osm.pbf"
             },
             "New York": {
                 "relationId": 61320,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/new-york.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/new-york.osm.pbf"
             },
             "North Carolina": {
                 "relationId": 224045,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/north-carolina.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/north-carolina.osm.pbf"
             },
             "North Dakota": {
                 "relationId": 161653,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/north-dakota.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/north-dakota.osm.pbf"
             },
             "Northern Mariana Islands": {
                 "relationId": 306004,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/australia-oceania/american-oceania.osm.pbf",
                 "countryCode": "MP"
             },
             "Ohio": {
                 "relationId": 162061,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/ohio.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/ohio.osm.pbf"
             },
             "Oklahoma": {
                 "relationId": 161645,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/oklahoma.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/oklahoma.osm.pbf"
             },
             "Oregon": {
                 "relationId": 165476,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/oregon.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/oregon.osm.pbf"
             },
             "Pennsylvania": {
                 "relationId": 162109,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/pennsylvania.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/pennsylvania.osm.pbf"
             },
             "Puerto Rico": {
                 "relationId": 4422604,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/puerto-rico.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/puerto-rico.osm.pbf",
                 "countryCode": "PR"
             },
             "Rhode Island": {
                 "relationId": 392915,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/rhode-island.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/rhode-island.osm.pbf"
             },
             "South Carolina": {
                 "relationId": 224040,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/south-carolina.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/south-carolina.osm.pbf"
             },
             "South Dakota": {
                 "relationId": 161652,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/south-dakota.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/south-dakota.osm.pbf"
             },
             "Tennessee": {
                 "relationId": 161838,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/tennessee.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/tennessee.osm.pbf"
             },
             "Texas": {
                 "relationId": 114690,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/texas.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/texas.osm.pbf"
             },
             "United States Virgin Islands": {
                 "relationId": 286898,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/us-virgin-islands.osm.pbf",
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/us-virgin-islands.osm.pbf",
                 "countryCode": "VI"
             },
             "Utah": {
                 "relationId": 161993,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/utah.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/utah.osm.pbf"
             },
             "Vermont": {
                 "relationId": 60759,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/vermont.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/vermont.osm.pbf"
             },
             "Virginia": {
                 "relationId": 224042,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/virginia.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/virginia.osm.pbf"
             },
             "Washington": {
                 "relationId": 165479,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/washington.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/washington.osm.pbf"
             },
             "West Virginia": {
                 "relationId": 162068,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/west-virginia.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/west-virginia.osm.pbf"
             },
             "Wisconsin": {
                 "relationId": 165466,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/wisconsin.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/wisconsin.osm.pbf"
             },
             "Wyoming": {
                 "relationId": 161991,
-                "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/north-america/us/wyoming.osm.pbf"
+                "pbfUrl": "https://download.bbbike.org/osm/pbf/region/north-america/us/wyoming.osm.pbf"
             }
         }
     },
