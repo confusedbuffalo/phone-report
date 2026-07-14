@@ -1,0 +1,59 @@
+{
+  "name": "Danmark",
+  "slug": "danmark",
+  "locale": "da-DK",
+  "timestamp": "2026-07-13T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Danmark": [
+      {
+        "name": "Region Nordjylland",
+        "divisionSlug": "danmark",
+        "slug": "region-nordjylland",
+        "lastUpdated": "2026-07-13T23:00:00.000Z",
+        "invalidCount": 51,
+        "autoFixableCount": 39,
+        "totalCount": 2596
+      },
+      {
+        "name": "Region Midtjylland",
+        "divisionSlug": "danmark",
+        "slug": "region-midtjylland",
+        "lastUpdated": "2026-07-13T23:00:00.000Z",
+        "invalidCount": 74,
+        "autoFixableCount": 53,
+        "totalCount": 4637
+      },
+      {
+        "name": "Region Syddanmark",
+        "divisionSlug": "danmark",
+        "slug": "region-syddanmark",
+        "lastUpdated": "2026-07-13T23:00:00.000Z",
+        "invalidCount": 117,
+        "autoFixableCount": 78,
+        "totalCount": 5275
+      },
+      {
+        "name": "Region Sjælland",
+        "divisionSlug": "danmark",
+        "slug": "region-sjælland",
+        "lastUpdated": "2026-07-13T23:00:00.000Z",
+        "invalidCount": 31,
+        "autoFixableCount": 15,
+        "totalCount": 2248
+      },
+      {
+        "name": "Region Hovedstaden",
+        "divisionSlug": "danmark",
+        "slug": "region-hovedstaden",
+        "lastUpdated": "2026-07-13T23:00:00.000Z",
+        "invalidCount": 174,
+        "autoFixableCount": 93,
+        "totalCount": 9325
+      }
+    ]
+  },
+  "invalidCount": 447,
+  "autoFixableCount": 278,
+  "totalCount": 24081,
+  "safeEditCount": 0
+}
