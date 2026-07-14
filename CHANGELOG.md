@@ -1,3 +1,10 @@
+## [5.23.1](https://github.com/confusedbuffalo/phone-report/compare/v5.23.0...v5.23.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* Revert JP region change ([#474](https://github.com/confusedbuffalo/phone-report/issues/474)) ([928cfa3](https://github.com/confusedbuffalo/phone-report/commit/928cfa3ee157da1e3882f1bc5a669a119b963280))
+
 # [5.23.0](https://github.com/confusedbuffalo/phone-report/compare/v5.22.0...v5.23.0) (2026-07-14)
 
 
