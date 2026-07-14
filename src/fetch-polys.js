@@ -77,6 +77,7 @@ async function fetchPoly(relationId) {
 
         if (response.data.includes('None') || response.status !== 200) {
             console.error(`⚠️ Failed to get valid poly for ${relationId}`);
+            process.exit(1);
             return;
         }
 
@@ -85,6 +86,7 @@ async function fetchPoly(relationId) {
         await new Promise(res => setTimeout(res, 1000));
     } catch (error) {
         console.error(`❌ Error fetching ${relationId}: ${error.message}`);
+        process.exit(1);
     }
 }
 
