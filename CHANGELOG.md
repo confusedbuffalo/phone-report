@@ -1,3 +1,16 @@
+# [5.23.0](https://github.com/confusedbuffalo/phone-report/compare/v5.22.0...v5.23.0) (2026-07-14)
+
+
+### Bug Fixes
+
+* standardise filtering for hours reports ([1333c02](https://github.com/confusedbuffalo/phone-report/commit/1333c0288d1219370cb725751a9454ca518d53f2))
+* try website button on its own row for hours ([0c2616e](https://github.com/confusedbuffalo/phone-report/commit/0c2616e8fd5fd0c454027aa13eafd144373882e5))
+
+
+### Features
+
+* split Kanto (JP) into prefectures ([72312a4](https://github.com/confusedbuffalo/phone-report/commit/72312a4ef82128eb8f6d7093528887ba0a38d6a4))
+
 # [5.22.0](https://github.com/confusedbuffalo/phone-report/compare/v5.21.0...v5.22.0) (2026-07-12)
 
 
