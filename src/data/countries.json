@@ -841,20 +841,12 @@
         "locale": "en",
         "safeAutoFixBotEnabled": false,
         "pbfUrl": "https://download3.bbbike.org/osm/pbf/region/asia/japan.osm.pbf",
-        "divisionMap": {
+        "divisions": {
             "中部地方 / Chubu": 532759,
             "中国地方 / Chugoku": 1842114,
             "北海道地方 / Hokkaido": 3792634,
             "近畿地方 / Kansai": 357113,
-            "関東地方 / Kanto": {
-                "千葉県 / Chiba Prefecture": 2679957,
-                "群馬県 / Gunma Prefecture": 1851649,
-                "茨城県 / Ibaraki Prefecture": 2682940,
-                "神奈川県 / Kanagawa Prefecture": 2689487,
-                "埼玉県 / Saitama Prefecture": 1768185,
-                "栃木県 / Tochigi Prefecture": 1800742,
-                "東京都 / Tokyo": 1543125
-            },
+            "関東地方 / Kanto": 1803923,
             "九州地方 / Kyūshū": 1842245,
             "四国地方 / Shikoku": 1847663,
             "東北地方 / Tōhoku": 1835900
