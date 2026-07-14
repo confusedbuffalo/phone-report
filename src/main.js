@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import axios from 'axios';
+import pLimit from 'p-limit';
 import { load } from 'js-yaml';
 import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
@@ -383,8 +384,15 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
         })
     );
 
+    const tasks = [];
     for (const subdivision of subdivisions) {
         for (const reportType of REPORT_TYPES) {
+            tasks.push({ subdivision, reportType });
+        }
+    }
+
+    const results = await Promise.all(
+        tasks.map(async ({ subdivision, reportType }) => {
             const reportStats = await processSubdivision(
                 subdivision,
                 reportType,
@@ -392,12 +400,17 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
                 rawDivisionName,
                 clientTranslations
             );
-            if (Object.keys(reportStats).length > 0) {
-                divisionStats[reportType].push(reportStats);
-                Object.keys(divisionTotals[reportType]).forEach(countType => {
-                    divisionTotals[reportType][countType] += reportStats[countType];
-                });
-            }
+            return { reportType, reportStats };
+        })
+    );
+
+    for (const { reportType, reportStats } of results.filter(Boolean)) {
+        if (Object.keys(reportStats).length > 0) {
+            divisionStats[reportType].push(reportStats);
+
+            Object.keys(divisionTotals[reportType]).forEach(countType => {
+                divisionTotals[reportType][countType] += reportStats[countType];
+            });
         }
     }
 
@@ -638,24 +651,26 @@ async function main() {
     // TODO: serve the translations server-side
     const clientDefaultTranslations = fullDefaultTranslations;
 
-    for (const countryKey in COUNTRIES) {
-        const countryData = COUNTRIES[countryKey];
-        countryData.name = countryKey;
-        countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
-        countryData.divisionLanguages = Object.fromEntries(
-            Object.entries(officialLanguages).filter(([key, _value]) => key.startsWith(countryData.countryCode))
-        );
-        const countryStats = await processCountry(countryData);
-        if (!countryStats) {
-            continue;
-        }
+    const limit = pLimit(3);
 
+    const preparedCountries = Object.entries(COUNTRIES).map(([countryKey, countryData]) => ({
+        ...countryData,
+        name: countryKey,
+        officialLanguages: officialLanguages[countryData.countryCode] ?? officialLanguages.default,
+        divisionLanguages: Object.fromEntries(
+            Object.entries(officialLanguages).filter(([key]) => key.startsWith(countryData.countryCode))
+        ),
+    }));
+
+    const targetCountries = testMode ? preparedCountries.slice(0, 1) : preparedCountries;
+
+    const processingPromises = targetCountries.map(countryData => limit(() => processCountry(countryData)));
+
+    const countryStatsResults = (await Promise.all(processingPromises)).filter(Boolean);
+
+    for (const countryStats of countryStatsResults) {
         for (const reportType of REPORT_TYPES) {
             allCountryStats[reportType].push(countryStats[reportType]);
-        }
-
-        if (testMode) {
-            break;
         }
     }
 
