@@ -1,3 +1,17 @@
+# [5.24.0](https://github.com/confusedbuffalo/phone-report/compare/v5.23.2...v5.24.0) (2026-07-15)
+
+
+### Bug Fixes
+
+* exit script if poly files fail to fetch ([deea049](https://github.com/confusedbuffalo/phone-report/commit/deea0498b1f9c77707f033ff8c9c60966d585d47))
+* update stats box when fixes are applied ([5c29b24](https://github.com/confusedbuffalo/phone-report/commit/5c29b249b22b4e6e888717971ef5bab34e05baac)), closes [#448](https://github.com/confusedbuffalo/phone-report/issues/448)
+* Updated German translation ([#478](https://github.com/confusedbuffalo/phone-report/issues/478)) ([8a34efa](https://github.com/confusedbuffalo/phone-report/commit/8a34efa0ce871eda333df247ad0f074f70f04026))
+
+
+### Features
+
+* try JP Kanto prefectures again ([0e52f8c](https://github.com/confusedbuffalo/phone-report/commit/0e52f8c5c247f1cea691fa172af97254c39153bb))
+
 ## [5.23.2](https://github.com/confusedbuffalo/phone-report/compare/v5.23.1...v5.23.2) (2026-07-14)
 
 
