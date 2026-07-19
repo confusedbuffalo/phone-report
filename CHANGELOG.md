@@ -1,3 +1,10 @@
+## [5.24.1](https://github.com/confusedbuffalo/phone-report/compare/v5.24.0...v5.24.1) (2026-07-19)
+
+
+### Bug Fixes
+
+* fixed opening hours values that are too long are not autofixable ([916c266](https://github.com/confusedbuffalo/phone-report/commit/916c266a1c192739bb93a19438cdcd0561cd3415))
+
 # [5.24.0](https://github.com/confusedbuffalo/phone-report/compare/v5.23.2...v5.24.0) (2026-07-15)
 
 
