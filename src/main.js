@@ -377,18 +377,7 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
-    const divisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
-    const divisionTotals = Object.fromEntries(
-        Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
-            return [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))];
-        })
-    );
-
-    const tasks = subdivisions.flatMap(subdivision =>
-        REPORT_TYPES.map(reportType =>
-            ({ subdivision, reportType })
-        )
-    );
+    const tasks = subdivisions.flatMap(subdivision => REPORT_TYPES.map(reportType => ({ subdivision, reportType })));
 
     const results = await Promise.all(
         tasks.map(async ({ subdivision, reportType }) => {
@@ -403,15 +392,24 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
         })
     );
 
-    for (const { reportType, reportStats } of results.filter(Boolean)) {
-        if (Object.keys(reportStats).length > 0) {
-            divisionStats[reportType].push(reportStats);
+    const validResults = results.filter(r => Object.keys(r?.reportStats ?? {}).length);
 
-            Object.keys(divisionTotals[reportType]).forEach(countType => {
-                divisionTotals[reportType][countType] += reportStats[countType];
-            });
-        }
-    }
+    const divisionStats = validResults.reduce((stats, { reportType, reportStats }) => {
+        (stats[reportType] ??= []).push(reportStats);
+        return stats;
+    }, {});
+
+    const divisionTotals = Object.fromEntries(
+        Object.entries(divisionStats).map(([reportType, stats]) => [
+            reportType,
+            stats.reduce((totals, reportStats) => {
+                for (const countType in reportStats) {
+                    totals[countType] = (totals[countType] ?? 0) + reportStats[countType];
+                }
+                return totals;
+            }, {}),
+        ])
+    );
 
     return { divisionStats, divisionTotals };
 }
@@ -643,8 +641,6 @@ async function main() {
 
     console.log('Starting full build process...');
 
-    const allCountryStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
-
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
     // TODO: serve the translations server-side
@@ -665,13 +661,11 @@ async function main() {
 
     const processingPromises = targetCountries.map(countryData => limit(() => processCountry(countryData)));
 
-    const countryStatsResults = (await Promise.all(processingPromises)).filter(Boolean);
+    const countryStats = (await Promise.all(processingPromises)).filter(Boolean);
 
-    for (const countryStats of countryStatsResults) {
-        for (const reportType of REPORT_TYPES) {
-            allCountryStats[reportType].push(countryStats[reportType]);
-        }
-    }
+    const allCountryStats = Object.fromEntries(
+        REPORT_TYPES.map(type => [type, countryStats.map(result => result[type])])
+    );
 
     for (const reportType of REPORT_TYPES) {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);
