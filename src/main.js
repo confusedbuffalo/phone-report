@@ -384,12 +384,11 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
         })
     );
 
-    const tasks = [];
-    for (const subdivision of subdivisions) {
-        for (const reportType of REPORT_TYPES) {
-            tasks.push({ subdivision, reportType });
-        }
-    }
+    const tasks = subdivisions.flatMap(subdivision =>
+        REPORT_TYPES.map(reportType =>
+            ({ subdivision, reportType })
+        )
+    );
 
     const results = await Promise.all(
         tasks.map(async ({ subdivision, reportType }) => {
