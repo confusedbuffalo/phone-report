@@ -284,7 +284,7 @@ export function addNote(osmType, osmId) {
                         id: `<a href="https://www.openstreetmap.org/note/${encodeURIComponent(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`,
                     })
                 )
-                .join('\n');
+                .join('<br>');
             if (openNotesMessage.length > 0) {
                 disableCreateNoteWithMessage(openNotesMessage);
             } else {
