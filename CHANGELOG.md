@@ -1,3 +1,10 @@
+## [5.24.2](https://github.com/confusedbuffalo/phone-report/compare/v5.24.1...v5.24.2) (2026-07-22)
+
+
+### Bug Fixes
+
+* fix nearby note message ([e90c8aa](https://github.com/confusedbuffalo/phone-report/commit/e90c8aaf8932991512061d5981a777c0560b34da))
+
 ## [5.24.1](https://github.com/confusedbuffalo/phone-report/compare/v5.24.0...v5.24.1) (2026-07-19)
 
 
