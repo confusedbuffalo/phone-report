@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import axios from 'axios';
+import pLimit from 'p-limit';
 import { load } from 'js-yaml';
 import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
@@ -376,15 +377,10 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
-    const divisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
-    const divisionTotals = Object.fromEntries(
-        Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
-            return [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))];
-        })
-    );
+    const tasks = subdivisions.flatMap(subdivision => REPORT_TYPES.map(reportType => ({ subdivision, reportType })));
 
-    for (const subdivision of subdivisions) {
-        for (const reportType of REPORT_TYPES) {
+    const results = await Promise.all(
+        tasks.map(async ({ subdivision, reportType }) => {
             const reportStats = await processSubdivision(
                 subdivision,
                 reportType,
@@ -392,14 +388,28 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
                 rawDivisionName,
                 clientTranslations
             );
-            if (Object.keys(reportStats).length > 0) {
-                divisionStats[reportType].push(reportStats);
-                Object.keys(divisionTotals[reportType]).forEach(countType => {
-                    divisionTotals[reportType][countType] += reportStats[countType];
-                });
-            }
-        }
-    }
+            return { reportType, reportStats };
+        })
+    );
+
+    const validResults = results.filter(r => Object.keys(r?.reportStats ?? {}).length);
+
+    const divisionStats = validResults.reduce((stats, { reportType, reportStats }) => {
+        (stats[reportType] ??= []).push(reportStats);
+        return stats;
+    }, {});
+
+    const divisionTotals = Object.fromEntries(
+        Object.entries(divisionStats).map(([reportType, stats]) => [
+            reportType,
+            stats.reduce((totals, reportStats) => {
+                for (const countType in reportStats) {
+                    totals[countType] = (totals[countType] ?? 0) + reportStats[countType];
+                }
+                return totals;
+            }, {}),
+        ])
+    );
 
     return { divisionStats, divisionTotals };
 }
@@ -656,33 +666,31 @@ async function main() {
 
     console.log('Starting full build process...');
 
-    const allCountryStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
-
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
     // TODO: serve the translations server-side
     const clientDefaultTranslations = fullDefaultTranslations;
 
-    for (const countryKey in COUNTRIES) {
-        const countryData = COUNTRIES[countryKey];
-        countryData.name = countryKey;
-        countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
-        countryData.divisionLanguages = Object.fromEntries(
-            Object.entries(officialLanguages).filter(([key, _value]) => key.startsWith(countryData.countryCode))
-        );
-        const countryStats = await processCountry(countryData);
-        if (!countryStats) {
-            continue;
-        }
+    const limit = pLimit(3);
 
-        for (const reportType of REPORT_TYPES) {
-            allCountryStats[reportType].push(countryStats[reportType]);
-        }
+    const preparedCountries = Object.entries(COUNTRIES).map(([countryKey, countryData]) => ({
+        ...countryData,
+        name: countryKey,
+        officialLanguages: officialLanguages[countryData.countryCode] ?? officialLanguages.default,
+        divisionLanguages: Object.fromEntries(
+            Object.entries(officialLanguages).filter(([key]) => key.startsWith(countryData.countryCode))
+        ),
+    }));
 
-        if (testMode) {
-            break;
-        }
-    }
+    const targetCountries = testMode ? preparedCountries.slice(0, 1) : preparedCountries;
+
+    const processingPromises = targetCountries.map(countryData => limit(() => processCountry(countryData)));
+
+    const countryStats = (await Promise.all(processingPromises)).filter(Boolean);
+
+    const allCountryStats = Object.fromEntries(
+        REPORT_TYPES.map(type => [type, countryStats.map(result => result[type])])
+    );
 
     for (const reportType of REPORT_TYPES) {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);
