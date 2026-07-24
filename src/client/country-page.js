@@ -2,6 +2,7 @@ import { reportType, locale, groupedDivisionStats, safeCountryName } from './con
 import { translate } from './i18n.js';
 import { initThemeToggle } from './theme.js';
 import { applyColors } from './background-colour.js';
+import { UPLOADED_ITEMS_KEY } from './report-state.js';
 
 initThemeToggle();
 
@@ -52,24 +53,51 @@ function formatNumber(num) {
     });
 }
 
-const calculatedDivisionTotals = {};
+// Recalculate totals, subtracting edits made locally
+const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 for (const divisionName in groupedDivisionStats) {
-    let groupInvalid = 0;
-    let groupTotal = 0;
-    let groupFixable = 0;
-    let groupMissing = 0;
     groupedDivisionStats[divisionName].forEach(stat => {
-        groupInvalid += stat.invalidCount;
-        groupTotal += stat.totalCount;
-        groupFixable += stat.autoFixableCount;
-        groupMissing += stat.missingNamesCount;
+        const subdivisionUploaded = uploadedChanges?.[safeCountryName]?.[stat.name];
+
+        if (!subdivisionUploaded) return;
+
+        const subdivisionUploadedCount = Object.values(subdivisionUploaded).reduce(
+            (sum, type) => sum + Object.keys(type || {}).length,
+            0
+        );
+
+        stat.invalidCount = Math.max(0, stat.invalidCount - subdivisionUploadedCount);
+        stat.autoFixableCount = Math.max(0, stat.autoFixableCount - subdivisionUploadedCount);
     });
-    calculatedDivisionTotals[divisionName] = {
-        invalid: groupInvalid,
-        total: groupTotal,
-        fixable: groupFixable,
-        missing: groupMissing,
-    };
+}
+
+const calculatedDivisionTotals = {};
+for (const [divisionName, stats] of Object.entries(groupedDivisionStats)) {
+    calculatedDivisionTotals[divisionName] = stats.reduce(
+        (acc, stat) => ({
+            invalid: acc.invalid + (stat.invalidCount || 0),
+            total: acc.total + (stat.totalCount || 0),
+            fixable: acc.fixable + (stat.autoFixableCount || 0),
+            missing: acc.missing + (stat.missingNamesCount || 0),
+        }),
+        { invalid: 0, total: 0, fixable: 0, missing: 0 }
+    );
+}
+
+// Update stats box
+const overallTotals = Object.values(calculatedDivisionTotals).reduce(
+    (acc, division) => ({
+        invalid: acc.invalid + (division.invalid || 0),
+        total: acc.total + (division.total || 0),
+        fixable: acc.fixable + (division.fixable || 0),
+        missing: acc.missing + (division.missing || 0),
+    }),
+    { invalid: 0, total: 0, fixable: 0, missing: 0 }
+);
+
+for (const [key, value] of Object.entries(overallTotals)) {
+    const el = document.getElementById(`stats-box-${key}-count`);
+    if (el) el.textContent = value ?? 0;
 }
 
 /**
