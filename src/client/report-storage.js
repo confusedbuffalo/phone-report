@@ -15,7 +15,7 @@ import {
     transitionInsertItem,
     setButtonState,
 } from './report-ui-controller.js';
-import { subdivisionName, storageKey } from './config.js';
+import { subdivisionName, storageKey, safeCountryName } from './config.js';
 
 /**
  * Adds an item's ID to localStorage to mark it as clicked.
@@ -167,20 +167,21 @@ export function getEditCounts(subdivision) {
  */
 export function moveEditsToUploadedStorage() {
     const edits = getEdits();
-    let uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
 
-    if (uploadedChanges && uploadedChanges[subdivisionName]) {
-        for (const type in edits[subdivisionName]) {
-            uploadedChanges[subdivisionName][type] = {
-                ...(edits[subdivisionName][type] || {}),
-                ...uploadedChanges[subdivisionName][type],
-            };
-        }
-    } else if (uploadedChanges) {
-        uploadedChanges[subdivisionName] = edits[subdivisionName];
-    } else {
-        uploadedChanges = {};
-        uploadedChanges[subdivisionName] = edits[subdivisionName];
+    if (!edits[subdivisionName]) return;
+
+    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY)) ?? {};
+
+    uploadedChanges[safeCountryName] ??= {};
+    uploadedChanges[safeCountryName][subdivisionName] ??= {};
+
+    const subdivisionUploaded = uploadedChanges[safeCountryName][subdivisionName];
+
+    for (const type in edits[subdivisionName]) {
+        subdivisionUploaded[type] = {
+            ...(edits[subdivisionName][type] || {}),
+            ...subdivisionUploaded[type],
+        };
     }
 
     localStorage.setItem(UPLOADED_ITEMS_KEY, JSON.stringify(uploadedChanges));
