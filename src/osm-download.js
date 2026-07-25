@@ -51,6 +51,7 @@ export async function withRetry(fn, label) {
 export async function downloadPbf(url) {
     console.log(`Downloading: ${url}`);
     const outputPath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+    const dispose = () => fs.rmSync(outputPath, { force: true });
     try {
         await withRetry(async () => {
             const response = await axios({
@@ -67,10 +68,10 @@ export async function downloadPbf(url) {
                 writer.on('error', reject);
             });
         }, `Download ${url}`);
-        return { path: outputPath, dispose: () => fs.rmSync(outputPath, { force: true })};
+        return { path: outputPath, dispose};
     } catch (error) {
         console.error('Error download OSM file:', error.message);
-        fs.rmSync(outputPath, { force: true });
+        dispose();
         throw error;
     }
 }
