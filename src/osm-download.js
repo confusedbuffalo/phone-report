@@ -46,7 +46,7 @@ export async function withRetry(fn, label) {
 /**
  * Downloads a specified OSM PBF file into a temporary file.
  * @param {string} url - The URL of the .osm.pbf file.
- * @returns {{path: string, dispose: () => void}} Where the file was saved and how to get rid of it.
+ * @returns {Promise<{path: string, dispose: () => void}>} Where the file was saved and how to get rid of it.
  */
 export async function downloadPbf(url) {
     console.log(`Downloading: ${url}`);
