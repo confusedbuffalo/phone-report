@@ -44,14 +44,20 @@ export async function withRetry(fn, label) {
 }
 
 /**
- * Downloads a specified OSM PBF file and saves it to the given path.
+ * Downloads a specified OSM PBF file into a temporary file.
  * @param {string} url - The URL of the .osm.pbf file.
- * @returns {{path: string, dispose: function}} Where the file was saved and how to get rid of it.
+ * @returns {{path: string, dispose: () => void}} Where the file was saved and how to get rid of it.
  */
 export async function downloadPbf(url) {
     console.log(`Downloading: ${url}`);
     const outputPath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
-    const dispose = () => fs.rmSync(outputPath, { force: true });
+    const dispose = () => {
+        try {
+            fs.rmSync(outputPath, { force: true });
+        } catch (error) {
+            console.warn(`Failed to remove temporary PBF ${outputPath}: ${error.message}`);
+        }
+    };
     try {
         await withRetry(async () => {
             const response = await axios({
@@ -68,7 +74,7 @@ export async function downloadPbf(url) {
                 writer.on('error', reject);
             });
         }, `Download ${url}`);
-        return { path: outputPath, dispose};
+        return { path: outputPath, dispose };
     } catch (error) {
         console.error('Error download OSM file:', error.message);
         dispose();
