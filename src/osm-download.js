@@ -70,6 +70,7 @@ export async function downloadPbf(url) {
         return { path: outputPath, dispose: () => fs.rmSync(outputPath, { force: true })};
     } catch (error) {
         console.error('Error download OSM file:', error.message);
+        fs.rmSync(outputPath, { force: true });
         throw error;
     }
 }
