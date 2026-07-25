@@ -1,3 +1,10 @@
+## [5.24.3](https://github.com/confusedbuffalo/phone-report/compare/v5.24.2...v5.24.3) (2026-07-25)
+
+
+### Bug Fixes
+
+* update stats on country page when edits have been uploaded ([005c240](https://github.com/confusedbuffalo/phone-report/commit/005c24039d0357d069d73aaa76208cfddd1f0158)), closes [#448](https://github.com/confusedbuffalo/phone-report/issues/448)
+
 ## [5.24.2](https://github.com/confusedbuffalo/phone-report/compare/v5.24.1...v5.24.2) (2026-07-22)
 
 
