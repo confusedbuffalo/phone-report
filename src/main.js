@@ -436,17 +436,17 @@ async function processCountry(countryData) {
     const divisions = countryData.divisions ? { [countryData.name]: countryData.divisions } : countryData.divisionMap;
 
     if (countryData.pbfUrl) {
-        const tmpPbfFilePath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+        let downloaded = {};
 
         try {
             const spaceBefore = await getFreeSpace(process.cwd());
             console.log(`[Disk Check] Free space before download: ${formatBytes(spaceBefore)}`);
 
-            await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
+            downloaded = await downloadPbf(countryData.pbfUrl);
 
             for (const reportType of REPORT_TYPES) {
                 const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
-                await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
+                await filterPbf(downloaded.path, tmpReportPbfFilePath, reportType);
                 await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
 
                 const spaceAfter = await getFreeSpace(process.cwd());
@@ -458,14 +458,13 @@ async function processCountry(countryData) {
                 fs.rmSync(tmpReportPbfFilePath, { force: true });
             }
 
-            fs.rmSync(tmpPbfFilePath, { force: true });
-
             const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
             countryData.timestamp = dataTimestamp;
         } catch (error) {
             console.error(`Skipping country ${countryName} due to download failure: ${error.message}`);
-            fs.rmSync(tmpPbfFilePath, { force: true });
             return null;
+        } finally {
+            downloaded.dispose?.();
         }
     }
 
@@ -473,22 +472,20 @@ async function processCountry(countryData) {
         for (const [subdivisionName, subData] of Object.entries(groupDivisions)) {
             const pbfUrl = typeof subData === 'object' ? subData.pbfUrl : null;
             if (pbfUrl) {
-                const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+                let downloaded = {};
 
                 try {
-                    await downloadPbf(pbfUrl, subPbfFilePath);
+                    downloaded = await downloadPbf(pbfUrl);
 
                     for (const reportType of REPORT_TYPES) {
                         const tmpReportPbfFilePath = path.join(
                             process.cwd(),
                             `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
                         );
-                        await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
+                        await filterPbf(downloaded.path, tmpReportPbfFilePath, reportType);
                         await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), null, subData);
                         fs.rmSync(tmpReportPbfFilePath, { force: true });
                     }
-
-                    fs.rmSync(subPbfFilePath, { force: true });
 
                     const dataTimestamp = await getOsmTimestamp(pbfUrl);
                     subData.timestamp = dataTimestamp;
@@ -497,8 +494,9 @@ async function processCountry(countryData) {
                     }
                 } catch (error) {
                     console.error(`Skipping subdivision ${subdivisionName} due to download failure: ${error.message}`);
-                    fs.rmSync(subPbfFilePath, { force: true });
                     // No return here, just skip this subdivision
+                } finally {
+                    downloaded.dispose?.();
                 }
 
                 if (testMode) {
