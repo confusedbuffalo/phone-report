@@ -414,21 +414,6 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
     return { divisionStats, divisionTotals };
 }
 
-function formatBytes(bytes) {
-    const gb = bytes / 1024 ** 3;
-    if (gb >= 1) return `${gb.toFixed(2)} GB`;
-    return `${(bytes / 1024 ** 2).toFixed(2)} MB`;
-}
-
-/**
- * Helper to get available space in bytes
- */
-async function getFreeSpace(targetPath) {
-    const dir = path.dirname(path.resolve(targetPath));
-    const stats = await fs.promises.statfs(dir);
-    return stats.bavail * stats.bsize;
-}
-
 /**
  * Processes all divisions and subdivisions for a single country.
  * @param {Object} countryData - The configuration object for the country.
@@ -449,21 +434,12 @@ async function processCountry(countryData) {
         let downloaded = {};
 
         try {
-            const spaceBefore = await getFreeSpace(process.cwd());
-            console.log(`[Disk Check] Free space before download: ${formatBytes(spaceBefore)}`);
-
             downloaded = await downloadPbf(countryData.pbfUrl);
 
             for (const reportType of REPORT_TYPES) {
                 const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
                 await filterPbf(downloaded.path, tmpReportPbfFilePath, reportType);
                 await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
-
-                const spaceAfter = await getFreeSpace(process.cwd());
-                const difference = spaceBefore - spaceAfter;
-                console.log(
-                    `[Disk Check] [${reportType}] Free space after download, filter and split: ${formatBytes(spaceAfter)} (Used: ${formatBytes(difference)})`
-                );
 
                 fs.rmSync(tmpReportPbfFilePath, { force: true });
             }
