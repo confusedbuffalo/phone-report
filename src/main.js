@@ -6,7 +6,6 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import axios from 'axios';
-import pLimit from 'p-limit';
 import { load } from 'js-yaml';
 import { access } from 'fs/promises';
 import { v4 as uuidv4 } from 'uuid';
@@ -645,8 +644,6 @@ async function main() {
     // TODO: serve the translations server-side
     const clientDefaultTranslations = fullDefaultTranslations;
 
-    const limit = pLimit(3);
-
     const preparedCountries = Object.entries(COUNTRIES).map(([countryKey, countryData]) => ({
         ...countryData,
         name: countryKey,
@@ -658,9 +655,7 @@ async function main() {
 
     const targetCountries = testMode ? preparedCountries.slice(0, 1) : preparedCountries;
 
-    const processingPromises = targetCountries.map(countryData => limit(() => processCountry(countryData)));
-
-    const countryStats = (await Promise.all(processingPromises)).filter(Boolean);
+    const countryStats = (await Promise.all(targetCountries.map(processCountry))).filter(Boolean);
 
     const allCountryStats = Object.fromEntries(
         REPORT_TYPES.map(type => [type, countryStats.map(result => result[type])])
