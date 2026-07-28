@@ -1,3 +1,10 @@
+## [5.24.4](https://github.com/confusedbuffalo/phone-report/compare/v5.24.3...v5.24.4) (2026-07-28)
+
+
+### Bug Fixes
+
+* fix uploaded edits key storing to aid stats display ([7b8f5c8](https://github.com/confusedbuffalo/phone-report/commit/7b8f5c8cbaff269a2645df1b3a426a50a3785362))
+
 ## [5.24.3](https://github.com/confusedbuffalo/phone-report/compare/v5.24.2...v5.24.3) (2026-07-25)
 
 
