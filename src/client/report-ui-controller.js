@@ -543,7 +543,7 @@ export function disableCreateNoteWithMessage(message) {
 
     const messageBox = document.getElementById('note-message-box');
     messageBox.className = 'message-box-error';
-    messageBox.textContent = message;
+    messageBox.innerHTML = message;
     messageBox.classList.remove('hidden');
 }
 

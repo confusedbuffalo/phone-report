@@ -502,6 +502,7 @@ export async function generateHtmlReport(
         defaultEditorsDesktop: DEFAULT_EDITORS_DESKTOP,
         defaultEditorsMobile: DEFAULT_EDITORS_MOBILE,
         githubLink: GITHUB_LINK,
+        safeCountryName: safeName(countryData.name),
     };
 
     const eta = new Eta({

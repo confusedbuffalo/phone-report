@@ -1,6 +1,6 @@
 import { appState, sortDirection, sortKey, UPLOADED_ITEMS_KEY } from './report-state.js';
 import { getEdits } from './report-storage.js';
-import { reportType, subdivisionName } from './config.js';
+import { reportType, safeCountryName, subdivisionName } from './config.js';
 
 /**
  * Sorts an array of report items based on a specified key and direction.
@@ -201,7 +201,7 @@ export function getFilteredItems(filterType) {
             isWanted = item.name; // names report
         }
 
-        const isNotInUploadedChanges = !uploadedChanges?.[subdivisionName]?.[item.type]?.[item.id];
+        const isNotInUploadedChanges = !uploadedChanges?.[safeCountryName]?.[subdivisionName]?.[item.type]?.[item.id];
         const isNotInCurrentEdits = !edits?.[subdivisionName]?.[item.type]?.[item.id];
         return isWanted && isNotInUploadedChanges && isNotInCurrentEdits;
     });

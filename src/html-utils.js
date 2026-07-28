@@ -35,6 +35,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('numbersChecked', locale),
                 numberClass: 'stats-box-number',
+                numberId: 'stats-box-total-count',
                 percentage: null,
                 href: null,
             },
@@ -64,6 +65,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.foreignCount.toLocaleString(locale),
                 label: translate('foreignNumbersHeader', locale),
                 numberClass: 'stats-box-number',
+                numberId: 'stats-box-foreign-count',
                 percentage: null,
                 href: data.foreignCount > 0 ? '#foreignSection' : null,
             });
@@ -74,6 +76,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('multilingualNames', locale),
                 numberClass: 'stats-box-number',
+                numberId: 'stats-box-total-count',
                 percentage: null,
                 href: null,
             },
@@ -104,6 +107,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('hoursChecked', locale),
                 numberClass: 'stats-box-number',
+                numberId: 'stats-box-total-count',
                 percentage: null,
             },
             {

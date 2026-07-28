@@ -3,6 +3,7 @@ import fs from 'fs';
 import { exec } from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
+import { v4 as uuidv4 } from 'uuid';
 import { POLY_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS } from './constants.js';
 import { getSubdivisionIds } from './fetch-polys.js';
 
@@ -43,12 +44,20 @@ export async function withRetry(fn, label) {
 }
 
 /**
- * Downloads a specified OSM PBF file and saves it to the given path.
+ * Downloads a specified OSM PBF file into a temporary file.
  * @param {string} url - The URL of the .osm.pbf file.
- * @param {string} outputPath - Where to save the file.
+ * @returns {Promise<{path: string, dispose: () => void}>} Where the file was saved and how to get rid of it.
  */
-export async function downloadPbf(url, outputPath) {
+export async function downloadPbf(url) {
     console.log(`Downloading: ${url}`);
+    const outputPath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+    const dispose = () => {
+        try {
+            fs.rmSync(outputPath, { force: true });
+        } catch (error) {
+            console.warn(`Failed to remove temporary PBF ${outputPath}: ${error.message}`);
+        }
+    };
     try {
         await withRetry(async () => {
             const response = await axios({
@@ -65,8 +74,10 @@ export async function downloadPbf(url, outputPath) {
                 writer.on('error', reject);
             });
         }, `Download ${url}`);
+        return { path: outputPath, dispose };
     } catch (error) {
         console.error('Error download OSM file:', error.message);
+        dispose();
         throw error;
     }
 }
