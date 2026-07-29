@@ -36,24 +36,20 @@ export class DiskSpaceManager {
     }
 
     async getRequiredSpace(url) {
+        // Fallback: 5 GB
+        let downloadBytes = 5 * 1024 * 1024 * 1024;
         try {
             const response = await axios.head(url);
             const contentLength = response.headers['content-length'];
             if (!contentLength) throw new Error('Content-Length missing');
-            const bytes = parseInt(contentLength, 10);
-            return {
-                downloadBytes: bytes,
-                totalBytes: Math.ceil(bytes * this.multiplier),
-            };
+            downloadBytes = parseInt(contentLength, 10);
         } catch (error) {
             console.warn(`Could not determine size via HEAD for ${url}: ${error.message}`);
-            // Fallback to 5 GB
-            const fallbackBytes = 5 * 1024 * 1024 * 1024;
-            return {
-                downloadBytes: fallbackBytes,
-                totalBytes: Math.ceil(fallbackBytes * this.multiplier),
-            };
         }
+        return {
+            downloadBytes,
+            totalBytes: Math.ceil(downloadBytes * this.multiplier)
+        };
     }
 
     async reserveSpace(url) {
