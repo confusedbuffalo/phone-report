@@ -35,7 +35,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('numbersChecked', locale),
                 numberClass: 'stats-box-number',
-                numberId: 'stats-box-total-count',
+                numberId: 'stats-box-total',
                 percentage: null,
                 href: null,
             },
@@ -43,7 +43,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('invalidNumbers', locale),
                 numberClass: 'stats-box-number-invalid',
-                numberId: 'stats-box-invalid-count',
+                numberId: 'stats-box-invalid',
                 percentage: translate('invalidPercentageOfTotal', locale, {
                     percent: getFormattedPercentage(data.invalidCount, data.totalCount, locale),
                 }),
@@ -53,7 +53,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.autoFixableCount.toLocaleString(locale),
                 label: translate('potentiallyFixable', locale),
                 numberClass: 'stats-box-number-fixable',
-                numberId: 'stats-box-fixable-count',
+                numberId: 'stats-box-fixable',
                 percentage: translate('fixablePercentageOfInvalid', locale, {
                     percent: getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale),
                 }),
@@ -65,7 +65,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.foreignCount.toLocaleString(locale),
                 label: translate('foreignNumbersHeader', locale),
                 numberClass: 'stats-box-number',
-                numberId: 'stats-box-foreign-count',
+                numberId: 'stats-box-foreign',
                 percentage: null,
                 href: data.foreignCount > 0 ? '#foreignSection' : null,
             });
@@ -76,7 +76,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('multilingualNames', locale),
                 numberClass: 'stats-box-number',
-                numberId: 'stats-box-total-count',
+                numberId: 'stats-box-total',
                 percentage: null,
                 href: null,
             },
@@ -84,7 +84,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('incompleteNames', locale),
                 numberClass: 'stats-box-number-invalid',
-                numberId: 'stats-box-invalid-count',
+                numberId: 'stats-box-invalid',
                 percentage: translate('invalidPercentageOfTotal', locale, {
                     percent: getFormattedPercentage(data.invalidCount, data.totalCount, locale),
                 }),
@@ -94,7 +94,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.missingNamesCount.toLocaleString(locale),
                 label: translate('missingNames', locale),
                 numberClass: 'stats-box-number-fixable',
-                numberId: 'stats-box-missing-count',
+                numberId: 'stats-box-missing',
                 percentage: translate('invalidPercentageOfTotal', locale, {
                     percent: getFormattedPercentage(data.missingNamesCount, data.totalCount, locale),
                 }),
@@ -107,14 +107,14 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.totalCount.toLocaleString(locale),
                 label: translate('hoursChecked', locale),
                 numberClass: 'stats-box-number',
-                numberId: 'stats-box-total-count',
+                numberId: 'stats-box-total',
                 percentage: null,
             },
             {
                 value: data.invalidCount.toLocaleString(locale),
                 label: translate('invalidHours', locale),
                 numberClass: 'stats-box-number-invalid',
-                numberId: 'stats-box-invalid-count',
+                numberId: 'stats-box-invalid',
                 percentage: translate('invalidPercentageOfTotal', locale, {
                     percent: getFormattedPercentage(data.invalidCount, data.totalCount, locale),
                 }),
@@ -124,7 +124,7 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
                 value: data.autoFixableCount.toLocaleString(locale),
                 label: translate('potentiallyFixable', locale),
                 numberClass: 'stats-box-number-fixable',
-                numberId: 'stats-box-fixable-count',
+                numberId: 'stats-box-fixable',
                 percentage: translate('fixablePercentageOfInvalid', locale, {
                     percent: getFormattedPercentage(data.autoFixableCount, data.invalidCount, locale),
                 }),
@@ -152,9 +152,9 @@ export function createStatsBox(reportType, data, locale, includeProgress = false
     const statsContent = statsData
         .map(stat => {
             const content = `
-            <p class="${stat.numberClass}" id="${stat.numberId}">${stat.value}</p>
+            <p class="${stat.numberClass}" id="${stat.numberId}-count">${stat.value}</p>
             <p class="stats-box-label ${stat.href ? 'underline decoration-1 underline-offset-4' : ''}">${stat.label}</p>
-            ${stat.percentage ? `<p class="stats-box-percentage">${stat.percentage}</p>` : ''}
+            ${stat.percentage ? `<p class="stats-box-percentage" id="${stat.numberId}-percent">${stat.percentage}</p>` : ''}
         `;
 
             if (stat.href) {
