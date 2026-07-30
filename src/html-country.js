@@ -26,6 +26,7 @@ export async function generateCountryIndexHtml(reportType, countryData) {
         translations: getTranslations(locale),
         groupedDivisionStats: countryData.groupedDivisionStats,
         safeCountryName: safeName(countryData.name),
+        dataLastUpdated: countryData.timestamp,
     };
 
     const templateData = {

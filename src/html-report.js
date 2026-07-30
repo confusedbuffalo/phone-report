@@ -494,7 +494,7 @@ export async function generateHtmlReport(
         translations,
         subdivisionName: subdivisionStats.name,
         dataFilePath: `./${subdivisionStats.slug}.json`,
-        dataLastUpdated: subdivisionStats.lastUpdated,
+        dataLastUpdated: subdivisionStats.timestamp,
         openingHoursEvaluationToolUrl: OPENING_HOURS_EVALUATION_TOOL_URL,
         changesetTags: CHANGESET_TAGS[reportType],
         officialLanguages,
