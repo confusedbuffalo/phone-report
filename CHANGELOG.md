@@ -1,3 +1,10 @@
+## [5.25.2](https://github.com/confusedbuffalo/phone-report/compare/v5.25.1...v5.25.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* make DiskSpaceManager limit concurrency ([#518](https://github.com/confusedbuffalo/phone-report/issues/518)) ([e5c3ea1](https://github.com/confusedbuffalo/phone-report/commit/e5c3ea11d379938a968fadfdd22eef3df011cac2))
+
 ## [5.25.1](https://github.com/confusedbuffalo/phone-report/compare/v5.25.0...v5.25.1) (2026-07-30)
 
 
