@@ -1,3 +1,10 @@
+# [5.25.0](https://github.com/confusedbuffalo/phone-report/compare/v5.24.4...v5.25.0) (2026-07-30)
+
+
+### Features
+
+* Speed up report with `Promise.all()` ([#477](https://github.com/confusedbuffalo/phone-report/issues/477)) ([cc2576b](https://github.com/confusedbuffalo/phone-report/commit/cc2576bdc213f5e48d501d79b5fdc15276fe6603)), closes [#457](https://github.com/confusedbuffalo/phone-report/issues/457)
+
 ## [5.24.4](https://github.com/confusedbuffalo/phone-report/compare/v5.24.3...v5.24.4) (2026-07-28)
 
 
