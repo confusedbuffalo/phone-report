@@ -101,7 +101,7 @@ function applyUploadedChanges() {
 
     for (const [key, value] of Object.entries(overallTotals)) {
         const el = document.getElementById(`stats-box-${key}-count`);
-        if (el) el.textContent = value ?? 0;
+        if (el) el.textContent = formatNumber(value) ?? 0;
     }
 }
 
