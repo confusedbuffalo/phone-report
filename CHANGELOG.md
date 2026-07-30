@@ -1,3 +1,10 @@
+## [5.25.3](https://github.com/confusedbuffalo/phone-report/compare/v5.25.2...v5.25.3) (2026-07-30)
+
+
+### Bug Fixes
+
+* try limit to 5 concurrent processes ([a403836](https://github.com/confusedbuffalo/phone-report/commit/a40383677ee95db42829f3e05fb0fc47d27a3779))
+
 ## [5.25.2](https://github.com/confusedbuffalo/phone-report/compare/v5.25.1...v5.25.2) (2026-07-30)
 
 
