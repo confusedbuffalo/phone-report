@@ -116,7 +116,7 @@ function saveCountryHistory(reportType, originalCountryStats) {
                         div => {
                             const compositeKey = `${div.divisionSlug}|${div.slug}`;
                             if (div.totalCount === 0 && historyMap.has(compositeKey)) {
-                                console.log(`Falling back to previous history for ${div.name}`);
+                                console.log(`${reportType}: Falling back to previous history for ${div.name}`);
                                 return { ...historyMap.get(compositeKey) };
                             }
                             return div;
