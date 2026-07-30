@@ -1,4 +1,4 @@
-import { initLogin } from './report-osm-edit.js';
+import { checkForChanges, initLogin } from './report-osm-edit.js';
 import { appState, settingsMenu, settingsToggle } from './report-state.js';
 import { loadSettings } from './report-storage.js';
 import {
@@ -68,5 +68,10 @@ async function initReportPage() {
 }
 
 enableModalCloseListeners();
-initReportPage();
-initLogin();
+
+try {
+    await Promise.all([initReportPage(), initLogin()]);
+    checkForChanges();
+} catch (error) {
+    console.error('Initialization failed:', error);
+}

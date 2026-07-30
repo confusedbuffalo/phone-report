@@ -20,7 +20,7 @@ import { reportType, safeCountryName, subdivisionName } from './config.js';
  * @param {('asc'|'desc')} direction - The sort order: 'asc' for ascending, 'desc' for descending.
  * @returns {Array<Object>} A new, sorted array of items. Returns the original array copy if key is 'none'.
  */
-function sortItems(items, key, direction) {
+export function sortItems(items, key, direction) {
     if (key === 'none') return items;
 
     const sortedItems = [...items];

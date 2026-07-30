@@ -240,7 +240,7 @@ function getSuggestedFix(item, language) {
 /**
  * Persists the current undo stack and position to localStorage.
  */
-function persistUndoState() {
+export function persistUndoState() {
     localStorage.setItem(`undoStack_${subdivisionName}`, JSON.stringify(undoData.stack));
     localStorage.setItem(`undoPosition_${subdivisionName}`, undoData.position);
 }
