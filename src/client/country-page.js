@@ -103,6 +103,33 @@ function applyUploadedChanges() {
         const el = document.getElementById(`stats-box-${key}-count`);
         if (el) el.textContent = formatNumber(value) ?? 0;
     }
+
+    const PERCENTAGE_OPTIONS = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    };
+
+    const invalidPercentElement = document.getElementById('stats-box-invalid-percent');
+    if (invalidPercentElement) {
+        const invalidPercentage = overallTotals.total > 0 ? (overallTotals.invalid / overallTotals.total) * 100 : 0;
+        invalidPercentElement.textContent = translate('invalidPercentageOfTotal', {
+            percent: invalidPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
+    }
+    const fixablePercentElement = document.getElementById('stats-box-fixable-percent');
+    if (invalidPercentElement) {
+        const fixablePercentage = overallTotals.invalid > 0 ? (overallTotals.fixable / overallTotals.invalid) * 100 : 0;
+        fixablePercentElement.textContent = translate('fixablePercentageOfInvalid', {
+            percent: fixablePercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
+    }
+    const missingPercentElement = document.getElementById('stats-box-missing-percent');
+    if (missingPercentElement) {
+        const missingPercentage = overallTotals.total > 0 ? (overallTotals.missing / overallTotals.total) * 100 : 0;
+        missingPercentElement.textContent = translate('invalidPercentageOfTotal', {
+            percent: missingPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
+    }
 }
 
 /**
