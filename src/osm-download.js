@@ -48,7 +48,7 @@ export class DiskSpaceManager {
         }
         return {
             downloadBytes,
-            totalBytes: Math.ceil(downloadBytes * this.multiplier)
+            totalBytes: Math.ceil(downloadBytes * this.multiplier),
         };
     }
 
@@ -303,7 +303,7 @@ export async function getOsmTimestamp(pbfUrl) {
             return new Date(text).toISOString();
         }, `Fetch timestamp for ${pbfUrl}`);
     } catch (error) {
-        console.error('Error fetching timestamp:', error);
-        return null;
+        console.error('Error fetching timestamp, falling back to now:', error);
+        return new Date().toISOString();
     }
 }
