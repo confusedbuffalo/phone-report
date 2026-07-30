@@ -1,3 +1,10 @@
+## [5.25.1](https://github.com/confusedbuffalo/phone-report/compare/v5.25.0...v5.25.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* fallback to current time if timestamp fails to fetch ([0e345cf](https://github.com/confusedbuffalo/phone-report/commit/0e345cf23e2ee957fe563f11bc9a5a101dd93580))
+
 # [5.25.0](https://github.com/confusedbuffalo/phone-report/compare/v5.24.4...v5.25.0) (2026-07-30)
 
 
