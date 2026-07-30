@@ -304,7 +304,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
         name: subdivision.name,
         divisionSlug: safeName(rawDivisionName),
         slug: safeName(subdivision.name),
-        lastUpdated: dataTimestamp.toISOString(),
+        timestamp: dataTimestamp.toISOString(),
     };
 
     const validate = VALIDATORS[reportType];
