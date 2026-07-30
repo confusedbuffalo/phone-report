@@ -16,7 +16,7 @@ const MIN_FREE_DISK_BYTES = 5 * 1024 * 1024 * 1024; // 5 GB
  * Class to track disk space reservations and queue downloads until sufficient space is free.
  */
 export class DiskSpaceManager {
-    constructor(targetDir = process.cwd(), multiplier = 1.5, maxActiveTickets = 16) {
+    constructor(targetDir = process.cwd(), multiplier = 1.5, maxActiveTickets = 5) {
         this.targetDir = targetDir;
         this.multiplier = multiplier;
         this.reservedBytes = 0;
