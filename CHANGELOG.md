@@ -1,3 +1,18 @@
+# [5.26.0](https://github.com/confusedbuffalo/phone-report/compare/v5.25.3...v5.26.0) (2026-07-31)
+
+
+### Bug Fixes
+
+* fix local stats update on country page ([f4a809f](https://github.com/confusedbuffalo/phone-report/commit/f4a809f6a28c075cfdb07e8f1d641796e7eff975))
+* format number on country page per locale again ([6017b9f](https://github.com/confusedbuffalo/phone-report/commit/6017b9f637b9009a9c7955d4fc4a78c722b8f39f))
+* update percentage on report page if edits have been made ([e660c85](https://github.com/confusedbuffalo/phone-report/commit/e660c858b1c6dcf258fd8a469c7031e25975e356))
+* update percentages on country page when local edits have been made ([479bab0](https://github.com/confusedbuffalo/phone-report/commit/479bab00c932a2875f4f112a48145a4a070ebedb))
+
+
+### Features
+
+* check for and hide items whose values have changed since report creation ([a8d5451](https://github.com/confusedbuffalo/phone-report/commit/a8d54510a4017ecc3283ea377c5ef072a1bec460)), closes [#512](https://github.com/confusedbuffalo/phone-report/issues/512) [#33](https://github.com/confusedbuffalo/phone-report/issues/33) [#492](https://github.com/confusedbuffalo/phone-report/issues/492)
+
 ## [5.25.3](https://github.com/confusedbuffalo/phone-report/compare/v5.25.2...v5.25.3) (2026-07-30)
 
 
