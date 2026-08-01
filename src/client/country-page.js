@@ -117,7 +117,7 @@ function applyUploadedChanges() {
         });
     }
     const fixablePercentElement = document.getElementById('stats-box-fixable-percent');
-    if (invalidPercentElement) {
+    if (fixablePercentElement) {
         const fixablePercentage = overallTotals.invalid > 0 ? (overallTotals.fixable / overallTotals.invalid) * 100 : 0;
         fixablePercentElement.textContent = translate('fixablePercentageOfInvalid', {
             percent: fixablePercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
