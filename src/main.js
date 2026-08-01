@@ -451,14 +451,14 @@ async function processCountry(countryData) {
         }
     }
 
-    for (const groupDivisions of Object.values(divisions)) {
-        for (const [subdivisionName, subData] of Object.entries(groupDivisions)) {
-            const pbfUrl = typeof subData === 'object' ? subData.pbfUrl : null;
-            if (pbfUrl) {
+    const subdivisionTasks = Object.values(divisions).flatMap(groupDivisions =>
+        Object.entries(groupDivisions)
+            .filter(([, subData]) => typeof subData === 'object' && subData.pbfUrl)
+            .map(([subdivisionName, subData]) => async () => {
                 let downloaded = {};
 
                 try {
-                    downloaded = await downloadPbf(pbfUrl);
+                    downloaded = await downloadPbf(subData.pbfUrl);
 
                     for (const reportType of REPORT_TYPES) {
                         const tmpReportPbfFilePath = path.join(
@@ -470,24 +470,24 @@ async function processCountry(countryData) {
                         fs.rmSync(tmpReportPbfFilePath, { force: true });
                     }
 
-                    const dataTimestamp = await getOsmTimestamp(pbfUrl);
+                    const dataTimestamp = await getOsmTimestamp(subData.pbfUrl);
                     subData.timestamp = dataTimestamp;
                     if (!countryData.timestamp) {
                         countryData.timestamp = dataTimestamp;
                     }
                 } catch (error) {
-                    console.error(`Skipping subdivision ${subdivisionName} due to download failure: ${error.message}`);
-                    // No return here, just skip this subdivision
+                    console.error(
+                        `Skipping subdivision ${subdivisionName} due to download failure: ${error?.message || error}`
+                    );
                 } finally {
                     downloaded.dispose?.();
                 }
+            })
+    );
 
-                if (testMode) {
-                    break;
-                }
-            }
-        }
-    }
+    const tasksToRun = testMode ? subdivisionTasks.slice(0, 1) : subdivisionTasks;
+
+    await Promise.all(tasksToRun.map(task => task()));
 
     for (const reportType of REPORT_TYPES) {
         const outputDir = path.join(BUILD_DIR, reportType, safeName(countryName));
