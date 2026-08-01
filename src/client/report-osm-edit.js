@@ -559,47 +559,54 @@ export async function checkForChanges() {
     if (!OSM.isLoggedIn()) return;
 
     const fixableItems = getSortedItems('fixable');
+    const missingItems = getSortedItems('missing');
+    const invalidItems = getSortedItems('invalid');
 
-    // Let's not hit the API with too many requests, if there are more than 1000 then don't bother checking at all
-    if (!fixableItems || fixableItems.length > 1000) return;
+    for (const itemSet of [fixableItems, missingItems, invalidItems]) {
+        // Let's not hit the API with too many requests, if there are more than 1000 then don't bother checking at all
+        if (!itemSet || itemSet.length > 1000) continue;
+        const dateSortedItems = sortItems(itemSet, 'date', 'asc');
+        const nameSortedItems = sortItems(itemSet, 'name', 'asc');
 
-    const dateSortedItems = sortItems(fixableItems, 'date', 'asc');
-    const nameSortedItems = sortItems(fixableItems, 'name', 'asc');
+        const sampleItems = Array.from(
+            new Set(
+                [
+                    itemSet.at(0),
+                    itemSet.at(-1),
+                    dateSortedItems.at(0),
+                    dateSortedItems.at(-1),
+                    nameSortedItems.at(0),
+                    nameSortedItems.at(-1),
+                ].filter(Boolean)
+            )
+        );
 
-    const sampleItems = [
-        fixableItems.at(0),
-        fixableItems.at(-1),
-        dateSortedItems.at(0),
-        dateSortedItems.at(-1),
-        nameSortedItems.at(0),
-        nameSortedItems.at(-1),
-    ].filter(Boolean);
+        if (sampleItems.length === 0) return;
 
-    if (sampleItems.length === 0) return;
+        const grouped = sampleItems.reduce((acc, item) => {
+            if (!acc[item.type]) acc[item.type] = [];
+            acc[item.type].push(item);
+            return acc;
+        }, {});
 
-    const grouped = sampleItems.reduce((acc, item) => {
-        if (!acc[item.type]) acc[item.type] = [];
-        acc[item.type].push(item);
-        return acc;
-    }, {});
+        let anyChanged = false;
 
-    let anyChanged = false;
+        for (const [type, items] of Object.entries(grouped)) {
+            const ids = items.map(item => item.id);
 
-    for (const [type, items] of Object.entries(grouped)) {
-        const ids = items.map(item => item.id);
+            const fetchedFeatures = await OSM.getFeatures(type, ids);
 
-        const fetchedFeatures = await OSM.getFeatures(type, ids);
+            const featureMap = new Map(fetchedFeatures.map(feat => [feat.id, feat]));
 
-        const featureMap = new Map(fetchedFeatures.map(feat => [feat.id, feat]));
+            for (const item of items) {
+                const fetchedFeature = featureMap.get(item.id);
 
-        for (const item of items) {
-            const fetchedFeature = featureMap.get(item.id);
-
-            anyChanged = compareTags(fetchedFeature, item);
+                anyChanged = compareTags(fetchedFeature, item);
+                if (anyChanged) break;
+            }
             if (anyChanged) break;
         }
-        if (anyChanged) break;
-    }
 
-    if (anyChanged) updateFeatures(fixableItems);
+        if (anyChanged) updateFeatures(itemSet);
+    }
 }
