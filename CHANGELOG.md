@@ -1,3 +1,74 @@
+# [5.26.0](https://github.com/confusedbuffalo/phone-report/compare/v5.25.3...v5.26.0) (2026-07-31)
+
+
+### Bug Fixes
+
+* fix local stats update on country page ([f4a809f](https://github.com/confusedbuffalo/phone-report/commit/f4a809f6a28c075cfdb07e8f1d641796e7eff975))
+* format number on country page per locale again ([6017b9f](https://github.com/confusedbuffalo/phone-report/commit/6017b9f637b9009a9c7955d4fc4a78c722b8f39f))
+* update percentage on report page if edits have been made ([e660c85](https://github.com/confusedbuffalo/phone-report/commit/e660c858b1c6dcf258fd8a469c7031e25975e356))
+* update percentages on country page when local edits have been made ([479bab0](https://github.com/confusedbuffalo/phone-report/commit/479bab00c932a2875f4f112a48145a4a070ebedb))
+
+
+### Features
+
+* check for and hide items whose values have changed since report creation ([a8d5451](https://github.com/confusedbuffalo/phone-report/commit/a8d54510a4017ecc3283ea377c5ef072a1bec460)), closes [#512](https://github.com/confusedbuffalo/phone-report/issues/512) [#33](https://github.com/confusedbuffalo/phone-report/issues/33) [#492](https://github.com/confusedbuffalo/phone-report/issues/492)
+
+## [5.25.3](https://github.com/confusedbuffalo/phone-report/compare/v5.25.2...v5.25.3) (2026-07-30)
+
+
+### Bug Fixes
+
+* try limit to 5 concurrent processes ([a403836](https://github.com/confusedbuffalo/phone-report/commit/a40383677ee95db42829f3e05fb0fc47d27a3779))
+
+## [5.25.2](https://github.com/confusedbuffalo/phone-report/compare/v5.25.1...v5.25.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* make DiskSpaceManager limit concurrency ([#518](https://github.com/confusedbuffalo/phone-report/issues/518)) ([e5c3ea1](https://github.com/confusedbuffalo/phone-report/commit/e5c3ea11d379938a968fadfdd22eef3df011cac2))
+
+## [5.25.1](https://github.com/confusedbuffalo/phone-report/compare/v5.25.0...v5.25.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* fallback to current time if timestamp fails to fetch ([0e345cf](https://github.com/confusedbuffalo/phone-report/commit/0e345cf23e2ee957fe563f11bc9a5a101dd93580))
+
+# [5.25.0](https://github.com/confusedbuffalo/phone-report/compare/v5.24.4...v5.25.0) (2026-07-30)
+
+
+### Features
+
+* Speed up report with `Promise.all()` ([#477](https://github.com/confusedbuffalo/phone-report/issues/477)) ([cc2576b](https://github.com/confusedbuffalo/phone-report/commit/cc2576bdc213f5e48d501d79b5fdc15276fe6603)), closes [#457](https://github.com/confusedbuffalo/phone-report/issues/457)
+
+## [5.24.4](https://github.com/confusedbuffalo/phone-report/compare/v5.24.3...v5.24.4) (2026-07-28)
+
+
+### Bug Fixes
+
+* fix uploaded edits key storing to aid stats display ([7b8f5c8](https://github.com/confusedbuffalo/phone-report/commit/7b8f5c8cbaff269a2645df1b3a426a50a3785362))
+
+## [5.24.3](https://github.com/confusedbuffalo/phone-report/compare/v5.24.2...v5.24.3) (2026-07-25)
+
+
+### Bug Fixes
+
+* update stats on country page when edits have been uploaded ([005c240](https://github.com/confusedbuffalo/phone-report/commit/005c24039d0357d069d73aaa76208cfddd1f0158)), closes [#448](https://github.com/confusedbuffalo/phone-report/issues/448)
+
+## [5.24.2](https://github.com/confusedbuffalo/phone-report/compare/v5.24.1...v5.24.2) (2026-07-22)
+
+
+### Bug Fixes
+
+* fix nearby note message ([e90c8aa](https://github.com/confusedbuffalo/phone-report/commit/e90c8aaf8932991512061d5981a777c0560b34da))
+
+## [5.24.1](https://github.com/confusedbuffalo/phone-report/compare/v5.24.0...v5.24.1) (2026-07-19)
+
+
+### Bug Fixes
+
+* fixed opening hours values that are too long are not autofixable ([916c266](https://github.com/confusedbuffalo/phone-report/commit/916c266a1c192739bb93a19438cdcd0561cd3415))
+
 # [5.24.0](https://github.com/confusedbuffalo/phone-report/compare/v5.23.2...v5.24.0) (2026-07-15)
 
 

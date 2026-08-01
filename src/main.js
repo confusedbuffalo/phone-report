@@ -116,7 +116,7 @@ function saveCountryHistory(reportType, originalCountryStats) {
                         div => {
                             const compositeKey = `${div.divisionSlug}|${div.slug}`;
                             if (div.totalCount === 0 && historyMap.has(compositeKey)) {
-                                console.log(`Falling back to previous history for ${div.name}`);
+                                console.log(`${reportType}: Falling back to previous history for ${div.name}`);
                                 return { ...historyMap.get(compositeKey) };
                             }
                             return div;
@@ -304,7 +304,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
         name: subdivision.name,
         divisionSlug: safeName(rawDivisionName),
         slug: safeName(subdivision.name),
-        lastUpdated: dataTimestamp.toISOString(),
+        timestamp: dataTimestamp.toISOString(),
     };
 
     const validate = VALIDATORS[reportType];
@@ -376,15 +376,10 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
 
-    const divisionStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
-    const divisionTotals = Object.fromEntries(
-        Object.entries(COUNT_TYPES).map(([reportType, countTypes]) => {
-            return [reportType, Object.fromEntries(countTypes.map(t => [t, 0]))];
-        })
-    );
+    const tasks = subdivisions.flatMap(subdivision => REPORT_TYPES.map(reportType => ({ subdivision, reportType })));
 
-    for (const subdivision of subdivisions) {
-        for (const reportType of REPORT_TYPES) {
+    const results = await Promise.all(
+        tasks.map(async ({ subdivision, reportType }) => {
             const reportStats = await processSubdivision(
                 subdivision,
                 reportType,
@@ -392,14 +387,28 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
                 rawDivisionName,
                 clientTranslations
             );
-            if (Object.keys(reportStats).length > 0) {
-                divisionStats[reportType].push(reportStats);
-                Object.keys(divisionTotals[reportType]).forEach(countType => {
-                    divisionTotals[reportType][countType] += reportStats[countType];
-                });
-            }
-        }
-    }
+            return { reportType, reportStats };
+        })
+    );
+
+    const validResults = results.filter(r => Object.keys(r?.reportStats ?? {}).length);
+
+    const divisionStats = validResults.reduce((stats, { reportType, reportStats }) => {
+        (stats[reportType] ??= []).push(reportStats);
+        return stats;
+    }, {});
+
+    const divisionTotals = Object.fromEntries(
+        Object.entries(divisionStats).map(([reportType, stats]) => [
+            reportType,
+            stats.reduce((totals, reportStats) => {
+                for (const countType in reportStats) {
+                    totals[countType] = (totals[countType] ?? 0) + reportStats[countType];
+                }
+                return totals;
+            }, {}),
+        ])
+    );
 
     return { divisionStats, divisionTotals };
 }
@@ -421,26 +430,26 @@ async function processCountry(countryData) {
     const divisions = countryData.divisions ? { [countryData.name]: countryData.divisions } : countryData.divisionMap;
 
     if (countryData.pbfUrl) {
-        const tmpPbfFilePath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+        let downloaded = {};
 
         try {
-            await downloadPbf(countryData.pbfUrl, tmpPbfFilePath);
+            downloaded = await downloadPbf(countryData.pbfUrl);
 
             for (const reportType of REPORT_TYPES) {
                 const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
-                await filterPbf(tmpPbfFilePath, tmpReportPbfFilePath, reportType);
+                await filterPbf(downloaded.path, tmpReportPbfFilePath, reportType);
                 await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), countryData);
+
                 fs.rmSync(tmpReportPbfFilePath, { force: true });
             }
-
-            fs.rmSync(tmpPbfFilePath, { force: true });
 
             const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
             countryData.timestamp = dataTimestamp;
         } catch (error) {
             console.error(`Skipping country ${countryName} due to download failure: ${error.message}`);
-            fs.rmSync(tmpPbfFilePath, { force: true });
             return null;
+        } finally {
+            downloaded.dispose?.();
         }
     }
 
@@ -448,22 +457,20 @@ async function processCountry(countryData) {
         for (const [subdivisionName, subData] of Object.entries(groupDivisions)) {
             const pbfUrl = typeof subData === 'object' ? subData.pbfUrl : null;
             if (pbfUrl) {
-                const subPbfFilePath = path.join(process.cwd(), `sub-${uuidv4()}.osm.pbf`);
+                let downloaded = {};
 
                 try {
-                    await downloadPbf(pbfUrl, subPbfFilePath);
+                    downloaded = await downloadPbf(pbfUrl);
 
                     for (const reportType of REPORT_TYPES) {
                         const tmpReportPbfFilePath = path.join(
                             process.cwd(),
                             `sub-filtered-${reportType}-${uuidv4()}.osm.pbf`
                         );
-                        await filterPbf(subPbfFilePath, tmpReportPbfFilePath, reportType);
+                        await filterPbf(downloaded.path, tmpReportPbfFilePath, reportType);
                         await splitPbf(tmpReportPbfFilePath, path.join(OSM_DIR, reportType), null, subData);
                         fs.rmSync(tmpReportPbfFilePath, { force: true });
                     }
-
-                    fs.rmSync(subPbfFilePath, { force: true });
 
                     const dataTimestamp = await getOsmTimestamp(pbfUrl);
                     subData.timestamp = dataTimestamp;
@@ -472,8 +479,9 @@ async function processCountry(countryData) {
                     }
                 } catch (error) {
                     console.error(`Skipping subdivision ${subdivisionName} due to download failure: ${error.message}`);
-                    fs.rmSync(subPbfFilePath, { force: true });
                     // No return here, just skip this subdivision
+                } finally {
+                    downloaded.dispose?.();
                 }
 
                 if (testMode) {
@@ -631,33 +639,27 @@ async function main() {
 
     console.log('Starting full build process...');
 
-    const allCountryStats = Object.fromEntries(REPORT_TYPES.map(reportType => [reportType, []]));
-
     const defaultLocale = 'en-GB';
     const fullDefaultTranslations = getTranslations(defaultLocale);
     // TODO: serve the translations server-side
     const clientDefaultTranslations = fullDefaultTranslations;
 
-    for (const countryKey in COUNTRIES) {
-        const countryData = COUNTRIES[countryKey];
-        countryData.name = countryKey;
-        countryData.officialLanguages = officialLanguages[countryData.countryCode] ?? officialLanguages.default;
-        countryData.divisionLanguages = Object.fromEntries(
-            Object.entries(officialLanguages).filter(([key, _value]) => key.startsWith(countryData.countryCode))
-        );
-        const countryStats = await processCountry(countryData);
-        if (!countryStats) {
-            continue;
-        }
+    const preparedCountries = Object.entries(COUNTRIES).map(([countryKey, countryData]) => ({
+        ...countryData,
+        name: countryKey,
+        officialLanguages: officialLanguages[countryData.countryCode] ?? officialLanguages.default,
+        divisionLanguages: Object.fromEntries(
+            Object.entries(officialLanguages).filter(([key]) => key.startsWith(countryData.countryCode))
+        ),
+    }));
 
-        for (const reportType of REPORT_TYPES) {
-            allCountryStats[reportType].push(countryStats[reportType]);
-        }
+    const targetCountries = testMode ? preparedCountries.slice(0, 1) : preparedCountries;
 
-        if (testMode) {
-            break;
-        }
-    }
+    const countryStats = (await Promise.all(targetCountries.map(processCountry))).filter(Boolean);
+
+    const allCountryStats = Object.fromEntries(
+        REPORT_TYPES.map(type => [type, countryStats.map(result => result[type])])
+    );
 
     for (const reportType of REPORT_TYPES) {
         await generateMainIndexHtml(reportType, allCountryStats[reportType], defaultLocale, clientDefaultTranslations);

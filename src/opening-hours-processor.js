@@ -226,6 +226,10 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
             }
         }
 
+        if (tagValidationResult.isInvalid && tagValidationResult.isAutoFixable && prettyValue.length > 255) {
+            tagValidationResult.isAutoFixable = false;
+        }
+
         if (warnings) {
             const ohToTest =
                 locale === 'en' ? oh : new opening_hours(hoursTagValue, null, { tag_key: tag, locale: 'en' });

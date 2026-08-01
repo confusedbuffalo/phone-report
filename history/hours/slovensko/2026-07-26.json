@@ -1,0 +1,92 @@
+{
+  "name": "Slovensko",
+  "slug": "slovensko",
+  "locale": "en",
+  "timestamp": "2026-07-25T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Západné Slovensko": [
+      {
+        "name": "Nitriansky kraj",
+        "divisionSlug": "západné-slovensko",
+        "slug": "nitriansky-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalCount": 2961
+      },
+      {
+        "name": "Trenčiansky kraj",
+        "divisionSlug": "západné-slovensko",
+        "slug": "trenčiansky-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalCount": 4800
+      },
+      {
+        "name": "Trnavský kraj",
+        "divisionSlug": "západné-slovensko",
+        "slug": "trnavský-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalCount": 3291
+      }
+    ],
+    "Východné Slovensko": [
+      {
+        "name": "Košický kraj",
+        "divisionSlug": "východné-slovensko",
+        "slug": "košický-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 4,
+        "autoFixableCount": 2,
+        "totalCount": 6646
+      },
+      {
+        "name": "Prešovský kraj",
+        "divisionSlug": "východné-slovensko",
+        "slug": "prešovský-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalCount": 5258
+      }
+    ],
+    "Bratislavský kraj": [
+      {
+        "name": "Bratislavský kraj",
+        "divisionSlug": "bratislavský-kraj",
+        "slug": "bratislavský-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalCount": 10306
+      }
+    ],
+    "Stredné Slovensko": [
+      {
+        "name": "Banskobystrický kraj",
+        "divisionSlug": "stredné-slovensko",
+        "slug": "banskobystrický-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalCount": 2341
+      },
+      {
+        "name": "Žilinský kraj",
+        "divisionSlug": "stredné-slovensko",
+        "slug": "žilinský-kraj",
+        "lastUpdated": "2026-07-25T23:00:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalCount": 4338
+      }
+    ]
+  },
+  "invalidCount": 11,
+  "autoFixableCount": 2,
+  "totalCount": 39941,
+  "safeEditCount": 0
+}

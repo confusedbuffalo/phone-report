@@ -477,6 +477,23 @@ describe('validateHoursTag', () => {
         expect(result.isAmbiguous).toBe(false);
         expect(result.noDays).toBe(false);
     });
+
+    test('Value that would be fixable but prettifies to value longer than 255 chars is invalid and not fixable', () => {
+        const result = validateHoursTag(
+            'Jan:Mo—Fr10:00-20:00;Feb:Mo-Fr10:00-20:00;Apr:Mo-Fr10:00-20:00;May:Mo-Fr10:00-20:00;Jun:Mo-Fr10:00-20:00;Jul:Mo-Fr10:00-20:00;Aug:Mo-Fr10:00-20:00;Sep:Mo-Fr10:00-20:00;Oct:Mo-Fr10:00-20:00;Nov:Mo-Fr10:00-20:00;Dec:Mo-Fr10:00-20:00;PH off',
+            'opening_hours',
+            'en'
+        );
+        console.log(result);
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+        expect(result.prettyValue).toEqual(
+            'Jan: Mo-Fr 10:00-20:00; Feb: Mo-Fr 10:00-20:00; Apr: Mo-Fr 10:00-20:00; May: Mo-Fr 10:00-20:00; Jun: Mo-Fr 10:00-20:00; Jul: Mo-Fr 10:00-20:00; Aug: Mo-Fr 10:00-20:00; Sep: Mo-Fr 10:00-20:00; Oct: Mo-Fr 10:00-20:00; Nov: Mo-Fr 10:00-20:00; Dec: Mo-Fr 10:00-20:00; PH off'
+        );
+    });
 });
 
 describe('validateOpeningHours', () => {

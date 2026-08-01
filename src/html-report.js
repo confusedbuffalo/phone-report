@@ -494,7 +494,7 @@ export async function generateHtmlReport(
         translations,
         subdivisionName: subdivisionStats.name,
         dataFilePath: `./${subdivisionStats.slug}.json`,
-        dataLastUpdated: subdivisionStats.lastUpdated,
+        dataLastUpdated: subdivisionStats.timestamp,
         openingHoursEvaluationToolUrl: OPENING_HOURS_EVALUATION_TOOL_URL,
         changesetTags: CHANGESET_TAGS[reportType],
         officialLanguages,
@@ -502,6 +502,7 @@ export async function generateHtmlReport(
         defaultEditorsDesktop: DEFAULT_EDITORS_DESKTOP,
         defaultEditorsMobile: DEFAULT_EDITORS_MOBILE,
         githubLink: GITHUB_LINK,
+        safeCountryName: safeName(countryData.name),
     };
 
     const eta = new Eta({

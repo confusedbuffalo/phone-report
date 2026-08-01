@@ -8,18 +8,20 @@ import {
     uploadBtn,
     uploadCancelBtn,
     uploadCloseBtnBottom,
+    UPLOADED_ITEMS_KEY,
 } from './report-state.js';
-import { getEdits, moveEditsToUploadedStorage } from './report-storage.js';
+import { getEdits, moveEditsToUploadedStorage, persistUndoState, saveEdits } from './report-storage.js';
 import {
     disableCreateNoteWithMessage,
     disableModalCloseListeners,
     enableModalCloseListeners,
     openNoteModal,
     renderNumbers,
+    setUpSaveBtn,
     toggleUploadingSpinner,
 } from './report-ui-controller.js';
-import { calculateBufferedBBox, escapeHTML } from './report-utils.js';
-import { subdivisionName, changesetTags } from './config.js';
+import { calculateBufferedBBox, escapeHTML, getSortedItems, sortItems } from './report-utils.js';
+import { subdivisionName, changesetTags, reportType, safeCountryName } from './config.js';
 import { translate } from './i18n.js';
 import { getOSM } from './osm-wrapper.js';
 
@@ -284,7 +286,7 @@ export function addNote(osmType, osmId) {
                         id: `<a href="https://www.openstreetmap.org/note/${encodeURIComponent(id)}" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">${escapeHTML(id)}</a>`,
                     })
                 )
-                .join('\n');
+                .join('<br>');
             if (openNotesMessage.length > 0) {
                 disableCreateNoteWithMessage(openNotesMessage);
             } else {
@@ -440,4 +442,162 @@ export function checkAndSubmit() {
         messageBox.innerHTML = translate('enterComment');
         messageBox.classList.remove('hidden');
     }
+}
+
+const INVALID_PROPERTY_MAP = {
+    phone: 'invalidNumbers',
+    hours: 'invalidHours',
+    name: 'nameTags',
+};
+
+/**
+ * Compares the tags of an OpenStreetMap (OSM) feature against the expected invalid tag values
+ * to determine if any changes have occurred.
+ *
+ * @param {Object} [osmFeature] - The fetched OSM feature object.
+ * @param {Object} originalItem - The reference item containing original tag metadata.
+ * @returns {boolean} `true` if any actual tag value differs from its expected invalid value; otherwise `false`.
+ */
+function compareTags(osmFeature, originalItem) {
+    let hasChanges = false;
+    const key = INVALID_PROPERTY_MAP[reportType];
+    const invalidTags = key ? originalItem[key] : {};
+
+    const fetchedTags = osmFeature?.tags || {};
+
+    for (const [tagName, expectedValue] of Object.entries(invalidTags)) {
+        const actualValue = fetchedTags[tagName] ?? null;
+        hasChanges = actualValue !== expectedValue;
+        if (hasChanges) return true;
+    }
+    return hasChanges;
+}
+
+/**
+ * Processes a list of items to detect external OSM updates or deletions, purges stale
+ * local pending edits/undo stacks for those features and updates local storage state.
+ *
+ * @async
+ * @param {Array<Object>} items - The list of items to check.
+ * @returns {Promise<void>} Resolves once feature updates are processed, edits are saved and the UI is re-rendered.
+ */
+async function updateFeatures(items) {
+    const grouped = items.reduce((acc, item) => {
+        if (!acc[item.type]) acc[item.type] = [];
+        acc[item.type].push(item);
+        return acc;
+    }, {});
+
+    const changedItems = {};
+
+    for (const [type, items] of Object.entries(grouped)) {
+        const itemMap = new Map(items.map(item => [item.id, item]));
+        const ids = items.map(item => item.id);
+
+        const fetchedFeatures = await OSM.getFeatures(type, ids);
+
+        for (const osmFeature of fetchedFeatures) {
+            const originalItem = itemMap.get(osmFeature.id);
+
+            if (!originalItem) continue;
+
+            const isDeleted = (osmFeature.visible ?? true) === false;
+
+            if (
+                isDeleted ||
+                !osmFeature.tags ||
+                typeof osmFeature.tags !== 'object' ||
+                compareTags(osmFeature, originalItem)
+            ) {
+                changedItems[type] ??= {};
+                changedItems[type][osmFeature.id] = { changed: true };
+            }
+        }
+    }
+
+    // In case user quickly applied edits before features were checked
+    // Need to do this outside of loop in case user is still clicking before re-render
+    const edits = getEdits();
+    for (const [osmType, features] of Object.entries(changedItems)) {
+        for (const osmId of Object.keys(features)) {
+            delete edits[subdivisionName]?.[osmType]?.[osmId];
+            const index = undoData.stack.findIndex(([type, id]) => type === osmType && id === parseInt(osmId));
+            if (index !== -1) {
+                undoData.stack.splice(index, 1);
+                undoData.position -= 1;
+            }
+        }
+    }
+    saveEdits(edits);
+    setUpSaveBtn();
+    persistUndoState();
+
+    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY)) ?? {};
+
+    uploadedChanges[safeCountryName] ??= {};
+    uploadedChanges[safeCountryName][subdivisionName] ??= {};
+
+    const subdivisionUploaded = uploadedChanges[safeCountryName][subdivisionName];
+
+    for (const type in changedItems) {
+        subdivisionUploaded[type] = {
+            ...(changedItems[type] || {}),
+            ...subdivisionUploaded[type],
+        };
+    }
+    localStorage.setItem(UPLOADED_ITEMS_KEY, JSON.stringify(uploadedChanges));
+    renderNumbers();
+}
+
+/**
+ * Checks a sample of the proposed changes to see if their value has changed since page creation
+ * @returns {void}
+ */
+export async function checkForChanges() {
+    const fixableItems = getSortedItems('fixable');
+
+    // Let's not hit the API with too many requests, if there are more than 1000 then don't bother checking at all
+    if (!fixableItems || fixableItems.length > 1000) return;
+
+    const dateSortedItems = sortItems(fixableItems, 'date', 'asc');
+    const nameSortedItems = sortItems(fixableItems, 'name', 'asc');
+
+    const sampleItems = [
+        fixableItems.at(0),
+        fixableItems.at(-1),
+        dateSortedItems.at(0),
+        dateSortedItems.at(-1),
+        nameSortedItems.at(0),
+        nameSortedItems.at(-1),
+    ].filter(Boolean);
+
+    if (sampleItems.length === 0) return;
+
+    const OSM = await getOSM();
+
+    const grouped = sampleItems.reduce((acc, item) => {
+        if (!acc[item.type]) acc[item.type] = [];
+        acc[item.type].push(item);
+        return acc;
+    }, {});
+
+    let anyChanged = false;
+
+    for (const [type, items] of Object.entries(grouped)) {
+        const ids = items.map(item => item.id);
+
+        const fetchedFeatures = await OSM.getFeatures(type, ids);
+
+        const featureMap = new Map(fetchedFeatures.map(feat => [feat.id, feat]));
+
+        for (const item of items) {
+            const fetchedFeature = featureMap.get(item.id);
+
+            anyChanged = compareTags(fetchedFeature, item);
+            if (anyChanged) break;
+        }
+        if (anyChanged) break;
+    }
+
+    if (anyChanged) updateFeatures(fixableItems);
 }

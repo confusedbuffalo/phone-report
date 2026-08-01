@@ -2,6 +2,7 @@ import { reportType, locale, groupedDivisionStats, safeCountryName } from './con
 import { translate } from './i18n.js';
 import { initThemeToggle } from './theme.js';
 import { applyColors } from './background-colour.js';
+import { UPLOADED_ITEMS_KEY } from './report-state.js';
 
 initThemeToggle();
 
@@ -53,23 +54,82 @@ function formatNumber(num) {
 }
 
 const calculatedDivisionTotals = {};
-for (const divisionName in groupedDivisionStats) {
-    let groupInvalid = 0;
-    let groupTotal = 0;
-    let groupFixable = 0;
-    let groupMissing = 0;
-    groupedDivisionStats[divisionName].forEach(stat => {
-        groupInvalid += stat.invalidCount;
-        groupTotal += stat.totalCount;
-        groupFixable += stat.autoFixableCount;
-        groupMissing += stat.missingNamesCount;
-    });
-    calculatedDivisionTotals[divisionName] = {
-        invalid: groupInvalid,
-        total: groupTotal,
-        fixable: groupFixable,
-        missing: groupMissing,
+
+function applyUploadedChanges() {
+    // Recalculate totals, subtracting edits made locally
+    const uploadedChanges = JSON.parse(localStorage.getItem(UPLOADED_ITEMS_KEY));
+    if (uploadedChanges) {
+        for (const divisionName in groupedDivisionStats) {
+            groupedDivisionStats[divisionName].forEach(stat => {
+                const subdivisionUploaded = uploadedChanges?.[safeCountryName]?.[stat.name];
+
+                if (!subdivisionUploaded) return;
+
+                const subdivisionUploadedCount = Object.values(subdivisionUploaded).reduce(
+                    (sum, type) => sum + Object.keys(type || {}).length,
+                    0
+                );
+
+                stat.invalidCount = Math.max(0, stat.invalidCount - subdivisionUploadedCount);
+                stat.autoFixableCount = Math.max(0, stat.autoFixableCount - subdivisionUploadedCount);
+            });
+        }
+    }
+
+    for (const [divisionName, stats] of Object.entries(groupedDivisionStats)) {
+        calculatedDivisionTotals[divisionName] = stats.reduce(
+            (acc, stat) => ({
+                invalid: acc.invalid + (stat.invalidCount || 0),
+                total: acc.total + (stat.totalCount || 0),
+                fixable: acc.fixable + (stat.autoFixableCount || 0),
+                missing: acc.missing + (stat.missingNamesCount || 0),
+            }),
+            { invalid: 0, total: 0, fixable: 0, missing: 0 }
+        );
+    }
+
+    // Update stats box
+    const overallTotals = Object.values(calculatedDivisionTotals).reduce(
+        (acc, division) => ({
+            invalid: acc.invalid + (division.invalid || 0),
+            total: acc.total + (division.total || 0),
+            fixable: acc.fixable + (division.fixable || 0),
+            missing: acc.missing + (division.missing || 0),
+        }),
+        { invalid: 0, total: 0, fixable: 0, missing: 0 }
+    );
+
+    for (const [key, value] of Object.entries(overallTotals)) {
+        const el = document.getElementById(`stats-box-${key}-count`);
+        if (el) el.textContent = formatNumber(value) ?? 0;
+    }
+
+    const PERCENTAGE_OPTIONS = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     };
+
+    const invalidPercentElement = document.getElementById('stats-box-invalid-percent');
+    if (invalidPercentElement) {
+        const invalidPercentage = overallTotals.total > 0 ? (overallTotals.invalid / overallTotals.total) * 100 : 0;
+        invalidPercentElement.textContent = translate('invalidPercentageOfTotal', {
+            percent: invalidPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
+    }
+    const fixablePercentElement = document.getElementById('stats-box-fixable-percent');
+    if (invalidPercentElement) {
+        const fixablePercentage = overallTotals.invalid > 0 ? (overallTotals.fixable / overallTotals.invalid) * 100 : 0;
+        fixablePercentElement.textContent = translate('fixablePercentageOfInvalid', {
+            percent: fixablePercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
+    }
+    const missingPercentElement = document.getElementById('stats-box-missing-percent');
+    if (missingPercentElement) {
+        const missingPercentage = overallTotals.total > 0 ? (overallTotals.missing / overallTotals.total) * 100 : 0;
+        missingPercentElement.textContent = translate('invalidPercentageOfTotal', {
+            percent: missingPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
+    }
 }
 
 /**
@@ -366,4 +426,5 @@ sortButtons.forEach(button => {
 
 showEmptyCheckbox.addEventListener('change', renderList);
 
+applyUploadedChanges();
 renderList();

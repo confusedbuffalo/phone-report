@@ -1,12 +1,109 @@
 import axios from 'axios';
 import fs from 'fs';
+import fsPromises from 'fs/promises';
 import { exec } from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
+import { v4 as uuidv4 } from 'uuid';
 import { POLY_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS } from './constants.js';
 import { getSubdivisionIds } from './fetch-polys.js';
 
 const execPromise = promisify(exec);
+
+const MIN_FREE_DISK_BYTES = 5 * 1024 * 1024 * 1024; // 5 GB
+
+/**
+ * Class to track disk space reservations and queue downloads until sufficient space is free.
+ */
+export class DiskSpaceManager {
+    constructor(targetDir = process.cwd(), multiplier = 1.5, maxActiveTickets = 5) {
+        this.targetDir = targetDir;
+        this.multiplier = multiplier;
+        this.reservedBytes = 0;
+        this.queue = [];
+        this.activeTickets = 0;
+        this.maxActiveTickets = maxActiveTickets;
+    }
+
+    /**
+     * Gets actual unreserved free space, enforcing a hard minimum disk floor.
+     */
+    async getAvailableSpace() {
+        const stats = await fsPromises.statfs(this.targetDir);
+        const realDiskFree = stats.bsize * stats.bavail;
+
+        // Ensure we always leave a safety buffer on the physical disk
+        const usableDiskFree = Math.max(0, realDiskFree - MIN_FREE_DISK_BYTES);
+        return Math.max(0, usableDiskFree - this.reservedBytes);
+    }
+
+    async getRequiredSpace(url) {
+        // Fallback: 5 GB
+        let downloadBytes = 5 * 1024 * 1024 * 1024;
+        try {
+            const response = await axios.head(url);
+            const contentLength = response.headers['content-length'];
+            if (!contentLength) throw new Error('Content-Length missing');
+            downloadBytes = parseInt(contentLength, 10);
+        } catch (error) {
+            console.warn(`Could not determine size via HEAD for ${url}: ${error.message}`);
+        }
+        return {
+            downloadBytes,
+            totalBytes: Math.ceil(downloadBytes * this.multiplier),
+        };
+    }
+
+    async reserveSpace(url) {
+        const { downloadBytes, totalBytes } = await this.getRequiredSpace(url);
+
+        return new Promise(resolve => {
+            const tryAcquire = async () => {
+                const freeSpace = await this.getAvailableSpace();
+                if (freeSpace >= totalBytes && this.activeTickets < this.maxActiveTickets) {
+                    this.reservedBytes += totalBytes;
+                    this.activeTickets++;
+                    let currentReservation = totalBytes;
+
+                    const ticket = {
+                        downloadBytes,
+
+                        onDownloadComplete: actualDownloadedBytes => {
+                            const bytesToRelease = actualDownloadedBytes || downloadBytes;
+                            this.reduceReservation(ticket, bytesToRelease);
+                        },
+
+                        release: () => {
+                            this.reduceReservation(ticket, currentReservation, true);
+                        },
+                    };
+
+                    resolve(ticket);
+                } else {
+                    this.queue.push(tryAcquire);
+                }
+            };
+            tryAcquire();
+        });
+    }
+
+    reduceReservation(ticket, amount, done) {
+        const releaseAmount = Math.min(amount, this.reservedBytes);
+        this.reservedBytes -= releaseAmount;
+        if (!done) return;
+        this.activeTickets--;
+        this.checkQueue();
+    }
+
+    checkQueue() {
+        if (this.queue.length > 0 && this.activeTickets < this.maxActiveTickets) {
+            const next = this.queue.shift();
+            next();
+        }
+    }
+}
+
+export const globalSpaceManager = new DiskSpaceManager();
 
 /**
  * Executes a function with a single retry for temporary network errors (timeout or 5xx).
@@ -43,12 +140,26 @@ export async function withRetry(fn, label) {
 }
 
 /**
- * Downloads a specified OSM PBF file and saves it to the given path.
+ * Downloads a specified OSM PBF file into a temporary file.
  * @param {string} url - The URL of the .osm.pbf file.
- * @param {string} outputPath - Where to save the file.
+ * @param {DiskSpaceManager} [spaceManager] - Optional custom space manager instance.
+ * @returns {Promise<{path: string, dispose: () => void}>} Where the file was saved and how to get rid of it.
  */
-export async function downloadPbf(url, outputPath) {
+export async function downloadPbf(url, spaceManager = globalSpaceManager) {
+    const ticket = await spaceManager.reserveSpace(url);
     console.log(`Downloading: ${url}`);
+    const outputPath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
+
+    const dispose = () => {
+        try {
+            fs.rmSync(outputPath, { force: true });
+        } catch (error) {
+            console.warn(`Failed to remove temporary PBF ${outputPath}: ${error.message}`);
+        } finally {
+            ticket.release();
+        }
+    };
+
     try {
         await withRetry(async () => {
             const response = await axios({
@@ -65,8 +176,14 @@ export async function downloadPbf(url, outputPath) {
                 writer.on('error', reject);
             });
         }, `Download ${url}`);
+
+        const stats = fs.statSync(outputPath);
+        ticket.onDownloadComplete(stats.size);
+
+        return { path: outputPath, dispose };
     } catch (error) {
         console.error('Error download OSM file:', error.message);
+        dispose();
         throw error;
     }
 }
@@ -96,17 +213,14 @@ export async function filterPbf(inputPath, outputPath, reportType) {
 
 /**
  * Splits a PBF file into smaller extracts based on country or specific division boundaries.
- * * This function uses the `osmium` CLI tool to extract geographic data using `.poly` files.
  * If a division is provided, it extracts that specific relation; otherwise, it
  * iterates through all subdivision IDs for the given country.
- * * @async
  * @param {string} filteredFilePath - The file path to the source .osm.pbf file.
  * @param {string} outputDir - The directory in which to save the output files.
  * @param {string|null} [country=null] - The country name or identifier used to fetch subdivision IDs.
  * @param {Object|null} [division=null] - An optional division object.
  * @param {string} division.relationId - The OpenStreetMap relation ID for the division.
  * @returns {Promise<void>} Resolves when the extraction process is complete for all IDs.
- * @throws {Error} Logs an error if the `osmium` command fails for a specific division.
  */
 export async function splitPbf(filteredFilePath, outputDir, country = null, division = null) {
     const ids = division ? [division.relationId] : getSubdivisionIds(country);
@@ -194,7 +308,7 @@ export async function getOsmTimestamp(pbfUrl) {
             return new Date(text).toISOString();
         }, `Fetch timestamp for ${pbfUrl}`);
     } catch (error) {
-        console.error('Error fetching timestamp:', error);
-        return null;
+        console.error('Error fetching timestamp, falling back to now:', error);
+        return new Date().toISOString();
     }
 }

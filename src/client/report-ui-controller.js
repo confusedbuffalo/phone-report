@@ -30,7 +30,7 @@ import {
 import { changePage, getItemWithIndex, handleSort } from './report-ui-actions.js';
 import { createListItem, createSaveRow, decodeHtmlEntities } from './report-ui-components.js';
 import { getFilterType, getSortedItems } from './report-utils.js';
-import { reportType, subdivisionName, allEditorIds, changesetTags } from './config.js';
+import { reportType, subdivisionName, allEditorIds, changesetTags, locale } from './config.js';
 import { translate } from './i18n.js';
 
 let firstLoad = true;
@@ -268,22 +268,50 @@ export function renderNumbers() {
     }
 
     // Update stats box
+
+    const PERCENTAGE_OPTIONS = {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    };
+
+    const totalElement = document.getElementById('stats-box-total-count');
+    const totalCount = totalElement ? parseInt(totalElement.textContent.replace(/[^\d]/, '')) : 0;
+
+    const newInvalidCount = sortedItems.invalid.length + sortedItems.fixable.length;
     const invalidCountElement = document.getElementById('stats-box-invalid-count');
-    if (invalidCountElement) {
-        const newInvalidCount = sortedItems.invalid.length + sortedItems.fixable.length;
+    const invalidPercentElement = document.getElementById('stats-box-invalid-percent');
+    if (invalidCountElement && invalidPercentElement) {
         invalidCountElement.textContent = newInvalidCount;
+
+        const invalidPercentage = totalCount > 0 ? (newInvalidCount / totalCount) * 100 : 0;
+        invalidPercentElement.textContent = translate('invalidPercentageOfTotal', {
+            percent: invalidPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
     }
 
     const fixableCountElement = document.getElementById('stats-box-fixable-count');
-    if (fixableCountElement) {
+    const fixablePercentElement = document.getElementById('stats-box-fixable-percent');
+
+    if (fixableCountElement && fixablePercentElement) {
         const newFixableCount = sortedItems.fixable.length;
         fixableCountElement.textContent = newFixableCount;
+
+        const invalidPercentage = newInvalidCount > 0 ? (newFixableCount / newInvalidCount) * 100 : 0;
+        fixablePercentElement.textContent = translate('fixablePercentageOfInvalid', {
+            percent: invalidPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
     }
 
     const missingCountElement = document.getElementById('stats-box-missing-count');
-    if (missingCountElement) {
+    const missingPercentElement = document.getElementById('stats-box-missing-percent');
+    if (missingCountElement && missingPercentElement) {
         const newMissingCount = sortedItems.missing.length;
         missingCountElement.textContent = newMissingCount;
+
+        const missingPercentage = totalCount > 0 ? (newMissingCount / totalCount) * 100 : 0;
+        missingPercentElement.textContent = translate('invalidPercentageOfTotal', {
+            percent: missingPercentage.toLocaleString(locale, PERCENTAGE_OPTIONS),
+        });
     }
 
     applyEditorVisibility();
@@ -543,7 +571,7 @@ export function disableCreateNoteWithMessage(message) {
 
     const messageBox = document.getElementById('note-message-box');
     messageBox.className = 'message-box-error';
-    messageBox.textContent = message;
+    messageBox.innerHTML = message;
     messageBox.classList.remove('hidden');
 }
 
