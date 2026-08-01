@@ -444,7 +444,7 @@ async function processCountry(countryData) {
             const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
             countryData.timestamp = dataTimestamp;
         } catch (error) {
-            console.error(`Skipping country ${countryName} due to download failure: ${error.message}`);
+            console.error(`Skipping country ${countryName} due to download failure: ${error?.message || error}`);
             return null;
         } finally {
             downloaded.dispose?.();

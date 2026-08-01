@@ -182,7 +182,7 @@ export async function downloadPbf(url, spaceManager = globalSpaceManager) {
 
         return { path: outputPath, dispose };
     } catch (error) {
-        console.error('Error download OSM file:', error.message);
+        console.error('Error downloading OSM file:', error?.message || error);
         dispose();
         throw error;
     }
