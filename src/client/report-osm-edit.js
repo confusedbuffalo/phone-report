@@ -554,6 +554,10 @@ async function updateFeatures(items) {
  * @returns {void}
  */
 export async function checkForChanges() {
+    const OSM = await getOSM();
+
+    if (!OSM.isLoggedIn()) return;
+
     const fixableItems = getSortedItems('fixable');
 
     // Let's not hit the API with too many requests, if there are more than 1000 then don't bother checking at all
@@ -572,8 +576,6 @@ export async function checkForChanges() {
     ].filter(Boolean);
 
     if (sampleItems.length === 0) return;
-
-    const OSM = await getOSM();
 
     const grouped = sampleItems.reduce((acc, item) => {
         if (!acc[item.type]) acc[item.type] = [];
