@@ -576,7 +576,13 @@ async function minifyJsFiles(directory) {
                 const code = await fs.readFileSync(fullPath, 'utf8');
 
                 const result = await minify(code, {
-                    compress: true,
+                    ecma: 2022,
+                    compress: {
+                        ecma: 2022,
+                    },
+                    format: {
+                        ecma: 2022,
+                    },
                     mangle: true,
                 });
 
