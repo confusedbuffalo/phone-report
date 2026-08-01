@@ -558,6 +558,9 @@ export async function checkForChanges() {
 
     if (!OSM.isLoggedIn()) return;
 
+    const checkingSpinner = document.getElementById('checking-spinner');
+    if (checkingSpinner) checkingSpinner.hidden = false;
+
     const fixableItems = getSortedItems('fixable');
     const missingItems = getSortedItems('missing');
     const invalidItems = getSortedItems('invalid');
@@ -609,4 +612,5 @@ export async function checkForChanges() {
 
         if (anyChanged) updateFeatures(itemSet);
     }
+    if (checkingSpinner) checkingSpinner.hidden = true;
 }
