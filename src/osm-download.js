@@ -188,6 +188,56 @@ export async function downloadPbf(url, spaceManager = globalSpaceManager) {
     }
 }
 
+/**
+ * Simple concurrency manager to limit parallel execution of Osmium commands.
+ */
+export class OsmiumQueueManager {
+    constructor(maxConcurrent = 2) {
+        this.maxConcurrent = maxConcurrent;
+        this.activeCount = 0;
+        this.queue = [];
+    }
+
+    /**
+     * Acquires an execution slot, waiting in line if max concurrency is reached.
+     */
+    async acquire() {
+        if (this.activeCount < this.maxConcurrent) {
+            this.activeCount++;
+            return;
+        }
+
+        await new Promise(resolve => this.queue.push(resolve));
+        this.activeCount++;
+    }
+
+    /**
+     * Releases the slot and triggers the next queued task, if any.
+     */
+    release() {
+        this.activeCount--;
+        if (this.queue.length > 0) {
+            const next = this.queue.shift();
+            next();
+        }
+    }
+
+    /**
+     * Helper to wrap and execute an async function within the queue slot.
+     * @param {Function} fn - Async task to execute.
+     */
+    async run(fn) {
+        await this.acquire();
+        try {
+            return await fn();
+        } finally {
+            this.release();
+        }
+    }
+}
+
+export const globalOsmiumManager = new OsmiumQueueManager(2);
+
 const FILTER_EXPRESSIONS = {
     phone: `nwr/${ALL_NUMBER_TAGS.join(',')}`,
     name: 'name:*',
@@ -196,25 +246,29 @@ const FILTER_EXPRESSIONS = {
 
 /**
  * Filters an OSM PBF file by tags appropriate for the specified report type.
+ * Limited to 2 max global active Osmium operations.
  * @param {string} inputPath - The filename of the .osm.pbf file.
  * @param {string} outputPath - Where to save the filtered file.
  * @param {'phone' | 'name' | 'hours'} reportType - The type of report to filter for.
  */
-export async function filterPbf(inputPath, outputPath, reportType) {
-    try {
-        const filterExpression = FILTER_EXPRESSIONS[reportType];
-
-        const command = `osmium tags-filter "${inputPath}" "${filterExpression}" -o "${outputPath}" --overwrite`;
-        await execPromise(command);
-    } catch (error) {
-        console.error('Error processing OSM data:', error.message);
-    }
+export async function filterPbf(inputPath, outputPath, reportType, osmiumManager = globalOsmiumManager) {
+    return osmiumManager.run(async () => {
+        try {
+            const filterExpression = FILTER_EXPRESSIONS[reportType];
+            const command = `osmium tags-filter "${inputPath}" "${filterExpression}" -o "${outputPath}" --overwrite`;
+            await execPromise(command);
+        } catch (error) {
+            console.error('Error processing OSM data:', error.message);
+            throw error;
+        }
+    });
 }
 
 /**
  * Splits a PBF file into smaller extracts based on country or specific division boundaries.
  * If a division is provided, it extracts that specific relation; otherwise, it
  * iterates through all subdivision IDs for the given country.
+ * Treats the whole sequence of subdivisions as one Osmium task slot.
  * @param {string} filteredFilePath - The file path to the source .osm.pbf file.
  * @param {string} outputDir - The directory in which to save the output files.
  * @param {string|null} [country=null] - The country name or identifier used to fetch subdivision IDs.
@@ -222,34 +276,42 @@ export async function filterPbf(inputPath, outputPath, reportType) {
  * @param {string} division.relationId - The OpenStreetMap relation ID for the division.
  * @returns {Promise<void>} Resolves when the extraction process is complete for all IDs.
  */
-export async function splitPbf(filteredFilePath, outputDir, country = null, division = null) {
-    const ids = division ? [division.relationId] : getSubdivisionIds(country);
+export async function splitPbf(
+    filteredFilePath,
+    outputDir,
+    country = null,
+    division = null,
+    osmiumManager = globalOsmiumManager
+) {
+    return osmiumManager.run(async () => {
+        const ids = division ? [division.relationId] : getSubdivisionIds(country);
 
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-    }
-
-    for (const id of ids) {
-        const polyPath = path.join(POLY_DIR, `${id}.poly`);
-        const tempPath = path.join(outputDir, `${id}.osm.pbf`);
-        const outputPath = path.join(outputDir, `${id}.geojsonseq`);
-
-        if (!fs.existsSync(polyPath)) {
-            console.warn(`[SKIP] Poly file not found for ID: ${id}`);
-            continue;
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
         }
 
-        try {
-            const extractCommand = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${tempPath}" --strategy simple --overwrite`;
-            const exportCommand = `osmium export "${tempPath}" -a type,id,changeset,timestamp,user -f geojsonseq -o "${outputPath}" --overwrite`;
-            await execPromise(extractCommand);
-            await execPromise(exportCommand);
-            fs.unlinkSync(tempPath);
-        } catch (error) {
-            console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
-            continue;
+        for (const id of ids) {
+            const polyPath = path.join(POLY_DIR, `${id}.poly`);
+            const tempPath = path.join(outputDir, `${id}.osm.pbf`);
+            const outputPath = path.join(outputDir, `${id}.geojsonseq`);
+
+            if (!fs.existsSync(polyPath)) {
+                console.warn(`[SKIP] Poly file not found for ID: ${id}`);
+                continue;
+            }
+
+            try {
+                const extractCommand = `osmium extract -p "${polyPath}" "${filteredFilePath}" -o "${tempPath}" --strategy simple --overwrite`;
+                const exportCommand = `osmium export "${tempPath}" -a type,id,changeset,timestamp,user -f geojsonseq -o "${outputPath}" --overwrite`;
+                await execPromise(extractCommand);
+                await execPromise(exportCommand);
+                fs.unlinkSync(tempPath);
+            } catch (error) {
+                console.error(`[ERROR] Failed to extract division ${id}:`, error.message);
+                continue;
+            }
         }
-    }
+    });
 }
 
 /**
