@@ -4,10 +4,53 @@ import { ALL_HOURS_TAGS } from './constants.js';
 import opening_hours from 'opening_hours';
 import { LRUCache } from 'lru-cache';
 import { diffChars } from 'diff';
+import { iso31662 } from 'iso-3166';
 
 const cache = new LRUCache({
     max: 10000,
 });
+
+const iso31662Map = new Map(iso31662.map(item => [item.code, item]));
+
+/**
+ * Creates a nominatim object suitable for the opening_hours library from the given code
+ * @param {string} countryStateCode - The country (and optionally with state) code for the location of the object in ISO 3166-1 or ISO 3166-2 format.
+ * @returns {object}
+ */
+function getNominatimObject(countryStateCode) {
+    if (!countryStateCode) return null;
+
+    const result = iso31662Map.get(countryStateCode.toUpperCase());
+    const countryCode = result ? result.parent.toLowerCase() : countryStateCode.split('-')[0].toLowerCase();
+    const state = result?.name ?? null;
+
+    return { address: { country_code: countryCode, state } };
+}
+
+/**
+ * Creates an opening hours object, falling back to a default location if the tag value has holidays that are not defined in the given country
+ * @param {string} hoursTagValue - The tag value for the opening hours string.
+ * @param {string} tag - The tag in which the opening hours string is defined (such as 'opening_hours' or 'service_times').
+ * @param {string} countryStateCode - The country (and optionally with state) code for the location of the object in ISO 3166-1 or ISO 3166-2 format.
+ * @returns {opening_hours}
+ */
+export function createOpeningHours(hoursTagValue, tag, countryStateCode) {
+    const nominatimObject = getNominatimObject(countryStateCode);
+
+    try {
+        return new opening_hours(hoursTagValue, nominatimObject, { tag_key: tag });
+    } catch (error) {
+        if (
+            countryStateCode &&
+            String(error?.message || error)
+                .toLowerCase()
+                .includes('there are no holidays')
+        ) {
+            return createOpeningHours(hoursTagValue, tag, null);
+        }
+        throw error;
+    }
+}
 
 const stdSemicolonCommaRegex = /\s*([,;])\s*/g;
 const stdHyphenRegex = /\s*(-)\s*/g;
@@ -77,18 +120,27 @@ const endHourMatchRegex = /^\d:\d\d-(\d\d):\d\d/;
  * @param {string} originalHours - The original tag value for the opening hours string.
  * @param {string} newHours - The prettified tag value for the opening hours string.
  * @param {string} tag - The tag in which the opening hours string is defined (such as 'opening_hours' or 'service_times').
- * @param {string} locale - The locale for warnings.
+ * @param {string} countryCode - The two-letter country code for the location of the object.
  * @param {opening_hours} [originalOh] - Pre-instantiated opening_hours object.
  * @returns {boolean}
  */
-export function isAmbiguousHours(originalHours, newHours, tag, locale, originalOh) {
+export function isAmbiguousHours(originalHours, newHours, tag, countryCode, originalOh) {
     if (!originalHours || !newHours) return false;
 
-    let isAmbiguous = false;
+    if (!originalOh) {
+        // keep the tests happy
+        originalOh = createOpeningHours(originalHours, tag, countryCode);
+    }
+
+    let isAmbiguous = originalOh
+        .getStructuredWarnings()
+        .some(warning => warning.type === 'ambiguous_single_digit_hour');
+
+    if (isAmbiguous) return true;
 
     try {
-        const oh1 = originalOh || new opening_hours(originalHours, null, { tag_key: tag, locale: locale });
-        const oh2 = new opening_hours(newHours, null, { tag_key: tag, locale: locale });
+        const oh1 = originalOh || createOpeningHours(originalHours, tag, countryCode);
+        const oh2 = createOpeningHours(newHours, tag, countryCode);
 
         if (!oh1.isEqualTo(oh2)[0]) {
             console.error(`Comparing two non-equal opening hours:\nOld: ${originalHours}\nNew: ${newHours}`);
@@ -146,6 +198,10 @@ export function isAmbiguousHours(originalHours, newHours, tag, locale, originalO
             }
         }
 
+        if (isAmbiguous) {
+            console.log(`Considering "${originalHours}" as ambiguous, but library does not`);
+        }
+
         return isAmbiguous;
     } catch {
         return false;
@@ -156,7 +212,7 @@ export function isAmbiguousHours(originalHours, newHours, tag, locale, originalO
  * Validates a single opening hours tag value.
  * @param {string} hoursTagValue - The tag value for the opening hours string.
  * @param {string} tag - The tag in which the opening hours string is defined (such as 'opening_hours' or 'service_times').
- * @param {string} locale - The locale for warnings.
+ * @param {string} countryCode - The two-letter country code for the location of the object.
  * @returns {{
  * isInvalid: boolean,
  * isAutoFixable: boolean,
@@ -166,8 +222,8 @@ export function isAmbiguousHours(originalHours, newHours, tag, locale, originalO
  * isAmbiguous: boolean,
  * }} An object containing the validation result.
  */
-export function validateHoursTag(hoursTagValue, tag, locale) {
-    const cacheKey = `${hoursTagValue}|${tag}|${locale}`;
+export function validateHoursTag(hoursTagValue, tag, countryCode) {
+    const cacheKey = `${hoursTagValue}|${tag}|${countryCode}`;
     const cachedResult = cache.get(cacheKey);
     if (cachedResult) {
         return structuredClone(cachedResult);
@@ -192,10 +248,10 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
     }
 
     try {
-        const oh = new opening_hours(hoursTagValue, null, { tag_key: tag, locale: locale });
+        const oh = createOpeningHours(hoursTagValue, tag, countryCode);
 
         const prettyValue = oh.prettifyValue();
-        const warnings = oh.getWarnings().length ? oh.getWarnings() : null;
+        const warnings = oh.getStructuredWarnings().length ? oh.getStructuredWarnings() : null;
         let valuesMatch = true;
 
         if (
@@ -210,7 +266,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         }
 
         if (tagValidationResult.isInvalid && tagValidationResult.isAutoFixable) {
-            tagValidationResult.isAmbiguous = isAmbiguousHours(hoursTagValue, prettyValue, tag, locale, oh);
+            tagValidationResult.isAmbiguous = isAmbiguousHours(hoursTagValue, prettyValue, tag, countryCode, oh);
             if (tagValidationResult.isAmbiguous) {
                 // stop incorrect fixes being easily applied on the website
                 tagValidationResult.isAutoFixable = false;
@@ -231,18 +287,19 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
         }
 
         if (warnings) {
-            const ohToTest =
-                locale === 'en' ? oh : new opening_hours(hoursTagValue, null, { tag_key: tag, locale: 'en' });
+            const warningMessages = oh.getStructuredWarnings().map(warning => warning.message);
+
             // Warning for when disconnected ranges are used in one rule, e.g. 'Mo-Fr 09:00-17:00 Sa 09:00-12:00'
-            if (ohToTest.getWarnings().join(',').toLowerCase().includes('not connected')) {
+            if (oh.getStructuredWarnings().some(warning => warning.type === 'use_multi')) {
                 tagValidationResult.isInvalid = true;
                 tagValidationResult.isAutoFixable = false;
                 tagValidationResult.prettyValue = valuesMatch ? null : prettyValue;
                 tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
             }
-            // Assumptions are generally bad, such as "summer" = "Jun-Aug"
-            if (ohToTest.getWarnings().join(',').toLowerCase().includes('assuming')) {
+            // Assumptions are often questionable, such as "M" = "Mo"
+            // structured warning here is just 'word_error_correction' which is also used for other probably valid changes
+            if (warningMessages.join(',').toLowerCase().includes('assuming')) {
                 tagValidationResult.isInvalid = true;
                 tagValidationResult.isAutoFixable = false;
                 tagValidationResult.prettyValue = valuesMatch ? null : prettyValue;
@@ -263,7 +320,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
 /**
  * Validates opening hours.
  * @param {Array<Object>} elementStream - OSM elements with opening hours tags.
- * @param {string} locale - The locale for warnings.
+ * @param {string} countryCode - The country code for the location of the object.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
  * @returns {{
  * totalCount: number,
@@ -271,7 +328,7 @@ export function validateHoursTag(hoursTagValue, tag, locale) {
  * autoFixableCount: number
  * }} An object containing the breakdown of record counts.
  */
-export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
+export async function validateOpeningHours(elementStream, countryCode, tmpFilePath) {
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
     let isFirstItem = true;
@@ -314,9 +371,7 @@ export async function validateOpeningHours(elementStream, locale, tmpFilePath) {
 
             const hoursValue = tags[tag];
 
-            // opening_hours uses just the first language part
-            locale = locale.split('-')[0];
-            const validationResult = validateHoursTag(hoursValue, tag, locale);
+            const validationResult = validateHoursTag(hoursValue, tag, countryCode);
 
             const isInvalid = validationResult.isInvalid;
             const isAutoFixable = validationResult.isAutoFixable;
