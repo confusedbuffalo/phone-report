@@ -131,6 +131,11 @@ describe('hasDaysSpecified', () => {
             expect(hasDaysSpecified(input)).toBe(true);
         }
     );
+
+    test('"closed" counts as having days specified', () => {
+        const result = hasDaysSpecified('closed');
+        expect(result).toBe(true);
+    });
 });
 
 describe('validateHoursTag', () => {
