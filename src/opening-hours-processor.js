@@ -36,10 +36,16 @@ function getNominatimObject(countryStateCode) {
  */
 export function createOpeningHours(hoursTagValue, tag, countryStateCode) {
     const nominatimObject = getNominatimObject(countryStateCode);
+    const originalConsoleError = console.error;
 
     try {
-        return new opening_hours(hoursTagValue, nominatimObject, { tag_key: tag });
+        // Temporarily silence console.error during instantiation
+        console.error = () => {};
+        const oh = new opening_hours(hoursTagValue, nominatimObject, { tag_key: tag });
+        console.error = originalConsoleError;
+        return oh;
     } catch (error) {
+        console.error = originalConsoleError;
         if (
             countryStateCode &&
             String(error?.message || error)
