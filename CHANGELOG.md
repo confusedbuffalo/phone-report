@@ -1,3 +1,22 @@
+# [5.27.0](https://github.com/confusedbuffalo/phone-report/compare/v5.26.0...v5.27.0) (2026-08-02)
+
+
+### Bug Fixes
+
+* add loading spinner while checking for updates ([ddf24aa](https://github.com/confusedbuffalo/phone-report/commit/ddf24aa2e0172cc3cf88368e41680dbdb8795dad))
+* also check for changed values in invalid and missing categories ([35ebcf2](https://github.com/confusedbuffalo/phone-report/commit/35ebcf25dadc245d62fdc42675f14d6e42db799b))
+* fix names country pages ([3359db3](https://github.com/confusedbuffalo/phone-report/commit/3359db3b1b9feb91145715d091a536709035f762))
+* fix report js minification ([9c1f8eb](https://github.com/confusedbuffalo/phone-report/commit/9c1f8eb6fdef952afb19ba1fa16fd02cf138e246))
+* improve hours warnings and parsing ([c6a43d1](https://github.com/confusedbuffalo/phone-report/commit/c6a43d16484cb2e16003539f91f8005557f7c50c)), closes [#389](https://github.com/confusedbuffalo/phone-report/issues/389) [#422](https://github.com/confusedbuffalo/phone-report/issues/422) [#486](https://github.com/confusedbuffalo/phone-report/issues/486)
+* only check for updated items if logged in ([980601d](https://github.com/confusedbuffalo/phone-report/commit/980601da20136569a425c111dd57fb35dba4be75))
+* try different server for ID extract ([345ec3d](https://github.com/confusedbuffalo/phone-report/commit/345ec3d5933e82dc60c637811953acb078d42b75))
+
+
+### Features
+
+* limit osmium commands to two at a time ([5cf77ec](https://github.com/confusedbuffalo/phone-report/commit/5cf77ec5e252ac31d70ac51ae53be1b1e23d1560))
+* run subdivision downloads concurrently ([b04eee8](https://github.com/confusedbuffalo/phone-report/commit/b04eee8b33c676176347553a0ee3d18ab69c6483))
+
 # [5.26.0](https://github.com/confusedbuffalo/phone-report/compare/v5.25.3...v5.26.0) (2026-07-31)
 
 
