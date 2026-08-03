@@ -1,3 +1,10 @@
+## [5.27.1](https://github.com/confusedbuffalo/phone-report/compare/v5.27.0...v5.27.1) (2026-08-03)
+
+
+### Bug Fixes
+
+* opening hours as closed should count as having days specified ([bbead8f](https://github.com/confusedbuffalo/phone-report/commit/bbead8f0a8046bb938fb2cd3731e7ae1989be203))
+
 # [5.27.0](https://github.com/confusedbuffalo/phone-report/compare/v5.26.0...v5.27.0) (2026-08-02)
 
 
