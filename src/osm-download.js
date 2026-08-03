@@ -16,13 +16,11 @@ const MIN_FREE_DISK_BYTES = 5 * 1024 * 1024 * 1024; // 5 GB
  * Class to track disk space reservations and queue downloads until sufficient space is free.
  */
 export class DiskSpaceManager {
-    constructor(targetDir = process.cwd(), multiplier = 1.5, maxActiveTickets = 16) {
+    constructor(targetDir = process.cwd(), multiplier = 1.5) {
         this.targetDir = targetDir;
         this.multiplier = multiplier;
         this.reservedBytes = 0;
         this.queue = [];
-        this.activeTickets = 0;
-        this.maxActiveTickets = maxActiveTickets;
     }
 
     /**
@@ -60,9 +58,8 @@ export class DiskSpaceManager {
         return new Promise(resolve => {
             const tryAcquire = async () => {
                 const freeSpace = await this.getAvailableSpace();
-                if (freeSpace >= totalBytes && this.activeTickets < this.maxActiveTickets) {
+                if (freeSpace >= totalBytes) {
                     this.reservedBytes += totalBytes;
-                    this.activeTickets++;
                     let currentReservation = totalBytes;
 
                     const ticket = {
@@ -74,7 +71,7 @@ export class DiskSpaceManager {
                         },
 
                         release: () => {
-                            this.reduceReservation(ticket, currentReservation, true);
+                            this.reduceReservation(ticket, currentReservation);
                         },
                     };
 
@@ -87,16 +84,14 @@ export class DiskSpaceManager {
         });
     }
 
-    reduceReservation(ticket, amount, done) {
+    reduceReservation(ticket, amount) {
         const releaseAmount = Math.min(amount, this.reservedBytes);
         this.reservedBytes -= releaseAmount;
-        if (!done) return;
-        this.activeTickets--;
         this.checkQueue();
     }
 
     checkQueue() {
-        if (this.queue.length > 0 && this.activeTickets < this.maxActiveTickets) {
+        if (this.queue.length > 0) {
             const next = this.queue.shift();
             next();
         }
