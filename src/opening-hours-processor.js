@@ -110,7 +110,8 @@ const hasDateRegex = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s?\d{1,2
 export function hasDaysSpecified(str) {
     if (str === '24/7') return true;
     if (str.toLowerCase() === 'closed') return true;
-    if (str.at(0) === '"' && str.at(-1) === '"') return true;
+    const ruleRemovedStr = str.toLowerCase().replace('closed', '').replace('24/7', '').trim();
+    if (ruleRemovedStr.at(0) === '"' && ruleRemovedStr.at(-1) === '"') return true;
     if (hasDateRegex.test(str)) return true;
     return hasDaysRegex.test(str);
 }
