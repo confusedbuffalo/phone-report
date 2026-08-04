@@ -90,6 +90,7 @@ export const MASTER_KEYS = {
     noInvalidHours: [],
     ambiguousHours: [],
     noDays: [],
+    edit: [],
 
     // --- Keys with Required Placeholders ---
     editIn: ['editor'],

@@ -7,6 +7,9 @@
     <%~ include("./partials/favicon", { reportType: it.reportType }) %>
     <link href="<%= it.singleLevelDivision ? '' : '../' %>../styles.css" rel="stylesheet">
     <%~ include("./partials/theme-init") %>
+    <% if (it.reportType === 'hours') { %>
+        <script src="https://openingh.openstreetmap.de/build/opening_hours+deps.min.js"></script>
+    <% } %>
     <% if (it.subdivisionStats.invalidCount === 0) { %>
         <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
         <script>
@@ -62,6 +65,7 @@
         <%~ it.createStatsBox(it.reportType, it.subdivisionStats, it.locale) %>
         <div id="reportContainer" class="space-y-8">
             <section id="noInvalidSection"></section>
+            <div id="save-row" class="sticky top-0 z-20"></div>
             <% if (it.reportType === 'phone') { %>
                 <section id="fixableSection" class="space-y-8"></section>
                 <section id="invalidSection" class="space-y-8">
@@ -69,7 +73,6 @@
                 </section>
                 <section id="foreignSection" class="space-y-8"></section>
             <% } else if (it.reportType === 'name') { %>
-                <div id="save-row" class="sticky top-0 z-20"></div>
                 <section id="invalidSection" class="space-y-8">
                     <div class="spinner mx-auto"></div>
                 </section>

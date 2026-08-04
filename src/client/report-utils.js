@@ -197,8 +197,10 @@ export function getFilteredItems(filterType) {
             isWanted = !item.autoFixable;
         } else if (filterType === 'missing') {
             isWanted = !item.name;
-        } else {
+        } else if (filterType) {
             isWanted = item.name; // names report
+        } else {
+            isWanted = true;
         }
 
         const isNotInUploadedChanges = !uploadedChanges?.[safeCountryName]?.[subdivisionName]?.[item.type]?.[item.id];
