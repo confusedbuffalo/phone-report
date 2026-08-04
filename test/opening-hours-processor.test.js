@@ -132,9 +132,8 @@ describe('hasDaysSpecified', () => {
         }
     );
 
-    test('"closed" counts as having days specified', () => {
-        const result = hasDaysSpecified('closed');
-        expect(result).toBe(true);
+    test.each(['closed', 'closed ""permanently closed"'])('Closed "%s" has no days specified', input => {
+        expect(hasDaysSpecified(input)).toBe(true);
     });
 });
 
