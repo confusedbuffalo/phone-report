@@ -35,7 +35,7 @@ export function recordItemClick(itemId) {
  * Clears an item's ID from localStorage to stop marking it as clicked.
  * @param {string} itemId - The unique ID of the item (e.g., "way/12345").
  */
-function clearItemClick(itemId) {
+export function clearItemClick(itemId) {
     try {
         const clickedItems = JSON.parse(localStorage.getItem(CLICKED_ITEMS_KEY)) || {};
         clickedItems[itemId] = false;
@@ -251,9 +251,11 @@ export function persistUndoState() {
  *
  * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
  * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @param {string | null} language - The language selected for the edit, or null if not applicable
+ * @param {Object | null} newKeyValue - An object of the new key, value pair/s to be applied to the OSM object
  * @returns {void}
  */
-function saveChangeToStorage(osmType, osmId, language = null) {
+export function saveChangeToStorage(osmType, osmId, language = null, newKeyValue = null) {
     const edits = getEdits();
     if (!edits[subdivisionName]) {
         edits[subdivisionName] = {};
@@ -262,11 +264,15 @@ function saveChangeToStorage(osmType, osmId, language = null) {
         edits[subdivisionName][osmType] = {};
     }
 
-    const item = appState.reportData.find(item => {
-        return item.id === osmId && item.type === osmType;
-    });
+    if (newKeyValue) {
+        edits[subdivisionName][osmType][osmId] = newKeyValue;
+    } else {
+        const item = appState.reportData.find(item => {
+            return item.id === osmId && item.type === osmType;
+        });
 
-    edits[subdivisionName][osmType][osmId] = getSuggestedFix(item, language);
+        edits[subdivisionName][osmType][osmId] = getSuggestedFix(item, language);
+    }
 
     saveEdits(edits);
     addToUndo(osmType, osmId, language);
@@ -279,6 +285,7 @@ function saveChangeToStorage(osmType, osmId, language = null) {
  *
  * @param {string} osmType - The OpenStreetMap element type.
  * @param {number} osmId - The ID of the OpenStreetMap element.
+ * @param {string | null} language - The language selected for the edit, or null if not applicable
  * @returns {void}
  */
 export function applyFix(osmType, osmId, language = null) {

@@ -355,6 +355,7 @@ export async function validateOpeningHours(elementStream, countryCode, tmpFilePa
         const createItem = () => {
             return {
                 ...createBaseItem(element),
+                nominatimObject: getNominatimObject(countryCode),
                 invalidHours: new Map(),
                 suggestedFixes: new Map(),
                 warnings: new Map(),

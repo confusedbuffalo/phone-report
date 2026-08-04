@@ -27,7 +27,7 @@ import {
     setButtonsAsClicked,
     undoChange,
 } from './report-storage.js';
-import { changePage, getItemWithIndex, handleSort } from './report-ui-actions.js';
+import { changePage, editInPlace, getItemWithIndex, handleSort } from './report-ui-actions.js';
 import { createListItem, createSaveRow, decodeHtmlEntities } from './report-ui-components.js';
 import { getFilterType, getSortedItems } from './report-utils.js';
 import { reportType, subdivisionName, allEditorIds, changesetTags, locale } from './config.js';
@@ -70,6 +70,12 @@ export function handleGlobalClicks(event) {
         case 'edit':
             recordItemClick(`${itemType}/${itemId}`);
             setButtonsAsClicked(`${itemType}/${itemId}`);
+            break;
+
+        case 'edit-here':
+            recordItemClick(`${itemType}/${itemId}`);
+            setButtonsAsClicked(`${itemType}/${itemId}`);
+            editInPlace(itemType, itemId);
             break;
 
         case 'add-name':
@@ -240,13 +246,11 @@ export function renderNumbers() {
             );
         }
 
-        if (reportType === 'name') {
-            const saveRow = document.getElementById('save-row');
+        const saveRow = document.getElementById('save-row');
 
-            saveRow.innerHTML = `<div class="page-sort-card"><div class="save-sort-container">
-                ${createSaveRow()}
-                </div></div>`;
-        }
+        saveRow.innerHTML = `<div class="page-sort-card"><div class="save-sort-container">
+            ${createSaveRow()}
+            </div></div>`;
     } else {
         // No invalid items found at all
         noInvalidContainer.innerHTML = `
@@ -422,7 +426,6 @@ function renderPaginatedSection(
         </div>`
             : '<div></div>';
 
-    const saveRow = createSaveRow();
     const sortButtonLayout = getSortButtonLayout(reportType, filterType);
 
     const sortControlContainer = sortButtonLayout
@@ -445,12 +448,11 @@ function renderPaginatedSection(
 
     // Extra space on name report since save row is separate and sticky
     const paginationSortCard = `
-        <div class="page-sort-card ${reportType === 'name' ? 'top-24' : ''}">
+        <div class="page-sort-card top-24">
             ${
                 filterType === 'fixable'
                     ? `
                 <div class="save-sort-container">
-                    <div>${saveRow}</div>
                     <div class="page-sort-controls">${pageAndSortControls}</div>
                 </div>
                 `

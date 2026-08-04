@@ -114,9 +114,9 @@ export function createListItem(item) {
 }
 
 /**
- * Creates a single row for the HTML grid for displaying an invalid phone number tag and value.
+ * Creates a single row for the HTML grid for displaying an invalid item tag and value.
  * @param {string} label - The HTML for the label.
- * @param {string} number - The HTML for the phone number.
+ * @param {string} number - The HTML for the tag value.
  * @returns {string} The HTML string for the details grid.
  */
 function createDetailsRow(label, number) {
@@ -127,21 +127,22 @@ function createDetailsRow(label, number) {
 }
 
 /**
- * Creates the HTML grid for displaying an invalid phone number tag and its suggested fix.
+ * Creates the HTML grid for displaying an invalid item tag and its suggested fix.
  * It generates a diff view if a fix is available.
  * @param {Object} item - The invalid item object.
  * @returns {string} The HTML string for the details grid.
  */
 function createDetailsGrid(item) {
+    const itemKey = `${item.type}/${item.id}`;
+
     const detailsGrid = item.fixRows
-        .map(row => {
+        .map((row, index) => {
             const detailsRows = Object.entries(row)
-                .map(([label, number]) => {
-                    return createDetailsRow(label, number);
-                })
+                .map(([label, number]) => createDetailsRow(label, number))
                 .join('\n');
+
             return `
-            <div class="list-item-details-grid">
+            <div class="list-item-details-grid" data-row-id="${itemKey}-${index}">
                 ${detailsRows}
             </div>`;
         })
@@ -243,7 +244,17 @@ function createButtons(item, clickedClass) {
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
                 ${translate('applyFix')}
         </button>`
-            : '';
+            : reportType === 'hours'
+              ? `<button
+                data-action="edit-here"
+                data-item-type="${escapeHTML(item.type)}"
+                data-item-id="${escapeHTML(item.id)}"
+                data-editor-id="apply-fix"
+                class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
+                ${translate('edit')}
+            </button>`
+              : '';
+        // TODO: consider edit button for phones/names
     }
 
     const createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];

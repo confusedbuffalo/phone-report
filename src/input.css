@@ -456,7 +456,7 @@ section {
 }
 
 @utility list-item-details-wrapper {
-    @apply ml-4;
+    @apply ml-4 flex-1 min-w-0;
 }
 
 @utility list-item-meta {
