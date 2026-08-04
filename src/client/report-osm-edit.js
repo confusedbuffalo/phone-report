@@ -27,6 +27,12 @@ import { getOSM } from './osm-wrapper.js';
 
 const redirectUrl = `${changesetTags.host}land.html`;
 
+const INVALID_PROPERTY_MAP = {
+    phone: 'invalidNumbers',
+    hours: 'invalidHours',
+    name: 'nameTags',
+};
+
 /**
  * Sends a command to the JOSM Remote Control API.
  * Prevents the default link action and provides user feedback in the console.
@@ -164,13 +170,16 @@ function applyEditsToFeatureTags(feature, elementEdits) {
 
     const tags = feature.tags;
 
+    const invalidKey = INVALID_PROPERTY_MAP[reportType];
+    const invalidTags = invalidKey ? item[invalidKey] : {};
+
     for (const key in elementEdits) {
         if (Object.hasOwn(elementEdits, key)) {
             const value = elementEdits[key];
 
             // If any of the target tags have changed, make no changes
             // originalValue could be undefined or null when a new tag is being added (moving from mobile or adding mnemonic)
-            const originalValue = item.invalidNumbers?.[key];
+            const originalValue = invalidTags?.[key];
             if (originalValue !== undefined && originalValue !== null && tags[key] !== originalValue) {
                 return false;
             }
@@ -444,16 +453,9 @@ export function checkAndSubmit() {
     }
 }
 
-const INVALID_PROPERTY_MAP = {
-    phone: 'invalidNumbers',
-    hours: 'invalidHours',
-    name: 'nameTags',
-};
-
 /**
  * Compares the tags of an OpenStreetMap (OSM) feature against the expected invalid tag values
  * to determine if any changes have occurred.
- *
  * @param {Object} [osmFeature] - The fetched OSM feature object.
  * @param {Object} originalItem - The reference item containing original tag metadata.
  * @returns {boolean} `true` if any actual tag value differs from its expected invalid value; otherwise `false`.
