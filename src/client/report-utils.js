@@ -263,3 +263,14 @@ export function getFilterType(osmType, osmId) {
     }
     return 'invalid';
 }
+
+/**
+ * Determines the appropriate opening_hours mode value for the given tag.
+ *
+ * @param {string} tag - The OSM tag key (e.g., 'opening_hours', 'collection_times').
+ * @returns {number} The opening_hours mode to be used for the tag.
+ */
+export function getOhMode(tag) {
+    if (['service_times', 'collection_times'].includes(tag)) return 2;
+    return 0;
+}
