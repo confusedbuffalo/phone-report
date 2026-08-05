@@ -1,4 +1,4 @@
-import { hasDaysSpecified, isAmbiguousHours } from '../src/opening-hours-utils';
+import { createOpeningHours, hasDaysSpecified, isAmbiguousHours } from '../src/opening-hours-utils';
 
 describe('isAmbiguousHours', () => {
     test('Empty value is not ambiguous', () => {
@@ -125,5 +125,13 @@ describe('hasDaysSpecified', () => {
 
     test.each(['closed', 'closed ""permanently closed"'])('Closed "%s" has no days specified', input => {
         expect(hasDaysSpecified(input)).toBe(true);
+    });
+});
+
+describe('createOpeningHours', () => {
+    test('SH in a country without SH defined does not throw an error', () => {
+        // Obviously this could change and we wouldn't notice, but it works at the moment
+        const result = createOpeningHours('Mo-Sa 08:00-22:00; Su,SH off', 'opening_hours', 'bg');
+        expect(result.getStructuredWarnings().length).toEqual(0);
     });
 });

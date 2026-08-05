@@ -382,6 +382,15 @@ describe('validateHoursTag', () => {
             expect(result.warnings.length).toBeGreaterThan(0);
         });
     });
+
+    test('SH in a country without SH defined does not throw an error', () => {
+        // Obviously this could change and we wouldn't notice, but it works at the moment
+        const result = validateHoursTag('Mo-Sa 08:00-22:00; Su,SH off', 'opening_hours', 'bg');
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
 });
 
 describe('validateOpeningHours', () => {
