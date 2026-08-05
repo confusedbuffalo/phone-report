@@ -34,18 +34,25 @@ export function createOpeningHours(hoursTagValue, tag, countryStateCode) {
         // Temporarily silence console.error during instantiation
         console.error = () => {};
         const oh = new opening_hours(hoursTagValue, nominatimObject, { tag_key: tag });
+
+        // Need to attempt to do something with it to trigger an error of missing holidays
+        oh.prettifyValue();
+
         console.error = originalConsoleError;
+
         return oh;
     } catch (error) {
         console.error = originalConsoleError;
+
+        const errorText = String(error?.message || error).toLowerCase();
         if (
             countryStateCode &&
-            String(error?.message || error)
-                .toLowerCase()
-                .includes('there are no holidays')
+            (errorText.includes('there are no holidays') ||
+                errorText.includes('school holiday not defined for the year'))
         ) {
             return createOpeningHours(hoursTagValue, tag, null);
         }
+
         throw error;
     }
 }
