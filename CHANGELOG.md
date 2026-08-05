@@ -1,3 +1,17 @@
+# [5.28.0](https://github.com/confusedbuffalo/phone-report/compare/v5.27.1...v5.28.0) (2026-08-05)
+
+
+### Bug Fixes
+
+* check for changes to target value for all report types ([1c2ca55](https://github.com/confusedbuffalo/phone-report/commit/1c2ca555d669973f5652f0fc0226a080ac7a64dd)), closes [#492](https://github.com/confusedbuffalo/phone-report/issues/492)
+* closed with a comment counts as having days specified ([329d7ab](https://github.com/confusedbuffalo/phone-report/commit/329d7ab935f1875effce2d80ea780a422b01530b))
+* try different extract servers for some locations that had been experiencing timeouts ([34097b9](https://github.com/confusedbuffalo/phone-report/commit/34097b9e93d02a6914b4de3a0a54726512c1de39))
+
+
+### Features
+
+* add button to edit in place for opening hours values ([40d8a37](https://github.com/confusedbuffalo/phone-report/commit/40d8a37bed88a66e345e4c31d7761311136c7d3b)), closes [#508](https://github.com/confusedbuffalo/phone-report/issues/508)
+
 ## [5.27.1](https://github.com/confusedbuffalo/phone-report/compare/v5.27.0...v5.27.1) (2026-08-03)
 
 
