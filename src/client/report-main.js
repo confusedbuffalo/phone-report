@@ -69,9 +69,6 @@ async function initReportPage() {
 
 enableModalCloseListeners();
 
-try {
-    await Promise.all([initReportPage(), initLogin()]);
-    checkForChanges();
-} catch (error) {
-    console.error('Initialization failed:', error);
-}
+Promise.all([initReportPage(), initLogin()])
+    .then(() => checkForChanges())
+    .catch(error => console.error('Initialization failed:', error));
