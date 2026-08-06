@@ -17,6 +17,7 @@ import {
     enableModalCloseListeners,
     openNoteModal,
     renderNumbers,
+    setChecking,
     setUpSaveBtn,
     toggleUploadingSpinner,
 } from './report-ui-controller.js';
@@ -483,7 +484,9 @@ function compareTags(osmFeature, originalItem) {
  * @param {Array<Object>} items - The list of items to check.
  * @returns {Promise<void>} Resolves once feature updates are processed, edits are saved and the UI is re-rendered.
  */
-async function updateFeatures(items) {
+export async function updateFeatures(items) {
+    setChecking(true);
+
     const grouped = items.reduce((acc, item) => {
         if (!acc[item.type]) acc[item.type] = [];
         acc[item.type].push(item);
@@ -549,6 +552,8 @@ async function updateFeatures(items) {
     }
     localStorage.setItem(UPLOADED_ITEMS_KEY, JSON.stringify(uploadedChanges));
     renderNumbers();
+
+    setChecking(false);
 }
 
 /**
@@ -560,8 +565,7 @@ export async function checkForChanges() {
 
     if (!OSM.isLoggedIn()) return;
 
-    const checkingSpinner = document.getElementById('checking-spinner');
-    if (checkingSpinner) checkingSpinner.hidden = false;
+    setChecking(true);
 
     const fixableItems = getSortedItems('fixable');
     const missingItems = getSortedItems('missing');
@@ -614,5 +618,5 @@ export async function checkForChanges() {
 
         if (anyChanged) updateFeatures(itemSet);
     }
-    if (checkingSpinner) checkingSpinner.hidden = true;
+    setChecking(false);
 }

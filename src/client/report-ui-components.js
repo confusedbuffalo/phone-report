@@ -12,6 +12,10 @@ export function createSaveRow() {
                 <button id="undo-btn" class="btn-undo-redo gray-btn-disabled" data-action="undo" disabled><svg class="icon-svg"><use href="#icon-undo"></use></svg></button>
                 <button id="redo-btn" class="btn-undo-redo gray-btn-disabled" data-action="redo" disabled><svg class="icon-svg"><use href="#icon-redo"></use></svg></button>
             </span>
+            <div class=content-center>
+                <button id="refresh-btn" class="btn-undo-redo gray-btn-enabled" data-action="refresh"><svg class="icon-svg"><use href="#icon-refresh"></use></svg></button>    
+                <div id="checking-spinner" class="spinner mx-auto" hidden></div>
+            </div
             <div id="save-btn-container">
                 <button id="save-btn" class="btn-squared gray-btn-disabled" data-action="open-upload-modal" disabled>${translate('save')}</button>
             </div>
@@ -290,16 +294,16 @@ function createButtons(item, clickedClass) {
         : '';
 
     const hoursForEvaluation = getFirstNonNullValue(item.invalidHours);
+    let evaluationButton = '';
 
-    const evaluationButton = () => {
-        if (reportType !== 'hours' || !hoursForEvaluation) return '';
+    if (reportType === 'hours' && hoursForEvaluation) {
         const [tagForEvaluation] = Object.entries(item.invalidHours).find(([, value]) => value != null) ?? [];
         const ohMode = getOhMode(tagForEvaluation);
-        return `<a
+        evaluationButton = `<a
                 href="${openingHoursEvaluationToolUrl}?EXP=${encodeURIComponent(hoursForEvaluation)}&lat=${item.lat}&lon=${item.lon}&mode=${ohMode}&DATE=${Date.now()}"
                 class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('evaluationTool')}
             </a>`;
-    };
+    }
 
     return { websiteButton, josmFixButton, fixButton, editorButtons, noteButton, evaluationButton };
 }
