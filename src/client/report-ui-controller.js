@@ -1,4 +1,4 @@
-import { addNote, openInJosm, login, logout, checkAndSubmit } from './report-osm-edit.js';
+import { addNote, openInJosm, login, logout, checkAndSubmit, updateFeatures } from './report-osm-edit.js';
 import {
     addNoteBtn,
     commentBox,
@@ -132,6 +132,11 @@ export function handleGlobalClicks(event) {
 
         case 'page':
             changePage(target.dataset.section, target.dataset.pageChange);
+            break;
+
+        case 'refresh':
+            updateFeatures(getSortedItems());
+            setButtonState('refresh-btn', false);
             break;
 
         default:
@@ -876,30 +881,30 @@ export function setButtonState(id, enabled) {
     const element = document.getElementById(id);
     if (element) {
         if (enabled) {
-            enableGrayBtn(element);
+            enableGreyBtn(element);
         } else {
-            disableGrayBtn(element);
+            disableGreyBtn(element);
         }
     }
 }
 
 /**
- * Applies the disabled visual and functional state to a gray-style button element.
+ * Applies the disabled visual and functional state to a grey-style button element.
  * @param {HTMLElement} element - The button element to disable.
  * @returns {void}
  */
-function disableGrayBtn(element) {
+function disableGreyBtn(element) {
     element.classList.remove('gray-btn-enabled');
     element.classList.add('gray-btn-disabled');
     element.disabled = true;
 }
 
 /**
- * Applies the enabled visual and functional state to a gray-style button element.
+ * Applies the enabled visual and functional state to a grey-style button element.
  * @param {HTMLElement} element - The button element to enable.
  * @returns {void}
  */
-function enableGrayBtn(element) {
+function enableGreyBtn(element) {
     element.classList.remove('gray-btn-disabled');
     element.classList.add('gray-btn-enabled');
     element.disabled = false;
@@ -1008,5 +1013,14 @@ export function transitionInsertItem(osmType, osmId) {
         animateInItem(newListItem);
     } else {
         console.error('Target item to insert not found');
+    }
+}
+
+export function setChecking(checking) {
+    const checkingSpinner = document.getElementById('checking-spinner');
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (checkingSpinner && refreshBtn) {
+        checkingSpinner.hidden = !checking;
+        refreshBtn.hidden = checking;
     }
 }
