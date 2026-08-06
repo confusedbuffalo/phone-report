@@ -1,3 +1,11 @@
+## [5.28.1](https://github.com/confusedbuffalo/phone-report/compare/v5.28.0...v5.28.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* do not show invalid hours where the only error is SH not being defined ([560b6c6](https://github.com/confusedbuffalo/phone-report/commit/560b6c6abe671eb225f17e3e82fb600569145f68))
+* include location and time in evaluation tool link ([eccc032](https://github.com/confusedbuffalo/phone-report/commit/eccc03240ee6ccf19eac9d651d1c5fb0490b820c))
+
 # [5.28.0](https://github.com/confusedbuffalo/phone-report/compare/v5.27.1...v5.28.0) (2026-08-05)
 
 
