@@ -290,15 +290,16 @@ function createButtons(item, clickedClass) {
         : '';
 
     const hoursForEvaluation = getFirstNonNullValue(item.invalidHours);
-    const [tagForEvaluation] = Object.entries(item.invalidHours).find(([, value]) => value != null) ?? [];
-    const ohMode = getOhMode(tagForEvaluation);
-    const evaluationButton =
-        reportType === 'hours' && hoursForEvaluation
-            ? `<a
+
+    const evaluationButton = () => {
+        if (reportType !== 'hours' || !hoursForEvaluation) return '';
+        const [tagForEvaluation] = Object.entries(item.invalidHours).find(([, value]) => value != null) ?? [];
+        const ohMode = getOhMode(tagForEvaluation);
+        return `<a
                 href="${openingHoursEvaluationToolUrl}?EXP=${encodeURIComponent(hoursForEvaluation)}&lat=${item.lat}&lon=${item.lon}&mode=${ohMode}&DATE=${Date.now()}"
                 class="btn btn-website" target="_blank" rel="noopener noreferrer">${translate('evaluationTool')}
-            </a>`
-            : '';
+            </a>`;
+    };
 
     return { websiteButton, josmFixButton, fixButton, editorButtons, noteButton, evaluationButton };
 }
