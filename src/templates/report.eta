@@ -51,7 +51,6 @@
                     <div id="error-div" class="text-black bg-red-500 rounded-md" hidden></div>
                     <button id="login-btn" class="btn-squared cursor-pointer text-white bg-blue-500" data-action="login"><%= it.translate('login', it.locale) %></button>
                     <button id="logout-btn" class="btn-squared cursor-pointer btn-editor" data-action="logout" hidden><%= it.translate('logout', it.locale) %></button>
-                    <div id="checking-spinner" class="spinner mx-auto" hidden></div>
                 </div>
                 <div class="flex items-center space-x-2 relative">
                     <button id="settings-toggle" class="settings-button" aria-label="<%= it.translate('settings', it.locale) %>">
