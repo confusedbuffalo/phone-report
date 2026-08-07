@@ -1,3 +1,16 @@
+# [5.29.0](https://github.com/confusedbuffalo/phone-report/compare/v5.28.1...v5.29.0) (2026-08-07)
+
+
+### Bug Fixes
+
+* fix minification of report-main ([5a6dbfb](https://github.com/confusedbuffalo/phone-report/commit/5a6dbfb8614338f04787f81bf5393da1ebd9464e)), closes [#522](https://github.com/confusedbuffalo/phone-report/issues/522)
+* fix report pages for names and phones ([eba3358](https://github.com/confusedbuffalo/phone-report/commit/eba3358e41bf7146651364ba325a7d52853d13f3))
+
+
+### Features
+
+* add refresh button to reports ([0114256](https://github.com/confusedbuffalo/phone-report/commit/011425632ea468171ef87bfd8d2d021f4ddb2c32))
+
 ## [5.28.1](https://github.com/confusedbuffalo/phone-report/compare/v5.28.0...v5.28.1) (2026-08-06)
 
 
