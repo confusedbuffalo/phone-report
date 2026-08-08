@@ -1,3 +1,10 @@
+## [5.29.1](https://github.com/confusedbuffalo/phone-report/compare/v5.29.0...v5.29.1) (2026-08-08)
+
+
+### Bug Fixes
+
+* remove duplicate spinner ([020cf73](https://github.com/confusedbuffalo/phone-report/commit/020cf737725bbef4b56065a0d1bdabf01681949c))
+
 # [5.29.0](https://github.com/confusedbuffalo/phone-report/compare/v5.28.1...v5.29.0) (2026-08-07)
 
 
