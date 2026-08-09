@@ -1,0 +1,93 @@
+{
+  "name": "Türkiye",
+  "slug": "türkiye",
+  "locale": "en",
+  "timestamp": "2026-08-08T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Türkiye": [
+      {
+        "name": "Ege Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "ege-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 44,
+        "autoFixableCount": 0,
+        "foreignCount": 4,
+        "safeEditCount": 0,
+        "totalCount": 5823
+      },
+      {
+        "name": "Karadeniz Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "karadeniz-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 22,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 0,
+        "totalCount": 3329
+      },
+      {
+        "name": "İç Anadolu Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "i-ç-anadolu-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 43,
+        "autoFixableCount": 1,
+        "foreignCount": 1,
+        "safeEditCount": 1,
+        "totalCount": 7380
+      },
+      {
+        "name": "Doğu Anadolu Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "doğu-anadolu-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 19,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 1711
+      },
+      {
+        "name": "Marmara Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "marmara-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 345,
+        "autoFixableCount": 5,
+        "foreignCount": 5,
+        "safeEditCount": 0,
+        "totalCount": 19743
+      },
+      {
+        "name": "Akdeniz Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "akdeniz-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 63,
+        "autoFixableCount": 2,
+        "foreignCount": 8,
+        "safeEditCount": 0,
+        "totalCount": 7514
+      },
+      {
+        "name": "Güneydoğu Anadolu Bölgesi",
+        "divisionSlug": "türkiye",
+        "slug": "güneydoğu-anadolu-bölgesi",
+        "timestamp": "2026-08-08T23:00:00.000Z",
+        "invalidCount": 15,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 4097
+      }
+    ]
+  },
+  "invalidCount": 551,
+  "autoFixableCount": 8,
+  "foreignCount": 20,
+  "safeEditCount": 1,
+  "totalCount": 49597,
+  "botEnabled": true
+}
