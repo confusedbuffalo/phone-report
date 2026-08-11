@@ -6,6 +6,15 @@
   "groupedDivisionStats": {
     "British Crown Dependencies and Overseas Territories": [
       {
+        "name": "Akrotiri and Dhekelia",
+        "divisionSlug": "british-crown-dependencies-and-overseas-territories",
+        "slug": "akrotiri-and-dhekelia",
+        "timestamp": "2026-08-10T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalCount": 25
+      },
+      {
         "name": "Anguilla ",
         "divisionSlug": "british-crown-dependencies-and-overseas-territories",
         "slug": "anguilla",
@@ -78,6 +87,15 @@
         "totalCount": 225
       },
       {
+        "name": "Isle of Man",
+        "divisionSlug": "british-crown-dependencies-and-overseas-territories",
+        "slug": "isle-of-man",
+        "timestamp": "2026-08-10T23:00:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalCount": 370
+      },
+      {
         "name": "Jersey",
         "divisionSlug": "british-crown-dependencies-and-overseas-territories",
         "slug": "jersey",
@@ -133,8 +151,8 @@
       }
     ]
   },
-  "invalidCount": 22,
+  "invalidCount": 25,
   "autoFixableCount": 2,
-  "totalCount": 1342,
+  "totalCount": 1737,
   "safeEditCount": 0
 }
