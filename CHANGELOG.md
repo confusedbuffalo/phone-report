@@ -1,3 +1,10 @@
+## [5.29.2](https://github.com/confusedbuffalo/phone-report/compare/v5.29.1...v5.29.2) (2026-08-11)
+
+
+### Bug Fixes
+
+* use England state code for GB to allow for holiday validation ([a82722a](https://github.com/confusedbuffalo/phone-report/commit/a82722abaf982eb4fc9e3afc069825aa4d6c23e8))
+
 ## [5.29.1](https://github.com/confusedbuffalo/phone-report/compare/v5.29.0...v5.29.1) (2026-08-08)
 
 
