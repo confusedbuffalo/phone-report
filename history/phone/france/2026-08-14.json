@@ -1,0 +1,425 @@
+{
+  "name": "France",
+  "slug": "france",
+  "locale": "fr-FR",
+  "timestamp": "2026-08-13T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Auvergne-Rhône-Alpes": [
+      {
+        "name": "Auvergne-Rhône-Alpes",
+        "divisionSlug": "auvergne-rhône-alpes",
+        "slug": "auvergne-rhône-alpes",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 11,
+        "autoFixableCount": 10,
+        "foreignCount": 48,
+        "safeEditCount": 8,
+        "totalCount": 65890
+      }
+    ],
+    "Bourgogne – Franche-Comté": [
+      {
+        "name": "Bourgogne – Franche-Comté",
+        "divisionSlug": "bourgogne-franche-comté",
+        "slug": "bourgogne-franche-comté",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 14,
+        "autoFixableCount": 12,
+        "foreignCount": 2,
+        "safeEditCount": 10,
+        "totalCount": 26861
+      }
+    ],
+    "Bretagne": [
+      {
+        "name": "Côtes-d'Armor",
+        "divisionSlug": "bretagne",
+        "slug": "côtes-d-armor",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 7,
+        "autoFixableCount": 6,
+        "foreignCount": 0,
+        "safeEditCount": 4,
+        "totalCount": 4648
+      },
+      {
+        "name": "Ille-et-Vilaine",
+        "divisionSlug": "bretagne",
+        "slug": "ille-et-vilaine",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "foreignCount": 0,
+        "safeEditCount": 1,
+        "totalCount": 9635
+      },
+      {
+        "name": "Finistère",
+        "divisionSlug": "bretagne",
+        "slug": "finistère",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 7,
+        "autoFixableCount": 5,
+        "foreignCount": 0,
+        "safeEditCount": 2,
+        "totalCount": 7244
+      },
+      {
+        "name": "Morbihan",
+        "divisionSlug": "bretagne",
+        "slug": "morbihan",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 15,
+        "autoFixableCount": 15,
+        "foreignCount": 0,
+        "safeEditCount": 15,
+        "totalCount": 5736
+      }
+    ],
+    "Centre-Val de Loire": [
+      {
+        "name": "Centre-Val de Loire",
+        "divisionSlug": "centre-val-de-loire",
+        "slug": "centre-val-de-loire",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 13,
+        "autoFixableCount": 12,
+        "foreignCount": 2,
+        "safeEditCount": 12,
+        "totalCount": 21937
+      }
+    ],
+    "Corse": [
+      {
+        "name": "Corse",
+        "divisionSlug": "corse",
+        "slug": "corse",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 3,
+        "autoFixableCount": 3,
+        "foreignCount": 3,
+        "safeEditCount": 3,
+        "totalCount": 2660
+      }
+    ],
+    "Grand Est": [
+      {
+        "name": "Grand Est",
+        "divisionSlug": "grand-est",
+        "slug": "grand-est",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 17,
+        "autoFixableCount": 17,
+        "foreignCount": 23,
+        "safeEditCount": 16,
+        "totalCount": 41017
+      }
+    ],
+    "Hauts-de-France": [
+      {
+        "name": "Hauts-de-France",
+        "divisionSlug": "hauts-de-france",
+        "slug": "hauts-de-france",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 46,
+        "autoFixableCount": 42,
+        "foreignCount": 5,
+        "safeEditCount": 42,
+        "totalCount": 39537
+      }
+    ],
+    "Ile-de-France": [
+      {
+        "name": "Ile-de-France",
+        "divisionSlug": "ile-de-france",
+        "slug": "ile-de-france",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 78,
+        "autoFixableCount": 76,
+        "foreignCount": 6,
+        "safeEditCount": 74,
+        "totalCount": 66440
+      }
+    ],
+    "Normandie": [
+      {
+        "name": "Normandie",
+        "divisionSlug": "normandie",
+        "slug": "normandie",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 53,
+        "autoFixableCount": 51,
+        "foreignCount": 2,
+        "safeEditCount": 50,
+        "totalCount": 29691
+      }
+    ],
+    "Nouvelle-Aquitaine": [
+      {
+        "name": "Nouvelle-Aquitaine",
+        "divisionSlug": "nouvelle-aquitaine",
+        "slug": "nouvelle-aquitaine",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 16,
+        "autoFixableCount": 14,
+        "foreignCount": 34,
+        "safeEditCount": 13,
+        "totalCount": 57364
+      }
+    ],
+    "Occitania": [
+      {
+        "name": "Occitania",
+        "divisionSlug": "occitania",
+        "slug": "occitania",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 17,
+        "autoFixableCount": 15,
+        "foreignCount": 8,
+        "safeEditCount": 14,
+        "totalCount": 50530
+      }
+    ],
+    "Pays de la Loire": [
+      {
+        "name": "Loire-Atlantique: Nantes",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique-nantes",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 7,
+        "autoFixableCount": 5,
+        "foreignCount": 0,
+        "safeEditCount": 5,
+        "totalCount": 7906
+      },
+      {
+        "name": "Loire-Atlantique: Saint-Nazaire",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique-saint-nazaire",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 3,
+        "autoFixableCount": 3,
+        "foreignCount": 0,
+        "safeEditCount": 3,
+        "totalCount": 2416
+      },
+      {
+        "name": "Loire-Atlantique: Châteaubriant-Ancenis",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "loire-atlantique-châteaubriant-ancenis",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 1852
+      },
+      {
+        "name": "Maine-et-Loire",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "maine-et-loire",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 5,
+        "autoFixableCount": 5,
+        "foreignCount": 0,
+        "safeEditCount": 5,
+        "totalCount": 4455
+      },
+      {
+        "name": "Mayenne",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "mayenne",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 1780
+      },
+      {
+        "name": "Vendée",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "vendée",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 4,
+        "autoFixableCount": 4,
+        "foreignCount": 0,
+        "safeEditCount": 4,
+        "totalCount": 4668
+      },
+      {
+        "name": "Sarthe",
+        "divisionSlug": "pays-de-la-loire",
+        "slug": "sarthe",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 1,
+        "foreignCount": 0,
+        "safeEditCount": 1,
+        "totalCount": 3737
+      }
+    ],
+    "Provence-Alpes-Côte d'Azur": [
+      {
+        "name": "Provence-Alpes-Côte d'Azur",
+        "divisionSlug": "provence-alpes-côte-d-azur",
+        "slug": "provence-alpes-côte-d-azur",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 6,
+        "autoFixableCount": 5,
+        "foreignCount": 10,
+        "safeEditCount": 5,
+        "totalCount": 31973
+      }
+    ],
+    "Guadeloupe": [
+      {
+        "name": "Guadeloupe",
+        "divisionSlug": "guadeloupe",
+        "slug": "guadeloupe",
+        "timestamp": "2026-08-14T03:49:24.333Z",
+        "invalidCount": 22,
+        "autoFixableCount": 3,
+        "foreignCount": 33,
+        "safeEditCount": 3,
+        "totalCount": 1702
+      }
+    ],
+    "Guyane": [
+      {
+        "name": "Guyane",
+        "divisionSlug": "guyane",
+        "slug": "guyane",
+        "timestamp": "2026-08-14T03:49:13.759Z",
+        "invalidCount": 16,
+        "autoFixableCount": 1,
+        "foreignCount": 18,
+        "safeEditCount": 1,
+        "totalCount": 1747
+      }
+    ],
+    "La Réunion": [
+      {
+        "name": "La Réunion",
+        "divisionSlug": "la-réunion",
+        "slug": "la-réunion",
+        "timestamp": "2026-08-14T03:49:26.677Z",
+        "invalidCount": 24,
+        "autoFixableCount": 1,
+        "foreignCount": 11,
+        "safeEditCount": 1,
+        "totalCount": 2691
+      }
+    ],
+    "Martinique": [
+      {
+        "name": "Martinique",
+        "divisionSlug": "martinique",
+        "slug": "martinique",
+        "timestamp": "2026-08-14T03:49:23.665Z",
+        "invalidCount": 28,
+        "autoFixableCount": 0,
+        "foreignCount": 162,
+        "safeEditCount": 0,
+        "totalCount": 931
+      }
+    ],
+    "Mayotte": [
+      {
+        "name": "Mayotte",
+        "divisionSlug": "mayotte",
+        "slug": "mayotte",
+        "timestamp": "2026-08-14T03:49:10.436Z",
+        "invalidCount": 23,
+        "autoFixableCount": 0,
+        "foreignCount": 112,
+        "safeEditCount": 0,
+        "totalCount": 1402
+      }
+    ],
+    "Nouvelle-Calédonie": [
+      {
+        "name": "Nouvelle-Calédonie",
+        "divisionSlug": "nouvelle-calédonie",
+        "slug": "nouvelle-calédonie",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 7,
+        "autoFixableCount": 0,
+        "foreignCount": 5,
+        "safeEditCount": 0,
+        "totalCount": 1280
+      }
+    ],
+    "Polynésie française": [
+      {
+        "name": "Polynésie française",
+        "divisionSlug": "polynésie-française",
+        "slug": "polynésie-française",
+        "timestamp": "2026-08-13T23:00:00.000Z",
+        "invalidCount": 14,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 570
+      }
+    ],
+    "Saint-Barthélemy": [
+      {
+        "name": "Saint-Barthélemy",
+        "divisionSlug": "saint-barthélemy",
+        "slug": "saint-barthélemy",
+        "timestamp": "2026-08-13T05:16:11.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 13,
+        "safeEditCount": 0,
+        "totalCount": 77
+      }
+    ],
+    "Saint-Martin": [
+      {
+        "name": "Saint-Martin",
+        "divisionSlug": "saint-martin",
+        "slug": "saint-martin",
+        "timestamp": "2026-08-13T05:17:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "foreignCount": 143,
+        "safeEditCount": 0,
+        "totalCount": 151
+      }
+    ],
+    "Saint-Pierre-et-Miquelon": [
+      {
+        "name": "Saint-Pierre-et-Miquelon",
+        "divisionSlug": "saint-pierre-et-miquelon",
+        "slug": "saint-pierre-et-miquelon",
+        "timestamp": "2026-08-13T08:38:40.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 0,
+        "totalCount": 37
+      }
+    ],
+    "Wallis-et-Futuna": [
+      {
+        "name": "Wallis-et-Futuna",
+        "divisionSlug": "wallis-et-futuna",
+        "slug": "wallis-et-futuna",
+        "timestamp": "2026-08-14T03:48:46.092Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 24
+      }
+    ]
+  },
+  "invalidCount": 460,
+  "autoFixableCount": 307,
+  "foreignCount": 641,
+  "safeEditCount": 292,
+  "totalCount": 498589,
+  "botEnabled": false
+}
