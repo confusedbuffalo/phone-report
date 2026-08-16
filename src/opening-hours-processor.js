@@ -46,6 +46,7 @@ export function validateHoursTag(hoursTagValue, tag, countryCode) {
     };
 
     if (tag === 'happy_hours' && ['yes', 'no'].includes(hoursTagValue.trim())) return tagValidationResult;
+    if (tag === 'service_times' && ['none', 'no'].includes(hoursTagValue.trim())) return tagValidationResult;
 
     if (['service_times', 'opening_hours'].includes(tag) && hoursTagValue.trim() === 'no') {
         tagValidationResult.isInvalid = true;

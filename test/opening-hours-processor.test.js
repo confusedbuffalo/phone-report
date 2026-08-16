@@ -342,10 +342,17 @@ describe('validateHoursTag', () => {
         expect(result.noDays).toBe(false);
     });
 
-    test('service_times=no is invalid and unfixable', () => {
+    test('service_times=no is valid', () => {
         const result = validateHoursTag('no', 'service_times', 'gb');
-        expect(result.isInvalid).toBe(true);
-        expect(result.isAutoFixable).toBe(false);
+        expect(result.isInvalid).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
+        expect(result.noDays).toBe(false);
+    });
+
+    test('service_times=none is valid', () => {
+        const result = validateHoursTag('none', 'service_times', 'gb');
+        expect(result.isInvalid).toBe(false);
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(false);
         expect(result.noDays).toBe(false);
