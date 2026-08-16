@@ -1,0 +1,50 @@
+{
+  "name": "Ireland",
+  "slug": "ireland",
+  "locale": "en-GB",
+  "timestamp": "2026-08-14T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Ireland": [
+      {
+        "name": "Connacht",
+        "divisionSlug": "ireland",
+        "slug": "connacht",
+        "timestamp": "2026-08-14T23:00:00.000Z",
+        "invalidCount": 44,
+        "autoFixableCount": 11,
+        "totalCount": 1468
+      },
+      {
+        "name": "Leinster",
+        "divisionSlug": "ireland",
+        "slug": "leinster",
+        "timestamp": "2026-08-14T23:00:00.000Z",
+        "invalidCount": 318,
+        "autoFixableCount": 71,
+        "totalCount": 7033
+      },
+      {
+        "name": "Munster",
+        "divisionSlug": "ireland",
+        "slug": "munster",
+        "timestamp": "2026-08-14T23:00:00.000Z",
+        "invalidCount": 122,
+        "autoFixableCount": 35,
+        "totalCount": 3889
+      },
+      {
+        "name": "Ulster",
+        "divisionSlug": "ireland",
+        "slug": "ulster",
+        "timestamp": "2026-08-14T23:00:00.000Z",
+        "invalidCount": 1,
+        "autoFixableCount": 0,
+        "totalCount": 391
+      }
+    ]
+  },
+  "invalidCount": 485,
+  "autoFixableCount": 117,
+  "totalCount": 12781,
+  "safeEditCount": 0
+}
