@@ -1,3 +1,15 @@
+# [5.30.0](https://github.com/confusedbuffalo/phone-report/compare/v5.29.2...v5.30.0) (2026-08-17)
+
+
+### Bug Fixes
+
+* allow service_times=no or none ([3180299](https://github.com/confusedbuffalo/phone-report/commit/3180299b494e43e918b3eb4721a6dd7913faa86a))
+
+
+### Features
+
+* add LI ([945a4c7](https://github.com/confusedbuffalo/phone-report/commit/945a4c74f3efc734ffd1593815e68c64ed02e7ad))
+
 ## [5.29.2](https://github.com/confusedbuffalo/phone-report/compare/v5.29.1...v5.29.2) (2026-08-11)
 
 
