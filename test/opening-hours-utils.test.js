@@ -126,6 +126,13 @@ describe('hasDaysSpecified', () => {
     test.each(['closed', 'closed ""permanently closed"'])('Closed "%s" has no days specified', input => {
         expect(hasDaysSpecified(input)).toBe(true);
     });
+
+    test.each(['Jan 01 10:00', 'easter 09:00', 'easter +63 days 10:00', 'easter -2 days 10:00'])(
+        'Specific date "%s" has day/s specified',
+        input => {
+            expect(hasDaysSpecified(input)).toBe(true);
+        }
+    );
 });
 
 describe('createOpeningHours', () => {
