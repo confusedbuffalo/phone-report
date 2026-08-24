@@ -105,6 +105,7 @@ export function standardiseOpeningHours(str) {
 
 const hasDaysRegex = /Mo|Tu|We|Th|Fr|Sa|Su/;
 const hasDateRegex = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s?\d{1,2}(?!\d|:)/;
+const hasEasterRegex = /(easter)(\s*[-+]\d+)?/;
 
 export function hasDaysSpecified(str) {
     if (str === '24/7') return true;
@@ -112,6 +113,7 @@ export function hasDaysSpecified(str) {
     const ruleRemovedStr = str.toLowerCase().replace('closed', '').replace('24/7', '').trim();
     if (ruleRemovedStr.at(0) === '"' && ruleRemovedStr.at(-1) === '"') return true;
     if (hasDateRegex.test(str)) return true;
+    if (hasEasterRegex.test(str.toLowerCase())) return true;
     return hasDaysRegex.test(str);
 }
 const amPmRegex = /^\d([.:]\d{1,2})?\s?[ap]\.?m\.?.*$/i;
