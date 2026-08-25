@@ -1,3 +1,10 @@
+## [5.30.1](https://github.com/confusedbuffalo/phone-report/compare/v5.30.0...v5.30.1) (2026-08-25)
+
+
+### Bug Fixes
+
+* service times with easter and possible offset has days specified ([508bedc](https://github.com/confusedbuffalo/phone-report/commit/508bedceef24c7e7d4d52dd6adf9eb4801d976dc))
+
 # [5.30.0](https://github.com/confusedbuffalo/phone-report/compare/v5.29.2...v5.30.0) (2026-08-17)
 
 
