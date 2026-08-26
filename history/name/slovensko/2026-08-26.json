@@ -1,0 +1,93 @@
+{
+  "name": "Slovensko",
+  "slug": "slovensko",
+  "locale": "en",
+  "timestamp": "2026-08-25T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Západné Slovensko": [
+      {
+        "name": "Nitriansky kraj",
+        "divisionSlug": "západné-slovensko",
+        "slug": "nitriansky-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 2108,
+        "missingNamesCount": 123,
+        "totalCount": 3620
+      },
+      {
+        "name": "Trenčiansky kraj",
+        "divisionSlug": "západné-slovensko",
+        "slug": "trenčiansky-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 174,
+        "missingNamesCount": 11,
+        "totalCount": 1614
+      },
+      {
+        "name": "Trnavský kraj",
+        "divisionSlug": "západné-slovensko",
+        "slug": "trnavský-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 893,
+        "missingNamesCount": 34,
+        "totalCount": 1937
+      }
+    ],
+    "Východné Slovensko": [
+      {
+        "name": "Košický kraj",
+        "divisionSlug": "východné-slovensko",
+        "slug": "košický-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 1472,
+        "missingNamesCount": 22,
+        "totalCount": 2873
+      },
+      {
+        "name": "Prešovský kraj",
+        "divisionSlug": "východné-slovensko",
+        "slug": "prešovský-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 1545,
+        "missingNamesCount": 25,
+        "totalCount": 3489
+      }
+    ],
+    "Bratislavský kraj": [
+      {
+        "name": "Bratislavský kraj",
+        "divisionSlug": "bratislavský-kraj",
+        "slug": "bratislavský-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 1306,
+        "missingNamesCount": 19,
+        "totalCount": 2225
+      }
+    ],
+    "Stredné Slovensko": [
+      {
+        "name": "Banskobystrický kraj",
+        "divisionSlug": "stredné-slovensko",
+        "slug": "banskobystrický-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 1085,
+        "missingNamesCount": 57,
+        "totalCount": 3095
+      },
+      {
+        "name": "Žilinský kraj",
+        "divisionSlug": "stredné-slovensko",
+        "slug": "žilinský-kraj",
+        "timestamp": "2026-08-25T23:00:00.000Z",
+        "invalidCount": 369,
+        "missingNamesCount": 27,
+        "totalCount": 1952
+      }
+    ]
+  },
+  "invalidCount": 8952,
+  "missingNamesCount": 318,
+  "totalCount": 20805,
+  "autoFixableCount": 0,
+  "safeEditCount": 0
+}
