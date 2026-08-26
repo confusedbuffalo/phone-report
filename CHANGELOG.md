@@ -1,3 +1,10 @@
+## [5.30.2](https://github.com/confusedbuffalo/phone-report/compare/v5.30.1...v5.30.2) (2026-08-26)
+
+
+### Bug Fixes
+
+* try running report generation later to resolve stale data and timeouts ([df7c135](https://github.com/confusedbuffalo/phone-report/commit/df7c135df3dd519f169a8ed5222064c87eb084dc))
+
 ## [5.30.1](https://github.com/confusedbuffalo/phone-report/compare/v5.30.0...v5.30.1) (2026-08-25)
 
 
