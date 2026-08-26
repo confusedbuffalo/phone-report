@@ -41,6 +41,9 @@ jobs:
             - name: Run all tests
               run: npm test
 
+            - name: Report country coverage
+              run: npm run check-coverage
+
     build-report:
         needs: run-tests
         runs-on: ubuntu-latest
