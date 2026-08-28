@@ -138,9 +138,10 @@ export async function withRetry(fn, label) {
  * Downloads a specified OSM PBF file into a temporary file.
  * @param {string} url - The URL of the .osm.pbf file.
  * @param {DiskSpaceManager} [spaceManager] - Optional custom space manager instance.
+ * @param {AbortSignal} [signal] - Optional AbortSignal to cancel the download.
  * @returns {Promise<{path: string, dispose: () => void}>} Where the file was saved and how to get rid of it.
  */
-export async function downloadPbf(url, spaceManager = globalSpaceManager) {
+export async function downloadPbf(url, signal, spaceManager = globalSpaceManager) {
     const ticket = await spaceManager.reserveSpace(url);
     console.log(`Downloading: ${url}`);
     const outputPath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
@@ -161,6 +162,7 @@ export async function downloadPbf(url, spaceManager = globalSpaceManager) {
                 url,
                 method: 'GET',
                 responseType: 'stream',
+                signal,
             });
 
             const writer = fs.createWriteStream(outputPath);
@@ -168,7 +170,15 @@ export async function downloadPbf(url, spaceManager = globalSpaceManager) {
 
             await new Promise((resolve, reject) => {
                 writer.on('finish', resolve);
-                writer.on('error', reject);
+                writer.on('error', err => {
+                    writer.destroy();
+                    reject(err);
+                });
+                // Handle stream errors or mid-download aborts gracefully
+                response.data.on('error', err => {
+                    writer.destroy();
+                    reject(err);
+                });
             });
         }, `Download ${url}`);
 
@@ -177,7 +187,11 @@ export async function downloadPbf(url, spaceManager = globalSpaceManager) {
 
         return { path: outputPath, dispose };
     } catch (error) {
-        console.error('Error downloading OSM file:', error?.message || error);
+        if (axios.isCancel(error) || error.code === 'ERR_CANCELED') {
+            console.log(`Download cancelled for: ${url}`);
+        } else {
+            console.error('Error downloading OSM file:', error?.message || error);
+        }
         dispose();
         throw error;
     }
