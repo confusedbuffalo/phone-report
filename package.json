@@ -6,6 +6,7 @@
     "main": "src/main.js",
     "scripts": {
         "download-icons": "node src/download-icons.js",
+        "check-coverage": "node src/check-coverage.js",
         "start": "npm run build",
         "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
         "build:css": "npx @tailwindcss/cli -i src/input.css -o build/phone/styles.css && npx @tailwindcss/cli -i src/input.css -o build/name/styles.css && npx @tailwindcss/cli -i src/input.css -o build/hours/styles.css",
