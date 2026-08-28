@@ -1,3 +1,11 @@
+## [5.30.3](https://github.com/confusedbuffalo/phone-report/compare/v5.30.2...v5.30.3) (2026-08-28)
+
+
+### Bug Fixes
+
+* cancel the process if 5 or more downloads fail ([4cb9d31](https://github.com/confusedbuffalo/phone-report/commit/4cb9d3114e4dce7b23a4dbda5f51ba99d3102c82))
+* never flag whatsapp numbers as foreign ([c0736d7](https://github.com/confusedbuffalo/phone-report/commit/c0736d790163dda3cb3531296a2e632019213155))
+
 ## [5.30.2](https://github.com/confusedbuffalo/phone-report/compare/v5.30.1...v5.30.2) (2026-08-26)
 
 
