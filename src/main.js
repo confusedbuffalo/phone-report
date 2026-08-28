@@ -38,6 +38,12 @@ const VALIDATORS = {
     hours: validateOpeningHours,
 };
 
+const controller = new AbortController();
+const { signal } = controller;
+
+let failedDownloadCount = 0;
+const FAILED_DOWNLOAD_THRESHOLD = 5;
+
 /**
  * Substitute any missing translations with default locale translation.
  * @param {Object} fullTranslations - The complete dictionary for a locale.
@@ -431,7 +437,7 @@ async function processCountry(countryData) {
         let downloaded = {};
 
         try {
-            downloaded = await downloadPbf(countryData.pbfUrl);
+            downloaded = await downloadPbf(countryData.pbfUrl, signal);
 
             for (const reportType of REPORT_TYPES) {
                 const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
@@ -444,7 +450,17 @@ async function processCountry(countryData) {
             const dataTimestamp = await getOsmTimestamp(countryData.pbfUrl);
             countryData.timestamp = dataTimestamp;
         } catch (error) {
+            if (axios.isCancel(error)) return;
+
+            failedDownloadCount++;
             console.error(`Skipping country ${countryName} due to download failure: ${error?.message || error}`);
+
+            if (failedDownloadCount >= FAILED_DOWNLOAD_THRESHOLD) {
+                console.error(`Threshold of ${FAILED_DOWNLOAD_THRESHOLD} failed downloads reached. Aborting process.`);
+                controller.abort(); // Cancels all pending requests
+                process.exit(1);
+            }
+
             return null;
         } finally {
             downloaded.dispose?.();
@@ -458,7 +474,7 @@ async function processCountry(countryData) {
                 let downloaded = {};
 
                 try {
-                    downloaded = await downloadPbf(subData.pbfUrl);
+                    downloaded = await downloadPbf(subData.pbfUrl, signal);
 
                     for (const reportType of REPORT_TYPES) {
                         const tmpReportPbfFilePath = path.join(
@@ -476,9 +492,20 @@ async function processCountry(countryData) {
                         countryData.timestamp = dataTimestamp;
                     }
                 } catch (error) {
+                    if (axios.isCancel(error)) return;
+
+                    failedDownloadCount++;
                     console.error(
                         `Skipping subdivision ${subdivisionName} due to download failure: ${error?.message || error}`
                     );
+
+                    if (failedDownloadCount >= FAILED_DOWNLOAD_THRESHOLD) {
+                        console.error(
+                            `Threshold of ${FAILED_DOWNLOAD_THRESHOLD} failed downloads reached. Aborting process.`
+                        );
+                        controller.abort(); // Cancels all pending requests
+                        process.exit(1);
+                    }
                 } finally {
                     downloaded.dispose?.();
                 }
