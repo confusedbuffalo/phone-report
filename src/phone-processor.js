@@ -178,7 +178,9 @@ export function processSingleNumber(numberStr, countryCode, osmTags = {}, tag) {
                 getNonStandardCostTypes(countryCode).includes(phoneNumber.getType()) &&
                 phoneNumber.country === 'US';
             foreign =
-                phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() && !isNanpTollFree
+                phoneNumber.country.toLowerCase() !== countryCode.toLowerCase() &&
+                !isNanpTollFree &&
+                tag !== 'contact:whatsapp'
                     ? phoneNumber.country
                     : null;
         } else {
