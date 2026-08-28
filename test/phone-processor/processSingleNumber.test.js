@@ -821,4 +821,10 @@ describe('processSingleNumber', () => {
         const result = processSingleNumber('+1-800-331-1234 x1', 'US');
         expect(result.isInvalid).toBe(false);
     });
+
+    test("Don't flag a whatsapp number as foreign (common correct tagging)", () => {
+        const result = processSingleNumber('+27 11 555 1234', 'CA', {}, 'contact:whatsapp');
+        expect(result.isInvalid).toBe(false);
+        expect(result.foreign).toBe(null);
+    });
 });
