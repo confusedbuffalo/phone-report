@@ -693,6 +693,15 @@
             }
         }
     },
+    "Ελλάς": {
+        "countryCode": "GR",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/greece.osm.pbf",
+        "divisions": {
+            "Ελλάς": 192307
+        }
+    },
     "Guyana": {
         "countryCode": "GY",
         "locale": "en",
@@ -798,6 +807,15 @@
             "Ulster": 14419962
         }
     },
+    "Ísland": {
+        "countryCode": "IS",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/iceland.osm.pbf",
+        "divisions": {
+            "Ísland": 299133
+        }
+    },
     "Italia": {
         "countryCode": "IT",
         "locale": "it-IT",
@@ -890,6 +908,15 @@
         "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/liechtenstein.osm.pbf",
         "divisions": {
             "Liechtenstein": 1155955
+        }
+    },
+    "Magyarország": {
+        "countryCode": "HU",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/hungary.osm.pbf",
+        "divisions": {
+            "Magyarország": 21335
         }
     },
     "Maroc ⵍⵎⵖⵔⵉⴱ المغرب": {
@@ -1171,6 +1198,15 @@
             "Madeira": 1629145
         }
     },
+    "România": {
+        "countryCode": "RO",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/romania.osm.pbf",
+        "divisions": {
+            "România": 90689
+        }
+    },
     "Schweiz / Suisse / Svizzera / Svizra": {
         "countryCode": "CH",
         "locale": "en",
@@ -1258,6 +1294,15 @@
             "North West": 349519,
             "Northern Cape": 86720,
             "Western Cape": 80501
+        }
+    },
+    "Suomi / Finland": {
+        "countryCode": "FI",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/finland.osm.pbf",
+        "divisions": {
+            "Suomi / Finland": 54224
         }
     },
     "Suriname": {
@@ -1350,6 +1395,15 @@
             "Marmara Bölgesi": 2094193,
             "Akdeniz Bölgesi": 2092903,
             "Güneydoğu Anadolu Bölgesi": 2094155
+        }
+    },
+    "Україна": {
+        "countryCode": "UA",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/ukraine.osm.pbf",
+        "divisions": {
+            "Україна": 60199
         }
     },
     "United Kingdom": {
