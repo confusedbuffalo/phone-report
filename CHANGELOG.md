@@ -1,3 +1,10 @@
+# [5.31.0](https://github.com/confusedbuffalo/phone-report/compare/v5.30.3...v5.31.0) (2026-08-29)
+
+
+### Features
+
+* add country coverage checking script ([#558](https://github.com/confusedbuffalo/phone-report/issues/558)) ([102a472](https://github.com/confusedbuffalo/phone-report/commit/102a4724d9057d750597107118e2f03512f06c7e))
+
 ## [5.30.3](https://github.com/confusedbuffalo/phone-report/compare/v5.30.2...v5.30.3) (2026-08-28)
 
 
