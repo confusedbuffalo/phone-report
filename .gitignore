@@ -8,3 +8,6 @@
 
 # Temporary files
 *.log
+
+# Downloaded OSM data extracts (large binaries, not source)
+*.osm.pbf
