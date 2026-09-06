@@ -42,7 +42,7 @@ const controller = new AbortController();
 const { signal } = controller;
 
 let failedDownloadCount = 0;
-const FAILED_DOWNLOAD_THRESHOLD = 5;
+const FAILED_DOWNLOAD_THRESHOLD = 10;
 
 /**
  * Substitute any missing translations with default locale translation.
