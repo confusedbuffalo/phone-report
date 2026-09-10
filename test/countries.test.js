@@ -20,6 +20,8 @@ describe('Countries file tests', () => {
         const overrides = {
             България: 'Bulgaria',
             Česko: 'Cesko',
+            Ελλάς: 'Greece',
+            Україна: 'Ukraine',
         };
         return overrides[countryName] || countryName;
     };

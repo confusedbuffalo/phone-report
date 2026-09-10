@@ -693,6 +693,27 @@
             }
         }
     },
+    "Ελλάς": {
+        "countryCode": "GR",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/greece.osm.pbf",
+        "divisions": {
+            "Περιφέρεια Ανατολικής Μακεδονίας και Θράκης": 937937,
+            "Περιφέρεια Αττικής": 957716,
+            "Περιφέρεια Βόρειου Αιγαίου": 958517,
+            "Περιφέρεια Δυτικής Ελλάδας": 910919,
+            "Περιφέρεια Δυτικής Μακεδονίας": 956701,
+            "Περιφέρεια Ηπείρου": 554424,
+            "Περιφέρεια Θεσσαλίας": 958236,
+            "Περιφέρεια Ιονίων Νήσων": 957830,
+            "Περιφέρεια Κεντρικής Μακεδονίας": 937958,
+            "Περιφέρεια Κρήτης": 282436,
+            "Περιφέρεια Νοτίου Αιγαίου": 1851752,
+            "Περιφέρεια Πελοποννήσου": 957717,
+            "Περιφέρεια Στερεάς Ελλάδας": 910915
+        }
+    },
     "Guyana": {
         "countryCode": "GY",
         "locale": "en",
@@ -798,6 +819,15 @@
             "Ulster": 14419962
         }
     },
+    "Ísland": {
+        "countryCode": "IS",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/iceland.osm.pbf",
+        "divisions": {
+            "Ísland": 299133
+        }
+    },
     "Italia": {
         "countryCode": "IT",
         "locale": "it-IT",
@@ -890,6 +920,34 @@
         "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/liechtenstein.osm.pbf",
         "divisions": {
             "Liechtenstein": 1155955
+        }
+    },
+    "Magyarország": {
+        "countryCode": "HU",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/hungary.osm.pbf",
+        "divisions": {
+            "Baranya vármegye": 22234,
+            "Borsod-Abaúj-Zemplén vármegye": 22271,
+            "Budapest": 37244,
+            "Bács-Kiskun vármegye": 22260,
+            "Békés vármegye": 22266,
+            "Csongrád-Csanád vármegye": 22265,
+            "Fejér vármegye": 22255,
+            "Győr-Moson-Sopron vármegye": 22249,
+            "Hajdú-Bihar vármegye": 22267,
+            "Heves vármegye": 22273,
+            "Jász-Nagykun-Szolnok vármegye": 26935,
+            "Komárom-Esztergom vármegye": 22252,
+            "Nógrád vármegye": 22274,
+            "Pest vármegye": 22259,
+            "Somogy vármegye": 22225,
+            "Szabolcs-Szatmár-Bereg vármegye": 22268,
+            "Tolna vármegye": 22239,
+            "Vas vármegye": 22250,
+            "Veszprém vármegye": 22278,
+            "Zala vármegye": 22238
         }
     },
     "Maroc ⵍⵎⵖⵔⵉⴱ المغرب": {
@@ -1171,6 +1229,56 @@
             "Madeira": 1629145
         }
     },
+    "România": {
+        "countryCode": "RO",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/romania.osm.pbf",
+        "divisions": {
+            "Alba": 194271,
+            "Arad": 2248721,
+            "Argeș": 2261315,
+            "Bacău": 2248681,
+            "Bihor": 91731,
+            "Bistrița-Năsăud": 55466,
+            "Botoșani": 2256729,
+            "Brașov": 2248612,
+            "Brăila": 2355512,
+            "București": 377733,
+            "Buzău": 2355511,
+            "Caraș-Severin": 2366873,
+            "Cluj": 91733,
+            "Constanța": 2367022,
+            "Covasna": 2248621,
+            "Călărași": 2367015,
+            "Dolj": 2366970,
+            "Dâmbovița": 2355471,
+            "Galați": 2260192,
+            "Giurgiu": 2366987,
+            "Gorj": 2261275,
+            "Harghita": 2248660,
+            "Hunedoara": 2248737,
+            "Ialomița": 2355517,
+            "Iași": 2256747,
+            "Ilfov": 2366996,
+            "Maramureș": 72481,
+            "Mehedinți": 2366962,
+            "Mureș": 2248573,
+            "Neamț": 2248675,
+            "Olt": 2366978,
+            "Prahova": 2355507,
+            "Satu Mare": 72482,
+            "Sibiu": 2248586,
+            "Suceava": 2077868,
+            "Sălaj": 91685,
+            "Teleorman": 2366986,
+            "Timiș": 2366863,
+            "Tulcea": 2367044,
+            "Vaslui": 2256753,
+            "Vrancea": 2260187,
+            "Vâlcea": 2261289
+        }
+    },
     "Schweiz / Suisse / Svizzera / Svizra": {
         "countryCode": "CH",
         "locale": "en",
@@ -1258,6 +1366,33 @@
             "North West": 349519,
             "Northern Cape": 86720,
             "Western Cape": 80501
+        }
+    },
+    "Suomi / Finland": {
+        "countryCode": "FI",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/finland.osm.pbf",
+        "divisions": {
+            "Etelä-Karjala": 2067231,
+            "Etelä-Pohjanmaa": 1702263,
+            "Etelä-Savo": 918897,
+            "Kainuu": 1997164,
+            "Kanta-Häme": 1473990,
+            "Keski-Pohjanmaa": 1702330,
+            "Keski-Suomi": 1701740,
+            "Kymenlaakso": 2102313,
+            "Landskapet Åland": 2375171,
+            "Lappi": 1724359,
+            "Pirkanmaa": 1701741,
+            "Pohjois-Karjala": 1999428,
+            "Pohjois-Pohjanmaa": 1724360,
+            "Pohjois-Savo": 918898,
+            "Päijät-Häme": 1703362,
+            "Satakunta": 2000361,
+            "Uusimaa": 37355,
+            "Varsinais-Suomi": 38092,
+            "Österbotten": 2000320
         }
     },
     "Suriname": {
@@ -1350,6 +1485,41 @@
             "Marmara Bölgesi": 2094193,
             "Akdeniz Bölgesi": 2092903,
             "Güneydoğu Anadolu Bölgesi": 2094155
+        }
+    },
+    "Україна": {
+        "countryCode": "UA",
+        "locale": "en",
+        "safeAutoFixBotEnabled": false,
+        "pbfUrl": "https://download.bbbike.org/osm/pbf/region/europe/ukraine.osm.pbf",
+        "divisions": {
+            "Автономна Республіка Крим": 72639,
+            "Вінницька область": 90726,
+            "Волинська область": 71064,
+            "Дніпропетровська область": 101746,
+            "Донецька область": 71973,
+            "Житомирська область": 71245,
+            "Закарпатська область": 72489,
+            "Запорізька область": 71980,
+            "Івано-Франківська область": 72488,
+            "Київ": 421866,
+            "Київська область": 71248,
+            "Кіровоградська область": 101859,
+            "Луганська область": 71971,
+            "Львівська область": 72380,
+            "Миколаївська область": 72635,
+            "Одеська область": 72634,
+            "Полтавська область": 91294,
+            "Рівненська область": 71236,
+            "Севастополь": 1574364,
+            "Сумська область": 71250,
+            "Тернопільська область": 72525,
+            "Харківська область": 71254,
+            "Херсонська область": 71022,
+            "Хмельницька область": 90742,
+            "Черкаська область": 91278,
+            "Чернівецька область": 72526,
+            "Чернігівська область": 71249
         }
     },
     "United Kingdom": {
