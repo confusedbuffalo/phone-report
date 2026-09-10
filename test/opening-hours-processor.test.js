@@ -129,6 +129,25 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
     });
 
+    test('Spaces around a plus is valid', () => {
+        const resultSpaceBoth = validateHoursTag('Mar 01-easter + 38 days', 'opening_hours', 'gb');
+        const resultSpaceBefore = validateHoursTag('Mar 01-easter +38 days', 'opening_hours', 'gb');
+        const resultNoSpace = validateHoursTag('Mar 01-easter+38 days', 'opening_hours', 'gb');
+        const resultSpaceAfter = validateHoursTag('Mar 01-easter+ 38 days', 'opening_hours', 'gb');
+
+        expect(resultSpaceBoth.isInvalid).toBe(false);
+        expect(resultSpaceBoth.disconnected).toBe(false);
+
+        expect(resultSpaceBefore.isInvalid).toBe(false);
+        expect(resultSpaceBefore.disconnected).toBe(false);
+
+        expect(resultNoSpace.isInvalid).toBe(false);
+        expect(resultNoSpace.disconnected).toBe(false);
+
+        expect(resultSpaceAfter.isInvalid).toBe(false);
+        expect(resultSpaceAfter.disconnected).toBe(false);
+    });
+
     test('No space between day and time is valid', () => {
         const result = validateHoursTag('Mo-Fr10:00-17:00', 'opening_hours', 'gb');
         expect(result.isInvalid).toBe(false);
