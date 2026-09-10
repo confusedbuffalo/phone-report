@@ -59,6 +59,7 @@ export function createOpeningHours(hoursTagValue, tag, countryStateCode) {
 
 const stdSemicolonCommaRegex = /\s*([,;])\s*/g;
 const stdHyphenRegex = /\s*(-)\s*/g;
+const stdPlusRegex = /\s*(\+)\s*/g;
 const stdWordBracketRegex = /((?<=\w)\s+(?=\[))/g;
 const stdBracketDigitRegex = /((?<=\])\s+(?=\d))/g;
 const stdWordDigitRegex = /((?<=\w)\s+(?=\d))/g;
@@ -82,6 +83,8 @@ export function standardiseOpeningHours(str) {
             .replace(stdSemicolonCommaRegex, '$1')
             // e.g. Mo - Th
             .replace(stdHyphenRegex, '$1')
+            // e.g. easter + 38 days
+            .replace(stdPlusRegex, '$1')
             // e.g. Su [1]
             .replace(stdWordBracketRegex, '')
             // e.g. [1] 10:00
