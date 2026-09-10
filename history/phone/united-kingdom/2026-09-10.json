@@ -1,0 +1,154 @@
+{
+  "name": "United Kingdom",
+  "slug": "united-kingdom",
+  "locale": "en-GB",
+  "timestamp": "2026-09-09T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "England": [
+      {
+        "name": "East Midlands",
+        "divisionSlug": "england",
+        "slug": "east-midlands",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 23,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 1,
+        "totalCount": 9819
+      },
+      {
+        "name": "East of England",
+        "divisionSlug": "england",
+        "slug": "east-of-england",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 23,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 8,
+        "totalCount": 18034
+      },
+      {
+        "name": "Greater London",
+        "divisionSlug": "england",
+        "slug": "greater-london",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 49,
+        "autoFixableCount": 0,
+        "foreignCount": 5,
+        "safeEditCount": 1,
+        "totalCount": 25657
+      },
+      {
+        "name": "North East England",
+        "divisionSlug": "england",
+        "slug": "north-east-england",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 17,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 7706
+      },
+      {
+        "name": "North West England",
+        "divisionSlug": "england",
+        "slug": "north-west-england",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 24,
+        "autoFixableCount": 0,
+        "foreignCount": 4,
+        "safeEditCount": 0,
+        "totalCount": 19587
+      },
+      {
+        "name": "South East England",
+        "divisionSlug": "england",
+        "slug": "south-east-england",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 34,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 2,
+        "totalCount": 27030
+      },
+      {
+        "name": "South West England",
+        "divisionSlug": "england",
+        "slug": "south-west-england",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 18,
+        "autoFixableCount": 1,
+        "foreignCount": 2,
+        "safeEditCount": 0,
+        "totalCount": 15047
+      },
+      {
+        "name": "West Midlands",
+        "divisionSlug": "england",
+        "slug": "west-midlands",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 20,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 1,
+        "totalCount": 11936
+      },
+      {
+        "name": "Yorkshire and the Humber",
+        "divisionSlug": "england",
+        "slug": "yorkshire-and-the-humber",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 30,
+        "autoFixableCount": 1,
+        "foreignCount": 0,
+        "safeEditCount": 3,
+        "totalCount": 11575
+      }
+    ],
+    "Northern Ireland": [
+      {
+        "name": "Northern Ireland",
+        "divisionSlug": "northern-ireland",
+        "slug": "northern-ireland",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 5,
+        "autoFixableCount": 0,
+        "foreignCount": 2,
+        "safeEditCount": 0,
+        "totalCount": 2518
+      }
+    ],
+    "Scotland": [
+      {
+        "name": "Scotland",
+        "divisionSlug": "scotland",
+        "slug": "scotland",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 28,
+        "autoFixableCount": 0,
+        "foreignCount": 0,
+        "safeEditCount": 0,
+        "totalCount": 17418
+      }
+    ],
+    "Wales": [
+      {
+        "name": "Wales",
+        "divisionSlug": "wales",
+        "slug": "wales",
+        "timestamp": "2026-09-09T23:00:00.000Z",
+        "invalidCount": 21,
+        "autoFixableCount": 0,
+        "foreignCount": 1,
+        "safeEditCount": 2,
+        "totalCount": 11242
+      }
+    ]
+  },
+  "invalidCount": 292,
+  "autoFixableCount": 2,
+  "foreignCount": 19,
+  "safeEditCount": 18,
+  "totalCount": 177569,
+  "botEnabled": true
+}
