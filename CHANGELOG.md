@@ -1,3 +1,16 @@
+# [5.32.0](https://github.com/confusedbuffalo/phone-report/compare/v5.31.0...v5.32.0) (2026-09-11)
+
+
+### Bug Fixes
+
+* add concurrency limit to downloader ([d198e1a](https://github.com/confusedbuffalo/phone-report/commit/d198e1a63fb776f44c62c23442d8bf9acdd3b15a))
+* don't suggest changes to spaces around a plus ([2bdabe2](https://github.com/confusedbuffalo/phone-report/commit/2bdabe23dc8a006ce013501da398598814978f99))
+
+
+### Features
+
+* Add Finland, Greece, Hungary, Iceland, Romania, Ukraine ([#565](https://github.com/confusedbuffalo/phone-report/issues/565)) ([e82920e](https://github.com/confusedbuffalo/phone-report/commit/e82920e33063773e8eba64fe3750a50e18f5bd63))
+
 # [5.31.0](https://github.com/confusedbuffalo/phone-report/compare/v5.30.3...v5.31.0) (2026-08-29)
 
 
