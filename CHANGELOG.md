@@ -1,3 +1,10 @@
+# [5.33.0](https://github.com/confusedbuffalo/phone-report/compare/v5.32.0...v5.33.0) (2026-09-15)
+
+
+### Features
+
+* cache build output and fallback if download fails ([51d5fe3](https://github.com/confusedbuffalo/phone-report/commit/51d5fe312576164340964ddeb012e4462329f517))
+
 # [5.32.0](https://github.com/confusedbuffalo/phone-report/compare/v5.31.0...v5.32.0) (2026-09-11)
 
 
