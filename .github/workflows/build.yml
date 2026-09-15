@@ -91,6 +91,15 @@ jobs:
             - name: Install Dependencies
               run: npm install
 
+            - name: Restore Previous Build Cache
+              if: env.BUILD_TYPE == 'full'
+              uses: actions/cache/restore@v5
+              with:
+                  path: build/
+                  key: build-artifacts-${{ github.sha }}
+                  restore-keys: |
+                      build-artifacts-
+
             - name: Run Semantic Release
               if: env.BUILD_TYPE == 'full'
               id: semantic
@@ -100,6 +109,13 @@ jobs:
 
             - name: Run Full Build Process
               run: npm run build
+
+            - name: Save Build Cache
+              if: env.BUILD_TYPE == 'full'
+              uses: actions/cache/save@v5
+              with:
+                  path: build/
+                  key: build-artifacts-${{ github.sha }}
 
             - name: Upload History Data Artifact
               if: env.BUILD_TYPE == 'full'
