@@ -339,7 +339,7 @@ export const HOST_URL = {
 
 const PACKAGE_NAME = packageInfo.name;
 const PACKAGE_VERSION = packageInfo.version;
-const PACKAGE_STRING = `${PACKAGE_NAME}/${PACKAGE_VERSION}`;
+const PACKAGE_STRING = `${PACKAGE_NAME} ${PACKAGE_VERSION}`;
 
 export const CHANGESET_TAGS = {
     phone: {
