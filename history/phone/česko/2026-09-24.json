@@ -1,0 +1,104 @@
+{
+  "name": "Česko",
+  "slug": "česko",
+  "locale": "en",
+  "timestamp": "2026-09-23T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Česko": [
+      {
+        "name": "Jihovýchod",
+        "divisionSlug": "česko",
+        "slug": "jihovýchod",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 413,
+        "autoFixableCount": 372,
+        "foreignCount": 13,
+        "safeEditCount": 309,
+        "totalCount": 7142
+      },
+      {
+        "name": "Jihozápad",
+        "divisionSlug": "česko",
+        "slug": "jihozápad",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 32,
+        "autoFixableCount": 7,
+        "foreignCount": 4,
+        "safeEditCount": 7,
+        "totalCount": 4873
+      },
+      {
+        "name": "Moravskoslezsko",
+        "divisionSlug": "česko",
+        "slug": "moravskoslezsko",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 11,
+        "autoFixableCount": 2,
+        "foreignCount": 3,
+        "safeEditCount": 2,
+        "totalCount": 2464
+      },
+      {
+        "name": "Praha",
+        "divisionSlug": "česko",
+        "slug": "praha",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 75,
+        "autoFixableCount": 23,
+        "foreignCount": 8,
+        "safeEditCount": 21,
+        "totalCount": 7056
+      },
+      {
+        "name": "Severovýchod",
+        "divisionSlug": "česko",
+        "slug": "severovýchod",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 58,
+        "autoFixableCount": 3,
+        "foreignCount": 7,
+        "safeEditCount": 3,
+        "totalCount": 4950
+      },
+      {
+        "name": "Severozápad",
+        "divisionSlug": "česko",
+        "slug": "severozápad",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 159,
+        "autoFixableCount": 117,
+        "foreignCount": 5,
+        "safeEditCount": 88,
+        "totalCount": 2720
+      },
+      {
+        "name": "Střední Čechy",
+        "divisionSlug": "česko",
+        "slug": "střední-čechy",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 234,
+        "autoFixableCount": 208,
+        "foreignCount": 2,
+        "safeEditCount": 167,
+        "totalCount": 3793
+      },
+      {
+        "name": "Střední Morava",
+        "divisionSlug": "česko",
+        "slug": "střední-morava",
+        "timestamp": "2026-09-23T23:00:00.000Z",
+        "invalidCount": 265,
+        "autoFixableCount": 247,
+        "foreignCount": 5,
+        "safeEditCount": 192,
+        "totalCount": 3533
+      }
+    ]
+  },
+  "invalidCount": 1247,
+  "autoFixableCount": 979,
+  "foreignCount": 47,
+  "safeEditCount": 789,
+  "totalCount": 36531,
+  "botEnabled": false
+}
