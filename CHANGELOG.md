@@ -1,3 +1,10 @@
+## [5.33.1](https://github.com/confusedbuffalo/phone-report/compare/v5.33.0...v5.33.1) (2026-09-28)
+
+
+### Bug Fixes
+
+* fix cache fallback stats generation ([a80a54b](https://github.com/confusedbuffalo/phone-report/commit/a80a54bc4d9ff4dd2c77dd11373629ff4131fde0))
+
 # [5.33.0](https://github.com/confusedbuffalo/phone-report/compare/v5.32.0...v5.33.0) (2026-09-15)
 
 
