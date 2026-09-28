@@ -172,6 +172,7 @@ export function renderNumbers() {
     const badTagsContainer = document.getElementById('badTagsSection');
     const foreignContainer = document.getElementById('foreignSection');
     const missingContainer = document.getElementById('missingSection');
+    const mismatchContainer = document.getElementById('mismatchSection');
     const noInvalidContainer = document.getElementById('noInvalidSection');
 
     const editCount = getEditCounts(subdivisionName);
@@ -190,6 +191,7 @@ export function renderNumbers() {
         badTags: getSortedItems('badTags'),
         foreign: getSortedItems('foreign'),
         missing: getSortedItems('missing'),
+        mismatch: getSortedItems('mismatch'),
     };
 
     const anyFixable = sortedItems.fixable.length > 0;
@@ -197,6 +199,7 @@ export function renderNumbers() {
     const anyBadTags = sortedItems.badTags.length > 0;
     const anyForeign = sortedItems.foreign.length > 0;
     const anyMissing = sortedItems.missing.length > 0;
+    const anyMismatch = sortedItems.mismatch.length > 0;
 
     // Clear all containers first
     fixableContainer && (fixableContainer.innerHTML = '');
@@ -204,9 +207,10 @@ export function renderNumbers() {
     badTagsContainer && (badTagsContainer.innerHTML = '');
     foreignContainer && (foreignContainer.innerHTML = '');
     missingContainer && (missingContainer.innerHTML = '');
+    mismatchContainer && (mismatchContainer.innerHTML = '');
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
 
-    if (anyFixable || anyInvalid || anyMissing || editCount.total > 0) {
+    if (anyFixable || anyInvalid || anyMissing || anyMismatch || editCount.total > 0) {
         if (['phone', 'hours'].includes(reportType) && (anyFixable || editCount.total > 0)) {
             renderPaginatedSection(
                 'fixableSection',
@@ -252,6 +256,18 @@ export function renderNumbers() {
                 currentPage['missing'],
                 page => (currentPage['missing'] = page),
                 'missing'
+            );
+        }
+
+        if (reportType === 'name' && (anyMismatch || editCount.mismatch > 0)) {
+            renderPaginatedSection(
+                'mismatchSection',
+                sortedItems.mismatch,
+                translate('mismatchNamesHeader'),
+                translate('mismatchNamesDescription'),
+                currentPage['mismatch'],
+                page => (currentPage['mismatch'] = page),
+                'mismatch'
             );
         }
 
@@ -349,7 +365,7 @@ export function renderNumbers() {
 /**
  * Determines the layout of sort buttons based on the report type and filter category.
  * @param {string} reportType - The current report type ('phone', 'name' or 'hours').
- * @param {string} filterType - The current filter section ('fixable', 'invalid', 'badTags', 'foreign' or 'missing').
+ * @param {string} filterType - The current filter section ('fixable', 'invalid', 'badTags', 'foreign', 'missing' or 'mismatch').
  * @returns {Array<Object>} An array of sort button configuration objects.
  */
 function getSortButtonLayout(reportType, filterType) {
@@ -402,7 +418,7 @@ function getSortButtonLayout(reportType, filterType) {
  * @param {string} descriptionStr - The description text.
  * @param {number} currentPage - The current page number for this section.
  * @param {function} setCurrentPageFn - Function to call to update the current page in the global state.
- * @param {'fixable'|'invalid'|'badTags'|'foreign'|'missing'} filterType - The category of items to render for (used for unique IDs).
+ * @param {'fixable'|'invalid'|'badTags'|'foreign'|'missing'|'mismatch'} filterType - The category of items to render for (used for unique IDs).
  */
 function renderPaginatedSection(
     containerId,

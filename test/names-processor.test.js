@@ -39,7 +39,7 @@ describe('validateNames', () => {
     test('just a name is valid', async () => {
         const elements = [createGeoJson(1001, { name: 'Test' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(0);
     });
@@ -47,7 +47,7 @@ describe('validateNames', () => {
     test('no name tags is not counted', async () => {
         const elements = [createGeoJson(1001, { highway: 'residential' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(0);
         expect(result.invalidCount).toBe(0);
@@ -57,7 +57,7 @@ describe('validateNames', () => {
     test('name and matching name in subtag is valid', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:en': 'Test' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -69,7 +69,7 @@ describe('validateNames', () => {
             createGeoJson(1001, { name: 'Test', 'name:en': 'Test', 'name:fr': 'Le Test', 'name:de': 'Das Test' }),
         ];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -87,7 +87,7 @@ describe('validateNames', () => {
             }),
         ];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -97,7 +97,7 @@ describe('validateNames', () => {
     test('multilingual names with no primary name is invalid', async () => {
         const elements = [createGeoJson(1001, { 'name:fr': 'Le Test', 'name:de': 'Das Test' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -120,7 +120,7 @@ describe('validateNames', () => {
     test('name and different names with no matching is invalid', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:fr': 'Le Test', 'name:de': 'Das Test' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -140,10 +140,10 @@ describe('validateNames', () => {
         });
     });
 
-    test('name and different names with no matching is invalid', async () => {
-        const elements = [createGeoJson(1001, { name: 'Test', 'name:fr': 'Le Test', 'name:de': 'Das Test' })];
+    test('name and name:en with different values is mismatch in GB', async () => {
+        const elements = [createGeoJson(1001, { name: 'Test', 'name:en': 'Example' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -157,16 +157,63 @@ describe('validateNames', () => {
         expect(invalidItem.id).toBe(1001);
 
         expect(invalidItem.name).toBe('Test');
+        expect(invalidItem.hasMismatch).toBe(true);
         expect(invalidItem.nameTags).toEqual({
+            'name:en': 'Example',
+        });
+    });
+
+    test('name and name:en with different values is an incomplete name in FR', async () => {
+        const elements = [createGeoJson(1001, { name: 'Test', 'name:en': 'Example' })];
+
+        const result = await validateNames(Readable.from(elements), 'FR', tmpFilePath, ['fr']);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(1001);
+
+        expect(invalidItem.name).toBe('Test');
+        expect(invalidItem.hasMismatch).toBe(false);
+        expect(invalidItem.nameTags).toEqual({
+            'name:en': 'Example',
+        });
+    });
+
+    test('name and name:fr with different values and also non-matching name:en tagged is a mismatch name in FR', async () => {
+        const elements = [createGeoJson(1001, { name: 'Test', 'name:en': 'Example', 'name:fr': 'Le Test' })];
+
+        const result = await validateNames(Readable.from(elements), 'FR', tmpFilePath, ['fr']);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(0);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(1001);
+
+        expect(invalidItem.name).toBe('Test');
+        expect(invalidItem.hasMismatch).toBe(true);
+        expect(invalidItem.nameTags).toEqual({
+            'name:en': 'Example',
             'name:fr': 'Le Test',
-            'name:de': 'Das Test',
         });
     });
 
     test('French and Dutch names separated by hyphen with both languages tagged is not valid in another country', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -176,7 +223,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen with both languages tagged is valid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath, ['fr', 'nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -186,7 +233,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen but the wrong way round is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'Dutch - French', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath, ['fr', 'nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -206,7 +253,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen with one language missing is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath, ['fr', 'nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -225,7 +272,7 @@ describe('validateNames', () => {
     test('French and Dutch names badly separated (slash) is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French / Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath, ['fr', 'nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -245,7 +292,7 @@ describe('validateNames', () => {
     test('French and Dutch names badly separated (no spaces) is invalid in Brussels', async () => {
         const elements = [createGeoJson(1001, { name: 'French-Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-BRU', tmpFilePath, ['fr', 'nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -265,7 +312,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen with both languages tagged is valid in Wallonia', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath, ['fr', 'de']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -275,7 +322,7 @@ describe('validateNames', () => {
     test('French and Dutch names separated by hyphen with both languages tagged is valid in Flanders', async () => {
         const elements = [createGeoJson(1001, { name: 'French - Dutch', 'name:fr': 'French', 'name:nl': 'Dutch' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath, ['nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -285,7 +332,7 @@ describe('validateNames', () => {
     test('French and German names separated by hyphen with both languages tagged is valid in Wallonia', async () => {
         const elements = [createGeoJson(1001, { name: 'French - German', 'name:fr': 'French', 'name:de': 'German' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-WAL', tmpFilePath, ['fr', 'de']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(0);
@@ -295,7 +342,7 @@ describe('validateNames', () => {
     test('French and German names separated by hyphen with both languages tagged is invalid in Flanders', async () => {
         const elements = [createGeoJson(1001, { name: 'French - German', 'name:fr': 'French', 'name:de': 'German' })];
 
-        const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'BE-VLG', tmpFilePath, ['nl']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -305,7 +352,7 @@ describe('validateNames', () => {
     test('name:signed is not a name', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:signed': 'no' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(0);
     });
@@ -313,7 +360,7 @@ describe('validateNames', () => {
     test('name:signed without a name is not a name', async () => {
         const elements = [createGeoJson(1001, { 'name:signed': 'no' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(0);
     });
@@ -321,7 +368,7 @@ describe('validateNames', () => {
     test('name:etymology is not a name', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:etymology': 'Testing' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(0);
     });
@@ -329,7 +376,7 @@ describe('validateNames', () => {
     test('name:zh-Hant is a name', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:zh-Hant': '測試' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -339,7 +386,7 @@ describe('validateNames', () => {
     test('name:zh-Latn-pinyin is a name', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:zh-Latn-pinyin': 'cè shì' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -349,7 +396,7 @@ describe('validateNames', () => {
     test('name:be-tarask is a name', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:be-tarask': 'Тэст' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -359,7 +406,7 @@ describe('validateNames', () => {
     test('name:ja-Latn is a name', async () => {
         const elements = [createGeoJson(1001, { name: 'Test', 'name:ja-Latn': 'Tesuto' })];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(1);
         expect(result.invalidCount).toBe(1);
@@ -376,7 +423,7 @@ describe('validateNames', () => {
             }),
         ];
 
-        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
         expect(result.totalCount).toBe(0);
     });
@@ -389,7 +436,7 @@ describe('validateNames', () => {
             { name: 'A (B)', 'name:en': 'A', 'name:mi': 'B' },
         ])('%s', async tags => {
             const elements = [createGeoJson(1001, tags)];
-            const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+            const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
             expect(result.totalCount).toBe(1);
             expect(result.invalidCount).toBe(0);
@@ -404,7 +451,7 @@ describe('validateNames', () => {
             { name: 'A;B', 'name:en': 'B;A' },
         ])('%s', async tags => {
             const elements = [createGeoJson(1001, tags)];
-            const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath);
+            const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
 
             expect(result.totalCount).toBe(1);
             expect(result.invalidCount).toBe(1);
@@ -417,6 +464,7 @@ describe('validateNames', () => {
             // DZ
             {
                 country: 'DZ',
+                officialLanguages: ['ar', 'ber', 'fr'],
                 isValid: true,
                 name: "Wilaya d'Alger ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ ولاية الجزائر",
                 'name:fr': "Wilaya d'Alger",
@@ -425,6 +473,7 @@ describe('validateNames', () => {
             },
             {
                 country: 'DZ',
+                officialLanguages: ['ar', 'ber', 'fr'],
                 isValid: false,
                 name: "Wilaya d'Alger ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ ولاية الجزائر",
                 'name:fr': "Wilaya d'Alger",
@@ -433,6 +482,7 @@ describe('validateNames', () => {
             },
             {
                 country: 'DZ',
+                officialLanguages: ['ar', 'ber', 'fr'],
                 isValid: true,
                 name: 'ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ ولاية الجزائر',
                 'name:ber': 'ⵜⴰⵡⵉⵍⴰⵢⵜ ⵏ ⴷⵣⴰⵢⵔ',
@@ -442,6 +492,7 @@ describe('validateNames', () => {
             // HK
             {
                 country: 'HK',
+                officialLanguages: ['en', 'zh'],
                 isValid: true,
                 name: '干諾道中 Connaught Road Central',
                 'name:zh': '干諾道中',
@@ -449,6 +500,7 @@ describe('validateNames', () => {
             },
             {
                 country: 'HK',
+                officialLanguages: ['en', 'zh'],
                 isValid: false,
                 name: '干諾道中 Connaught Road Central',
                 'name:zh-Hant': '干諾道中', // zh-Hant instead of zh
@@ -458,6 +510,7 @@ describe('validateNames', () => {
             // MA
             {
                 country: 'MA',
+                officialLanguages: ['ar', 'ber'],
                 isValid: true,
                 name: 'Province de Tiznit ⵜⴰⵙⴳⴰ ⵏ ⵜⵉⵣⵏⵉⵜ إقليم تزنيت',
                 'name:ar': 'إقليم تزنيت',
@@ -466,6 +519,7 @@ describe('validateNames', () => {
             },
             {
                 country: 'MA',
+                officialLanguages: ['ar', 'ber'],
                 isValid: false,
                 name: 'Province de Tiznit ⵜⴰⵙⴳⴰ ⵏ ⵜⵉⵣⵏⵉⵜ إقليم تزنيت',
                 'name:ar': 'إقليم تزنيت',
@@ -476,6 +530,7 @@ describe('validateNames', () => {
             // NZ
             {
                 country: 'NZ',
+                officialLanguages: ['en'],
                 isValid: true,
                 name: 'Auckland Art Gallery Toi o Tāmaki',
                 'name:en': 'Auckland Art Gallery',
@@ -483,6 +538,7 @@ describe('validateNames', () => {
             },
             {
                 country: 'NZ',
+                officialLanguages: ['en'],
                 isValid: true,
                 name: 'Toi o Tāmaki Auckland Art Gallery',
                 'name:en': 'Auckland Art Gallery',
@@ -490,20 +546,21 @@ describe('validateNames', () => {
             },
             {
                 country: 'NZ',
+                officialLanguages: ['en'],
                 isValid: false,
                 name: 'Toi o Tāmaki,Auckland Art Gallery', // strange punctuation
                 'name:en': 'Auckland Art Gallery',
                 'name:mi': 'Toi o Tāmaki',
             },
-        ])('%s', async ({ country, isValid, ...tags }) => {
+        ])('%s', async ({ country, officialLanguages, isValid, ...tags }) => {
             const elements = [createGeoJson(1001, tags)];
-            const result = await validateNames(Readable.from(elements), country, tmpFilePath);
+            const result = await validateNames(Readable.from(elements), country, tmpFilePath, officialLanguages);
             expect(result.totalCount).toBe(1);
             expect(result.invalidCount).toBe(+!isValid);
             expect(result.missingNamesCount).toBe(0);
 
             // base case: confirm that this is invalid in any other country
-            const baseResult = await validateNames(Readable.from(elements), 'US', tmpFilePath);
+            const baseResult = await validateNames(Readable.from(elements), 'US', tmpFilePath, ['en']);
             expect(baseResult.totalCount).toBe(1);
             expect(baseResult.invalidCount).toBe(1);
             expect(baseResult.missingNamesCount).toBe(0);

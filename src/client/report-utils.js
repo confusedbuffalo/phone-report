@@ -184,7 +184,7 @@ export function getFirstNonNullValue(obj) {
 /**
  * Filters the report data to retrieve items belonging to a specific category
  * that have not yet been marked as edited or uploaded.
- * @param {'fixable' | 'invalid' | 'badTags' | 'foreign' | 'missing'} filterType - The category of items to retrieve.
+ * @param {'fixable'|'invalid'|'badTags'|'foreign'|'missing'|'mismatch'} filterType - The category of items to retrieve.
  * @returns {Array<Object>} An array of filtered report items.
  */
 export function getFilteredItems(filterType) {
@@ -205,8 +205,10 @@ export function getFilteredItems(filterType) {
             isWanted = !item.autoFixable;
         } else if (filterType === 'missing') {
             isWanted = !item.name;
+        } else if (filterType === 'mismatch') {
+            isWanted = item.hasMismatch;
         } else if (filterType) {
-            isWanted = item.name; // names report
+            isWanted = item.name && !item.hasMismatch; // names report, incomplete names
         } else {
             isWanted = true;
         }
@@ -221,7 +223,7 @@ export function getFilteredItems(filterType) {
  * Retrieves the subset of report items (either autofixable or manual fix)
  * that have not been marked as edited or uploaded, and applies the current
  * section-specific sorting parameters.
- * @param {'fixable' | 'invalid' | 'foreign' | 'missing'} filterType - The category of items to retrieve.
+ * @param {'fixable'|'invalid'|'foreign'|'missing'|'mismatch'} filterType - The category of items to retrieve.
  * @returns {Array<Object>} A new, sorted array of items for the specified section.
  */
 export function getSortedItems(filterType) {
@@ -268,6 +270,8 @@ export function getFilterType(osmType, osmId) {
         return 'foreign';
     } else if (item.isBadTagItem) {
         return 'badTags';
+    } else if (item.hasMismatch) {
+        return 'mismatch';
     } else if (reportType === 'name' && !item.name) {
         return 'missing';
     }

@@ -120,5 +120,7 @@
     "assumption": "Möjligen ogiltigt antagande",
     "pastDate": "Datum i det förflutna",
     "badTagsHeader": "Tveksamma taggar",
-    "badTagsDescription": "Dessa ser ut som telefonnummertaggar men använder icke-standardiserade taggar. Kanske kan de flyttas till en standardtagg, eller så är de inte längre giltiga."
+    "badTagsDescription": "Dessa ser ut som telefonnummertaggar men använder icke-standardiserade taggar. Kanske kan de flyttas till en standardtagg, eller så är de inte längre giltiga.",
+    "mismatchNamesHeader": "Icke-överensstämmande namn",
+    "mismatchNamesDescription": "Alla dessa har ett namn på ett vanligt språk i denna region, men det matchar inte den primära namntaggen. Detta kan bero på att endast ett av dessa ändrades och det andra inte uppdaterades samtidigt."
 }

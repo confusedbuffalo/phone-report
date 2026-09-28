@@ -8,6 +8,7 @@ export const currentPage = {
     badTags: 1,
     foreign: 1,
     missing: 1,
+    mismatch: 1,
 };
 
 export const sortDirection = {
@@ -16,6 +17,7 @@ export const sortDirection = {
     badTags: 'asc',
     foreign: 'asc',
     missing: 'asc',
+    mismatch: 'asc',
 };
 
 export const sortKey = {
@@ -24,6 +26,7 @@ export const sortKey = {
     badTags: 'none',
     foreign: 'none',
     missing: 'none',
+    mismatch: 'none',
 };
 
 export const undoData = {
