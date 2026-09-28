@@ -106,7 +106,7 @@ function validateInput(inputValue, tag, originalValue, item) {
             return false;
         }
     }
-    // TODO: add validation for names and phones
+    // TODO: add validation for phones
     return true;
 }
 
@@ -129,8 +129,7 @@ function enableRowEditing(targetId) {
 
     const tag = labelContainer.textContent.trim();
 
-    // TODO: other report types
-    const tagValue = item.invalidHours[tag];
+    const tagValue = reportType === 'hours' ? item.invalidHours[tag] : item.invalidNumbers[tag];
 
     valueContainer.innerHTML = `<textarea
             class="edit-textarea-field resize-none border-2 border-radius border-gray-900 dark:border-white rounded-md focus:outline-none p-2 w-full font-inherit overflow-hidden"
