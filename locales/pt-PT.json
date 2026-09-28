@@ -120,5 +120,7 @@
     "assumption": "Suposição possivelmente inválida",
     "pastDate": "Data no passado",
     "badTagsHeader": "Etiquetas duvidosas",
-    "badTagsDescription": "Estas parecem etiquetas de números de telefone, mas usaram etiquetas não padrão. Talvez possam ser movidas para uma etiqueta padrão, ou talvez já não sejam válidas."
+    "badTagsDescription": "Estas parecem etiquetas de números de telefone, mas usaram etiquetas não padrão. Talvez possam ser movidas para uma etiqueta padrão, ou talvez já não sejam válidas.",
+    "mismatchNamesHeader": "Nomes não coincidentes",
+    "mismatchNamesDescription": "Todos estes têm um nome num idioma comum nesta região, mas este não corresponde à etiqueta de nome principal. Isto pode dever-se ao facto de apenas um deles ter sido alterado e o outro não ter sido atualizado ao mesmo tempo."
 }

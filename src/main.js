@@ -332,9 +332,10 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     if (!geojsonExists) {
         console.log(`PBF data not downloaded for ${subdivision.name}. Checking for cached build fallback...`);
-        const relativePath = subdivisionSlug === safeName(countryName) || divisionSlug === subdivisionSlug
-            ? path.join(safeName(countryName), `${subdivisionSlug}.json`)
-            : path.join(safeName(countryName), divisionSlug, `${subdivisionSlug}.json`);
+        const relativePath =
+            subdivisionSlug === safeName(countryName) || divisionSlug === subdivisionSlug
+                ? path.join(safeName(countryName), `${subdivisionSlug}.json`)
+                : path.join(safeName(countryName), divisionSlug, `${subdivisionSlug}.json`);
         const fallbackJsonPath = path.join(BUILD_DIR, reportType, relativePath);
 
         if (fs.existsSync(fallbackJsonPath)) {
@@ -346,7 +347,9 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
                         .filter(f => f.endsWith('.json'))
                         .sort((a, b) => b.localeCompare(a));
                     if (historyFiles.length > 0) {
-                        const lastHistory = JSON.parse(fs.readFileSync(path.join(historyCountryDir, historyFiles[0]), 'utf8'));
+                        const lastHistory = JSON.parse(
+                            fs.readFileSync(path.join(historyCountryDir, historyFiles[0]), 'utf8')
+                        );
                         const allPrevDivs = Object.values(lastHistory.groupedDivisionStats || {}).flat();
                         const matchingPrev = allPrevDivs.find(
                             div => div.divisionSlug === divisionSlug && div.slug === subdivisionSlug
@@ -384,7 +387,9 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
     const validate = VALIDATORS[reportType];
     if (!validate) throw new Error(`Unsupported report type: ${reportType}`);
 
-    const validationResult = await validate(elementStream, subdivision.countryCode, tmpFilePath);
+    const officialLanguages = countryData.divisionLanguages[subdivision.countryCode] ?? countryData.officialLanguages;
+
+    const validationResult = await validate(elementStream, subdivision.countryCode, tmpFilePath, officialLanguages);
 
     if (reportType === 'phone' && botEnabled) {
         validationResult.invalidCount -= validationResult.safeEditCount;
@@ -443,10 +448,7 @@ export async function processDivision(rawDivisionName, countryData, clientTransl
 
     const defaultDivisionStats = Object.fromEntries(REPORT_TYPES.map(rt => [rt, []]));
     const defaultDivisionTotals = Object.fromEntries(
-        REPORT_TYPES.map(rt => [
-            rt,
-            Object.fromEntries(COUNT_TYPES[rt].map(ct => [ct, 0])),
-        ])
+        REPORT_TYPES.map(rt => [rt, Object.fromEntries(COUNT_TYPES[rt].map(ct => [ct, 0]))])
     );
 
     if (!subdivisions || subdivisions.length === 0) {

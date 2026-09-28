@@ -120,5 +120,7 @@
     "assumption": "Assunzione possibilmente non valida",
     "pastDate": "Data nel passato",
     "badTagsHeader": "Tag dubbi",
-    "badTagsDescription": "Questi sembrano tag di numeri di telefono ma usano tag non standard. Forse possono essere spostati su un tag standard, o forse non sono più validi."
+    "badTagsDescription": "Questi sembrano tag di numeri di telefono ma usano tag non standard. Forse possono essere spostati su un tag standard, o forse non sono più validi.",
+    "mismatchNamesHeader": "Nomi non corrispondenti",
+    "mismatchNamesDescription": "Tutti questi hanno un nome in una lingua comune in questa regione, ma non corrisponde al tag del nome principale. Ciò potrebbe essere dovuto al fatto che solo uno di questi è stato modificato e l'altro non è stato aggiornato contemporaneamente."
 }

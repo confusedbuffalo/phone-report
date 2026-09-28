@@ -120,5 +120,7 @@
     "assumption": "Hypothèse potentiellement invalide",
     "pastDate": "Date dans le passé",
     "badTagsHeader": "Tags douteux",
-    "badTagsDescription": "Ceux-ci ressemblent à des tags de numéro de téléphone, mais utilisent des tags non standard. Ils peuvent peut-être être déplacés vers un tag standard, ou ne sont peut-être plus valides."
+    "badTagsDescription": "Ceux-ci ressemblent à des tags de numéro de téléphone, mais utilisent des tags non standard. Ils peuvent peut-être être déplacés vers un tag standard, ou ne sont peut-être plus valides.",
+    "mismatchNamesHeader": "Noms ne correspondant pas",
+    "mismatchNamesDescription": "Tous ces éléments ont un nom dans une langue courante de cette région, mais il ne correspond pas à l'étiquette de nom principal. Cela peut être dû au fait qu'un seul d'entre eux a été modifié et que l'autre n'a pas été mis à jour en même temps."
 }

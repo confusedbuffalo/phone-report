@@ -29,13 +29,14 @@ const UNDELIMITED_NAME_LANGUAGES = {
  * @param {Array<Object>} elementStream - OSM elements with name tags.
  * @param {string} countryCode - The country code for special handling of multi-lingual names in the name tag.
  * @param {string} tmpFilePath - The temporary file path to store the invalid items.
+ * @param {Array} officialLanguages - The list of languages considered as official in this region.
  * @returns {{
  * totalCount: number,
  * invalidCount: number,
  * missingNamesCount: number
  * }} An object containing the breakdown of record counts.
  */
-export async function validateNames(elementStream, countryCode, tmpFilePath) {
+export async function validateNames(elementStream, countryCode, tmpFilePath, officialLanguages) {
     const fileStream = fs.createWriteStream(tmpFilePath);
     fileStream.write('[\n');
     let isFirstItem = true;
@@ -55,6 +56,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
         const nameTags = new Map();
         const primaryName = tags['name'];
         let hasPrimaryNameMatch = false;
+        let hasMismatch = false;
 
         for (const key in tags) {
             if (key.startsWith('name:')) {
@@ -115,12 +117,19 @@ export async function validateNames(elementStream, countryCode, tmpFilePath) {
             }
         }
 
+        if (isInvalid && !hasPrimaryNameMatch) {
+            if (officialLanguages.some(lang => nameTags.has(`name:${lang}`))) {
+                hasMismatch = true;
+            }
+        }
+
         if (!primaryName) missingNamesCount++;
 
         if (isInvalid) {
             incompleteNames++;
             const item = {
                 ...createBaseItem(element),
+                hasMismatch,
                 nameTags,
             };
 

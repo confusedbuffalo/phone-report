@@ -7,7 +7,7 @@ import { getFilteredItems, getSortedItems } from './report-utils.js';
 /**
  * Handles pagination control logic by calculating the new current page,
  * updating the relevant global state variable, triggering a full re-render and smoothly scrolling to the section.
- * @param {('fixable'|'invalid'|'badTags'|'foreign'|'missing')} section - The section being navigated.
+ * @param {('fixable'|'invalid'|'badTags'|'foreign'|'missing'|'mismatch')} section - The section being navigated.
  * @param {number} delta - The change in page number, typically +1 for Next or -1 for Previous.
  */
 export function changePage(section, delta) {
@@ -28,7 +28,7 @@ export function changePage(section, delta) {
  * Handles the user request to sort a report section. It toggles the sort direction
  * if the same key is clicked, or sets a new key and resets the direction to ascending.
  * It also resets the current page to 1 and triggers a full UI re-render and a smooth scroll.
- * @param {('fixable'|'invalid'|'badTags'|'foreign'|'missing')} section - The section being sorted.
+ * @param {('fixable'|'invalid'|'badTags'|'foreign'|'missing'|'mismatch')} section - The section being sorted.
  * @param {('name'|'invalid'|'fixable')} newKey - The column key requested for sorting.
  */
 export function handleSort(section, newKey) {
@@ -57,7 +57,7 @@ export function handleSort(section, newKey) {
  *
  * @param {string} osmType - The OpenStreetMap element type (e.g., 'node', 'way').
  * @param {number} osmId - The ID of the OpenStreetMap element.
- * @param {'fixable'|'invalid'|'badTags'|'foreign'} filterType - The category of items to search.
+ * @param {'fixable'|'invalid'|'badTags'|'foreign'|'mismatch'} filterType - The category of items to search.
  * @returns {{item: Object, index: number}|void} An object containing the item and its index, or void if not found.
  */
 export function getItemWithIndex(osmType, osmId, filterType) {

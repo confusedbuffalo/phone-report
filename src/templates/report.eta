@@ -77,10 +77,11 @@
                 <section id="badTagsSection" class="space-y-8"></section>
                 <section id="foreignSection" class="space-y-8"></section>
             <% } else if (it.reportType === 'name') { %>
-                <section id="invalidSection" class="space-y-8">
+                <section id="missingSection" class="space-y-8">
                     <div class="spinner mx-auto"></div>
                 </section>
-                <section id="missingSection" class="space-y-8"></section>
+                <section id="mismatchSection" class="space-y-8"></section>
+                <section id="invalidSection" class="space-y-8"></section>
             <% } else { %>
                 <section id="fixableSection" class="space-y-8"></section>
                 <section id="invalidSection" class="space-y-8">
