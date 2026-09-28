@@ -1251,4 +1251,27 @@ describe('validateNumbers', () => {
             phone: FIXABLE_LANDLINE_SUGGESTED_FIX,
         });
     });
+
+    test('should detect a questionable tag key', async () => {
+        const elements = [
+            createGeoJson(123456, {
+                phone: VALID_LANDLINE,
+                phone_1: VALID_LANDLINE_2,
+            }),
+        ];
+
+        const result = await validateNumbers(Readable.from(elements), COUNTRY_CODE, tmpFilePath);
+
+        console.log(result);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(0);
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.isBadTagItem).toBe(true);
+        expect(invalidItem.badTags).toEqual({
+            phone_1: VALID_LANDLINE_2,
+        });
+    });
 });

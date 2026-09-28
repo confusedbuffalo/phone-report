@@ -134,10 +134,10 @@ export async function generateSafeEditFile(countryName, subdivisionStats, tmpFil
 
             const item = chunk.value;
 
-            if (item && item.autoFixable && !item.isForeignItem) {
+            if (item && item.autoFixable && !item.isForeignItem && !item.isBadTagItem) {
                 this.totalSuggestedEdits++;
             }
-            if (item && item.safeEdit === true && !item.isForeignItem) {
+            if (item && item.safeEdit === true && !item.isForeignItem && !item.isBadTagItem) {
                 this.totalSafeEdits++;
 
                 const disassembledItem = {

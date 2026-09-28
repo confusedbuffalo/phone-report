@@ -5,7 +5,7 @@ import { exec } from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
 import { v4 as uuidv4 } from 'uuid';
-import { POLY_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS } from './constants.js';
+import { POLY_DIR, ALL_NUMBER_TAGS, ALL_HOURS_TAGS, QUESTIONABLE_NUMBER_TAGS } from './constants.js';
 import { getSubdivisionIds } from './fetch-polys.js';
 
 const execPromise = promisify(exec);
@@ -253,7 +253,7 @@ export class OsmiumQueueManager {
 export const globalOsmiumManager = new OsmiumQueueManager(2);
 
 const FILTER_EXPRESSIONS = {
-    phone: `nwr/${ALL_NUMBER_TAGS.join(',')}`,
+    phone: `nwr/${[...ALL_NUMBER_TAGS, ...QUESTIONABLE_NUMBER_TAGS].join(',')}`,
     name: 'name:*',
     hours: `nwr/${ALL_HOURS_TAGS.join(',')}`,
 };

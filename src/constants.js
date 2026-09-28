@@ -25,6 +25,20 @@ export const FAX_TAGS = ['fax', 'contact:fax'];
 export const OTHER_TAGS = ['contact:whatsapp'];
 export const ALL_NUMBER_TAGS = [...PHONE_TAGS, ...FAX_TAGS, ...OTHER_TAGS];
 
+// prettier-ignore
+export const QUESTIONABLE_NUMBER_TAGS = [
+    'phone1', 'phone:1', 'phone_1',
+    'phone2', 'phone:2', 'phone_2',
+    'phone3', 'phone:3', 'phone_3',
+    'contact:phone1', 'contact:phone:1', 'contact:phone_1',
+    'contact:phone2', 'contact:phone:2', 'contact:phone_2',
+    'contact1:phone', 'contact2:phone',
+    'phone:tollfree', 'phone:toll-free', 'contact:phone:tollfree', 'contact:tollfree', 'contact:phone:toll-free',
+    'alt_phone', 'phone:alternate', 'phone_alt', 'phone:alt',
+    'contact:alt_phone',
+    'phone:mobile_1'
+]
+
 export const HOURS_POINT_OR_RANGE_TAGS = ['collection_times', 'service_times'];
 export const HOURS_RANGE_TAGS = [
     'opening_hours',

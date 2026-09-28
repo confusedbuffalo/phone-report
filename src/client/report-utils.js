@@ -10,12 +10,13 @@ import { reportType, safeCountryName, subdivisionName } from './config.js';
  * @param {Array<Object>} items - The list of report items to be sorted. Each item must contain
  * 'featureTypeName', 'invalidNumbers' ({[key: string]: string}), 'suggestedFixes' ({[key: string]: string}),
  * and 'timestamp' (string|number|Date).
- * @param {('none'|'name'|'invalid'|'fixable'|'date')} key - The column key to sort by.
+ * @param {('none'|'name'|'invalid'|'fixable'|'date'|'foreign'|'badTags')} key - The column key to sort by.
  * - 'name': Sorts by the item's 'featureTypeName'.
  * - 'invalid': Sorts by the first value in 'invalidNumbers'.
  * - 'fixable': Sorts by the first value in 'suggestedFixes'.
  * - 'date': Sorts by the item's 'timestamp'.
  * - 'foreign': Sorts by the first value in 'validForeignNumbers'.
+ * - 'badTags': Sorts by the first value in 'badTags'.
  * - 'none': Returns the original array unsorted.
  * @param {('asc'|'desc')} direction - The sort order: 'asc' for ascending, 'desc' for descending.
  * @returns {Array<Object>} A new, sorted array of items. Returns the original array copy if key is 'none'.
@@ -46,6 +47,11 @@ export function sortItems(items, key, direction) {
                 // Get the value of the first key in validForeignNumbers
                 valA = Object.keys(getFirstNonNullValue(a.validForeignNumbers))[0];
                 valB = Object.keys(getFirstNonNullValue(b.validForeignNumbers))[0];
+                break;
+            case 'badTags':
+                // Get the value of the first key in badTags
+                valA = getFirstNonNullValue(a.badTags);
+                valB = getFirstNonNullValue(b.badTags);
                 break;
             case 'fixable': {
                 // Get the value of the first key in suggestedFixes
@@ -178,7 +184,7 @@ export function getFirstNonNullValue(obj) {
 /**
  * Filters the report data to retrieve items belonging to a specific category
  * that have not yet been marked as edited or uploaded.
- * @param {'fixable' | 'invalid' | 'foreign' | 'missing'} filterType - The category of items to retrieve.
+ * @param {'fixable' | 'invalid' | 'badTags' | 'foreign' | 'missing'} filterType - The category of items to retrieve.
  * @returns {Array<Object>} An array of filtered report items.
  */
 export function getFilteredItems(filterType) {
@@ -189,10 +195,12 @@ export function getFilteredItems(filterType) {
         let isWanted;
         if (filterType === 'foreign') {
             isWanted = item.isForeignItem;
+        } else if (filterType === 'badTags') {
+            isWanted = item.isBadTagItem;
         } else if (filterType === 'fixable') {
             isWanted = item.autoFixable;
         } else if (reportType === 'phone') {
-            isWanted = !item.autoFixable && !item.isForeignItem; // 'invalid' phone case
+            isWanted = !item.autoFixable && !item.isForeignItem && !item.isBadTagItem; // 'invalid' phone case
         } else if (reportType === 'hours') {
             isWanted = !item.autoFixable;
         } else if (filterType === 'missing') {
@@ -258,6 +266,8 @@ export function getFilterType(osmType, osmId) {
         return 'fixable';
     } else if (item.isForeignItem) {
         return 'foreign';
+    } else if (item.isBadTagItem) {
+        return 'badTags';
     } else if (reportType === 'name' && !item.name) {
         return 'missing';
     }

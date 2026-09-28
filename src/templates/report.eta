@@ -74,6 +74,7 @@
                 <section id="invalidSection" class="space-y-8">
                     <div class="spinner mx-auto"></div>
                 </section>
+                <section id="badTagsSection" class="space-y-8"></section>
                 <section id="foreignSection" class="space-y-8"></section>
             <% } else if (it.reportType === 'name') { %>
                 <section id="invalidSection" class="space-y-8">

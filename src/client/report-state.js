@@ -5,6 +5,7 @@ export let pageSize = 50;
 export const currentPage = {
     fixable: 1,
     invalid: 1,
+    badTags: 1,
     foreign: 1,
     missing: 1,
 };
@@ -12,6 +13,7 @@ export const currentPage = {
 export const sortDirection = {
     fixable: 'asc',
     invalid: 'asc',
+    badTags: 'asc',
     foreign: 'asc',
     missing: 'asc',
 };
@@ -19,6 +21,7 @@ export const sortDirection = {
 export const sortKey = {
     fixable: 'none',
     invalid: 'none',
+    badTags: 'none',
     foreign: 'none',
     missing: 'none',
 };
