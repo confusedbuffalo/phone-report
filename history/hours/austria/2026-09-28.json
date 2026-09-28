@@ -1,0 +1,95 @@
+{
+  "name": "Austria",
+  "slug": "austria",
+  "locale": "de-DE",
+  "timestamp": "2026-09-27T23:00:00.000Z",
+  "groupedDivisionStats": {
+    "Austria": [
+      {
+        "name": "Burgenland",
+        "divisionSlug": "austria",
+        "slug": "burgenland",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 0,
+        "autoFixableCount": 0,
+        "totalCount": 1426
+      },
+      {
+        "name": "Kärnten",
+        "divisionSlug": "austria",
+        "slug": "kärnten",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 0,
+        "totalCount": 3778
+      },
+      {
+        "name": "Niederösterreich",
+        "divisionSlug": "austria",
+        "slug": "niederösterreich",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalCount": 13003
+      },
+      {
+        "name": "Oberösterreich",
+        "divisionSlug": "austria",
+        "slug": "oberösterreich",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 43,
+        "autoFixableCount": 0,
+        "totalCount": 10253
+      },
+      {
+        "name": "Salzburg",
+        "divisionSlug": "austria",
+        "slug": "salzburg",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 45,
+        "autoFixableCount": 0,
+        "totalCount": 5894
+      },
+      {
+        "name": "Steiermark",
+        "divisionSlug": "austria",
+        "slug": "steiermark",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 101,
+        "autoFixableCount": 3,
+        "totalCount": 11024
+      },
+      {
+        "name": "Tirol",
+        "divisionSlug": "austria",
+        "slug": "tirol",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 30,
+        "autoFixableCount": 0,
+        "totalCount": 9224
+      },
+      {
+        "name": "Vorarlberg",
+        "divisionSlug": "austria",
+        "slug": "vorarlberg",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 2,
+        "autoFixableCount": 1,
+        "totalCount": 4123
+      },
+      {
+        "name": "Wien",
+        "divisionSlug": "austria",
+        "slug": "wien",
+        "timestamp": "2026-09-27T23:00:00.000Z",
+        "invalidCount": 6,
+        "autoFixableCount": 5,
+        "totalCount": 20645
+      }
+    ]
+  },
+  "invalidCount": 231,
+  "autoFixableCount": 10,
+  "totalCount": 79370,
+  "safeEditCount": 0
+}
