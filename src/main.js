@@ -435,15 +435,23 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
  * @param {Object} clientTranslations - The client-side translations.
  * @returns {Promise<Object>} A promise resolving to an object with aggregated stats for the division.
  */
-async function processDivision(rawDivisionName, countryData, clientTranslations) {
+export async function processDivision(rawDivisionName, countryData, clientTranslations) {
     const divisionName = rawDivisionName;
     console.debug(`Processing subdivisions for ${divisionName}...`);
 
     const subdivisions = getSubdivisions(countryData, rawDivisionName);
 
+    const defaultDivisionStats = Object.fromEntries(REPORT_TYPES.map(rt => [rt, []]));
+    const defaultDivisionTotals = Object.fromEntries(
+        REPORT_TYPES.map(rt => [
+            rt,
+            Object.fromEntries(COUNT_TYPES[rt].map(ct => [ct, 0])),
+        ])
+    );
+
     if (!subdivisions || subdivisions.length === 0) {
         console.error(`No subdivisions to process for ${divisionName}.`);
-        return { divisionStats: [], divisionTotals: {} };
+        return { divisionStats: defaultDivisionStats, divisionTotals: defaultDivisionTotals };
     }
 
     console.log(`Processing for ${subdivisions.length} subdivisions in ${divisionName}.`);
@@ -465,20 +473,20 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
 
     const validResults = results.filter(r => Object.keys(r?.reportStats ?? {}).length);
 
-    const divisionStats = validResults.reduce((stats, { reportType, reportStats }) => {
-        (stats[reportType] ??= []).push(reportStats);
-        return stats;
-    }, {});
+    const divisionStats = Object.fromEntries(REPORT_TYPES.map(rt => [rt, []]));
+    validResults.forEach(({ reportType, reportStats }) => {
+        divisionStats[reportType].push(reportStats);
+    });
 
     const divisionTotals = Object.fromEntries(
-        Object.entries(divisionStats).map(([reportType, stats]) => [
+        REPORT_TYPES.map(reportType => [
             reportType,
-            stats.reduce((totals, reportStats) => {
-                for (const countType in reportStats) {
-                    totals[countType] = (totals[countType] ?? 0) + reportStats[countType];
-                }
-                return totals;
-            }, {}),
+            Object.fromEntries(
+                COUNT_TYPES[reportType].map(countType => [
+                    countType,
+                    divisionStats[reportType].reduce((sum, stats) => sum + (stats[countType] || 0), 0),
+                ])
+            ),
         ])
     );
 
@@ -490,7 +498,7 @@ async function processDivision(rawDivisionName, countryData, clientTranslations)
  * @param {Object} countryData - The configuration object for the country.
  * @returns {Promise<Object>} A promise that resolves to the aggregated statistics for the country.
  */
-async function processCountry(countryData) {
+export async function processCountry(countryData) {
     const countryName = countryData.name;
     const locale = countryData.locale;
 
@@ -608,10 +616,10 @@ async function processCountry(countryData) {
         );
 
         for (const reportType of REPORT_TYPES) {
-            groupedDivisionStats[reportType][rawDivisionName] = divisionStats[reportType];
+            groupedDivisionStats[reportType][rawDivisionName] = divisionStats[reportType] || [];
 
             Object.keys(totals[reportType]).forEach(countType => {
-                totals[reportType][countType] += divisionTotals[reportType][countType];
+                totals[reportType][countType] += divisionTotals?.[reportType]?.[countType] || 0;
             });
         }
     }
@@ -768,4 +776,6 @@ async function main() {
     console.log('Full build process completed successfully.');
 }
 
-main();
+if (process.argv[1] === __filename) {
+    main();
+}
