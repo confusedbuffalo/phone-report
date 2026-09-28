@@ -129,7 +129,7 @@ export class IconManager {
                 packageName = '@rapideditor/temaki';
                 break;
             case 'pinhead':
-                packageName = ' @waysidemapping/pinhead';
+                packageName = '@waysidemapping/pinhead';
                 break;
             default: {
                 // iD, Roentgen and Flagpedia icons
