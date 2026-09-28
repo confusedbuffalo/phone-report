@@ -43,6 +43,7 @@ export function validateHoursTag(hoursTagValue, tag, countryCode) {
         disconnected: false,
         isAmbiguous: false,
         noDays: false,
+        assumption: false,
     };
 
     if (tag === 'happy_hours' && ['yes', 'no'].includes(hoursTagValue.trim())) return tagValidationResult;
@@ -104,6 +105,16 @@ export function validateHoursTag(hoursTagValue, tag, countryCode) {
                 tagValidationResult.warnings = warnings;
                 tagValidationResult.disconnected = true;
             }
+
+            const pastDateTypes = ['date_past', 'date_range_past', 'year_past'];
+
+            if (oh.getStructuredWarnings().some(warning => pastDateTypes.includes(warning.type))) {
+                tagValidationResult.isInvalid = true;
+                tagValidationResult.isAutoFixable = false;
+                tagValidationResult.prettyValue = null; // don't show the pretty value as it is irrelevant
+                tagValidationResult.warnings = warnings;
+            }
+
             // Assumptions are often questionable, such as "M" = "Mo"
             // structured warning here is just 'word_error_correction' which is also used for other probably valid changes
             if (warningMessages.join(',').toLowerCase().includes('assuming')) {
@@ -111,6 +122,7 @@ export function validateHoursTag(hoursTagValue, tag, countryCode) {
                 tagValidationResult.isAutoFixable = false;
                 tagValidationResult.prettyValue = valuesMatch ? null : prettyValue;
                 tagValidationResult.warnings = warnings;
+                tagValidationResult.assumption = true;
             }
         }
     } catch (error) {
