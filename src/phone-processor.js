@@ -19,6 +19,7 @@ import {
     INVALID_SPACING_CHARACTERS_REGEX_TW,
     INVISIBLE_CHARACTERS,
     TOLL_FREE_AS_INTERNATIONAL_COUNTRIES,
+    QUESTIONABLE_NUMBER_TAGS,
 } from './constants.js';
 import { createBaseItem, mapReplacer } from './data-processor.js';
 import { isSafeItemEdit } from './phone-safe-edits.js';
@@ -444,6 +445,7 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
         let item = null;
         let foreignItem = null;
+        let badTagItem = null;
         const allNormalisedPhoneNumbers = new Map();
         const allNormalisedFaxNumbers = new Map();
 
@@ -478,6 +480,19 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
                 validForeignNumbers: new Map(),
             };
             return foreignItem;
+        };
+
+        const getOrCreateBadTagItem = () => {
+            if (badTagItem) return badTagItem;
+
+            const baseItem = createItem();
+
+            badTagItem = {
+                ...baseItem,
+                isBadTagItem: true,
+                badTags: new Map(),
+            };
+            return badTagItem;
         };
 
         for (const tag of ALL_NUMBER_TAGS) {
@@ -684,6 +699,13 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
             }
         }
 
+        for (const tag of QUESTIONABLE_NUMBER_TAGS) {
+            if (!tags[tag]) continue;
+
+            const currentBadTagItem = getOrCreateBadTagItem(true);
+            currentBadTagItem.badTags.set(tag, tags[tag]);
+        }
+
         if (item) {
             const safeEdit = isSafeItemEdit(item, baseCountryCode);
             invalidCount++;
@@ -713,6 +735,16 @@ export async function validateNumbers(elementStream, countryCode, tmpFilePath) {
 
             // Convert Maps and nested Maps
             fileStream.write(JSON.stringify(foreignItem, mapReplacer));
+            isFirstItem = false;
+        }
+
+        if (badTagItem) {
+            if (!isFirstItem) {
+                fileStream.write(',\n');
+            }
+
+            // Convert Maps and nested Maps
+            fileStream.write(JSON.stringify(badTagItem, mapReplacer));
             isFirstItem = false;
         }
     }

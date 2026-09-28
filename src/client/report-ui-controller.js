@@ -169,6 +169,7 @@ export function renderNumbers() {
     }
     const fixableContainer = document.getElementById('fixableSection');
     const invalidContainer = document.getElementById('invalidSection');
+    const badTagsContainer = document.getElementById('badTagsSection');
     const foreignContainer = document.getElementById('foreignSection');
     const missingContainer = document.getElementById('missingSection');
     const noInvalidContainer = document.getElementById('noInvalidSection');
@@ -186,18 +187,21 @@ export function renderNumbers() {
     const sortedItems = {
         fixable: getSortedItems('fixable'),
         invalid: getSortedItems('invalid'),
+        badTags: getSortedItems('badTags'),
         foreign: getSortedItems('foreign'),
         missing: getSortedItems('missing'),
     };
 
     const anyFixable = sortedItems.fixable.length > 0;
     const anyInvalid = sortedItems.invalid.length > 0;
+    const anyBadTags = sortedItems.badTags.length > 0;
     const anyForeign = sortedItems.foreign.length > 0;
     const anyMissing = sortedItems.missing.length > 0;
 
     // Clear all containers first
     fixableContainer && (fixableContainer.innerHTML = '');
     invalidContainer && (invalidContainer.innerHTML = '');
+    badTagsContainer && (badTagsContainer.innerHTML = '');
     foreignContainer && (foreignContainer.innerHTML = '');
     missingContainer && (missingContainer.innerHTML = '');
     noInvalidContainer && (noInvalidContainer.innerHTML = '');
@@ -261,6 +265,19 @@ export function renderNumbers() {
         noInvalidContainer.innerHTML = `
             <p class="report-list-item-empty">${translate(reportType === 'phone' ? 'noInvalidNumbers' : reportType === 'name' ? 'noIncompleteNames' : 'noInvalidHours')}</p>
         `;
+    }
+
+    // Always render bad tags items on phone report
+    if (reportType === 'phone' && anyBadTags) {
+        renderPaginatedSection(
+            'badTagsSection',
+            sortedItems.badTags,
+            translate('badTagsHeader'),
+            translate('badTagsDescription'),
+            currentPage['badTags'],
+            page => (currentPage['badTags'] = page),
+            'badTags'
+        );
     }
 
     // Always render foreign items on phone report
@@ -332,7 +349,7 @@ export function renderNumbers() {
 /**
  * Determines the layout of sort buttons based on the report type and filter category.
  * @param {string} reportType - The current report type ('phone', 'name' or 'hours').
- * @param {string} filterType - The current filter section ('fixable', 'invalid', 'foreign' or 'missing').
+ * @param {string} filterType - The current filter section ('fixable', 'invalid', 'badTags', 'foreign' or 'missing').
  * @returns {Array<Object>} An array of sort button configuration objects.
  */
 function getSortButtonLayout(reportType, filterType) {
@@ -347,6 +364,12 @@ function getSortButtonLayout(reportType, filterType) {
             { style: 'name', label: 'name' },
             { style: 'date', label: 'date' },
             { style: 'foreign', label: 'phoneNumber' },
+        ];
+    } else if (reportType === 'phone' && filterType === 'badTags') {
+        return [
+            { style: 'name', label: 'name' },
+            { style: 'date', label: 'date' },
+            { style: 'badTags', label: 'phoneNumber' },
         ];
     } else if (reportType === 'phone') {
         // invalid phone
@@ -379,7 +402,7 @@ function getSortButtonLayout(reportType, filterType) {
  * @param {string} descriptionStr - The description text.
  * @param {number} currentPage - The current page number for this section.
  * @param {function} setCurrentPageFn - Function to call to update the current page in the global state.
- * @param {'fixable' | 'invalid' | 'foreign' | 'missing'} filterType - The category of items to render for (used for unique IDs).
+ * @param {'fixable'|'invalid'|'badTags'|'foreign'|'missing'} filterType - The category of items to render for (used for unique IDs).
  */
 function renderPaginatedSection(
     containerId,

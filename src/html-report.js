@@ -99,6 +99,21 @@ function createPhoneForeignFixRows(item, locale, iconManager) {
 }
 
 /**
+ * Creates the fix rows for a phone number item that has questionable/bad phone number tags.
+ * @param {Object} item - The invalid number data item.
+ * @param {string} locale - The locale for the text
+ * @param {IconManager} iconManager - The icon manager instance for this report.
+ * @returns {Object}
+ */
+function createPhoneBadTagFixRows(item) {
+    if (!item?.badTags) return [];
+
+    return Object.entries(item.badTags).map(([key, value]) => ({
+        [key]: value,
+    }));
+}
+
+/**
  * Gets the appropriate translated text for a length issue with a phone number.
  * @param {String} lengthResult - The result from validatePhoneNumberLength.
  * @param {string} locale - The locale for the text.
@@ -346,6 +361,14 @@ function createClientItems(reportType, item, locale, countryCode, botEnabled, ic
 
     if (reportType === 'phone' && item.isForeignItem) {
         item.fixRows = createPhoneForeignFixRows(item, locale, iconManager);
+
+        const clientItem = { ...item };
+        delete clientItem.allTags;
+        return clientItem;
+    }
+
+    if (reportType === 'phone' && item.isBadTagItem) {
+        item.fixRows = createPhoneBadTagFixRows(item);
 
         const clientItem = { ...item };
         delete clientItem.allTags;
