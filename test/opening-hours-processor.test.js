@@ -333,6 +333,7 @@ describe('validateHoursTag', () => {
         expect(result.isAutoFixable).toBe(false);
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(false);
+        expect(result.assumption).toBe(true);
         expect(result.prettyValue).toEqual('Mo-Fr 09:00-15:00');
     });
 
@@ -416,6 +417,18 @@ describe('validateHoursTag', () => {
         expect(result.disconnected).toBe(false);
         expect(result.isAmbiguous).toBe(false);
         expect(result.noDays).toBe(false);
+    });
+
+    test('Dates in the past are invalid and not fixable', () => {
+        const result = validateHoursTag(
+            '2025 Sep 06 - 2025 Oct 05 Fr-Sa 10:00-17:00; Su 12:00-17:00',
+            'opening_hours',
+            'gb'
+        );
+        expect(result.isInvalid).toBe(true);
+        expect(result.isAutoFixable).toBe(false);
+        expect(result.disconnected).toBe(false);
+        expect(result.isAmbiguous).toBe(false);
     });
 });
 

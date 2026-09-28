@@ -273,7 +273,19 @@ function createHoursFixRows(item, locale) {
             const noDaysLabel = item.noDays[key]
                 ? `<span class="label label-number-problem">${translate('noDays', locale)}</span>`
                 : '';
-            const problemLabel = disconnectedLabel + ambiguousLabel + noDaysLabel;
+            const assumptionLabel = item.noDays[key]
+                ? `<span class="label label-number-problem">${translate('assumption', locale)}</span>`
+                : '';
+
+            const pastDateTypes = ['date_past', 'date_range_past', 'year_past'];
+            const hasPastDateWarning = item.warnings?.opening_hours?.some(warning =>
+                pastDateTypes.includes(warning.type)
+            );
+            const pastDateWarning = hasPastDateWarning
+                ? `<span class="label label-number-problem">${translate('pastDate', locale)}</span>`
+                : '';
+
+            const problemLabel = disconnectedLabel + ambiguousLabel + noDaysLabel + assumptionLabel + pastDateWarning;
 
             if (suggestedFix) {
                 const { oldDiff, newDiff } = getHoursDiffHtml(originalValue, suggestedFix);

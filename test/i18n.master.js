@@ -90,6 +90,8 @@ export const MASTER_KEYS = {
     noInvalidHours: [],
     ambiguousHours: [],
     noDays: [],
+    assumption: [],
+    pastDate: [],
     edit: [],
 
     // --- Keys with Required Placeholders ---
