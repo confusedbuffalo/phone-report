@@ -5,7 +5,7 @@ on:
         branches:
             - main
     schedule:
-        # Run at midnight (00:00) UTC every day
+        # Run at 02:00 UTC every day
         - cron: '0 2 * * *'
     # Allow for manual trigger
     workflow_dispatch:
