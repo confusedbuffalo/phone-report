@@ -590,7 +590,10 @@ export async function checkForChanges() {
             )
         );
 
-        if (sampleItems.length === 0) return;
+        if (sampleItems.length === 0) {
+            setChecking(false);
+            return;
+        }
 
         const grouped = sampleItems.reduce((acc, item) => {
             if (!acc[item.type]) acc[item.type] = [];
