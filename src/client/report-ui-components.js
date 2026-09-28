@@ -247,9 +247,12 @@ function createButtons(item, clickedClass) {
                 data-editor-id="apply-fix"
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
                 ${translate('applyFix')}
-        </button>`
-            : reportType === 'hours'
-              ? `<button
+            </button>`
+            : '';
+
+        fixButton = ['hours', 'phone'].includes(reportType)
+            ? fixButton +
+              `<button
                 data-action="edit-here"
                 data-item-type="${escapeHTML(item.type)}"
                 data-item-id="${escapeHTML(item.id)}"
@@ -257,8 +260,7 @@ function createButtons(item, clickedClass) {
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
                 ${translate('edit')}
             </button>`
-              : '';
-        // TODO: consider edit button for phones/names
+            : fixButton;
     }
 
     const createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];

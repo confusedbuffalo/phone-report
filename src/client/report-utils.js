@@ -199,9 +199,9 @@ export function getFilteredItems(filterType) {
             isWanted = item.isBadTagItem;
         } else if (filterType === 'fixable') {
             isWanted = item.autoFixable;
-        } else if (reportType === 'phone') {
+        } else if (filterType && reportType === 'phone') {
             isWanted = !item.autoFixable && !item.isForeignItem && !item.isBadTagItem; // 'invalid' phone case
-        } else if (reportType === 'hours') {
+        } else if (filterType && reportType === 'hours') {
             isWanted = !item.autoFixable;
         } else if (filterType === 'missing') {
             isWanted = !item.name;
