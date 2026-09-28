@@ -80,12 +80,13 @@ export function getItemWithIndex(osmType, osmId, filterType) {
  * Validates an input for a certain value and OSM tag
  * @param {string} inputValue - The value to be validated
  * @param {string} tag - The tag for the key being validated
+ * @param {string} originalValue - The original value of the tag
  * @param {Object} item - The original item that the value is being suggested for
  * @returns {Boolean}
  */
 
-function validateInput(inputValue, tag, item) {
-    if (!inputValue || inputValue.length > 255) return false;
+function validateInput(inputValue, tag, originalValue, item) {
+    if (!inputValue || inputValue.length > 255 || inputValue === originalValue) return false;
     if (reportType === 'hours') {
         try {
             const oh = new window.opening_hours(inputValue, item.nominatimObject, { tag_key: tag });
@@ -138,7 +139,7 @@ function enableRowEditing(targetId) {
     const textarea = valueContainer.querySelector('textarea');
 
     // pre-validate to colour the box
-    const validInput = validateInput(textarea.value, tag, item);
+    const validInput = validateInput(textarea.value, tag, tagValue, item);
 
     textarea.classList.toggle('border-gray-900', validInput);
     textarea.classList.toggle('dark:border-white', validInput);
@@ -156,7 +157,7 @@ function enableRowEditing(targetId) {
         this.style.height = 'auto';
         this.style.height = `${this.scrollHeight}px`;
 
-        const validInput = validateInput(textarea.value, tag, item);
+        const validInput = validateInput(textarea.value, tag, tagValue, item);
 
         textarea.classList.toggle('border-gray-900', validInput);
         textarea.classList.toggle('dark:border-white', validInput);
@@ -171,7 +172,7 @@ function enableRowEditing(targetId) {
         }
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
-            const validInput = validateInput(textarea.value, tag, item);
+            const validInput = validateInput(textarea.value, tag, tagValue, item);
 
             if (validInput) {
                 saveChangeToStorage(osmType, parseInt(osmId), null, { [tag]: textarea.value });
