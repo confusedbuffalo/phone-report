@@ -1,3 +1,20 @@
+# [5.34.0](https://github.com/confusedbuffalo/phone-report/compare/v5.33.1...v5.34.0) (2026-09-29)
+
+
+### Bug Fixes
+
+* fix pinhead icon resolution, add tests ([47789db](https://github.com/confusedbuffalo/phone-report/commit/47789db8f9f7f5e69b5a23a09e3bf1f7a42a66e6))
+* fix stuck loading spinner ([0218754](https://github.com/confusedbuffalo/phone-report/commit/021875421818922e7bb47f823b7e84afc2285d8c))
+* reject quick edit if value has not changed ([8fd1ed3](https://github.com/confusedbuffalo/phone-report/commit/8fd1ed33138dc6b0dc8156234c8a714dc559a0c2)), closes [#553](https://github.com/confusedbuffalo/phone-report/issues/553)
+
+
+### Features
+
+* add section for questionable phone tags ([c4b4242](https://github.com/confusedbuffalo/phone-report/commit/c4b4242b956e5cb93d1ba6d83324e0a25f845597)), closes [#524](https://github.com/confusedbuffalo/phone-report/issues/524)
+* add warnings for dates in the past and invalid assumptions ([3de30ed](https://github.com/confusedbuffalo/phone-report/commit/3de30ed41eeb2d958f1e5863454585f8d321027f)), closes [#503](https://github.com/confusedbuffalo/phone-report/issues/503)
+* include edit in place for phones and autofixable items ([4b75549](https://github.com/confusedbuffalo/phone-report/commit/4b75549e38df6c849324c5c825561aa4c22698be))
+* separate missing names from mismatching names ([2f77900](https://github.com/confusedbuffalo/phone-report/commit/2f77900f8431bf6e636cb2603b98542e98d7bee1)), closes [#490](https://github.com/confusedbuffalo/phone-report/issues/490)
+
 ## [5.33.1](https://github.com/confusedbuffalo/phone-report/compare/v5.33.0...v5.33.1) (2026-09-28)
 
 
