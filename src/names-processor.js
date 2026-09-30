@@ -117,7 +117,7 @@ export async function validateNames(elementStream, countryCode, tmpFilePath, off
             }
         }
 
-        if (isInvalid && !hasPrimaryNameMatch) {
+        if (isInvalid && !hasPrimaryNameMatch && primaryName) {
             if (officialLanguages.some(lang => nameTags.has(`name:${lang}`))) {
                 hasMismatch = true;
             }
