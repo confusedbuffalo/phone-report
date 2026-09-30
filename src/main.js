@@ -15,7 +15,7 @@ import { splitPbf, getOsmTimestamp, downloadPbf, filterPbf, withRetry } from './
 import { safeName } from './data-processor.js';
 import { generateCountryIndexHtml } from './html-country.js';
 import { generateMainIndexHtml } from './html-index.js';
-import { generateHtmlReport } from './html-report.js';
+import { generateHtmlReport, getSubdivisionRelativeFilePath } from './html-report.js';
 import { getTranslations } from './i18n.js';
 import { generateSafeEditFile } from './osm-safe-edits.js';
 import { minify } from 'terser';
@@ -332,10 +332,7 @@ async function processSubdivision(subdivision, reportType, countryData, rawDivis
 
     if (!geojsonExists) {
         console.log(`PBF data not downloaded for ${subdivision.name}. Checking for cached build fallback...`);
-        const relativePath =
-            subdivisionSlug === safeName(countryName) || divisionSlug === subdivisionSlug
-                ? path.join(safeName(countryName), `${subdivisionSlug}.json`)
-                : path.join(safeName(countryName), divisionSlug, `${subdivisionSlug}.json`);
+        const relativePath = `${getSubdivisionRelativeFilePath(countryName, divisionSlug, subdivisionSlug)}.json`;
         const fallbackJsonPath = path.join(BUILD_DIR, reportType, relativePath);
 
         if (fs.existsSync(fallbackJsonPath)) {
