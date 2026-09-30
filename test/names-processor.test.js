@@ -111,6 +111,7 @@ describe('validateNames', () => {
         expect(invalidItem.id).toBe(1001);
 
         expect(invalidItem.name).toBeUndefined();
+        expect(invalidItem.hasMismatch).toBe(false);
         expect(invalidItem.nameTags).toEqual({
             'name:fr': 'Le Test',
             'name:de': 'Das Test',
@@ -134,9 +135,33 @@ describe('validateNames', () => {
         expect(invalidItem.id).toBe(1001);
 
         expect(invalidItem.name).toBe('Test');
+        expect(invalidItem.hasMismatch).toBe(false);
         expect(invalidItem.nameTags).toEqual({
             'name:fr': 'Le Test',
             'name:de': 'Das Test',
+        });
+    });
+
+    test('name:en without name is missing name and not mismatch in GB', async () => {
+        const elements = [createGeoJson(1001, { 'name:en': 'Test' })];
+
+        const result = await validateNames(Readable.from(elements), 'GB', tmpFilePath, ['en']);
+
+        expect(result.totalCount).toBe(1);
+        expect(result.invalidCount).toBe(1);
+        expect(result.missingNamesCount).toBe(1);
+
+        const invalidItems = JSON.parse(fs.readFileSync(tmpFilePath, 'utf-8'));
+
+        expect(invalidItems).toHaveLength(1);
+        const invalidItem = invalidItems[0];
+
+        expect(invalidItem.id).toBe(1001);
+
+        expect(invalidItem.name).toBeUndefined();
+        expect(invalidItem.hasMismatch).toBe(false);
+        expect(invalidItem.nameTags).toEqual({
+            'name:en': 'Test',
         });
     });
 
