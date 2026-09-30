@@ -1,3 +1,11 @@
+## [5.34.1](https://github.com/confusedbuffalo/phone-report/compare/v5.34.0...v5.34.1) (2026-09-30)
+
+
+### Bug Fixes
+
+* don't show edit button for foreign or bad tag items ([49f0e50](https://github.com/confusedbuffalo/phone-report/commit/49f0e50e2a1a75c9953884ce934f382f9a7a2aac))
+* missing name should never be a mismatched name ([b2f9568](https://github.com/confusedbuffalo/phone-report/commit/b2f956872bab64d8f9a8a30bc7204eb37f59e2ef))
+
 # [5.34.0](https://github.com/confusedbuffalo/phone-report/compare/v5.33.1...v5.34.0) (2026-09-29)
 
 
