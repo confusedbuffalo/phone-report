@@ -250,9 +250,10 @@ function createButtons(item, clickedClass) {
             </button>`
             : '';
 
-        fixButton = ['hours', 'phone'].includes(reportType)
-            ? fixButton +
-              `<button
+        fixButton =
+            ['hours', 'phone'].includes(reportType) && !item.isBadTagItem && !item.isForeignItem
+                ? fixButton +
+                  `<button
                 data-action="edit-here"
                 data-item-type="${escapeHTML(item.type)}"
                 data-item-id="${escapeHTML(item.id)}"
@@ -260,7 +261,7 @@ function createButtons(item, clickedClass) {
                 class="btn cursor-pointer ${clickedClass ? clickedClass : 'btn-josm-fix'}">
                 ${translate('edit')}
             </button>`
-            : fixButton;
+                : fixButton;
     }
 
     const createdNotes = JSON.parse(localStorage.getItem(`createdNotes_${subdivisionName}`)) || [];
