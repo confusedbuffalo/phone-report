@@ -1,3 +1,10 @@
+## [5.34.2](https://github.com/confusedbuffalo/phone-report/compare/v5.34.1...v5.34.2) (2026-10-01)
+
+
+### Bug Fixes
+
+* fix cache retrieval for single level divisions ([58d5a3b](https://github.com/confusedbuffalo/phone-report/commit/58d5a3b298bd0fea89c9e19059bb1919872112e7))
+
 ## [5.34.1](https://github.com/confusedbuffalo/phone-report/compare/v5.34.0...v5.34.1) (2026-09-30)
 
 
