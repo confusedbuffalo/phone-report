@@ -52,7 +52,7 @@ function getServerHostname(urlStr) {
     }
 }
 
-function shouldSkipDownload(pbfUrl) {
+export function shouldSkipDownload(pbfUrl) {
     if (!pbfUrl) return false;
     const hostname = getServerHostname(pbfUrl);
     if (!hostname) return false;
@@ -60,7 +60,7 @@ function shouldSkipDownload(pbfUrl) {
     return count >= SERVER_FAILURE_THRESHOLD;
 }
 
-function recordDownloadFailure(pbfUrl) {
+export function recordDownloadFailure(pbfUrl) {
     if (!pbfUrl) return;
     const hostname = getServerHostname(pbfUrl);
     if (!hostname) return;
@@ -79,7 +79,7 @@ function recordDownloadFailure(pbfUrl) {
  * @param {Object} fullDefaultTranslations - The complete dictionary for the default locale.
  * @returns {Object} A full dictionary containing all keys.
  */
-function createClientTranslations(fullTranslations, fullDefaultTranslations) {
+export function createClientTranslations(fullTranslations, fullDefaultTranslations) {
     const clientTranslations = {};
     for (const key of Object.keys(fullDefaultTranslations)) {
         if (fullTranslations[key] !== undefined) {
@@ -111,7 +111,7 @@ async function downloadAndParseOfficialLanguages() {
  * @param {'phone' | 'name' | 'hours'} reportType - The type of report to generate history for.
  * @param {Object} originalCountryStats - The statistics for the country, included groupedDivisionStats.
  */
-function saveCountryHistory(reportType, originalCountryStats) {
+export function saveCountryHistory(reportType, originalCountryStats) {
     const countryStats = structuredClone(originalCountryStats);
 
     const rootDir = path.join(HISTORY_DIR, reportType);
@@ -193,7 +193,7 @@ function saveCountryHistory(reportType, originalCountryStats) {
  * @param {string} divisionName - The name of the division.
  * @returns {Array<Object>} A list of subdivision objects.
  */
-function getSubdivisions(countryData, divisionName) {
+export function getSubdivisions(countryData, divisionName) {
     // Helper to normalise the entry into a standard object
     const formatSubdivision = ([name, value]) => {
         if (typeof value === 'object' && value !== null) {
@@ -236,7 +236,7 @@ function getSubdivisions(countryData, divisionName) {
  * Uses a combination of @id and @type to ensure uniqueness across OSM types.
  * @param {string} filePath - Path to the .geojsonseq file.
  */
-async function* createGeoJsonElementStream(filePath) {
+export async function* createGeoJsonElementStream(filePath) {
     const fileStream = fs.createReadStream(filePath);
     const seenElements = new Set();
 
@@ -297,7 +297,7 @@ async function* createGeoJsonElementStream(filePath) {
  * @param {string} timestampStr - The raw timestamp from the metadata file.
  * @returns {Date|null} - A valid Date object or null if parsing fails.
  */
-function parseOsmTimestamp(timestampStr) {
+export function parseOsmTimestamp(timestampStr) {
     if (!timestampStr) return null;
 
     const date = new Date(timestampStr);
