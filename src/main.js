@@ -517,7 +517,7 @@ export async function processCountry(countryData) {
             let downloaded = {};
 
             try {
-                downloaded = await downloadPbf(countryData.pbfUrl, signal);
+                downloaded = await downloadPbf(countryData.pbfUrl, signal, undefined, shouldSkipDownload);
 
                 for (const reportType of REPORT_TYPES) {
                     const tmpReportPbfFilePath = path.join(process.cwd(), `filtered-${reportType}-${uuidv4()}.osm.pbf`);
@@ -557,7 +557,7 @@ export async function processCountry(countryData) {
                 let downloaded = {};
 
                 try {
-                    downloaded = await downloadPbf(subData.pbfUrl, signal);
+                    downloaded = await downloadPbf(subData.pbfUrl, signal, undefined, shouldSkipDownload);
 
                     for (const reportType of REPORT_TYPES) {
                         const tmpReportPbfFilePath = path.join(
