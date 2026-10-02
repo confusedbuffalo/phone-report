@@ -1,3 +1,10 @@
+## [5.34.3](https://github.com/confusedbuffalo/phone-report/compare/v5.34.2...v5.34.3) (2026-10-02)
+
+
+### Bug Fixes
+
+* check download failure limit from download queue ([f2c1cf3](https://github.com/confusedbuffalo/phone-report/commit/f2c1cf3296f1575014ea5c5fa3d4efce41f4dac9))
+
 ## [5.34.2](https://github.com/confusedbuffalo/phone-report/compare/v5.34.1...v5.34.2) (2026-10-01)
 
 
