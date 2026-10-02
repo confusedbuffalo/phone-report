@@ -146,8 +146,16 @@ export async function withRetry(fn, label) {
  * @param {AbortSignal} [signal] - Optional AbortSignal to cancel the download.
  * @returns {Promise<{path: string, dispose: () => void}>} Where the file was saved and how to get rid of it.
  */
-export async function downloadPbf(url, signal, spaceManager = globalSpaceManager) {
+export async function downloadPbf(url, signal, spaceManager = globalSpaceManager, shouldSkip = null) {
     const ticket = await spaceManager.reserveSpace(url);
+
+    if (typeof shouldSkip === 'function' && shouldSkip(url)) {
+        ticket.release();
+        const skipMsg = `Skipping queued download for ${url} because server failure threshold was reached while waiting in queue.`;
+        console.warn(skipMsg);
+        throw new Error(skipMsg);
+    }
+
     console.log(`Downloading: ${url}`);
     const outputPath = path.join(process.cwd(), `${uuidv4()}.osm.pbf`);
 

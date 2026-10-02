@@ -197,6 +197,38 @@ describe('src/main.js test suite', () => {
             const otherUrl = 'https://download-server-test.example.com/other.pbf';
             expect(shouldSkipDownload(otherUrl)).toBe(true);
         });
+
+        it('skips queued downloads when server failure threshold is reached after reserveSpace', async () => {
+            const { downloadPbf, DiskSpaceManager } = await import('../src/osm-download.js');
+            const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+            const mockSpaceManager = new DiskSpaceManager(process.cwd(), 1.5, 1);
+            // Lock active tickets so subsequent reserveSpace gets queued
+            mockSpaceManager.activeTickets = 1;
+
+            const url = 'https://queue-skip-test.example.com/file.pbf';
+
+            const downloadPromise = downloadPbf(url, undefined, mockSpaceManager, shouldSkipDownload);
+
+            // Simulate failures reaching threshold while queued
+            for (let i = 0; i < 5; i++) {
+                recordDownloadFailure(url);
+            }
+
+            // Release active ticket so queued task acquires reservation
+            mockSpaceManager.activeTickets = 0;
+            mockSpaceManager.checkQueue();
+
+            await expect(downloadPromise).rejects.toThrow(
+                `Skipping queued download for ${url} because server failure threshold was reached while waiting in queue.`
+            );
+
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.stringContaining(`Skipping queued download for ${url}`)
+            );
+
+            warnSpy.mockRestore();
+        });
     });
 
     describe('createClientTranslations', () => {
