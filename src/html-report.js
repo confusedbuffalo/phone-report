@@ -129,8 +129,9 @@ export function getLengthProblemText(originalNumber, locale, countryCode) {
                 return translate('tooShort', locale);
             case 'TOO_LONG':
                 return translate('tooLong', locale);
-            case 'INVALID_COUNTRY':
-                return translate('invalidCountry', locale);
+            // Disabled as this is often unclear and not really the correct reason for a number being invalid
+            // case 'INVALID_COUNTRY':
+            //     return translate('invalidCountry', locale);
             case 'INVALID_LENGTH':
                 return translate('invalidLength', locale);
             case 'NOT_A_NUMBER':
