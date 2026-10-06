@@ -173,6 +173,7 @@ export async function validateOpeningHours(elementStream, countryCode, tmpFilePa
                 disconnected: new Map(),
                 ambiguous: new Map(),
                 noDays: new Map(),
+                assumption: new Map(),
             };
         };
 
@@ -211,6 +212,7 @@ export async function validateOpeningHours(elementStream, countryCode, tmpFilePa
                 currentItem.disconnected.set(tag, validationResult.disconnected);
                 currentItem.ambiguous.set(tag, validationResult.isAmbiguous);
                 currentItem.noDays.set(tag, validationResult.noDays);
+                currentItem.assumption.set(tag, validationResult.assumption);
             }
         }
 

@@ -289,7 +289,7 @@ function createHoursFixRows(item, locale) {
             const noDaysLabel = item.noDays[key]
                 ? `<span class="label label-number-problem">${translate('noDays', locale)}</span>`
                 : '';
-            const assumptionLabel = item.noDays[key]
+            const assumptionLabel = item.assumption[key]
                 ? `<span class="label label-number-problem">${translate('assumption', locale)}</span>`
                 : '';
 
