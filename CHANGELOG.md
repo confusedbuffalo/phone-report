@@ -1,3 +1,10 @@
+## [5.34.4](https://github.com/confusedbuffalo/phone-report/compare/v5.34.3...v5.34.4) (2026-10-06)
+
+
+### Bug Fixes
+
+* disable invalid country label as it is often not really the correct reason ([d87fad7](https://github.com/confusedbuffalo/phone-report/commit/d87fad7cebb121344264a30ae31d5ea352a9636f))
+
 ## [5.34.3](https://github.com/confusedbuffalo/phone-report/compare/v5.34.2...v5.34.3) (2026-10-02)
 
 
