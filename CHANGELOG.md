@@ -1,3 +1,10 @@
+## [5.34.5](https://github.com/confusedbuffalo/phone-report/compare/v5.34.4...v5.34.5) (2026-10-07)
+
+
+### Bug Fixes
+
+* fix assumption label ([8a8fa2d](https://github.com/confusedbuffalo/phone-report/commit/8a8fa2d91268232d388ad510395c45d4c7633a14))
+
 ## [5.34.4](https://github.com/confusedbuffalo/phone-report/compare/v5.34.3...v5.34.4) (2026-10-06)
 
 
