@@ -1,3 +1,10 @@
+## [5.34.6](https://github.com/confusedbuffalo/phone-report/compare/v5.34.5...v5.34.6) (2026-10-09)
+
+
+### Bug Fixes
+
+* couldn't edit a phone item that had bad tags or foreign numbers ([4d9c701](https://github.com/confusedbuffalo/phone-report/commit/4d9c701008d30bf66f386f8a72b90edca57a373c))
+
 ## [5.34.5](https://github.com/confusedbuffalo/phone-report/compare/v5.34.4...v5.34.5) (2026-10-07)
 
 
