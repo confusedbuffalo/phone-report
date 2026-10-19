@@ -1,0 +1,128 @@
+{
+  "name": "United Kingdom",
+  "slug": "united-kingdom",
+  "locale": "en-GB",
+  "timestamp": "2026-10-19T00:00:00.000Z",
+  "groupedDivisionStats": {
+    "England": [
+      {
+        "name": "East Midlands",
+        "divisionSlug": "england",
+        "slug": "east-midlands",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 54,
+        "autoFixableCount": 0,
+        "totalCount": 11634
+      },
+      {
+        "name": "East of England",
+        "divisionSlug": "england",
+        "slug": "east-of-england",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 89,
+        "autoFixableCount": 2,
+        "totalCount": 21354
+      },
+      {
+        "name": "Greater London",
+        "divisionSlug": "england",
+        "slug": "greater-london",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 98,
+        "autoFixableCount": 3,
+        "totalCount": 26968
+      },
+      {
+        "name": "North East England",
+        "divisionSlug": "england",
+        "slug": "north-east-england",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 19,
+        "autoFixableCount": 1,
+        "totalCount": 5279
+      },
+      {
+        "name": "North West England",
+        "divisionSlug": "england",
+        "slug": "north-west-england",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 100,
+        "autoFixableCount": 1,
+        "totalCount": 17578
+      },
+      {
+        "name": "South East England",
+        "divisionSlug": "england",
+        "slug": "south-east-england",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 240,
+        "autoFixableCount": 1,
+        "totalCount": 34481
+      },
+      {
+        "name": "South West England",
+        "divisionSlug": "england",
+        "slug": "south-west-england",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 131,
+        "autoFixableCount": 1,
+        "totalCount": 25337
+      },
+      {
+        "name": "West Midlands",
+        "divisionSlug": "england",
+        "slug": "west-midlands",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 69,
+        "autoFixableCount": 0,
+        "totalCount": 11703
+      },
+      {
+        "name": "Yorkshire and the Humber",
+        "divisionSlug": "england",
+        "slug": "yorkshire-and-the-humber",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 207,
+        "autoFixableCount": 1,
+        "totalCount": 16010
+      }
+    ],
+    "Northern Ireland": [
+      {
+        "name": "Northern Ireland",
+        "divisionSlug": "northern-ireland",
+        "slug": "northern-ireland",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 19,
+        "autoFixableCount": 0,
+        "totalCount": 2472
+      }
+    ],
+    "Scotland": [
+      {
+        "name": "Scotland",
+        "divisionSlug": "scotland",
+        "slug": "scotland",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 148,
+        "autoFixableCount": 2,
+        "totalCount": 20507
+      }
+    ],
+    "Wales": [
+      {
+        "name": "Wales",
+        "divisionSlug": "wales",
+        "slug": "wales",
+        "timestamp": "2026-10-19T00:00:00.000Z",
+        "invalidCount": 50,
+        "autoFixableCount": 0,
+        "totalCount": 12271
+      }
+    ]
+  },
+  "invalidCount": 1224,
+  "autoFixableCount": 12,
+  "totalCount": 205594,
+  "safeEditCount": 0
+}
